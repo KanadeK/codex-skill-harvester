@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/KanadeK/codex-skill-harvester/actions/workflows/ci.yml/badge.svg)](https://github.com/KanadeK/codex-skill-harvester/actions/workflows/ci.yml)
 
-The current source version is **0.1.1**. Tagged releases are published as immutable GitHub Releases with verified source, Plugin, and checksum assets; the prior [v0.1.0](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.1.0) attestation remains available.
+[v0.1.1](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.1.1) is published as an immutable GitHub Release with verified source, Plugin, and checksum assets. The [final attestation](runs/2026-08-27T14-31-10Z-v0.1.1-attestation.md) records the PR, CI, tag, assets, isolated install, live Skill call, settings, and contributors.
 
 Codex Skill Harvester incrementally turns changed, authoritative public workflow evidence into reviewed, original Codex Skills grouped by user task domain. It persists source cursors, evidence hashes, capability fingerprints, semantic decisions, generated artifacts, and run reports in the repository, so a later scan resumes without chat memory.
 
@@ -19,7 +19,7 @@ It is deliberately not a Skill mirror. Deterministic Python owns fetching, chang
 - Read-only `status` and `review-queue` commands expose durable handoff state without opening JSON files.
 - A weekly/manual GitHub Actions workflow performs only deterministic scanning and opens a changed-only review PR. It never applies a semantic decision or publishes a Skill.
 - Repository validation covers structure, state/catalog/decision consistency, generated artifact hashes, source references, and secret-like material. Release ZIPs are deterministic and are installed and invoked from an isolated temporary directory.
-- The previous published source archive and Plugin were live-verified against the v0.1.0 repository, PR, CI, tag, asset, installation, and contributor evidence. v0.1.1 is not declared published until the same remote gates pass.
+- The published v0.1.1 source archive installs and invokes successfully from a fresh download, and the released Plugin's own Skill returns `complete` against the live PR, CI, annotated tag, immutable Release, assets, installation, and contributor evidence.
 
 GitHub API sources support either `GITHUB_TOKEN` from the current process or the official `gh` keyring via `--github-auth gh-cli`. Environment tokens are sent only to `api.github.com`, are not forwarded across redirects, and are never persisted or printed. The `gh-cli` path invokes `gh api` without exporting or placing a credential on the command line. The discovery search intentionally follows a moving `sort=updated` window, so an immediate repeat can truthfully discover new repository identities while revision-only churn is suppressed.
 
