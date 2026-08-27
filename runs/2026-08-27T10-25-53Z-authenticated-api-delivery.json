@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-08-27T10-25-53Z",
+  "status": "ready_for_second_remote_ci",
+  "discoveries": 95,
+  "sources": [
+    {"source_id": "openai-build-skills", "status": "scanned_then_no_op"},
+    {"source_id": "openai-build-plugins", "status": "scanned_then_no_op"},
+    {"source_id": "openai-plugin-catalog", "status": "authenticated_scanned_then_unchanged"},
+    {"source_id": "github-agent-skills-search", "status": "authenticated_incremental_changes"},
+    {"source_id": "openai-codex-releases", "status": "scanned_then_no_op"},
+    {"source_id": "github-cli-repo-view", "status": "scanned_then_no_op"},
+    {"source_id": "github-cli-pr-checks", "status": "scanned_then_no_op"},
+    {"source_id": "github-cli-release-view", "status": "scanned_then_no_op"},
+    {"source_id": "github-cli-api", "status": "scanned_then_no_op"},
+    {"source_id": "github-rest-releases", "status": "scanned_then_no_op"},
+    {"source_id": "github-rest-repositories", "status": "scanned_then_no_op"},
+    {"source_id": "openai-gh-fix-ci", "status": "scanned_then_no_op"},
+    {"source_id": "openai-gh-address-comments", "status": "scanned_then_no_op"}
+  ],
+  "scan_evidence": {
+    "stable_changed_run": "2026-08-27T09-26-05Z",
+    "stable_changed_discoveries": 20,
+    "stable_no_op_run": "2026-08-27T09-27-31Z",
+    "stable_no_op_discoveries": 0,
+    "authenticated_api_run": "2026-08-27T10-14-45.959028Z",
+    "authenticated_api_discoveries": 63,
+    "authenticated_repeat_run": "2026-08-27T10-15-07.674022Z",
+    "authenticated_repeat_catalog_discoveries": 0,
+    "authenticated_repeat_search_discoveries": 2,
+    "focused_search_run": "2026-08-27T10-16-09.152293Z",
+    "focused_search_discoveries": 10
+  },
+  "decisions": {
+    "discard": 3,
+    "merge": 1,
+    "update": 1,
+    "create": 1,
+    "pending": 89
+  },
+  "created_capability": "github-release-evidence:audit-github-release",
+  "validations": [
+    {"name": "unit_and_integration_tests", "status": "passed", "details": "31 tests"},
+    {"name": "official_skill_validator", "status": "passed"},
+    {"name": "official_plugin_validator", "status": "passed"},
+    {"name": "trigger_review", "status": "passed", "details": "3 positive and 4 negative cases"},
+    {"name": "end_to_end_release_evidence", "status": "passed", "details": "8 gates plus mismatch and injection cases"},
+    {"name": "repository_consistency", "status": "passed", "details": "13 state sources, 95 candidates, 6 applied records"},
+    {"name": "secret_material_scan", "status": "passed", "details": "0 findings"},
+    {"name": "release_build", "status": "passed", "details": "source and Plugin archives plus checksum manifest"},
+    {"name": "isolated_archive_install_and_call", "status": "passed"},
+    {"name": "initial_remote_ci", "status": "passed", "details": "Windows and Ubuntu on merged main"}
+  ],
+  "remote_evidence": {
+    "repository": "https://github.com/KanadeK/codex-skill-harvester",
+    "initial_pull_request": "https://github.com/KanadeK/codex-skill-harvester/pull/1",
+    "initial_merge_commit": "6bdb9cb9408d28c3d1fe2a0f4c800597e12b5a65",
+    "main_ci": "https://github.com/KanadeK/codex-skill-harvester/actions/runs/33061789460"
+  },
+  "security": {
+    "raw_source_bodies_committed": false,
+    "external_scripts_executed": false,
+    "credentials_exported_from_keyring": false,
+    "credentials_committed": false,
+    "copied_external_skill_bodies": false
+  },
+  "unresolved_issues": [
+    "The live repository search uses a moving sort=updated window; true upstream churn can produce small changed-only batches on immediate repeats.",
+    "Eighty-nine discoveries remain pending explicit Codex review and do not block the first vertical slice.",
+    "The authenticated scan branch still requires remote CI and merge before v0.1.0 can be tagged and released.",
+    "Published Release asset installation, marketplace discovery, and remote contributor verification remain outstanding."
+  ]
+}

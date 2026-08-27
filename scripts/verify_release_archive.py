@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import os
 import subprocess
 import sys
@@ -11,8 +12,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def main() -> int:
-    archive = ROOT / "dist" / "codex-skill-harvester-v0.1.0.zip"
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="install and invoke a built release archive")
+    parser.add_argument(
+        "--archive",
+        type=Path,
+        default=ROOT / "dist" / "codex-skill-harvester-v0.1.0.zip",
+    )
+    archive = parser.parse_args(argv).archive.resolve()
     with tempfile.TemporaryDirectory() as directory:
         temporary = Path(directory)
         with zipfile.ZipFile(archive) as package:

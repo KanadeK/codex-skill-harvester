@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/zoom",
+  "evidence_sha256": "b997c1645ac6e2575e3e281e7aaa7539f596695e98ec80245755be50c6cbad01",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "60dba5e21729027ad5076f41172cb1f64a5cb89d"
+    },
+    {
+      "kind": "source_title",
+      "value": "zoom"
+    }
+  ],
+  "id": "f3945a8c1ad0c941bf38c8d5",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "60dba5e21729027ad5076f41172cb1f64a5cb89d",
+  "source_revision": "60dba5e21729027ad5076f41172cb1f64a5cb89d",
+  "title": "zoom",
+  "trust": "official"
+}

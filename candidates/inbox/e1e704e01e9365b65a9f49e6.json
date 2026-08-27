@@ -1,0 +1,28 @@
+{
+  "authority": "demand-signal-only",
+  "canonical_url": "https://github.com/pefman/multica-setup",
+  "evidence_sha256": "3cff309fdc17ff2f2a0bdd561b8e40acf6909ee2f20f2761d0121c98dc6ed7a2",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "2026-08-27T09:41:53Z"
+    },
+    {
+      "kind": "source_title",
+      "value": "pefman/multica-setup"
+    }
+  ],
+  "id": "e1e704e01e9365b65a9f49e6",
+  "license": {
+    "identifier": null,
+    "status": "unknown"
+  },
+  "observed_at": "2026-08-27T10:16:09.152293Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "github-agent-skills-search",
+  "source_item_id": "1348222467",
+  "source_revision": "2026-08-27T09:41:53Z",
+  "title": "pefman/multica-setup",
+  "trust": "discovery"
+}

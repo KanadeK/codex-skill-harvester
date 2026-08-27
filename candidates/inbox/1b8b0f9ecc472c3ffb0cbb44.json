@@ -1,0 +1,28 @@
+{
+  "authority": "demand-signal-only",
+  "canonical_url": "https://github.com/linny006/agent-eval-harness",
+  "evidence_sha256": "e5b7dc95faa69f4615fe65aefddcf50aa941ade44c54cc704b7386f7c3fbab26",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "2026-08-27T10:05:59Z"
+    },
+    {
+      "kind": "source_title",
+      "value": "linny006/agent-eval-harness"
+    }
+  ],
+  "id": "1b8b0f9ecc472c3ffb0cbb44",
+  "license": {
+    "identifier": null,
+    "status": "unknown"
+  },
+  "observed_at": "2026-08-27T10:16:09.152293Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "github-agent-skills-search",
+  "source_item_id": "1247930960",
+  "source_revision": "2026-08-27T10:05:59Z",
+  "title": "linny006/agent-eval-harness",
+  "trust": "discovery"
+}

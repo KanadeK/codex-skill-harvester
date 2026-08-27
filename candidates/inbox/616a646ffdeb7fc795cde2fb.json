@@ -1,0 +1,28 @@
+{
+  "authority": "demand-signal-only",
+  "canonical_url": "https://github.com/SUNRNEHUI/agent-harness",
+  "evidence_sha256": "e8fccb7e6c2a4a1bd297f5434afad3f13781da14ddfb482ef1ee26ce37d9cd3e",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "2026-08-27T10:14:21Z"
+    },
+    {
+      "kind": "source_title",
+      "value": "SUNRNEHUI/agent-harness"
+    }
+  ],
+  "id": "616a646ffdeb7fc795cde2fb",
+  "license": {
+    "identifier": null,
+    "status": "unknown"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "github-agent-skills-search",
+  "source_item_id": "1218899337",
+  "source_revision": "2026-08-27T10:14:21Z",
+  "title": "SUNRNEHUI/agent-harness",
+  "trust": "discovery"
+}

@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/vercel",
+  "evidence_sha256": "6b6d9cb6eecc63cf1e3612f00eecdef606be7684d64bc2c81d7ed1cb3175a90d",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "52806f715d53d89d23194f87e753489058b184ee"
+    },
+    {
+      "kind": "source_title",
+      "value": "vercel"
+    }
+  ],
+  "id": "01062c088b6d0aead5fb67c5",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "52806f715d53d89d23194f87e753489058b184ee",
+  "source_revision": "52806f715d53d89d23194f87e753489058b184ee",
+  "title": "vercel",
+  "trust": "official"
+}

@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import subprocess
 import xml.etree.ElementTree as ElementTree
 from copy import deepcopy
 from dataclasses import dataclass
@@ -82,6 +83,51 @@ class UrllibFetcher:
             raise SourceFetchError(f"source request failed: {error.reason}") from error
 
 
+class GitHubCliFetcher:
+    def __init__(
+        self,
+        *,
+        delegate: Fetcher | None = None,
+        executable: str = "gh",
+        max_response_bytes: int = 2_000_000,
+        timeout: float = 20.0,
+    ) -> None:
+        self.delegate = delegate or UrllibFetcher(github_token="")
+        self.executable = executable
+        self.max_response_bytes = max_response_bytes
+        self.timeout = timeout
+
+    def fetch(self, url: str, headers: dict[str, str]) -> FetchResponse:
+        parsed = urlparse(url)
+        if parsed.hostname != "api.github.com":
+            return self.delegate.fetch(url, headers)
+        if parsed.scheme != "https":
+            raise SourceFetchError("GitHub CLI sources must use https")
+        endpoint = parsed.path.lstrip("/")
+        if parsed.query:
+            endpoint += f"?{parsed.query}"
+        command = [self.executable, "api", "--method", "GET", endpoint]
+        if headers.get("Accept"):
+            command.extend(["-H", f"Accept: {headers['Accept']}"])
+        try:
+            completed = subprocess.run(
+                command,
+                capture_output=True,
+                check=False,
+                timeout=self.timeout,
+            )
+        except subprocess.TimeoutExpired as error:
+            raise SourceFetchError(f"gh api request timed out after {self.timeout} seconds") from error
+        if completed.returncode != 0:
+            message = completed.stderr.decode("utf-8", errors="replace").strip()
+            raise SourceFetchError(f"gh api request failed: {message}")
+        if len(completed.stdout) > self.max_response_bytes:
+            raise SourceFetchError(
+                f"source response exceeded {self.max_response_bytes}-byte size limit"
+            )
+        return FetchResponse(200, url, {}, completed.stdout)
+
+
 def load_registry(root: Path) -> list[dict[str, Any]]:
     registry = load_json(root / "sources" / "registry.json")
     if not isinstance(registry, dict) or registry.get("schema_version") != 1:
@@ -108,7 +154,8 @@ def load_registry(root: Path) -> list[dict[str, Any]]:
             raise RegistryError(f"source {source_id} has an unsupported trust tier")
         authentication = source.get("authentication")
         if authentication is not None and (
-            authentication != {"type": "optional-bearer-env", "env": "GITHUB_TOKEN"}
+            authentication
+            != {"type": "github", "methods": ["GITHUB_TOKEN", "gh-cli"]}
             or urlparse(url).hostname != "api.github.com"
         ):
             raise RegistryError(f"source {source_id} has unsupported authentication metadata")

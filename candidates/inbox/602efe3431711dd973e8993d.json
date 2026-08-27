@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/datadog",
+  "evidence_sha256": "d03fb194c5e69f51eef3b24394a897231dadb429a2b8be68de312f6dbb2348a0",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "cfd2ef81e8fc7830dee2c05afd1811bd3b95fecc"
+    },
+    {
+      "kind": "source_title",
+      "value": "datadog"
+    }
+  ],
+  "id": "602efe3431711dd973e8993d",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "cfd2ef81e8fc7830dee2c05afd1811bd3b95fecc",
+  "source_revision": "cfd2ef81e8fc7830dee2c05afd1811bd3b95fecc",
+  "title": "datadog",
+  "trust": "official"
+}

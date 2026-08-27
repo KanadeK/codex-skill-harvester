@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/coderabbit",
+  "evidence_sha256": "19184177a74606b921ad638599efedf5eca3ffeb1ab39a7030c817ff148e66c1",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "bafbc89df2bbaf939d9dc5cf366e1d2e2405dc0d"
+    },
+    {
+      "kind": "source_title",
+      "value": "coderabbit"
+    }
+  ],
+  "id": "b1a5c505dd266cc655e3c045",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "bafbc89df2bbaf939d9dc5cf366e1d2e2405dc0d",
+  "source_revision": "bafbc89df2bbaf939d9dc5cf366e1d2e2405dc0d",
+  "title": "coderabbit",
+  "trust": "official"
+}

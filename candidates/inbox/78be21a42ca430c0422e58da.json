@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/google-drive",
+  "evidence_sha256": "6e48a207b5c313cf2513334cab65b9381849eff344471b7ca77fa06942616e85",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "7a103a71d9103f1f178c9352ada722a5da4a6dda"
+    },
+    {
+      "kind": "source_title",
+      "value": "google-drive"
+    }
+  ],
+  "id": "78be21a42ca430c0422e58da",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "7a103a71d9103f1f178c9352ada722a5da4a6dda",
+  "source_revision": "7a103a71d9103f1f178c9352ada722a5da4a6dda",
+  "title": "google-drive",
+  "trust": "official"
+}

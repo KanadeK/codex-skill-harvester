@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/magicpath",
+  "evidence_sha256": "dce2a3b421243ce2693ebfbcb957982d53e8b3cbbc341d1983269b36de1b215f",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "32150a2aba0b60d9ab973035b6d7ffafceacc527"
+    },
+    {
+      "kind": "source_title",
+      "value": "magicpath"
+    }
+  ],
+  "id": "f126fc431a32a0f4d59fc280",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "32150a2aba0b60d9ab973035b6d7ffafceacc527",
+  "source_revision": "32150a2aba0b60d9ab973035b6d7ffafceacc527",
+  "title": "magicpath",
+  "trust": "official"
+}

@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/sentry",
+  "evidence_sha256": "d8b0730bf304e42cf523e6bb3019ad7c62f990c98e1b2a7fbd5a253c78630ec9",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "3b1c0422be348497b92267a5d7cc57ccd2d0c189"
+    },
+    {
+      "kind": "source_title",
+      "value": "sentry"
+    }
+  ],
+  "id": "039dd54890ab7e98e09f3b49",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "3b1c0422be348497b92267a5d7cc57ccd2d0c189",
+  "source_revision": "3b1c0422be348497b92267a5d7cc57ccd2d0c189",
+  "title": "sentry",
+  "trust": "official"
+}

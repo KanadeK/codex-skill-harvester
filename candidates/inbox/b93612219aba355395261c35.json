@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/hyperframes",
+  "evidence_sha256": "956497dd0422edfb61571a8fac7c5f4e87b339809d385c4026ba3b9aae6e5c98",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "1b70ce3e44d8ccb330f5d77baf227893bb049cd8"
+    },
+    {
+      "kind": "source_title",
+      "value": "hyperframes"
+    }
+  ],
+  "id": "b93612219aba355395261c35",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "1b70ce3e44d8ccb330f5d77baf227893bb049cd8",
+  "source_revision": "1b70ce3e44d8ccb330f5d77baf227893bb049cd8",
+  "title": "hyperframes",
+  "trust": "official"
+}

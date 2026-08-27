@@ -1,0 +1,28 @@
+{
+  "authority": "demand-signal-only",
+  "canonical_url": "https://github.com/jiamingyuan/notee",
+  "evidence_sha256": "1fd4147fc26445386d4d6f56eae2d1d9f5319b3101c12ef25a18227dfcaced93",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "2026-08-27T10:11:41Z"
+    },
+    {
+      "kind": "source_title",
+      "value": "jiamingyuan/notee"
+    }
+  ],
+  "id": "22f3ec27e6c7af3b562f36e6",
+  "license": {
+    "identifier": null,
+    "status": "unknown"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "github-agent-skills-search",
+  "source_item_id": "1348340694",
+  "source_revision": "2026-08-27T10:11:41Z",
+  "title": "jiamingyuan/notee",
+  "trust": "discovery"
+}

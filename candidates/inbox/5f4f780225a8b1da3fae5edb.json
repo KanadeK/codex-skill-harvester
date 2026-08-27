@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/granola",
+  "evidence_sha256": "a07c7a876e079cef22b906b4bb39675636d909ce3979473fda25fad3828861d6",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "75339b564918f75bc4e59364841e6afe1fdd6114"
+    },
+    {
+      "kind": "source_title",
+      "value": "granola"
+    }
+  ],
+  "id": "5f4f780225a8b1da3fae5edb",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "75339b564918f75bc4e59364841e6afe1fdd6114",
+  "source_revision": "75339b564918f75bc4e59364841e6afe1fdd6114",
+  "title": "granola",
+  "trust": "official"
+}

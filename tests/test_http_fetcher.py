@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import subprocess
 import unittest
 from email.message import Message
 from pathlib import Path
@@ -9,7 +10,7 @@ from urllib.error import HTTPError
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from skill_harvester.sources import SourceFetchError, UrllibFetcher
+from skill_harvester.sources import GitHubCliFetcher, SourceFetchError, UrllibFetcher
 
 
 class FakeResponse:
@@ -60,6 +61,46 @@ class HttpFetcherTests(unittest.TestCase):
         fetcher.fetch("https://example.test/source", {})
         other_request = urlopen.call_args.args[0]
         self.assertIsNone(other_request.get_header("Authorization"))
+
+    @patch("skill_harvester.sources.subprocess.run")
+    def test_github_cli_fetcher_uses_official_gh_without_exporting_a_token(self, run: object) -> None:
+        run.return_value.returncode = 0
+        run.return_value.stdout = b'{"items": []}'
+        run.return_value.stderr = b""
+        fetcher = GitHubCliFetcher()
+
+        response = fetcher.fetch(
+            "https://api.github.com/search/repositories?q=agent-skills",
+            {"Accept": "application/json", "If-None-Match": '"old"'},
+        )
+
+        self.assertEqual(response.status, 200)
+        self.assertEqual(response.body, b'{"items": []}')
+        command = run.call_args.args[0]
+        self.assertEqual(command[:3], ["gh", "api", "--method"])
+        self.assertNotIn("Authorization", " ".join(command))
+
+    @patch("skill_harvester.sources.subprocess.run")
+    def test_github_cli_fetcher_rejects_response_larger_than_limit(self, run: object) -> None:
+        run.return_value.returncode = 0
+        run.return_value.stdout = b"12345"
+        run.return_value.stderr = b""
+
+        with self.assertRaisesRegex(SourceFetchError, "size limit"):
+            GitHubCliFetcher(max_response_bytes=4).fetch(
+                "https://api.github.com/repos/openai/plugins/contents/plugins",
+                {"Accept": "application/json"},
+            )
+
+    @patch("skill_harvester.sources.subprocess.run")
+    def test_github_cli_fetcher_reports_timeout(self, run: object) -> None:
+        run.side_effect = subprocess.TimeoutExpired(["gh", "api"], timeout=1)
+
+        with self.assertRaisesRegex(SourceFetchError, "timed out"):
+            GitHubCliFetcher(timeout=1).fetch(
+                "https://api.github.com/repos/openai/plugins/contents/plugins",
+                {"Accept": "application/json"},
+            )
 
     @patch("skill_harvester.sources.urlopen")
     def test_rejects_response_larger_than_limit(self, urlopen: object) -> None:

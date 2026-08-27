@@ -1,0 +1,26 @@
+{
+  "decisions": {
+    "create": 0,
+    "discard": 0,
+    "merge": 0,
+    "update": 0
+  },
+  "discoveries": 2,
+  "run_id": "2026-08-27T10-15-07.674022Z",
+  "schema_version": 1,
+  "sources": [
+    {
+      "discoveries": 0,
+      "source_id": "openai-plugin-catalog",
+      "status": "unchanged_content"
+    },
+    {
+      "discoveries": 2,
+      "source_id": "github-agent-skills-search",
+      "status": "changed"
+    }
+  ],
+  "status": "changed",
+  "unresolved_issues": [],
+  "validations": []
+}

@@ -8,14 +8,15 @@ It is deliberately not a Skill mirror. Deterministic Python owns fetching, chang
 
 ## What v0.1.0 proves
 
-- 13 registered sources across official OpenAI format authority, vendor documentation, GitHub search/API, Release/Atom, and representative external Skills.
+- 13 registered and live-scanned sources across official OpenAI format authority, vendor documentation, GitHub search/API, Release/Atom, and representative external Skills.
 - A real 11-source scan produced 20 changed discoveries; the next successful identical scan produced `status=no_op` and zero discoveries.
+- The authenticated GitHub API scan produced 63 discoveries. Its immediate repeat processed only two genuinely changed search results while the official Plugin catalog produced zero; a later focused search processed ten more entries because the live `sort=updated` window had changed again.
 - Controlled tests distinguish exact duplicates, semantic/capability duplicates, updates, and genuinely new capabilities.
-- Six real discoveries are reviewed: three discarded, one merged, one created, and one corrective update. Fourteen remain explicitly pending rather than being converted into filler.
+- Six real discoveries are reviewed: three discarded, one merged, one created, and one corrective update. Eighty-nine remain explicitly pending rather than being converted into filler.
 - The generated `github-release-evidence` Plugin contains one original `audit-github-release` Skill with source provenance, positive/negative trigger reviews, and a deterministic end-to-end evidence checker.
 - Repository validation covers structure, state/catalog/decision consistency, generated artifact hashes, source references, and secret-like material. Release ZIPs are deterministic and are installed and invoked from an isolated temporary directory.
 
-The two anonymous GitHub API sources can be rate-limited on shared networks. They remain registered and tested; set `GITHUB_TOKEN` in the process environment to scan them with official GitHub authentication. The token is sent only to `api.github.com`, is not forwarded across redirects, and is never persisted or printed.
+GitHub API sources support either `GITHUB_TOKEN` from the current process or the official `gh` keyring via `--github-auth gh-cli`. Environment tokens are sent only to `api.github.com`, are not forwarded across redirects, and are never persisted or printed. The `gh-cli` path invokes `gh api` without exporting or placing a credential on the command line. The discovery search intentionally follows a moving `sort=updated` window, so an immediate repeat can truthfully contain a small number of changed entries instead of being a no-op.
 
 ## Product boundary
 
@@ -45,6 +46,12 @@ Run all registered sources, using `GITHUB_TOKEN` if the GitHub API needs authent
 
 ```powershell
 .\.venv\Scripts\skill-harvester scan --root .
+```
+
+Or reuse an existing official GitHub CLI login without exporting its keyring credential:
+
+```powershell
+.\.venv\Scripts\skill-harvester scan --root . --github-auth gh-cli
 ```
 
 A scan stores only source metadata, necessary extracted facts, and evidence hashes. It does not store raw pages or execute fetched code. Review a discovery by creating the explicit decision contract documented in [.agents/skills/maintain-skill-harvester](.agents/skills/maintain-skill-harvester/SKILL.md), then apply it:

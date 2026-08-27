@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/openai-developers",
+  "evidence_sha256": "a42d1344afd9112c654b802e1faf384ecfc9fbd7a044371762dae3fd514dee2d",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "bdb6e82a836b313888391ef2cfc354089abcd086"
+    },
+    {
+      "kind": "source_title",
+      "value": "openai-developers"
+    }
+  ],
+  "id": "51997dba5ae26b9871b2a2bc",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "bdb6e82a836b313888391ef2cfc354089abcd086",
+  "source_revision": "bdb6e82a836b313888391ef2cfc354089abcd086",
+  "title": "openai-developers",
+  "trust": "official"
+}

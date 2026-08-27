@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/life-science-research",
+  "evidence_sha256": "0318f0f14865a8232e668d0ce884b865c97583dbc0e13e8086ab249f40d0a7a9",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "dc85d9ce2b81eab9eace5b8b4b857f166e2a8d5b"
+    },
+    {
+      "kind": "source_title",
+      "value": "life-science-research"
+    }
+  ],
+  "id": "54b01d740595161c374295ef",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "dc85d9ce2b81eab9eace5b8b4b857f166e2a8d5b",
+  "source_revision": "dc85d9ce2b81eab9eace5b8b4b857f166e2a8d5b",
+  "title": "life-science-research",
+  "trust": "official"
+}

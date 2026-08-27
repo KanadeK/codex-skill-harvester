@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/sharepoint",
+  "evidence_sha256": "ae2cf9d7ef92d5043bfdf512d59770aab5c9b54375b6e90fc4b471c6e74c376e",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "64082159cdd9ebfd7150cb0b79ae1f69a462c0ef"
+    },
+    {
+      "kind": "source_title",
+      "value": "sharepoint"
+    }
+  ],
+  "id": "2d1aac25c27a2616539e7a6b",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "64082159cdd9ebfd7150cb0b79ae1f69a462c0ef",
+  "source_revision": "64082159cdd9ebfd7150cb0b79ae1f69a462c0ef",
+  "title": "sharepoint",
+  "trust": "official"
+}

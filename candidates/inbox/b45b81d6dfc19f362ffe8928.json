@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/expo",
+  "evidence_sha256": "c135ace15e3e31d501ba8d7a0a39d4a019ebf1cb0e6d41627fe8e8a2db10a45c",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "b7920cf48436dd4c4103f8247e9a3bee17761dfd"
+    },
+    {
+      "kind": "source_title",
+      "value": "expo"
+    }
+  ],
+  "id": "b45b81d6dfc19f362ffe8928",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "b7920cf48436dd4c4103f8247e9a3bee17761dfd",
+  "source_revision": "b7920cf48436dd4c4103f8247e9a3bee17761dfd",
+  "title": "expo",
+  "trust": "official"
+}
