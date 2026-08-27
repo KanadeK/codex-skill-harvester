@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools==84.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "codex-skill-harvester"
+version = "0.1.0"
+description = "Incrementally turn authoritative public workflow evidence into reviewed Codex skills"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "KanadeK" }]
+dependencies = []
+
+[project.scripts]
+skill-harvester = "skill_harvester.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]

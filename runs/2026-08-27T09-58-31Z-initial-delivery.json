@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-08-27T09-58-31Z",
+  "status": "ready_for_remote_ci",
+  "discoveries": 20,
+  "sources": [
+    {"source_id": "openai-build-skills", "status": "scanned_then_no_op"},
+    {"source_id": "openai-build-plugins", "status": "scanned_then_no_op"},
+    {"source_id": "openai-plugin-catalog", "status": "pending_authenticated_scan"},
+    {"source_id": "github-agent-skills-search", "status": "pending_authenticated_scan"},
+    {"source_id": "openai-codex-releases", "status": "scanned_then_no_op"},
+    {"source_id": "github-cli-repo-view", "status": "scanned_then_no_op"},
+    {"source_id": "github-cli-pr-checks", "status": "scanned_then_no_op"},
+    {"source_id": "github-cli-release-view", "status": "scanned_then_no_op"},
+    {"source_id": "github-cli-api", "status": "scanned_then_no_op"},
+    {"source_id": "github-rest-releases", "status": "scanned_then_no_op"},
+    {"source_id": "github-rest-repositories", "status": "scanned_then_no_op"},
+    {"source_id": "openai-gh-fix-ci", "status": "scanned_then_no_op"},
+    {"source_id": "openai-gh-address-comments", "status": "scanned_then_no_op"}
+  ],
+  "scan_evidence": {
+    "changed_run": "2026-08-27T09-26-05Z",
+    "changed_discoveries": 20,
+    "failed_retry": "2026-08-27T09-26-32Z",
+    "no_op_run": "2026-08-27T09-27-31Z",
+    "no_op_discoveries": 0
+  },
+  "decisions": {
+    "discard": 3,
+    "merge": 1,
+    "update": 1,
+    "create": 1,
+    "pending": 14
+  },
+  "created_capability": "github-release-evidence:audit-github-release",
+  "validations": [
+    {"name": "unit_and_integration_tests", "status": "passed", "details": "28 tests"},
+    {"name": "official_skill_validator", "status": "passed"},
+    {"name": "official_plugin_validator", "status": "passed"},
+    {"name": "trigger_review", "status": "passed", "details": "3 positive and 4 negative cases"},
+    {"name": "end_to_end_release_evidence", "status": "passed", "details": "8 gates plus mismatch and injection cases"},
+    {"name": "repository_consistency", "status": "passed", "details": "13 sources, 20 candidates, 6 records"},
+    {"name": "secret_material_scan", "status": "passed", "details": "0 findings"},
+    {"name": "deterministic_release_build", "status": "passed", "details": "two source and Plugin archive builds matched"},
+    {"name": "isolated_archive_install_and_call", "status": "passed"},
+    {"name": "five_axis_code_review", "status": "passed", "details": "three blocking findings repaired and retested"}
+  ],
+  "security": {
+    "raw_source_bodies_committed": false,
+    "external_scripts_executed": false,
+    "credentials_committed": false,
+    "copied_external_skill_bodies": false
+  },
+  "unresolved_issues": [
+    "The two GitHub API sources returned an anonymous shared-IP 403 locally; GITHUB_TOKEN support is implemented and must be live-verified through an authenticated official environment.",
+    "Fourteen first-round discoveries remain pending explicit Codex review.",
+    "The public GitHub repository, pull request, remote CI, tag, Release assets, marketplace install, and remote contributor evidence do not exist yet."
+  ]
+}

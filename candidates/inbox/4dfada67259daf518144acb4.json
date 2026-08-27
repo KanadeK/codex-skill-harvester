@@ -1,0 +1,83 @@
+{
+  "authority": "codex-plugin-format",
+  "canonical_url": "https://developers.openai.com/plugins/build/plugins.md",
+  "evidence_sha256": "605face331e44ea6befdc54c63b3d1e560f0595635db9083a20b9bbd19554e18",
+  "extracted_facts": [
+    {
+      "kind": "heading",
+      "value": "Package your plugin"
+    },
+    {
+      "kind": "heading",
+      "value": "Package with `@plugin-creator`"
+    },
+    {
+      "kind": "heading",
+      "value": "Create and test a plugin locally with an MCP server"
+    },
+    {
+      "kind": "heading",
+      "value": "Build your own curated plugin list"
+    },
+    {
+      "kind": "heading",
+      "value": "Add a marketplace from the CLI"
+    },
+    {
+      "kind": "heading",
+      "value": "Create a plugin manually"
+    },
+    {
+      "kind": "heading",
+      "value": "Install a local plugin manually"
+    },
+    {
+      "kind": "heading",
+      "value": "Publish a local plugin to your workspace"
+    },
+    {
+      "kind": "heading",
+      "value": "Marketplace metadata"
+    },
+    {
+      "kind": "heading",
+      "value": "How local marketplaces work"
+    },
+    {
+      "kind": "heading",
+      "value": "Package and distribute plugins"
+    },
+    {
+      "kind": "heading",
+      "value": "Plugin structure"
+    },
+    {
+      "kind": "heading",
+      "value": "Manifest fields"
+    },
+    {
+      "kind": "heading",
+      "value": "Path rules"
+    },
+    {
+      "kind": "heading",
+      "value": "Bundled MCP servers and lifecycle hooks"
+    },
+    {
+      "kind": "heading",
+      "value": "Publish official public plugins"
+    }
+  ],
+  "id": "4dfada67259daf518144acb4",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T09:26:05Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-build-plugins",
+  "source_revision": "\"624127e189eedff9749a68d95b9afed8\"",
+  "title": "Package your plugin",
+  "trust": "official"
+}

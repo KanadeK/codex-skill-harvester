@@ -1,0 +1,51 @@
+{
+  "repository": {
+    "name_with_owner": "KanadeK/codex-skill-harvester",
+    "is_private": false,
+    "default_branch": "main",
+    "url": "https://github.com/KanadeK/codex-skill-harvester"
+  },
+  "release": {
+    "tag_name": "v0.1.0",
+    "is_draft": false,
+    "published_at": "2026-08-27T10:00:00Z",
+    "url": "https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.1.0",
+    "target_commit_sha": "1111111111111111111111111111111111111111",
+    "asset_names": [
+      "codex-skill-harvester-v0.1.0.zip"
+    ]
+  },
+  "tag": {
+    "name": "v0.1.0",
+    "commit_sha": "1111111111111111111111111111111111111111"
+  },
+  "expected_assets": [
+    "codex-skill-harvester-v0.1.0.zip"
+  ],
+  "pull_request": {
+    "number": 1,
+    "state": "MERGED",
+    "merge_commit_sha": "1111111111111111111111111111111111111111",
+    "url": "https://github.com/KanadeK/codex-skill-harvester/pull/1",
+    "checks": [
+      {
+        "name": "test (ubuntu)",
+        "bucket": "pass"
+      },
+      {
+        "name": "test (windows)",
+        "bucket": "pass"
+      }
+    ]
+  },
+  "installation": {
+    "command": "skill-harvester --help",
+    "exit_code": 0,
+    "observed_output": "usage: skill-harvester"
+  },
+  "contributors": [
+    {
+      "login": "KanadeK"
+    }
+  ]
+}

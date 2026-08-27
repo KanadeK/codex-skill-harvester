@@ -1,0 +1,18 @@
+{
+  "authority": "vendor-api-docs",
+  "canonical_url": "https://raw.githubusercontent.com/github/docs/main/content/rest/repos/repos.md",
+  "evidence_sha256": "e0d58574b719a07686576976d73f30eeff8f254ad784cda4296420002081755f",
+  "extracted_facts": [],
+  "id": "5183bfd41fe9392d59bad366",
+  "license": {
+    "identifier": "CC-BY-4.0",
+    "status": "known"
+  },
+  "observed_at": "2026-08-27T09:26:05Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "github-rest-repositories",
+  "source_revision": "\"910b42d372af4da679b75a483281331f59fbe6aad22a38c0f334da0014948d82\"",
+  "title": "github-rest-repositories",
+  "trust": "official"
+}

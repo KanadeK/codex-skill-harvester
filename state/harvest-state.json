@@ -1,0 +1,127 @@
+{
+  "last_successful_run": "2026-08-27T09:27:31Z",
+  "schema_version": 1,
+  "sources": {
+    "github-cli-api": {
+      "adapter": "document",
+      "content_sha256": "529855e680bc56be3dfc2cb0bb6dfb9bcb8b8f820bc2c6b2b0678032d244641e",
+      "cursor": "529855e680bc56be3dfc2cb0bb6dfb9bcb8b8f820bc2c6b2b0678032d244641e",
+      "etag": "\"6a877e4f-1b3f4\"",
+      "last_modified": "Thu, 20 Aug 2026 22:23:11 GMT",
+      "last_success_at": "2026-08-27T09:27:31Z",
+      "seen_items": {},
+      "url": "https://cli.github.com/manual/gh_api"
+    },
+    "github-cli-pr-checks": {
+      "adapter": "document",
+      "content_sha256": "8e649be863a030519c5b5580bff0ccf80e50510af348edc82f6dbe2289ec8cf5",
+      "cursor": "8e649be863a030519c5b5580bff0ccf80e50510af348edc82f6dbe2289ec8cf5",
+      "etag": "\"6a877e4f-18d52\"",
+      "last_modified": "Thu, 20 Aug 2026 22:23:11 GMT",
+      "last_success_at": "2026-08-27T09:27:31Z",
+      "seen_items": {},
+      "url": "https://cli.github.com/manual/gh_pr_checks"
+    },
+    "github-cli-release-view": {
+      "adapter": "document",
+      "content_sha256": "e3b9ed91d156858a7d2e94d4b3ffdb563c11644b5f57f06447c8e974f8cc9802",
+      "cursor": "e3b9ed91d156858a7d2e94d4b3ffdb563c11644b5f57f06447c8e974f8cc9802",
+      "etag": "\"6a877e4f-18b8b\"",
+      "last_modified": "Thu, 20 Aug 2026 22:23:11 GMT",
+      "last_success_at": "2026-08-27T09:27:31Z",
+      "seen_items": {},
+      "url": "https://cli.github.com/manual/gh_release_view"
+    },
+    "github-cli-repo-view": {
+      "adapter": "document",
+      "content_sha256": "c78e69088bc3f3769c2ba26180a9606cb3929252b55b776d927b89b33d08c927",
+      "cursor": "c78e69088bc3f3769c2ba26180a9606cb3929252b55b776d927b89b33d08c927",
+      "etag": "\"6a877e4f-1a094\"",
+      "last_modified": "Thu, 20 Aug 2026 22:23:11 GMT",
+      "last_success_at": "2026-08-27T09:27:31Z",
+      "seen_items": {},
+      "url": "https://cli.github.com/manual/gh_repo_view"
+    },
+    "github-rest-releases": {
+      "adapter": "document",
+      "content_sha256": "d7e9c3afab82701940851e6de60e1ccf53e15863970f84bb16bbb06ce05a36c9",
+      "cursor": "d7e9c3afab82701940851e6de60e1ccf53e15863970f84bb16bbb06ce05a36c9",
+      "etag": "\"85f364dc2c75661d81498ade24166d71c9e426064db726ae5ce0b2d56de7aeae\"",
+      "last_modified": null,
+      "last_success_at": "2026-08-27T09:27:31Z",
+      "seen_items": {},
+      "url": "https://raw.githubusercontent.com/github/docs/main/content/rest/releases/releases.md"
+    },
+    "github-rest-repositories": {
+      "adapter": "document",
+      "content_sha256": "e0d58574b719a07686576976d73f30eeff8f254ad784cda4296420002081755f",
+      "cursor": "e0d58574b719a07686576976d73f30eeff8f254ad784cda4296420002081755f",
+      "etag": "\"910b42d372af4da679b75a483281331f59fbe6aad22a38c0f334da0014948d82\"",
+      "last_modified": null,
+      "last_success_at": "2026-08-27T09:27:31Z",
+      "seen_items": {},
+      "url": "https://raw.githubusercontent.com/github/docs/main/content/rest/repos/repos.md"
+    },
+    "openai-build-plugins": {
+      "adapter": "document",
+      "content_sha256": "605face331e44ea6befdc54c63b3d1e560f0595635db9083a20b9bbd19554e18",
+      "cursor": "605face331e44ea6befdc54c63b3d1e560f0595635db9083a20b9bbd19554e18",
+      "etag": "\"624127e189eedff9749a68d95b9afed8\"",
+      "last_modified": "Thu, 27 Aug 2026 07:17:48 GMT",
+      "last_success_at": "2026-08-27T09:27:31Z",
+      "seen_items": {},
+      "url": "https://developers.openai.com/plugins/build/plugins.md"
+    },
+    "openai-build-skills": {
+      "adapter": "document",
+      "content_sha256": "d15791562748e64a53dfec534b8558aa522e732cec0fdedcf7257fa4ef486a20",
+      "cursor": "d15791562748e64a53dfec534b8558aa522e732cec0fdedcf7257fa4ef486a20",
+      "etag": null,
+      "last_modified": null,
+      "last_success_at": "2026-08-27T09:27:31Z",
+      "seen_items": {},
+      "url": "https://developers.openai.com/codex/skills.md"
+    },
+    "openai-codex-releases": {
+      "adapter": "atom",
+      "content_sha256": "c6a902bb6c4ced56c16e49cf94802c923d135e86e4240a2157fcfc1a6fadb9dc",
+      "cursor": "2026-08-27T07:25:38Z",
+      "etag": "W/\"c6a902bb6c4ced56c16e49cf94802c92\"",
+      "last_modified": null,
+      "last_success_at": "2026-08-27T09:27:31Z",
+      "seen_items": {
+        "tag:github.com,2008:Repository/965415649/rust-v0.150.0": "07f2e141a440fb7d50da12e3cac9d935bd44e3cc2443c74528dcebdb27a3b8b1",
+        "tag:github.com,2008:Repository/965415649/rust-v0.150.0-alpha.12.1": "b67c0e6f65d6875bfe75de272c248a38a7608c2b9dc42e4bbd2a01f4ae3f4db0",
+        "tag:github.com,2008:Repository/965415649/rust-v0.150.0-alpha.12.2": "f93bf5c912700657f176377855b5f2b6801da6762a25037e991754a394157373",
+        "tag:github.com,2008:Repository/965415649/rust-v0.150.0-alpha.13": "77907677d96dd6ac91afa6f2add20d6315d3b89ee905096727f9310a4c9e5152",
+        "tag:github.com,2008:Repository/965415649/rust-v0.150.1": "446e9e0b74fa4c0e6861208b3d6f70ed83ed3d0a91c57f122bf23089defa33fe",
+        "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.1": "6cc8303a259f5c8bfe800e0df8464b9becaabe632cad9294d5b02b5ea4f7aad0",
+        "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.2": "eef0acdf167fdc3e98fbed3e834d5d2659f638e2599c1642dc0f0d1b96c5de81",
+        "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.3": "aef2283da70a77437c0ae01f8898a7c7ab8c3dc58c5655534ca72497ecd9ce45",
+        "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.4": "611dd6d98a22cac823d4f7aa2a41ecc83eaa48c1f0c62926b8eadaf0984dd1eb",
+        "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.5": "102f5e065e219ebd361a48bc413c0243336350069350a7948e6563f94ebf12ae"
+      },
+      "url": "https://github.com/openai/codex/releases.atom"
+    },
+    "openai-gh-address-comments": {
+      "adapter": "document",
+      "content_sha256": "77389eefd3fb6584210668ca8e43f4b8de87e7722ddd953474bc9e24cdfaaedd",
+      "cursor": "77389eefd3fb6584210668ca8e43f4b8de87e7722ddd953474bc9e24cdfaaedd",
+      "etag": "\"2ab0093089080e5dde3b51f69126b867e5cec8511f51ae44435cab51de9ca4ce\"",
+      "last_modified": null,
+      "last_success_at": "2026-08-27T09:27:31Z",
+      "seen_items": {},
+      "url": "https://raw.githubusercontent.com/openai/skills/main/skills/.curated/gh-address-comments/SKILL.md"
+    },
+    "openai-gh-fix-ci": {
+      "adapter": "document",
+      "content_sha256": "7b326b4a2f0f5f85122144628ec02077e48841e0e0e82efce88b3415bcfb7c26",
+      "cursor": "7b326b4a2f0f5f85122144628ec02077e48841e0e0e82efce88b3415bcfb7c26",
+      "etag": "\"1a26fc110dbd0ed15f50e80aa3f346f36269112588af204db5d34bcca2ceb6fa\"",
+      "last_modified": null,
+      "last_success_at": "2026-08-27T09:27:31Z",
+      "seen_items": {},
+      "url": "https://raw.githubusercontent.com/openai/skills/main/skills/.curated/gh-fix-ci/SKILL.md"
+    }
+  }
+}

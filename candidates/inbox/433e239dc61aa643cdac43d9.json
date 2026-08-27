@@ -1,0 +1,35 @@
+{
+  "authority": "external-skill-comparison",
+  "canonical_url": "https://raw.githubusercontent.com/openai/skills/main/skills/.curated/gh-address-comments/SKILL.md",
+  "evidence_sha256": "77389eefd3fb6584210668ca8e43f4b8de87e7722ddd953474bc9e24cdfaaedd",
+  "extracted_facts": [
+    {
+      "kind": "heading",
+      "value": "PR Comment Handler"
+    },
+    {
+      "kind": "heading",
+      "value": "1) Inspect comments needing attention"
+    },
+    {
+      "kind": "heading",
+      "value": "2) Ask the user for clarification"
+    },
+    {
+      "kind": "heading",
+      "value": "3) If user chooses comments"
+    }
+  ],
+  "id": "433e239dc61aa643cdac43d9",
+  "license": {
+    "identifier": "Apache-2.0",
+    "status": "known"
+  },
+  "observed_at": "2026-08-27T09:26:05Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-gh-address-comments",
+  "source_revision": "\"2ab0093089080e5dde3b51f69126b867e5cec8511f51ae44435cab51de9ca4ce\"",
+  "title": "PR Comment Handler",
+  "trust": "representative"
+}

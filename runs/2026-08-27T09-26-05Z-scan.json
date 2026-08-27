@@ -1,0 +1,71 @@
+{
+  "decisions": {
+    "create": 0,
+    "discard": 0,
+    "merge": 0,
+    "update": 0
+  },
+  "discoveries": 20,
+  "run_id": "2026-08-27T09-26-05Z",
+  "schema_version": 1,
+  "sources": [
+    {
+      "discoveries": 1,
+      "source_id": "openai-build-skills",
+      "status": "changed"
+    },
+    {
+      "discoveries": 1,
+      "source_id": "openai-build-plugins",
+      "status": "changed"
+    },
+    {
+      "discoveries": 10,
+      "source_id": "openai-codex-releases",
+      "status": "changed"
+    },
+    {
+      "discoveries": 1,
+      "source_id": "github-cli-repo-view",
+      "status": "changed"
+    },
+    {
+      "discoveries": 1,
+      "source_id": "github-cli-pr-checks",
+      "status": "changed"
+    },
+    {
+      "discoveries": 1,
+      "source_id": "github-cli-release-view",
+      "status": "changed"
+    },
+    {
+      "discoveries": 1,
+      "source_id": "github-cli-api",
+      "status": "changed"
+    },
+    {
+      "discoveries": 1,
+      "source_id": "github-rest-releases",
+      "status": "changed"
+    },
+    {
+      "discoveries": 1,
+      "source_id": "github-rest-repositories",
+      "status": "changed"
+    },
+    {
+      "discoveries": 1,
+      "source_id": "openai-gh-fix-ci",
+      "status": "changed"
+    },
+    {
+      "discoveries": 1,
+      "source_id": "openai-gh-address-comments",
+      "status": "changed"
+    }
+  ],
+  "status": "changed",
+  "unresolved_issues": [],
+  "validations": []
+}

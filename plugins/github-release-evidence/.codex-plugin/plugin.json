@@ -1,0 +1,29 @@
+{
+  "author": {
+    "name": "KanadeK"
+  },
+  "description": "Read-only evidence audits for already-published GitHub releases.",
+  "homepage": "https://github.com/KanadeK/codex-skill-harvester",
+  "interface": {
+    "capabilities": [
+      "Read"
+    ],
+    "category": "Developer Tools",
+    "defaultPrompt": "Audit whether this published GitHub release is genuinely complete and report evidence gaps.",
+    "developerName": "KanadeK",
+    "displayName": "GitHub Release Evidence",
+    "longDescription": "Collect read-only remote evidence for an already-published GitHub release and report confirmed gates, contradictions, and missing proof.",
+    "shortDescription": "Audit published GitHub release evidence"
+  },
+  "keywords": [
+    "github",
+    "release",
+    "audit",
+    "codex-skill"
+  ],
+  "license": "MIT",
+  "name": "github-release-evidence",
+  "repository": "https://github.com/KanadeK/codex-skill-harvester",
+  "skills": "./skills/",
+  "version": "0.1.0"
+}

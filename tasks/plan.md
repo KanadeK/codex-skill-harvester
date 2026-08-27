@@ -15,57 +15,57 @@ Deliver one thin but complete path: scan official public sources with persisted 
 ## Phase 1: durable foundation
 
 - [x] Record scope, product boundary, source authority, success criteria, and working rules.
-- [ ] Bootstrap the independent repository on `main`, then create `codex/initial-harvester`.
-- [ ] Add the repo-scoped maintainer Skill and repo marketplace/plugin scaffolds using the official creator helpers.
+- [x] Bootstrap the independent repository on `main`, then create `codex/initial-harvester`.
+- [x] Add the repo-scoped maintainer Skill and repo marketplace/plugin scaffolds using the official creator helpers.
 
 ### Checkpoint: foundation
 
-- [ ] `git rev-parse --show-toplevel` resolves to this child repository.
-- [ ] The outer workspace has not been staged or committed.
-- [ ] Skill and Plugin scaffolds validate before behavior is added.
+- [x] `git rev-parse --show-toplevel` resolves to this child repository.
+- [x] The outer workspace has not been staged or committed.
+- [x] Skill and Plugin scaffolds validate before behavior is added.
 
 ## Phase 2: incremental source scan
 
-- [ ] Add failing tests for first scan, unchanged second scan, changed third scan, and transactional failure.
-- [ ] Implement source registry validation, HTTPS fetch boundary, document/JSON/Atom extractors, cursors, and atomic state/report writes.
-- [ ] Add fixed real sources with trust, authority, license, and adapter metadata.
+- [x] Add failing tests for first scan, unchanged second scan, changed third scan, and transactional failure.
+- [x] Implement source registry validation, HTTPS fetch boundary, document/JSON/Atom extractors, cursors, and atomic state/report writes.
+- [x] Add fixed real sources with trust, authority, license, and adapter metadata.
 
 ### Checkpoint: scan
 
-- [ ] Focused source tests pass.
-- [ ] Fixture second run is a no-op and creates no duplicate candidate.
-- [ ] A failed selected source leaves prior successful state byte-identical.
+- [x] Focused source tests pass.
+- [x] Fixture second run is a no-op and creates no duplicate candidate.
+- [x] A failed selected source leaves prior successful state byte-identical.
 
 ## Phase 3: capability decisions and generation
 
-- [ ] Add failing fixtures/tests for exact duplicate, semantic duplicate, update, and new capability.
-- [ ] Implement fingerprint normalization, deterministic recommendations, reviewed-decision validation, and append-only records.
-- [ ] Apply reviewed decisions to the catalog and task-domain plugin without partial writes.
+- [x] Add failing fixtures/tests for exact duplicate, semantic duplicate, update, and new capability.
+- [x] Implement fingerprint normalization, deterministic recommendations, reviewed-decision validation, and append-only records.
+- [x] Apply reviewed decisions to the catalog and task-domain plugin without partial writes.
 
 ### Checkpoint: decisions
 
-- [ ] All four fixture outcomes are distinguishable and recorded.
-- [ ] Merge/update/create cannot occur without `reviewed_by: codex` and a rationale.
-- [ ] Unknown-license material cannot be copied into generated artifacts.
+- [x] All four fixture outcomes are distinguishable and recorded.
+- [x] Merge/update/create cannot occur without `reviewed_by: codex` and a rationale.
+- [x] Unknown-license material cannot be copied into generated artifacts.
 
 ## Phase 4: real skill and evaluation
 
-- [ ] Scan official OpenAI/GitHub sources and record the real run.
-- [ ] Compare the proposed GitHub Release evidence capability against representative external and internal fingerprints.
-- [ ] Apply one original reviewed Skill to the GitHub release evidence Plugin.
-- [ ] Add format, positive trigger, negative trigger, and end-to-end evals.
-- [ ] Run the complete pipeline again unchanged and record a no-op report.
+- [x] Scan official OpenAI/GitHub sources and record the real run.
+- [x] Compare the proposed GitHub Release evidence capability against representative external and internal fingerprints.
+- [x] Apply one original reviewed Skill to the GitHub release evidence Plugin.
+- [x] Add format, positive trigger, negative trigger, and end-to-end evals.
+- [x] Run the complete pipeline again unchanged and record a no-op report.
 
 ### Checkpoint: vertical slice
 
-- [ ] Generated Skill and Plugin validate.
-- [ ] End-to-end eval produces a concrete release-gap report from controlled evidence.
-- [ ] No source body or third-party script exists in tracked files.
+- [x] Generated Skill and Plugin validate.
+- [x] End-to-end eval produces a concrete release-gap report from controlled evidence.
+- [x] No source body or third-party script exists in tracked files.
 
 ## Phase 5: automation and release
 
-- [ ] Add repository validator, deterministic release builder, secret/material checks, and GitHub Actions CI.
-- [ ] Perform a five-axis code review and repair all required findings.
+- [x] Add repository validator, deterministic release builder, secret/material checks, and GitHub Actions CI.
+- [x] Perform a five-axis code review and repair all required findings.
 - [ ] Commit exact paths in atomic increments and verify author/co-author hygiene.
 - [ ] Create the public repository, push the branch, open a PR, wait for green CI, merge, tag v0.1.0, and create the Release.
 - [ ] Verify release assets from a clean temporary extraction, marketplace/plugin discovery, CLI invocation, remote contributor list, and final run report.

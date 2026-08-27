@@ -1,0 +1,57 @@
+{
+  "authority": "codex-skill-format",
+  "canonical_url": "https://learn.chatgpt.com/docs/build-skills.md",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T09-36-00Z-e5caf692f3cd783215a50c2b.json",
+  "evidence_sha256": "d15791562748e64a53dfec534b8558aa522e732cec0fdedcf7257fa4ef486a20",
+  "extracted_facts": [
+    {
+      "kind": "heading",
+      "value": "Build skills"
+    },
+    {
+      "kind": "heading",
+      "value": "How ChatGPT and Codex use skills"
+    },
+    {
+      "kind": "heading",
+      "value": "Create a skill"
+    },
+    {
+      "kind": "heading",
+      "value": "Where Codex loads local skills"
+    },
+    {
+      "kind": "heading",
+      "value": "Distribute skills with plugins"
+    },
+    {
+      "kind": "heading",
+      "value": "Install curated skills for local use"
+    },
+    {
+      "kind": "heading",
+      "value": "Enable or disable local Codex skills"
+    },
+    {
+      "kind": "heading",
+      "value": "Optional metadata"
+    },
+    {
+      "kind": "heading",
+      "value": "Best practices"
+    }
+  ],
+  "id": "e5caf692f3cd783215a50c2b",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T09:26:05Z",
+  "review_status": "applied",
+  "schema_version": 1,
+  "source_id": "openai-build-skills",
+  "source_revision": "d15791562748e64a53dfec534b8558aa522e732cec0fdedcf7257fa4ef486a20",
+  "title": "Build skills",
+  "trust": "official"
+}

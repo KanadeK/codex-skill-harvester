@@ -1,0 +1,20 @@
+{
+  "authority": "vendor-docs",
+  "canonical_url": "https://cli.github.com/manual/gh_release_view",
+  "decision_outcome": "create",
+  "decision_record": "decisions/records/2026-08-27T09-30-00Z-39855412c6ff6f5adaf6d21d.json",
+  "evidence_sha256": "e3b9ed91d156858a7d2e94d4b3ffdb563c11644b5f57f06447c8e974f8cc9802",
+  "extracted_facts": [],
+  "id": "39855412c6ff6f5adaf6d21d",
+  "license": {
+    "identifier": "MIT",
+    "status": "known"
+  },
+  "observed_at": "2026-08-27T09:26:05Z",
+  "review_status": "applied",
+  "schema_version": 1,
+  "source_id": "github-cli-release-view",
+  "source_revision": "\"6a877e4e-18b8b\"",
+  "title": "github-cli-release-view",
+  "trust": "official"
+}

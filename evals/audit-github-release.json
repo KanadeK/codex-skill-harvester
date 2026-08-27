@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "capability_id": "github-release-evidence:audit-github-release",
+  "method": "codex-semantic-review-plus-deterministic-e2e",
+  "reviewed_by": "codex",
+  "reviewed_at": "2026-08-27T09:35:00Z",
+  "trigger_cases": [
+    {
+      "id": "positive-release-completeness",
+      "prompt": "Is KanadeK/example v1.2.0 actually released and complete on GitHub?",
+      "expected": "trigger",
+      "observed": "trigger",
+      "rationale": "Asks for post-publication completeness evidence for a named GitHub release."
+    },
+    {
+      "id": "positive-remote-evidence",
+      "prompt": "Audit the remote PR, tag, Release assets, install proof, and contributors for this published version.",
+      "expected": "trigger",
+      "observed": "trigger",
+      "rationale": "Names the exact evidence matrix this read-only Skill owns."
+    },
+    {
+      "id": "positive-gap-report",
+      "prompt": "Verify release v0.4.0 and tell me which publication gates are still unproven.",
+      "expected": "trigger",
+      "observed": "trigger",
+      "rationale": "Requests verification and a gap report for an existing release."
+    },
+    {
+      "id": "negative-fix-ci",
+      "prompt": "Fix the failing GitHub Actions checks on PR 42.",
+      "expected": "do-not-trigger",
+      "observed": "do-not-trigger",
+      "rationale": "This is code-changing CI repair and belongs to gh-fix-ci."
+    },
+    {
+      "id": "negative-review-comments",
+      "prompt": "Address the review comments on my open pull request.",
+      "expected": "do-not-trigger",
+      "observed": "do-not-trigger",
+      "rationale": "This changes code in response to comments and belongs to gh-address-comments."
+    },
+    {
+      "id": "negative-create-release",
+      "prompt": "Create tag v2.0.0 and publish a GitHub Release.",
+      "expected": "do-not-trigger",
+      "observed": "do-not-trigger",
+      "rationale": "The Skill is read-only and only audits an already-published release."
+    },
+    {
+      "id": "negative-general-git",
+      "prompt": "How do I rebase this branch onto main?",
+      "expected": "do-not-trigger",
+      "observed": "do-not-trigger",
+      "rationale": "A general local Git operation has no release-evidence task."
+    }
+  ],
+  "end_to_end": {
+    "snapshot": "evals/fixtures/complete-release-snapshot.json",
+    "expected_exit_code": 0,
+    "expected_result": "complete",
+    "expected_gates": 8
+  }
+}
