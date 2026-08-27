@@ -83,16 +83,20 @@ def validate_repository(root: Path) -> dict[str, Any]:
     for marker in (
         "workflow_dispatch:",
         "schedule:",
+        "actions: write",
         "contents: write",
         "pull-requests: write",
         "python -m skill_harvester scan --root .",
         "git add -- state/harvest-state.json candidates/inbox runs",
+        'gh workflow run ci.yml --ref "$branch"',
     ):
         _require(marker in harvest_workflow, f"harvest workflow contract missing: {marker}")
     _require(
         "skill_harvester apply" not in harvest_workflow,
         "harvest workflow must not apply semantic decisions",
     )
+    ci_workflow = (root / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    _require("workflow_dispatch:" in ci_workflow, "CI workflow must support explicit dispatch")
 
     sources = load_registry(root)
     source_by_id = {source["id"]: source for source in sources}

@@ -6,6 +6,7 @@ on:
     - cron: "17 4 * * 1"
 
 permissions:
+  actions: write
   contents: write
   pull-requests: write
 
@@ -69,3 +70,4 @@ jobs:
           gh pr create \
             --title "chore: review harvested public-source changes" \
             --body "Automated incremental scan only. Review every pending candidate with Codex before applying a discard, merge, update, or create decision. No external source body or script was executed."
+          gh workflow run ci.yml --ref "$branch"

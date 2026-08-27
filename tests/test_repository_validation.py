@@ -35,9 +35,16 @@ class RepositoryValidationTests(unittest.TestCase):
         self.assertIn("schedule:", workflow)
         self.assertIn("contents: write", workflow)
         self.assertIn("pull-requests: write", workflow)
+        self.assertIn("actions: write", workflow)
         self.assertIn("python -m skill_harvester scan --root .", workflow)
         self.assertIn("git add -- state/harvest-state.json candidates/inbox runs", workflow)
+        self.assertIn('gh workflow run ci.yml --ref "$branch"', workflow)
         self.assertNotIn("skill_harvester apply", workflow)
+
+        ci_workflow = (root / ".github" / "workflows" / "ci.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("workflow_dispatch:", ci_workflow)
 
     def test_current_repository_is_consistent(self) -> None:
         root = Path(__file__).resolve().parents[1]
