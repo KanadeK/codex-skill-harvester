@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/figma",
+  "evidence_sha256": "cc185f055915f2a744dc9305e146d6c6d016a3c2cd967eb79f74ddbb0d7b6b8e",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "9059b8c62a81cac85e22999e75f4bfde1071a728"
+    },
+    {
+      "kind": "source_title",
+      "value": "figma"
+    }
+  ],
+  "id": "fb92d6c0533ba12f47c2d74b",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "9059b8c62a81cac85e22999e75f4bfde1071a728",
+  "source_revision": "9059b8c62a81cac85e22999e75f4bfde1071a728",
+  "title": "figma",
+  "trust": "official"
+}

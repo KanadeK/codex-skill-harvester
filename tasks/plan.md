@@ -66,8 +66,9 @@ Deliver one thin but complete path: scan official public sources with persisted 
 
 - [x] Add repository validator, deterministic release builder, secret/material checks, and GitHub Actions CI.
 - [x] Perform a five-axis code review and repair all required findings.
-- [ ] Commit exact paths in atomic increments and verify author/co-author hygiene.
-- [ ] Create the public repository, push the branch, open a PR, wait for green CI, merge, tag v0.1.0, and create the Release.
+- [x] Commit exact paths in atomic increments and verify author/co-author hygiene.
+- [x] Create the public repository, push the initial branch, merge its PR after green CI, and verify green `main` CI.
+- [ ] Merge the authenticated API scan update, tag v0.1.0, and create the Release.
 - [ ] Verify release assets from a clean temporary extraction, marketplace/plugin discovery, CLI invocation, remote contributor list, and final run report.
 
 ### Checkpoint: published
@@ -80,7 +81,7 @@ Deliver one thin but complete path: scan official public sources with persisted 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
 | Official formats drift | Generated artifacts become invalid | Keep format authority sources in the registry and validate every run/CI |
-| GitHub rate limits or network failure | Live scan cannot complete | Conditional requests, bounded source subset, transactional state, honest failed report |
+| GitHub rate limits or network failure | Live scan cannot complete | Conditional requests, official `gh` keyring transport, bounded source subset, transactional state, honest failed report |
 | Prompt injection in fetched text | Scope or tool misuse | Treat bodies as data, use deterministic extractors, never execute or obey source text |
 | License ambiguity | Unauthorized redistribution | Store license status and block copying; synthesize original factual workflows only |
 | Semantic false positive | Useful skill incorrectly merged/rejected | Require an explicit Codex decision with compared fingerprints and rationale |

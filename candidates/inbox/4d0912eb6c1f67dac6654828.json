@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/cloudflare",
+  "evidence_sha256": "73cbb308e75097f713fd9b22f03c1ddb2b167efe2ccf664199403102e7fc3b9a",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "44056417d1f8dfc44eea9b2a08d3c64573edd638"
+    },
+    {
+      "kind": "source_title",
+      "value": "cloudflare"
+    }
+  ],
+  "id": "4d0912eb6c1f67dac6654828",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "44056417d1f8dfc44eea9b2a08d3c64573edd638",
+  "source_revision": "44056417d1f8dfc44eea9b2a08d3c64573edd638",
+  "title": "cloudflare",
+  "trust": "official"
+}

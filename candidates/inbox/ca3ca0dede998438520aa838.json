@@ -1,0 +1,28 @@
+{
+  "authority": "demand-signal-only",
+  "canonical_url": "https://github.com/linny006/awesome-agent-skills",
+  "evidence_sha256": "9aa051d8a8189aa88272b7aa6bd744744be8f0c2ce381655c766369ddfd71628",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "2026-08-27T10:07:28Z"
+    },
+    {
+      "kind": "source_title",
+      "value": "linny006/awesome-agent-skills"
+    }
+  ],
+  "id": "ca3ca0dede998438520aa838",
+  "license": {
+    "identifier": null,
+    "status": "unknown"
+  },
+  "observed_at": "2026-08-27T10:16:09.152293Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "github-agent-skills-search",
+  "source_item_id": "1247931386",
+  "source_revision": "2026-08-27T10:07:28Z",
+  "title": "linny006/awesome-agent-skills",
+  "trust": "discovery"
+}

@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/gmail",
+  "evidence_sha256": "4e25c500c51be7531749dd1ced66da635eb20fe29a9c45ffabfe0ebb7848ca78",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "5520d60e7c9b2b283bca85767ab50388f3f4aaf4"
+    },
+    {
+      "kind": "source_title",
+      "value": "gmail"
+    }
+  ],
+  "id": "3bf8e083aa96f05fc56e45c2",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "5520d60e7c9b2b283bca85767ab50388f3f4aaf4",
+  "source_revision": "5520d60e7c9b2b283bca85767ab50388f3f4aaf4",
+  "title": "gmail",
+  "trust": "official"
+}

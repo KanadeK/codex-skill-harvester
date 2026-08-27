@@ -25,6 +25,7 @@ Framework-specific behavior is limited to the documented Codex Skill/Plugin file
 ## Commands
 
 - Scan configured sources: `python -m skill_harvester scan --root .`
+- Scan with the current official GitHub CLI keyring login: `python -m skill_harvester scan --root . --github-auth gh-cli`
 - Scan a subset: `python -m skill_harvester scan --root . --source <source-id>`
 - Apply one reviewed candidate decision: `python -m skill_harvester apply --root . --decision candidates/reviewed/<id>.json`
 - Validate repository and generated artifacts: `python scripts/validate_repo.py`
@@ -101,6 +102,7 @@ Only a reviewed decision marked `reviewed_by: codex` may merge, update, or creat
 
 - Only `https://` network sources are accepted.
 - Network responses have bounded size and timeout.
+- GitHub API authentication may use a process-scoped `GITHUB_TOKEN` or `gh api`; credentials are never persisted, printed, or placed in command arguments.
 - Redirects must remain HTTPS.
 - Raw bodies live only in an OS temporary directory during a run.
 - Extracted instruction-like text is stored as quoted evidence/facts and never executed.

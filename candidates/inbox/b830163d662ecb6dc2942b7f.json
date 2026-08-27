@@ -1,0 +1,28 @@
+{
+  "authority": "demand-signal-only",
+  "canonical_url": "https://github.com/aelfa/awesome-stars",
+  "evidence_sha256": "c848e62cc64442167b2a2910c189ddda46d210f6bff0aed4a6014e0972b14fba",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "2026-08-26T02:16:00Z"
+    },
+    {
+      "kind": "source_title",
+      "value": "aelfa/awesome-stars"
+    }
+  ],
+  "id": "b830163d662ecb6dc2942b7f",
+  "license": {
+    "identifier": null,
+    "status": "unknown"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "github-agent-skills-search",
+  "source_item_id": "670544507",
+  "source_revision": "2026-08-26T02:16:00Z",
+  "title": "aelfa/awesome-stars",
+  "trust": "discovery"
+}

@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/notion",
+  "evidence_sha256": "64017a9b8d2b3982d2325895e180b8313e7e5f00f4084f299691b447ded2fe3a",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "87f8c1848b571ba616df607a11a075674b65b080"
+    },
+    {
+      "kind": "source_title",
+      "value": "notion"
+    }
+  ],
+  "id": "4cceb46a3be6311b57fdfec5",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "87f8c1848b571ba616df607a11a075674b65b080",
+  "source_revision": "87f8c1848b571ba616df607a11a075674b65b080",
+  "title": "notion",
+  "trust": "official"
+}

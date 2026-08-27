@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/monday-com",
+  "evidence_sha256": "4dda496b751e567a2229a6cfa6c68bc146b13b9970a124375bd3d0c10785d5f5",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "b364652b14a9f2c4875c2048fb9443d901539c2b"
+    },
+    {
+      "kind": "source_title",
+      "value": "monday-com"
+    }
+  ],
+  "id": "ab1e8cebcf563e157ae05800",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "b364652b14a9f2c4875c2048fb9443d901539c2b",
+  "source_revision": "b364652b14a9f2c4875c2048fb9443d901539c2b",
+  "title": "monday-com",
+  "trust": "official"
+}

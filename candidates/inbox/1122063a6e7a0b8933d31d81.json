@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/stripe",
+  "evidence_sha256": "3a9b6edfefb67fbd3132812d9481e43b387e16d50bc4c4dc6f0d55117608ab0d",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "3ae2166424028f2a4e4cc94bb5c0fedc954821a4"
+    },
+    {
+      "kind": "source_title",
+      "value": "stripe"
+    }
+  ],
+  "id": "1122063a6e7a0b8933d31d81",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "3ae2166424028f2a4e4cc94bb5c0fedc954821a4",
+  "source_revision": "3ae2166424028f2a4e4cc94bb5c0fedc954821a4",
+  "title": "stripe",
+  "trust": "official"
+}

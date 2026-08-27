@@ -1,0 +1,28 @@
+{
+  "authority": "demand-signal-only",
+  "canonical_url": "https://github.com/nerdislb/nbshell",
+  "evidence_sha256": "4a80acb2af9cdc34fa8b1cbec5e14b947b6b3b008d845b2996f8a2b5bcac4423",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "2026-08-27T09:59:10Z"
+    },
+    {
+      "kind": "source_title",
+      "value": "nerdislb/nbshell"
+    }
+  ],
+  "id": "b28c3c050830b7acf2242172",
+  "license": {
+    "identifier": null,
+    "status": "unknown"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "github-agent-skills-search",
+  "source_item_id": "1319148247",
+  "source_revision": "2026-08-27T09:59:10Z",
+  "title": "nerdislb/nbshell",
+  "trust": "discovery"
+}

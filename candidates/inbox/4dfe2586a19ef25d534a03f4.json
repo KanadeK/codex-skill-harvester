@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/zotero",
+  "evidence_sha256": "e787de531c59f721f713357de6157b409cac697bf4e1aff75f0c333840be3f4f",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "9418fa4c038bc9ab6e282ef9b050e1d838ca728a"
+    },
+    {
+      "kind": "source_title",
+      "value": "zotero"
+    }
+  ],
+  "id": "4dfe2586a19ef25d534a03f4",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "9418fa4c038bc9ab6e282ef9b050e1d838ca728a",
+  "source_revision": "9418fa4c038bc9ab6e282ef9b050e1d838ca728a",
+  "title": "zotero",
+  "trust": "official"
+}

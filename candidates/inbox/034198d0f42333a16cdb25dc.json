@@ -1,0 +1,28 @@
+{
+  "authority": "demand-signal-only",
+  "canonical_url": "https://github.com/linny006/mcp-servers-live",
+  "evidence_sha256": "4c78a328ff339c33f563092932086236e8600d97231f789c9641697b04b0d695",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "2026-08-27T10:11:29Z"
+    },
+    {
+      "kind": "source_title",
+      "value": "linny006/mcp-servers-live"
+    }
+  ],
+  "id": "034198d0f42333a16cdb25dc",
+  "license": {
+    "identifier": null,
+    "status": "unknown"
+  },
+  "observed_at": "2026-08-27T10:16:09.152293Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "github-agent-skills-search",
+  "source_item_id": "1247447904",
+  "source_revision": "2026-08-27T10:11:29Z",
+  "title": "linny006/mcp-servers-live",
+  "trust": "discovery"
+}

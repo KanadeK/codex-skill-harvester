@@ -7,7 +7,14 @@ from pathlib import Path
 from typing import Sequence
 
 from .decisions import DecisionError, apply_decision
-from .sources import Fetcher, RegistryError, SourceFetchError, UrllibFetcher, run_scan
+from .sources import (
+    Fetcher,
+    GitHubCliFetcher,
+    RegistryError,
+    SourceFetchError,
+    UrllibFetcher,
+    run_scan,
+)
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -19,6 +26,12 @@ def _parser() -> argparse.ArgumentParser:
     scan = commands.add_parser("scan", help="scan changed sources and persist successful cursors")
     scan.add_argument("--root", type=Path, default=Path.cwd(), help="harvester repository root")
     scan.add_argument("--source", action="append", help="scan only this registered source id")
+    scan.add_argument(
+        "--github-auth",
+        choices=("environment", "gh-cli"),
+        default="environment",
+        help="authenticate api.github.com with GITHUB_TOKEN or the official gh keyring",
+    )
     apply = commands.add_parser("apply", help="apply one explicit Codex-reviewed decision")
     apply.add_argument("--root", type=Path, default=Path.cwd(), help="harvester repository root")
     apply.add_argument("--decision", type=Path, required=True, help="reviewed decision JSON path")
@@ -41,9 +54,12 @@ def main(
         observed_at = now or datetime.now(timezone.utc).isoformat(timespec="microseconds").replace(
             "+00:00", "Z"
         )
+        selected_fetcher = fetcher or (
+            GitHubCliFetcher() if args.github_auth == "gh-cli" else UrllibFetcher()
+        )
         report = run_scan(
             root,
-            fetcher or UrllibFetcher(),
+            selected_fetcher,
             now=observed_at,
             source_ids=set(args.source) if args.source else None,
         )

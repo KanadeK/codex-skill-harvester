@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/atlassian-rovo",
+  "evidence_sha256": "baf0c021754181c25d8ac67d9eea5d844323b8a0e02751e8a5a741e8bb29c4cc",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "b2dad6b979f07ca07edff8987c1ef92afc642870"
+    },
+    {
+      "kind": "source_title",
+      "value": "atlassian-rovo"
+    }
+  ],
+  "id": "02c6f50653078e3ddc52e9d3",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "b2dad6b979f07ca07edff8987c1ef92afc642870",
+  "source_revision": "b2dad6b979f07ca07edff8987c1ef92afc642870",
+  "title": "atlassian-rovo",
+  "trust": "official"
+}

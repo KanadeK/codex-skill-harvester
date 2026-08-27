@@ -1,0 +1,28 @@
+{
+  "authority": "official-plugin-examples",
+  "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/canva",
+  "evidence_sha256": "15d3abef48d4a986bb541ff490b1f1cb8bb3f785ee02e03d32d588626729039d",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "684440d38d1e594496104be67109ba71bf1eaf6b"
+    },
+    {
+      "kind": "source_title",
+      "value": "canva"
+    }
+  ],
+  "id": "b54fea7f3af6759fe39cf7c5",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T10:14:45.959028Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-plugin-catalog",
+  "source_item_id": "684440d38d1e594496104be67109ba71bf1eaf6b",
+  "source_revision": "684440d38d1e594496104be67109ba71bf1eaf6b",
+  "title": "canva",
+  "trust": "official"
+}

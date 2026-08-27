@@ -12,4 +12,4 @@ Release assets:
 - standalone Plugin archive;
 - checksum manifest.
 
-Known limitation: anonymous GitHub API requests can be rate-limited. `GITHUB_TOKEN` is supported for `api.github.com` only and is never stored. Fourteen first-round discoveries remain intentionally pending for later reviewed scan rounds.
+Known limitation: the GitHub repository discovery source follows a moving `sort=updated` result window, so true upstream churn can prevent an immediate all-source no-op even though unchanged entries are not reprocessed. Authentication supports either process-scoped `GITHUB_TOKEN` for `api.github.com` or the official `gh` keyring without exporting its token. Eighty-nine discoveries remain intentionally pending for later reviewed scan rounds.

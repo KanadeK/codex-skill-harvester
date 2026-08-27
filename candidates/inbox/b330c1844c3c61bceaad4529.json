@@ -1,0 +1,28 @@
+{
+  "authority": "demand-signal-only",
+  "canonical_url": "https://github.com/linny006/cursor-rules-live",
+  "evidence_sha256": "84526966dbd857010d65e5463364921820c070a35f8be706aa5d42f5e40a1bd5",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "2026-08-27T10:04:54Z"
+    },
+    {
+      "kind": "source_title",
+      "value": "linny006/cursor-rules-live"
+    }
+  ],
+  "id": "b330c1844c3c61bceaad4529",
+  "license": {
+    "identifier": null,
+    "status": "unknown"
+  },
+  "observed_at": "2026-08-27T10:16:09.152293Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "github-agent-skills-search",
+  "source_item_id": "1247448216",
+  "source_revision": "2026-08-27T10:04:54Z",
+  "title": "linny006/cursor-rules-live",
+  "trust": "discovery"
+}
