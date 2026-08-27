@@ -1,6 +1,8 @@
 {
   "authority": "external-skill-comparison",
   "canonical_url": "https://raw.githubusercontent.com/openai/skills/main/skills/.curated/gh-fix-ci/SKILL.md",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T09-38-00Z-a02cff10cbc2ceaadcb5c7a7.json",
   "evidence_sha256": "7b326b4a2f0f5f85122144628ec02077e48841e0e0e82efce88b3415bcfb7c26",
   "extracted_facts": [
     {
@@ -38,7 +40,7 @@
     "status": "known"
   },
   "observed_at": "2026-08-27T09:26:05Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-gh-fix-ci",
   "source_revision": "\"1a26fc110dbd0ed15f50e80aa3f346f36269112588af204db5d34bcca2ceb6fa\"",
