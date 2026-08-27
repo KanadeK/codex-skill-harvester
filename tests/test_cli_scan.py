@@ -5,7 +5,9 @@ import io
 import sys
 import tempfile
 import unittest
+from datetime import datetime as real_datetime, timezone
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -60,6 +62,28 @@ class ScanCliTests(unittest.TestCase):
             self.assertEqual(exit_code, 0)
             self.assertIn("outcome=create", output.getvalue())
             self.assertIn("candidate=real-source-candidate", output.getvalue())
+
+    @patch("skill_harvester.cli.datetime")
+    def test_default_run_ids_do_not_collide_within_one_second(self, clock: object) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_registry(root, [document_source()])
+            clock.now.side_effect = [
+                real_datetime(2026, 8, 27, 6, 0, 0, 100_000, tzinfo=timezone.utc),
+                real_datetime(2026, 8, 27, 6, 0, 0, 200_000, tzinfo=timezone.utc),
+            ]
+            first = QueueFetcher(
+                FetchResponse(200, "https://example.test/official-doc.md", {"etag": '"v1"'}, b"# Evidence")
+            )
+            second = QueueFetcher(
+                FetchResponse(304, "https://example.test/official-doc.md", {"etag": '"v1"'}, b"")
+            )
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(main(["scan", "--root", str(root)], fetcher=first), 0)
+                self.assertEqual(main(["scan", "--root", str(root)], fetcher=second), 0)
+
+            self.assertEqual(len(list((root / "runs").glob("*-scan.json"))), 2)
 
 
 if __name__ == "__main__":

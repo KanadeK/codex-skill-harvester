@@ -98,6 +98,17 @@ class IncrementalScanTests(unittest.TestCase):
             self.assertEqual(len(failed_reports), 1)
             self.assertEqual(read_json(failed_reports[0])["status"], "failed")
 
+    def test_programming_errors_are_not_reported_as_source_failures(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_registry(root, [document_source()])
+            fetcher = QueueFetcher(RuntimeError("programming error"))
+
+            with self.assertRaisesRegex(RuntimeError, "programming error"):
+                run_scan(root, fetcher, now="2026-08-27T02:10:00Z")
+
+            self.assertFalse((root / "runs").exists())
+
 
 if __name__ == "__main__":
     unittest.main()

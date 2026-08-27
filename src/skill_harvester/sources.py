@@ -371,7 +371,7 @@ def run_scan(
             staged_state.setdefault("sources", {})[source["id"]] = source_state
             staged_discoveries.extend(discoveries)
             source_results.append(result)
-    except Exception as error:
+    except (RegistryError, SourceFetchError, OSError) as error:
         failed_report = {
             "schema_version": 1,
             "run_id": run_id,

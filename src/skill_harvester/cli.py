@@ -38,7 +38,7 @@ def main(
             record = apply_decision(root, args.decision.resolve())
             print(f"outcome={record['outcome']} candidate={record['candidate_id']}")
             return 0
-        observed_at = now or datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace(
+        observed_at = now or datetime.now(timezone.utc).isoformat(timespec="microseconds").replace(
             "+00:00", "Z"
         )
         report = run_scan(
