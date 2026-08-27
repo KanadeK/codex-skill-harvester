@@ -44,16 +44,16 @@
 
 ## Task 7: stabilize recurring scans
 
-- [ ] Acceptance: moving search-window churn is reported separately and does not create revision-only duplicate candidates; status and review queue are directly inspectable.
-- [ ] Verify: focused source and CLI tests cover revision-only change, reordering, new items, status output, and queue filtering.
-- [ ] Files: source state/CLI modules, registry, tests, specification, and operator docs.
+- [x] Acceptance: moving search-window churn is reported separately and does not create revision-only duplicate candidates; status and review queue are directly inspectable.
+- [x] Verify: focused source and CLI tests cover revision-only change, reordering, new items, status output, and queue filtering.
+- [x] Files: source state/CLI modules, registry, tests, specification, and operator docs.
 - Dependencies: Task 6.
 
 ## Task 8: review the inherited queue and update useful capability evidence
 
-- [ ] Acceptance: all 89 pending discoveries have explicit records; no title-only or unknown-license signal becomes a Skill; any update is original and source-traceable.
-- [ ] Verify: zero pending candidates, repository consistency, Skill format, trigger cases, and end-to-end evidence checker pass.
-- [ ] Files: candidate status, decision records, catalog, selected Plugin Skill/evals, and run report.
+- [x] Acceptance: all 89 pending discoveries have explicit records; no title-only or unknown-license signal becomes a Skill; any update is original and source-traceable.
+- [x] Verify: zero pending candidates, repository consistency, Skill format, trigger cases, and end-to-end evidence checker pass.
+- [x] Files: candidate status, decision records, catalog, selected Plugin Skill/evals, and run report.
 - Dependencies: Task 7.
 
 ## Task 9: automate and harden maintenance

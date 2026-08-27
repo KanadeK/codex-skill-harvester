@@ -5,6 +5,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import tomllib
 import zipfile
 from pathlib import Path
 
@@ -13,11 +14,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main(argv: list[str] | None = None) -> int:
+    project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
+    version = project["version"]
     parser = argparse.ArgumentParser(description="install and invoke a built release archive")
     parser.add_argument(
         "--archive",
         type=Path,
-        default=ROOT / "dist" / "codex-skill-harvester-v0.1.0.zip",
+        default=ROOT / "dist" / f"codex-skill-harvester-v{version}.zip",
     )
     archive = parser.parse_args(argv).archive.resolve()
     with tempfile.TemporaryDirectory() as directory:
@@ -28,7 +31,7 @@ def main(argv: list[str] | None = None) -> int:
                 if not destination.is_relative_to(temporary.resolve()):
                     raise ValueError(f"archive member escapes extraction root: {member.filename}")
             package.extractall(temporary)
-        extracted = temporary / "codex-skill-harvester-0.1.0"
+        extracted = temporary / f"codex-skill-harvester-{version}"
         target = temporary / "site-packages"
         subprocess.run(
             [

@@ -95,20 +95,20 @@ None for the first vertical slice.
 
 ### Phase 6: stabilize recurring scans
 
-- [ ] Distinguish moving-window churn from material JSON-list changes with regression tests.
-- [ ] Add durable `status` and `review-queue` operator commands.
-- [ ] Run a real incremental scan from the persisted cursor and record changed/no-op truthfully.
+- [x] Distinguish moving-window churn from material JSON-list changes with regression tests.
+- [x] Add durable `status` and `review-queue` operator commands.
+- [x] Run a real incremental scan from the persisted cursor and record changed/no-op truthfully.
 
 ### Phase 7: close the review queue
 
-- [ ] Review all 89 pending discoveries in source batches and persist individual decisions.
-- [ ] Update the release-evidence Skill only if authoritative evidence supports a useful non-duplicate gate.
-- [ ] Confirm no unsupported second Plugin is created from catalog names or community demand signals alone.
+- [x] Review all 89 pending discoveries in source batches and persist individual decisions.
+- [x] Update the release-evidence Skill only if authoritative evidence supports a useful non-duplicate gate.
+- [x] Confirm no unsupported second Plugin is created from catalog names or community demand signals alone.
 
 ### Phase 8: automate and harden maintenance
 
-- [ ] Add a scheduled/manual deterministic scan workflow that opens PRs only for real discoveries.
-- [ ] Add dependency update, security policy, contribution templates, and repository validation for the new contracts.
+- [x] Add a scheduled/manual deterministic scan workflow that opens PRs only for real discoveries.
+- [x] Add dependency update, security policy, contribution templates, and repository validation for the new contracts.
 - [ ] Enable remote vulnerability features, disable unused repository surfaces, and protect `main` with required CI and PRs.
 
 ### Phase 9: verify and release v0.1.1

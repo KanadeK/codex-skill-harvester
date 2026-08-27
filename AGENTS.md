@@ -9,6 +9,8 @@ Build and maintain a repeatable, evidence-backed harvester that turns changed pu
 - Test: `python -m unittest discover -s tests -v`
 - Validate: `python scripts/validate_repo.py`
 - Scan: `python -m skill_harvester scan --root .`
+- Status: `python -m skill_harvester status --root .`
+- Review queue: `python -m skill_harvester review-queue --root .`
 - Apply one reviewed decision: `python -m skill_harvester apply --root . --decision <path>`
 - Build release assets: `python scripts/build_release.py`
 

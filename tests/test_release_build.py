@@ -21,6 +21,14 @@ class ReleaseBuildTests(unittest.TestCase):
             first_files = build_release(root, first)
             second_files = build_release(root, second)
 
+            self.assertEqual(
+                [path.name for path in first_files],
+                [
+                    "codex-skill-harvester-v0.1.1.zip",
+                    "github-release-evidence-v0.1.1.zip",
+                    "SHA256SUMS.txt",
+                ],
+            )
             self.assertEqual([path.name for path in first_files], [path.name for path in second_files])
             for left, right in zip(first_files, second_files, strict=True):
                 self.assertEqual(
