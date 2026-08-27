@@ -68,13 +68,13 @@ Deliver one thin but complete path: scan official public sources with persisted 
 - [x] Perform a five-axis code review and repair all required findings.
 - [x] Commit exact paths in atomic increments and verify author/co-author hygiene.
 - [x] Create the public repository, push the initial branch, merge its PR after green CI, and verify green `main` CI.
-- [ ] Merge the authenticated API scan update, tag v0.1.0, and create the Release.
-- [ ] Verify release assets from a clean temporary extraction, marketplace/plugin discovery, CLI invocation, remote contributor list, and final run report.
+- [x] Merge the authenticated API scan update, tag v0.1.0, and create the Release.
+- [x] Verify release assets from a clean temporary extraction, marketplace/plugin discovery, CLI invocation, remote contributor list, and final run report.
 
 ### Checkpoint: published
 
-- [ ] Public remote, merged PR, green CI, immutable tag, Release assets, installation/call path, and contributor evidence all agree on the same release commit.
-- [ ] Local child worktree is clean; outer workspace remains uncommitted.
+- [x] Public remote, merged PR, green CI, immutable tag, Release assets, installation/call path, and contributor evidence all agree on the same release commit.
+- [x] Local child worktree is clean after final-report merge; outer workspace remains uncommitted.
 
 ## Risks and mitigations
 

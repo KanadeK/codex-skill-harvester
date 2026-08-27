@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-08-27T10-49-17Z",
+  "status": "published_and_verified",
+  "repository": {
+    "url": "https://github.com/KanadeK/codex-skill-harvester",
+    "visibility": "public",
+    "default_branch": "main",
+    "topics": ["agent-skills", "automation", "codex", "openai", "python"]
+  },
+  "pull_requests": [
+    {
+      "number": 1,
+      "url": "https://github.com/KanadeK/codex-skill-harvester/pull/1",
+      "merge_commit": "6bdb9cb9408d28c3d1fe2a0f4c800597e12b5a65"
+    },
+    {
+      "number": 2,
+      "url": "https://github.com/KanadeK/codex-skill-harvester/pull/2",
+      "head_commit": "c120f0a29205f17719b1bda7e6230e89b3cf447f",
+      "merge_commit": "b3190bf21a0487a55b1e3a16836f1bc201abfe87",
+      "checks": [
+        {"name": "validate (ubuntu-latest)", "conclusion": "success", "duration_seconds": 14},
+        {"name": "validate (windows-latest)", "conclusion": "success", "duration_seconds": 28}
+      ]
+    }
+  ],
+  "main_ci": {
+    "run_id": 33063492658,
+    "url": "https://github.com/KanadeK/codex-skill-harvester/actions/runs/33063492658",
+    "commit": "b3190bf21a0487a55b1e3a16836f1bc201abfe87",
+    "conclusion": "success"
+  },
+  "release": {
+    "tag": "v0.1.0",
+    "tag_object": "9f16d05d1074df9567d30cdb2dfdd9769cf56b3c",
+    "commit": "b3190bf21a0487a55b1e3a16836f1bc201abfe87",
+    "url": "https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.1.0",
+    "published_at": "2026-08-27T10:42:25Z",
+    "immutable": true,
+    "attestation_verified": true,
+    "assets": [
+      {
+        "name": "codex-skill-harvester-v0.1.0.zip",
+        "size": 166234,
+        "sha256": "11a4a61094f1dd125340a5374bb1d74abc0204b9d60e581571134102e8a1f6f8"
+      },
+      {
+        "name": "github-release-evidence-v0.1.0.zip",
+        "size": 5478,
+        "sha256": "04033ceb83168da51850eb4ba437fa96b9436d960dd1b7ba10f59271a34a51a2"
+      },
+      {
+        "name": "SHA256SUMS.txt",
+        "size": 200,
+        "sha256": "779b6900f5362f86084f66716a2286dac3138bbe0687316d5cf583536354090b"
+      }
+    ]
+  },
+  "installation_and_invocation": {
+    "source_archive_install": "passed",
+    "installed_cli_help": "passed",
+    "installed_repository_validation": "passed",
+    "marketplace_name_from_published_archive": "codex-skill-harvester",
+    "published_plugin_validation": "passed",
+    "published_skill_live_audit": "complete"
+  },
+  "harvest_state": {
+    "registered_sources": 13,
+    "successful_state_sources": 13,
+    "candidates": 95,
+    "applied": 6,
+    "pending": 89,
+    "decisions": {"discard": 3, "merge": 1, "update": 1, "create": 1}
+  },
+  "contributors": {
+    "github": [{"login": "KanadeK", "contributions": 3}],
+    "coauthor_trailers": 0
+  },
+  "validations": [
+    {"name": "unit_and_integration_tests", "status": "passed", "details": "31 tests"},
+    {"name": "official_skill_validator", "status": "passed"},
+    {"name": "official_plugin_validator", "status": "passed"},
+    {"name": "trigger_and_e2e_evals", "status": "passed", "details": "3 positive, 4 negative, 8 live evidence gates"},
+    {"name": "repository_consistency", "status": "passed", "details": "0 secret-like findings"},
+    {"name": "published_release_attestation", "status": "passed"},
+    {"name": "published_assets", "status": "passed", "details": "3 of 3 verified against GitHub attestations"},
+    {"name": "published_source_install_and_call", "status": "passed"},
+    {"name": "published_plugin_marketplace_and_format", "status": "passed"},
+    {"name": "published_skill_live_release_audit", "status": "passed", "details": "result=complete"},
+    {"name": "contributor_hygiene", "status": "passed", "details": "KanadeK only, 0 co-author trailers"}
+  ],
+  "security": {
+    "immutable_releases_enabled": true,
+    "credentials_exported_from_keyring": false,
+    "raw_source_bodies_committed": false,
+    "external_scripts_executed": false,
+    "copied_external_skill_bodies": false
+  },
+  "unresolved_issues": [
+    "Eighty-nine changed-source discoveries remain pending explicit Codex review for later scan rounds.",
+    "The live GitHub repository search uses a moving sort=updated window, so true upstream churn can produce small changed-only batches on immediate repeats."
+  ]
+}
