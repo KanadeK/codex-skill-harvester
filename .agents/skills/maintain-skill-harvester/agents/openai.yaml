@@ -1,0 +1,4 @@
+interface:
+  display_name: "Maintain Skill Harvester"
+  short_description: "Scan sources and maintain reviewed skills"
+  default_prompt: "Use $maintain-skill-harvester to resume the next incremental scan."
