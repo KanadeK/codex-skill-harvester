@@ -48,6 +48,20 @@ class HttpFetcherTests(unittest.TestCase):
         self.assertIn("codex-skill-harvester", request.get_header("User-agent"))
 
     @patch("skill_harvester.sources.urlopen")
+    def test_github_token_is_sent_only_to_the_github_api(self, urlopen: object) -> None:
+        urlopen.return_value = FakeResponse(b"evidence", final_url="https://api.github.com/final")
+        fetcher = UrllibFetcher(github_token="secret-test-token")
+
+        fetcher.fetch("https://api.github.com/search/repositories", {})
+        github_request = urlopen.call_args.args[0]
+        self.assertEqual(github_request.get_header("Authorization"), "Bearer secret-test-token")
+
+        urlopen.return_value = FakeResponse(b"evidence")
+        fetcher.fetch("https://example.test/source", {})
+        other_request = urlopen.call_args.args[0]
+        self.assertIsNone(other_request.get_header("Authorization"))
+
+    @patch("skill_harvester.sources.urlopen")
     def test_rejects_response_larger_than_limit(self, urlopen: object) -> None:
         urlopen.return_value = FakeResponse(b"12345")
 

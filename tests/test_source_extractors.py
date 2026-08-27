@@ -154,6 +154,27 @@ class SourceExtractorTests(unittest.TestCase):
             with self.assertRaisesRegex(RegistryError, "https"):
                 run_scan(root, QueueFetcher(), now="2026-08-27T05:00:00Z")
 
+    def test_registry_rejects_arbitrary_authentication_environment(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_registry(
+                root,
+                [
+                    {
+                        "id": "unsafe-auth",
+                        "adapter": "document",
+                        "url": "https://api.github.com/resource",
+                        "trust": "discovery",
+                        "authority": "signal",
+                        "license": {"status": "unknown", "identifier": None},
+                        "authentication": {"type": "optional-bearer-env", "env": "ARBITRARY_SECRET"},
+                    }
+                ],
+            )
+
+            with self.assertRaisesRegex(RegistryError, "authentication"):
+                run_scan(root, QueueFetcher(), now="2026-08-27T05:00:00Z")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import xml.etree.ElementTree as ElementTree
 from copy import deepcopy
@@ -41,9 +42,16 @@ class Fetcher(Protocol):
 
 
 class UrllibFetcher:
-    def __init__(self, *, max_bytes: int = 2_000_000, timeout: float = 20.0) -> None:
+    def __init__(
+        self,
+        *,
+        max_bytes: int = 2_000_000,
+        timeout: float = 20.0,
+        github_token: str | None = None,
+    ) -> None:
         self.max_bytes = max_bytes
         self.timeout = timeout
+        self.github_token = github_token if github_token is not None else os.environ.get("GITHUB_TOKEN")
 
     def fetch(self, url: str, headers: dict[str, str]) -> FetchResponse:
         if urlparse(url).scheme != "https":
@@ -53,6 +61,8 @@ class UrllibFetcher:
             **headers,
         }
         request = Request(url, headers=request_headers)
+        if urlparse(url).hostname == "api.github.com" and self.github_token:
+            request.add_unredirected_header("Authorization", f"Bearer {self.github_token}")
         try:
             with urlopen(request, timeout=self.timeout) as response:
                 final_url = response.geturl()
@@ -96,6 +106,12 @@ def load_registry(root: Path) -> list[dict[str, Any]]:
             raise RegistryError(f"source {source_id} has an unsupported adapter")
         if source.get("trust") not in {"official", "representative", "discovery"}:
             raise RegistryError(f"source {source_id} has an unsupported trust tier")
+        authentication = source.get("authentication")
+        if authentication is not None and (
+            authentication != {"type": "optional-bearer-env", "env": "GITHUB_TOKEN"}
+            or urlparse(url).hostname != "api.github.com"
+        ):
+            raise RegistryError(f"source {source_id} has unsupported authentication metadata")
         license_value = source.get("license")
         if not isinstance(license_value, dict) or license_value.get("status") not in {
             "known",
