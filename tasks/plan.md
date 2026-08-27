@@ -65,7 +65,7 @@ Deliver one thin but complete path: scan official public sources with persisted 
 ## Phase 5: automation and release
 
 - [x] Add repository validator, deterministic release builder, secret/material checks, and GitHub Actions CI.
-- [ ] Perform a five-axis code review and repair all required findings.
+- [x] Perform a five-axis code review and repair all required findings.
 - [ ] Commit exact paths in atomic increments and verify author/co-author hygiene.
 - [ ] Create the public repository, push the branch, open a PR, wait for green CI, merge, tag v0.1.0, and create the Release.
 - [ ] Verify release assets from a clean temporary extraction, marketplace/plugin discovery, CLI invocation, remote contributor list, and final run report.
