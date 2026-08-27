@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import io
+import json
 import sys
 import tempfile
 import unittest
@@ -19,6 +20,121 @@ from test_apply_decision import create_decision, write_json
 
 
 class ScanCliTests(unittest.TestCase):
+    def test_status_command_reports_durable_repository_counts_as_json(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_registry(root, [document_source("official-doc"), document_source("other-doc")])
+            write_json(
+                root / "state" / "harvest-state.json",
+                {
+                    "schema_version": 1,
+                    "last_successful_run": "2026-08-27T06:00:00Z",
+                    "sources": {"official-doc": {}, "other-doc": {}},
+                },
+            )
+            write_json(
+                root / "candidates" / "inbox" / "pending-one.json",
+                {
+                    "id": "pending-one",
+                    "source_id": "official-doc",
+                    "title": "Pending one",
+                    "trust": "official",
+                    "license": {"status": "known"},
+                    "canonical_url": "https://example.test/one",
+                    "observed_at": "2026-08-27T06:00:00Z",
+                    "review_status": "pending",
+                },
+            )
+            write_json(
+                root / "candidates" / "inbox" / "applied-one.json",
+                {
+                    "id": "applied-one",
+                    "source_id": "other-doc",
+                    "title": "Applied one",
+                    "trust": "official",
+                    "license": {"status": "known"},
+                    "canonical_url": "https://example.test/two",
+                    "observed_at": "2026-08-27T06:00:00Z",
+                    "review_status": "applied",
+                },
+            )
+            write_json(
+                root / "decisions" / "records" / "record.json",
+                {"outcome": "discard"},
+            )
+            write_json(
+                root / "catalog" / "capabilities.json",
+                {"schema_version": 1, "internal": [{"id": "plugin:skill"}], "external": []},
+            )
+            write_json(
+                root / ".agents" / "plugins" / "marketplace.json",
+                {"plugins": [{"name": "plugin"}]},
+            )
+            output = io.StringIO()
+
+            with contextlib.redirect_stdout(output):
+                exit_code = main(["status", "--root", str(root), "--json"])
+
+            self.assertEqual(exit_code, 0)
+            report = json.loads(output.getvalue())
+            self.assertEqual(report["last_successful_run"], "2026-08-27T06:00:00Z")
+            self.assertEqual(report["sources"]["registered"], 2)
+            self.assertEqual(report["candidates"], {"total": 2, "pending": 1, "applied": 1})
+            self.assertEqual(report["pending_by_source"], {"official-doc": 1})
+            self.assertEqual(report["decision_outcomes"], {"discard": 1})
+            self.assertEqual(report["catalog"]["plugins"], 1)
+            self.assertEqual(report["catalog"]["skills"], 1)
+
+    def test_review_queue_filters_pending_candidates_by_registered_source(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_registry(root, [document_source("official-doc"), document_source("other-doc")])
+            for candidate_id, source_id, status in (
+                ("pending-one", "official-doc", "pending"),
+                ("pending-two", "other-doc", "pending"),
+                ("applied-one", "official-doc", "applied"),
+            ):
+                write_json(
+                    root / "candidates" / "inbox" / f"{candidate_id}.json",
+                    {
+                        "id": candidate_id,
+                        "source_id": source_id,
+                        "title": candidate_id.replace("-", " "),
+                        "trust": "official",
+                        "license": {"status": "known"},
+                        "canonical_url": f"https://example.test/{candidate_id}",
+                        "observed_at": "2026-08-27T06:00:00Z",
+                        "review_status": status,
+                    },
+                )
+            output = io.StringIO()
+
+            with contextlib.redirect_stdout(output):
+                exit_code = main(
+                    [
+                        "review-queue",
+                        "--root",
+                        str(root),
+                        "--source",
+                        "official-doc",
+                        "--json",
+                    ]
+                )
+
+            self.assertEqual(exit_code, 0)
+            report = json.loads(output.getvalue())
+            self.assertEqual(report["pending"], 1)
+            self.assertEqual(report["by_source"], {"official-doc": 1})
+            self.assertEqual([item["id"] for item in report["items"]], ["pending-one"])
+
+            error = io.StringIO()
+            with contextlib.redirect_stderr(error):
+                exit_code = main(
+                    ["review-queue", "--root", str(root), "--source", "missing-source"]
+                )
+            self.assertEqual(exit_code, 1)
+            self.assertIn("unknown source id: missing-source", error.getvalue())
+
     def test_scan_command_reports_changed_sources(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
