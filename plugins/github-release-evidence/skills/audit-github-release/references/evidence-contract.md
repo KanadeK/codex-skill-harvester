@@ -4,6 +4,9 @@ Use this normalized JSON shape as input to `scripts/check_snapshot.py`. Values m
 
 ```json
 {
+  "requirements": {
+    "immutable_release": true
+  },
   "repository": {
     "name_with_owner": "OWNER/REPO",
     "is_private": false,
@@ -14,6 +17,7 @@ Use this normalized JSON shape as input to `scripts/check_snapshot.py`. Values m
     "tag_name": "v1.0.0",
     "is_draft": false,
     "published_at": "RFC-3339 timestamp",
+    "immutable": true,
     "url": "https://github.com/OWNER/REPO/releases/tag/v1.0.0",
     "target_commit_sha": "full commit SHA",
     "asset_names": ["artifact.zip"]
@@ -39,7 +43,7 @@ Use this normalized JSON shape as input to `scripts/check_snapshot.py`. Values m
 }
 ```
 
-`pull_request` and `installation` may be `null`; their gates then remain `NOT_CHECKED`. When a pull request is present, its `merge_commit_sha` must equal `tag.commit_sha`. An empty `expected_assets` list means the audit makes no custom-asset claim.
+`pull_request` and `installation` may be `null`; their gates then remain `NOT_CHECKED`. When a pull request is present, its `merge_commit_sha` must equal `tag.commit_sha`. An empty `expected_assets` list means the audit makes no custom-asset claim. Set `requirements.immutable_release` to `true` only when immutable Release proof is part of the stated acceptance criteria; then `release.immutable` must come from the REST Release record and be `true`.
 
 ## Authority sources
 

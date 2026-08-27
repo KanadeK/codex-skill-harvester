@@ -1,0 +1,21 @@
+{
+  "decisions": {
+    "create": 0,
+    "discard": 0,
+    "merge": 0,
+    "update": 0
+  },
+  "discoveries": 0,
+  "run_id": "2026-08-27T12-39-48.327316Z",
+  "schema_version": 1,
+  "sources": [
+    {
+      "discoveries": 0,
+      "source_id": "github-cli-api",
+      "status": "not_modified"
+    }
+  ],
+  "status": "no_op",
+  "unresolved_issues": [],
+  "validations": []
+}

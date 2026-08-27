@@ -1,0 +1,30 @@
+{
+  "authority": "demand-signal-only",
+  "canonical_url": "https://github.com/Hanibalus/ai-langchain-lab",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-00-02Z-e26c070d0d6c3b823b4d6419.json",
+  "evidence_sha256": "7eefb8890fd083bed617c4abde29ecf3dd7ca5f12fa13e19edbc37f3a53037b9",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "2026-08-27T12:11:56Z"
+    },
+    {
+      "kind": "source_title",
+      "value": "Hanibalus/ai-langchain-lab"
+    }
+  ],
+  "id": "e26c070d0d6c3b823b4d6419",
+  "license": {
+    "identifier": null,
+    "status": "unknown"
+  },
+  "observed_at": "2026-08-27T12:41:55.827368Z",
+  "review_status": "applied",
+  "schema_version": 1,
+  "source_id": "github-agent-skills-search",
+  "source_item_id": "1348135793",
+  "source_revision": "2026-08-27T12:11:56Z",
+  "title": "Hanibalus/ai-langchain-lab",
+  "trust": "discovery"
+}

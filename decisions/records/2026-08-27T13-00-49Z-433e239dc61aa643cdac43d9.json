@@ -1,0 +1,45 @@
+{
+  "candidate_id": "433e239dc61aa643cdac43d9",
+  "fingerprint": {
+    "goal": "address selected review and issue comments on an open pull request",
+    "inputs": [
+      "current branch pull request",
+      "github cli authentication",
+      "selected comments"
+    ],
+    "outputs": [
+      "numbered comment summary",
+      "selected code fixes"
+    ],
+    "platforms": [
+      "github pull requests"
+    ],
+    "side_effects": [
+      "repository changes after user selection"
+    ],
+    "tools": [
+      "fetch comments script",
+      "gh"
+    ],
+    "triggers": [
+      "address github pr review comments",
+      "handle issue comments on this pull request"
+    ]
+  },
+  "outcome": "discard",
+  "rationale": "Compared representative openai:gh-address-comments with internal github-release-evidence:audit-github-release. The external capability already owns the separate code-changing task of addressing PR comments, while the internal Skill explicitly performs read-only post-publication audits. Merging would blur triggers and side effects, and copying the representative Skill would add no original capability, so discard this discovery.",
+  "recommendation": {
+    "artifact_sha256": null,
+    "matches": [
+      "openai:gh-address-comments"
+    ],
+    "outcome": "merge_semantic"
+  },
+  "reviewed_at": "2026-08-27T13:00:49Z",
+  "reviewed_by": "codex",
+  "schema_version": 1,
+  "source_refs": [
+    "openai-gh-address-comments"
+  ],
+  "target_capability_id": null
+}

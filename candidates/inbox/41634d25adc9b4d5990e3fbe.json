@@ -1,6 +1,8 @@
 {
   "authority": "vendor-api-docs",
   "canonical_url": "https://raw.githubusercontent.com/github/docs/main/content/rest/releases/releases.md",
+  "decision_outcome": "merge",
+  "decision_record": "decisions/records/2026-08-27T13-00-37Z-41634d25adc9b4d5990e3fbe.json",
   "evidence_sha256": "d7e9c3afab82701940851e6de60e1ccf53e15863970f84bb16bbb06ce05a36c9",
   "extracted_facts": [],
   "id": "41634d25adc9b4d5990e3fbe",
@@ -9,7 +11,7 @@
     "status": "known"
   },
   "observed_at": "2026-08-27T09:26:05Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "github-rest-releases",
   "source_revision": "\"85f364dc2c75661d81498ade24166d71c9e426064db726ae5ce0b2d56de7aeae\"",

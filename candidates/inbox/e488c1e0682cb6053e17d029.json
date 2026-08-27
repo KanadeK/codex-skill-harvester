@@ -1,6 +1,8 @@
 {
   "authority": "official-plugin-examples",
   "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/codex-security",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-01-01Z-e488c1e0682cb6053e17d029.json",
   "evidence_sha256": "65dd15e9f3f240507d7dbc22465b984c724bf5278cc332254a5971eb95366300",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "facts-only"
   },
   "observed_at": "2026-08-27T10:14:45.959028Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-plugin-catalog",
   "source_item_id": "570f16ac6804c4ba300aeebe0f1c802d1fd11b3c",

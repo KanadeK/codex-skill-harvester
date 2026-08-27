@@ -1,0 +1,30 @@
+{
+  "authority": "demand-signal-only",
+  "canonical_url": "https://github.com/IBM/ado",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-00-03Z-b9f4c096d4eca1c344f291ca.json",
+  "evidence_sha256": "ad90f19f1bfb89b8387eb2dd2e5b45e448fd5b84b58910281b22901a9ceb259c",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "2026-08-27T12:41:11Z"
+    },
+    {
+      "kind": "source_title",
+      "value": "IBM/ado"
+    }
+  ],
+  "id": "b9f4c096d4eca1c344f291ca",
+  "license": {
+    "identifier": null,
+    "status": "unknown"
+  },
+  "observed_at": "2026-08-27T12:41:55.827368Z",
+  "review_status": "applied",
+  "schema_version": 1,
+  "source_id": "github-agent-skills-search",
+  "source_item_id": "1044302997",
+  "source_revision": "2026-08-27T12:41:11Z",
+  "title": "IBM/ado",
+  "trust": "discovery"
+}

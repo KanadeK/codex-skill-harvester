@@ -1,6 +1,8 @@
 {
   "authority": "official-plugin-examples",
   "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/build-web-data-visualization",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-00-56Z-e88f95de9e0f5d1ff616ac83.json",
   "evidence_sha256": "53cf073de143a66234e205e5e2ee4ebe5b3721d4beb3fa8a45ff33d1b44d88e1",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "facts-only"
   },
   "observed_at": "2026-08-27T10:14:45.959028Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-plugin-catalog",
   "source_item_id": "bc053f29725f02c887a5a905a39824a41fb6a19b",

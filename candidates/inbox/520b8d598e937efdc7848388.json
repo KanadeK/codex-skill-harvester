@@ -1,0 +1,30 @@
+{
+  "authority": "demand-signal-only",
+  "canonical_url": "https://github.com/enhansome/trackenhansomelist",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-00-15Z-520b8d598e937efdc7848388.json",
+  "evidence_sha256": "fc28426653e02a4e892a64da626f791351fc9f8979954366315ecdd9287a65c9",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "2026-08-27T12:18:57Z"
+    },
+    {
+      "kind": "source_title",
+      "value": "enhansome/trackenhansomelist"
+    }
+  ],
+  "id": "520b8d598e937efdc7848388",
+  "license": {
+    "identifier": null,
+    "status": "unknown"
+  },
+  "observed_at": "2026-08-27T12:42:25.111014Z",
+  "review_status": "applied",
+  "schema_version": 1,
+  "source_id": "github-agent-skills-search",
+  "source_item_id": "1331743519",
+  "source_revision": "2026-08-27T12:18:57Z",
+  "title": "enhansome/trackenhansomelist",
+  "trust": "discovery"
+}

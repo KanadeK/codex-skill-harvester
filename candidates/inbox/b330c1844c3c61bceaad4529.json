@@ -1,6 +1,8 @@
 {
   "authority": "demand-signal-only",
   "canonical_url": "https://github.com/linny006/cursor-rules-live",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-00-24Z-b330c1844c3c61bceaad4529.json",
   "evidence_sha256": "84526966dbd857010d65e5463364921820c070a35f8be706aa5d42f5e40a1bd5",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "unknown"
   },
   "observed_at": "2026-08-27T10:16:09.152293Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "github-agent-skills-search",
   "source_item_id": "1247448216",

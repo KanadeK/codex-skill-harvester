@@ -1,6 +1,8 @@
 {
   "authority": "official-plugin-examples",
   "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/superpowers",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-01-35Z-a0b7cd67caf8510b0588e8fa.json",
   "evidence_sha256": "422212e522bd608406de828b2474b706c683564ed6aba5eede1f14c70e716a6a",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "facts-only"
   },
   "observed_at": "2026-08-27T10:14:45.959028Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-plugin-catalog",
   "source_item_id": "ebebbff97c8ec8f77959080df80f4d57478f65e8",

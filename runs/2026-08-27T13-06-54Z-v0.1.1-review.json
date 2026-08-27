@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-08-27T13-06-54Z",
+  "status": "review_complete",
+  "starting_pending": 89,
+  "discoveries": 15,
+  "discovery_sources": {
+    "github-agent-skills-search": 14,
+    "openai-codex-releases": 1
+  },
+  "reviewed": 104,
+  "decisions": {
+    "create": 0,
+    "discard": 100,
+    "merge": 3,
+    "update": 1,
+    "pending": 0
+  },
+  "catalog_after": {
+    "candidates": 110,
+    "applied_candidates": 110,
+    "decision_outcomes": {
+      "create": 1,
+      "discard": 103,
+      "merge": 4,
+      "update": 2
+    },
+    "plugins": 1,
+    "skills": 1
+  },
+  "updated_capability": "github-release-evidence:audit-github-release",
+  "sources": [
+    "openai-build-skills",
+    "openai-build-plugins",
+    "openai-plugin-catalog",
+    "github-agent-skills-search",
+    "openai-codex-releases",
+    "github-cli-repo-view",
+    "github-cli-pr-checks",
+    "github-cli-release-view",
+    "github-cli-api",
+    "github-rest-releases",
+    "github-rest-repositories",
+    "openai-gh-fix-ci",
+    "openai-gh-address-comments"
+  ],
+  "validations": [
+    {
+      "name": "unit_and_integration_tests",
+      "status": "passed",
+      "details": "35 tests"
+    },
+    {
+      "name": "official_skill_validator",
+      "status": "passed"
+    },
+    {
+      "name": "official_plugin_validator",
+      "status": "passed"
+    },
+    {
+      "name": "trigger_review",
+      "status": "passed",
+      "details": "3 positive and 4 negative cases"
+    },
+    {
+      "name": "end_to_end_release_evidence",
+      "status": "passed",
+      "details": "9 gates including required immutable Release proof"
+    },
+    {
+      "name": "repository_consistency",
+      "status": "passed",
+      "details": "13 sources, 110 candidates, 110 records, 0 pending"
+    },
+    {
+      "name": "secret_material_scan",
+      "status": "passed",
+      "details": "0 findings"
+    }
+  ],
+  "security": {
+    "raw_source_bodies_committed": false,
+    "external_scripts_executed": false,
+    "credentials_committed": false,
+    "copied_external_skill_bodies": false
+  },
+  "unresolved_issues": [
+    "A moving GitHub top-results window can still reveal genuinely unseen repository identities; revision-only churn and reordering no longer create candidates.",
+    "One all-source network transaction timed out; transactional state prevented partial cursor advancement, and all 13 sources then completed through bounded source subsets."
+  ]
+}

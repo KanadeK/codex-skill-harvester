@@ -1,6 +1,8 @@
 {
   "authority": "demand-signal-only",
   "canonical_url": "https://github.com/linny006/skills-tracker",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-00-27Z-b24c824f918c3be2b275c27c.json",
   "evidence_sha256": "a6ec0e968a690eec0096d0a66341337502d1df32f8fef2935cc86fa7ca78c851",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "unknown"
   },
   "observed_at": "2026-08-27T10:16:09.152293Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "github-agent-skills-search",
   "source_item_id": "1247931160",

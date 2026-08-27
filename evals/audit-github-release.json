@@ -59,6 +59,6 @@
     "snapshot": "evals/fixtures/complete-release-snapshot.json",
     "expected_exit_code": 0,
     "expected_result": "complete",
-    "expected_gates": 8
+    "expected_gates": 9
   }
 }

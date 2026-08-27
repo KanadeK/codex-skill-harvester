@@ -1,6 +1,8 @@
 {
   "authority": "demand-signal-only",
   "canonical_url": "https://github.com/laurigates/claude-plugins",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-00-19Z-491ae6b66f429f053b8889d1.json",
   "evidence_sha256": "d7a53dfa79088dad96904c3385b435de261fcc7cb9ff9ce401fe2486aaf25283",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "unknown"
   },
   "observed_at": "2026-08-27T10:15:07.674022Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "github-agent-skills-search",
   "source_item_id": "1117480701",

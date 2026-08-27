@@ -1,6 +1,8 @@
 {
   "authority": "official-plugin-examples",
   "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/product-design",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-01-27Z-f7ebda127feff5b8307930ff.json",
   "evidence_sha256": "7605ff27796e28cf19aa717d5aec675072a18233a186ac8559616de153a3dd41",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "facts-only"
   },
   "observed_at": "2026-08-27T10:14:45.959028Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-plugin-catalog",
   "source_item_id": "4d41e3b08997d258c5fede8ddf000a550832a74f",

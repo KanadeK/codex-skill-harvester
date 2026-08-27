@@ -1,6 +1,8 @@
 {
   "authority": "official-plugin-examples",
   "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/outlook-email",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-01-24Z-2a6715496c9e0a23fb05e83b.json",
   "evidence_sha256": "a1e99b26d3673f7dc10c822728dca4636ce1d3f9d496675f396b54647eb833d9",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "facts-only"
   },
   "observed_at": "2026-08-27T10:14:45.959028Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-plugin-catalog",
   "source_item_id": "4950842ed1606f711b863f29df9aa39935d196f3",

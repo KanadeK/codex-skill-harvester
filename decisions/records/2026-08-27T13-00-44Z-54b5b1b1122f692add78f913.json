@@ -1,0 +1,38 @@
+{
+  "candidate_id": "54b5b1b1122f692add78f913",
+  "fingerprint": {
+    "goal": "evaluate discovery signal 0.151.0-alpha.3",
+    "inputs": [
+      "source identity and extracted facts"
+    ],
+    "outputs": [
+      "review decision and rationale"
+    ],
+    "platforms": [
+      "codex"
+    ],
+    "side_effects": [
+      "append-only decision record"
+    ],
+    "tools": [
+      "codex semantic review"
+    ],
+    "triggers": [
+      "review a harvested public workflow signal"
+    ]
+  },
+  "outcome": "discard",
+  "rationale": "Compared official Codex Release title 0.151.0-alpha.3 with the internal and external capability catalog. The extracted record contains only a version identity and revision timestamp, not migration steps, stable decisions, inputs, outputs, or an acceptance procedure. A version notification is not itself a reusable Skill, so discard this title-only candidate while retaining the Release cursor.",
+  "recommendation": {
+    "artifact_sha256": null,
+    "matches": [],
+    "outcome": "create_new"
+  },
+  "reviewed_at": "2026-08-27T13:00:44Z",
+  "reviewed_by": "codex",
+  "schema_version": 1,
+  "source_refs": [
+    "openai-codex-releases"
+  ],
+  "target_capability_id": null
+}

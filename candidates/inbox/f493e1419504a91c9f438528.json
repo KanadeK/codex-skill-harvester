@@ -1,6 +1,8 @@
 {
   "authority": "release-changelog",
   "canonical_url": "https://github.com/openai/codex/releases/tag/rust-v0.150.0-alpha.13",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-00-41Z-f493e1419504a91c9f438528.json",
   "evidence_sha256": "77907677d96dd6ac91afa6f2add20d6315d3b89ee905096727f9310a4c9e5152",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "facts-only"
   },
   "observed_at": "2026-08-27T09:26:05Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-codex-releases",
   "source_item_id": "tag:github.com,2008:Repository/965415649/rust-v0.150.0-alpha.13",

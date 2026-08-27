@@ -1,6 +1,8 @@
 {
   "authority": "official-plugin-examples",
   "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/ngs-analysis",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-01-18Z-b6b852ca2de3ab6976a8d666.json",
   "evidence_sha256": "fe458d6c1c1ff0060c6408b71d1c7263986369d83ec6048dc4b72416f564a641",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "facts-only"
   },
   "observed_at": "2026-08-27T10:14:45.959028Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-plugin-catalog",
   "source_item_id": "bf16b54db2ec21e278a69ffb6b2f364d10d6d250",

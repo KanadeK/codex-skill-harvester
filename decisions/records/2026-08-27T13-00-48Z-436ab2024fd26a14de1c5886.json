@@ -1,0 +1,38 @@
+{
+  "candidate_id": "436ab2024fd26a14de1c5886",
+  "fingerprint": {
+    "goal": "evaluate discovery signal rust-v0.151.0-alpha.1",
+    "inputs": [
+      "source identity and extracted facts"
+    ],
+    "outputs": [
+      "review decision and rationale"
+    ],
+    "platforms": [
+      "codex"
+    ],
+    "side_effects": [
+      "append-only decision record"
+    ],
+    "tools": [
+      "codex semantic review"
+    ],
+    "triggers": [
+      "review a harvested public workflow signal"
+    ]
+  },
+  "outcome": "discard",
+  "rationale": "Compared official Codex Release title rust-v0.151.0-alpha.1 with the internal and external capability catalog. The extracted record contains only a version identity and revision timestamp, not migration steps, stable decisions, inputs, outputs, or an acceptance procedure. A version notification is not itself a reusable Skill, so discard this title-only candidate while retaining the Release cursor.",
+  "recommendation": {
+    "artifact_sha256": null,
+    "matches": [],
+    "outcome": "create_new"
+  },
+  "reviewed_at": "2026-08-27T13:00:48Z",
+  "reviewed_by": "codex",
+  "schema_version": 1,
+  "source_refs": [
+    "openai-codex-releases"
+  ],
+  "target_capability_id": null
+}

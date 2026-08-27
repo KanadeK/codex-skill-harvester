@@ -68,7 +68,7 @@
   ],
   "internal": [
     {
-      "artifact_sha256": "527fa871859ee7fcf12773cfedbd4c9e853be5fa4af77b785b0d557a18782565",
+      "artifact_sha256": "55501c46b8ad4c52fbcad92953be63aabf343542e9b43941ade9aef0f4452719",
       "created_at": "2026-08-27T09:30:00Z",
       "fingerprint": {
         "goal": "audit published github release evidence",
@@ -108,7 +108,7 @@
         "scripts/check_snapshot.py"
       ],
       "plugin_id": "github-release-evidence",
-      "revision": 2,
+      "revision": 3,
       "skill_name": "audit-github-release",
       "source_refs": [
         "github-cli-api",
@@ -122,7 +122,7 @@
         "openai-gh-address-comments",
         "openai-gh-fix-ci"
       ],
-      "updated_at": "2026-08-27T09:55:00Z"
+      "updated_at": "2026-08-27T13:00:38Z"
     }
   ],
   "schema_version": 1

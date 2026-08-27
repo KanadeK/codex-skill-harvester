@@ -1,0 +1,38 @@
+{
+  "candidate_id": "9dd248f7036ffa6601050482",
+  "fingerprint": {
+    "goal": "evaluate discovery signal dropbox",
+    "inputs": [
+      "source identity and extracted facts"
+    ],
+    "outputs": [
+      "review decision and rationale"
+    ],
+    "platforms": [
+      "codex"
+    ],
+    "side_effects": [
+      "append-only decision record"
+    ],
+    "tools": [
+      "codex semantic review"
+    ],
+    "triggers": [
+      "review a harvested public workflow signal"
+    ]
+  },
+  "outcome": "discard",
+  "rationale": "Compared official Plugin catalog listing dropbox with the internal catalog. The listing provides only a Plugin name and commit identity: useful demand discovery, but not vendor operational documentation or a repeatable workflow contract. No independent, verifiable capability can be synthesized from these facts alone, so discard rather than create filler; authoritative vendor evidence may re-enter later.",
+  "recommendation": {
+    "artifact_sha256": null,
+    "matches": [],
+    "outcome": "create_new"
+  },
+  "reviewed_at": "2026-08-27T13:01:03Z",
+  "reviewed_by": "codex",
+  "schema_version": 1,
+  "source_refs": [
+    "openai-plugin-catalog"
+  ],
+  "target_capability_id": null
+}

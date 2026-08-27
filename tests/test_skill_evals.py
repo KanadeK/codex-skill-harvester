@@ -26,7 +26,7 @@ class SkillEvalTests(unittest.TestCase):
         self.assertEqual(report["positive"], 3)
         self.assertEqual(report["negative"], 4)
         self.assertEqual(report["e2e_result"], "complete")
-        self.assertEqual(report["e2e_gates"], 8)
+        self.assertEqual(report["e2e_gates"], 9)
 
     def test_e2e_detects_pull_request_release_commit_mismatch(self) -> None:
         root = Path(__file__).resolve().parents[1]
@@ -49,6 +49,29 @@ class SkillEvalTests(unittest.TestCase):
 
             self.assertEqual(completed.returncode, 1)
             self.assertIn("pull_request_release_alignment | FAIL", report_path.read_text(encoding="utf-8"))
+
+    def test_e2e_detects_required_mutable_release(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        script = root / "plugins" / "github-release-evidence" / "skills" / "audit-github-release" / "scripts" / "check_snapshot.py"
+        snapshot = json.loads(
+            (root / "evals" / "fixtures" / "complete-release-snapshot.json").read_text(encoding="utf-8")
+        )
+        snapshot["requirements"] = {"immutable_release": True}
+        snapshot["release"]["immutable"] = False
+        with tempfile.TemporaryDirectory() as directory:
+            temporary = Path(directory)
+            snapshot_path = temporary / "snapshot.json"
+            report_path = temporary / "report.md"
+            snapshot_path.write_text(json.dumps(snapshot), encoding="utf-8")
+
+            completed = subprocess.run(
+                [sys.executable, str(script), str(snapshot_path), "--output", str(report_path)],
+                cwd=temporary,
+                check=False,
+            )
+
+            self.assertEqual(completed.returncode, 1)
+            self.assertIn("release_immutable | FAIL", report_path.read_text(encoding="utf-8"))
 
     def test_e2e_flattens_untrusted_markdown_newlines(self) -> None:
         root = Path(__file__).resolve().parents[1]

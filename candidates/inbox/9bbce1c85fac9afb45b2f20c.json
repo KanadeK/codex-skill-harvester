@@ -1,6 +1,8 @@
 {
   "authority": "demand-signal-only",
   "canonical_url": "https://github.com/KalithasG/NYC-Taxi-Data-Engineering-Platform",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-00-04Z-9bbce1c85fac9afb45b2f20c.json",
   "evidence_sha256": "cbc7d90c8113f3c2143a1f0466d1744355fecbe564dc2790d9f16bc41353c140",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "unknown"
   },
   "observed_at": "2026-08-27T10:14:45.959028Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "github-agent-skills-search",
   "source_item_id": "1348044782",

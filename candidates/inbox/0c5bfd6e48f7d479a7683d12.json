@@ -1,6 +1,8 @@
 {
   "authority": "official-plugin-examples",
   "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/airtable",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-00-50Z-0c5bfd6e48f7d479a7683d12.json",
   "evidence_sha256": "ceb8440ccc8991a4e6a3e472b2355734c6aeef6db2093ade50bdee196ed47a4e",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "facts-only"
   },
   "observed_at": "2026-08-27T10:14:45.959028Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-plugin-catalog",
   "source_item_id": "ff6244f5930be59916bb75275a5a7e2cfc6c89cd",

@@ -1,6 +1,8 @@
 {
   "authority": "official-plugin-examples",
   "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/supabase",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-01-34Z-6c7ab6444da018439b836fe3.json",
   "evidence_sha256": "91a458d5b6271a8f30856728f961c34df244895403936d53e8b38cc9626661f7",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "facts-only"
   },
   "observed_at": "2026-08-27T10:14:45.959028Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-plugin-catalog",
   "source_item_id": "b44239dd7c7132e45d35aa260d8d03911c263d9d",

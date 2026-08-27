@@ -1,6 +1,8 @@
 {
   "authority": "official-plugin-examples",
   "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/posthog",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-01-26Z-958d0cdca97317ebbb54c7d1.json",
   "evidence_sha256": "1282ccc2c0e7cf16f25d77f75d552adbd84372bd2a02ff1fcd37af43b9f2b732",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "facts-only"
   },
   "observed_at": "2026-08-27T10:14:45.959028Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-plugin-catalog",
   "source_item_id": "99359b5f77febc5f29573ce0e337992390e59203",

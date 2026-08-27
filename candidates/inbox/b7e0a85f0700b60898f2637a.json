@@ -1,6 +1,8 @@
 {
   "authority": "official-plugin-examples",
   "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/build-web-apps",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-00-55Z-b7e0a85f0700b60898f2637a.json",
   "evidence_sha256": "3626b7fd84d74cd2af29d7c85132aa3aba9315a3394806149e53fb9fbcbb79c9",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "facts-only"
   },
   "observed_at": "2026-08-27T10:14:45.959028Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-plugin-catalog",
   "source_item_id": "83e3adc1eeb8e474e60aae43eb56a1c2a90ebc22",
