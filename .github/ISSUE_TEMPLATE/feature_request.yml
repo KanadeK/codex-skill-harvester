@@ -1,0 +1,27 @@
+name: Feature request
+description: Propose one repeatable harvesting or maintenance capability.
+title: "proposal: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: task
+    attributes:
+      label: Repeatable task
+      description: Describe the user goal, triggers, inputs, outputs, tools, side effects, and platforms.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Authoritative evidence
+      description: Link official documentation or a clearly licensed public source. Do not paste source bodies.
+    validations:
+      required: true
+  - type: textarea
+    id: overlap
+    attributes:
+      label: Existing-capability overlap
+      description: Explain why this should be created, merged, updated, or rejected.
+    validations:
+      required: true

@@ -30,19 +30,19 @@
   },
   "updated_capability": "github-release-evidence:audit-github-release",
   "sources": [
-    "openai-build-skills",
-    "openai-build-plugins",
-    "openai-plugin-catalog",
-    "github-agent-skills-search",
-    "openai-codex-releases",
-    "github-cli-repo-view",
-    "github-cli-pr-checks",
-    "github-cli-release-view",
-    "github-cli-api",
-    "github-rest-releases",
-    "github-rest-repositories",
-    "openai-gh-fix-ci",
-    "openai-gh-address-comments"
+    {"source_id": "openai-build-skills", "status": "completed"},
+    {"source_id": "openai-build-plugins", "status": "completed"},
+    {"source_id": "openai-plugin-catalog", "status": "completed"},
+    {"source_id": "github-agent-skills-search", "status": "completed"},
+    {"source_id": "openai-codex-releases", "status": "completed"},
+    {"source_id": "github-cli-repo-view", "status": "completed"},
+    {"source_id": "github-cli-pr-checks", "status": "completed"},
+    {"source_id": "github-cli-release-view", "status": "completed"},
+    {"source_id": "github-cli-api", "status": "completed"},
+    {"source_id": "github-rest-releases", "status": "completed"},
+    {"source_id": "github-rest-repositories", "status": "completed"},
+    {"source_id": "openai-gh-fix-ci", "status": "completed"},
+    {"source_id": "openai-gh-address-comments", "status": "completed"}
   ],
   "validations": [
     {

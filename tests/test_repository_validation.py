@@ -12,6 +12,33 @@ from skill_harvester.validation import ValidationError, validate_repository
 
 
 class RepositoryValidationTests(unittest.TestCase):
+    def test_current_repository_has_safe_harvest_automation_and_community_files(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        required = (
+            ".github/workflows/harvest.yml",
+            ".github/dependabot.yml",
+            ".github/ISSUE_TEMPLATE/bug_report.yml",
+            ".github/ISSUE_TEMPLATE/feature_request.yml",
+            ".github/ISSUE_TEMPLATE/config.yml",
+            ".github/pull_request_template.md",
+            "CODE_OF_CONDUCT.md",
+            "SECURITY.md",
+        )
+
+        for name in required:
+            self.assertTrue((root / name).is_file(), name)
+
+        workflow = (root / ".github" / "workflows" / "harvest.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("workflow_dispatch:", workflow)
+        self.assertIn("schedule:", workflow)
+        self.assertIn("contents: write", workflow)
+        self.assertIn("pull-requests: write", workflow)
+        self.assertIn("python -m skill_harvester scan --root .", workflow)
+        self.assertIn("git add -- state/harvest-state.json candidates/inbox runs", workflow)
+        self.assertNotIn("skill_harvester apply", workflow)
+
     def test_current_repository_is_consistent(self) -> None:
         root = Path(__file__).resolve().parents[1]
 

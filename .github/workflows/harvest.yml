@@ -1,0 +1,71 @@
+name: Scheduled harvest
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 4 * * 1"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: scheduled-harvest
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    name: scan public sources
+    if: github.repository == 'KanadeK/codex-skill-harvester'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: src
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Scan from persisted cursors
+        id: scan
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          output="$(python -m skill_harvester scan --root .)"
+          printf '%s\n' "$output"
+          if [[ "$output" == status=changed* ]]; then
+            printf 'changed=true\n' >> "$GITHUB_OUTPUT"
+          elif [[ "$output" == status=no_op* ]]; then
+            printf 'changed=false\n' >> "$GITHUB_OUTPUT"
+          else
+            printf 'Unexpected scanner result: %s\n' "$output" >&2
+            exit 1
+          fi
+      - name: Open a review-only harvest pull request
+        if: steps.scan.outputs.changed == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          branch="codex/harvest-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git switch -c "$branch"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- state/harvest-state.json candidates/inbox runs
+          if git diff --cached --quiet; then
+            printf 'Scanner reported changes but produced no reviewable diff.\n' >&2
+            exit 1
+          fi
+          git commit -m "chore: harvest changed public sources"
+          git push --set-upstream origin "$branch"
+          gh pr create \
+            --title "chore: review harvested public-source changes" \
+            --body "Automated incremental scan only. Review every pending candidate with Codex before applying a discard, merge, update, or create decision. No external source body or script was executed."

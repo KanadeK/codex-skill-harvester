@@ -60,8 +60,39 @@ def _scan_secrets(root: Path) -> list[str]:
 
 def validate_repository(root: Path) -> dict[str, Any]:
     root = root.resolve()
-    for name in ("AGENTS.md", "LICENSE", "pyproject.toml", "sources/registry.json"):
+    for name in (
+        "AGENTS.md",
+        "CODE_OF_CONDUCT.md",
+        "LICENSE",
+        "SECURITY.md",
+        "pyproject.toml",
+        "sources/registry.json",
+        ".github/dependabot.yml",
+        ".github/ISSUE_TEMPLATE/bug_report.yml",
+        ".github/ISSUE_TEMPLATE/feature_request.yml",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        ".github/pull_request_template.md",
+        ".github/workflows/ci.yml",
+        ".github/workflows/harvest.yml",
+    ):
         _require((root / name).is_file(), f"required repository file is missing: {name}")
+
+    harvest_workflow = (root / ".github" / "workflows" / "harvest.yml").read_text(
+        encoding="utf-8"
+    )
+    for marker in (
+        "workflow_dispatch:",
+        "schedule:",
+        "contents: write",
+        "pull-requests: write",
+        "python -m skill_harvester scan --root .",
+        "git add -- state/harvest-state.json candidates/inbox runs",
+    ):
+        _require(marker in harvest_workflow, f"harvest workflow contract missing: {marker}")
+    _require(
+        "skill_harvester apply" not in harvest_workflow,
+        "harvest workflow must not apply semantic decisions",
+    )
 
     sources = load_registry(root)
     source_by_id = {source["id"]: source for source in sources}
