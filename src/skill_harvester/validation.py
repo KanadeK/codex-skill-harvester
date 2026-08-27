@@ -77,6 +77,14 @@ def validate_repository(root: Path) -> dict[str, Any]:
         _require(cursor["adapter"] == source["adapter"], f"state adapter drift: {source_id}")
         _require(bool(re.fullmatch(r"[0-9a-f]{64}", cursor["content_sha256"])), f"state hash invalid: {source_id}")
         _require(isinstance(cursor["seen_items"], dict), f"state seen_items invalid: {source_id}")
+        _require(
+            isinstance(cursor.get("material_items", {}), dict),
+            f"state material_items invalid: {source_id}",
+        )
+        _require(
+            isinstance(cursor.get("window_item_ids", []), list),
+            f"state window_item_ids invalid: {source_id}",
+        )
 
     catalog = load_json(root / "catalog" / "capabilities.json")
     _require(isinstance(catalog, dict) and catalog.get("schema_version") == 1, "catalog schema invalid")

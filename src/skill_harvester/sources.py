@@ -150,6 +150,11 @@ def load_registry(root: Path) -> list[dict[str, Any]]:
             raise RegistryError(f"source {source_id} must use an https URL")
         if source.get("adapter") not in {"document", "json-list", "atom"}:
             raise RegistryError(f"source {source_id} has an unsupported adapter")
+        change_policy = source.get("change_policy", "revision")
+        if change_policy not in {"revision", "material"}:
+            raise RegistryError(f"source {source_id} has an unsupported change policy")
+        if "change_policy" in source and source["adapter"] != "json-list":
+            raise RegistryError(f"source {source_id} change policy requires the json-list adapter")
         if source.get("trust") not in {"official", "representative", "discovery"}:
             raise RegistryError(f"source {source_id} has an unsupported trust tier")
         authentication = source.get("authentication")
@@ -297,18 +302,40 @@ def _atom_items(source: dict[str, Any], body: bytes) -> list[dict[str, str]]:
 
 def _incremental_items(
     source: dict[str, Any], items: list[dict[str, str]], previous: dict[str, Any], now: str
-) -> tuple[list[dict[str, Any]], dict[str, str], str]:
+) -> tuple[
+    list[dict[str, Any]],
+    dict[str, str],
+    dict[str, str],
+    list[str],
+    bool,
+    str,
+]:
     seen_items = deepcopy(previous.get("seen_items", {}))
+    material_items = deepcopy(previous.get("material_items", {}))
     discoveries: list[dict[str, Any]] = []
     revisions: list[str] = []
+    window_item_ids = [item["id"] for item in items]
+    previous_window = previous.get("window_item_ids")
+    window_changed = isinstance(previous_window, list) and previous_window != window_item_ids
     for item in items:
         item_hash = sha256_bytes(canonical_json_bytes(item))
+        material_hash = sha256_bytes(
+            canonical_json_bytes({field: item[field] for field in ("id", "title", "url")})
+        )
         revisions.append(item["revision"])
-        if seen_items.get(item["id"]) != item_hash:
+        if source.get("change_policy", "revision") == "material":
+            previous_material = material_items.get(item["id"])
+            changed = item["id"] not in seen_items or (
+                previous_material is not None and previous_material != material_hash
+            )
+        else:
+            changed = seen_items.get(item["id"]) != item_hash
+        if changed:
             discoveries.append(_item_discovery(source, item, item_hash, now))
-            seen_items[item["id"]] = item_hash
+        seen_items[item["id"]] = item_hash
+        material_items[item["id"]] = material_hash
     cursor = max(revisions) if revisions else previous.get("cursor", "")
-    return discoveries, seen_items, cursor
+    return discoveries, seen_items, material_items, window_item_ids, window_changed, cursor
 
 
 def _process_source(
@@ -329,16 +356,33 @@ def _process_source(
     evidence_hash = sha256_bytes(response.body)
     discoveries: list[dict[str, Any]] = []
     seen_items = deepcopy(previous.get("seen_items", {}))
+    material_items = deepcopy(previous.get("material_items", {}))
+    window_item_ids = deepcopy(previous.get("window_item_ids", []))
+    window_changed = False
     cursor = evidence_hash
     if previous.get("content_sha256") != evidence_hash:
         if source["adapter"] == "document":
             discoveries.append(_document_discovery(source, response, evidence_hash, now))
         elif source["adapter"] == "json-list":
-            discoveries, seen_items, cursor = _incremental_items(
+            (
+                discoveries,
+                seen_items,
+                material_items,
+                window_item_ids,
+                window_changed,
+                cursor,
+            ) = _incremental_items(
                 source, _json_items(source, response.body), previous, now
             )
         elif source["adapter"] == "atom":
-            discoveries, seen_items, cursor = _incremental_items(
+            (
+                discoveries,
+                seen_items,
+                material_items,
+                window_item_ids,
+                window_changed,
+                cursor,
+            ) = _incremental_items(
                 source, _atom_items(source, response.body), previous, now
             )
 
@@ -350,12 +394,16 @@ def _process_source(
         "cursor": cursor,
         "content_sha256": evidence_hash,
         "seen_items": seen_items,
+        "material_items": material_items,
+        "window_item_ids": window_item_ids,
         "last_success_at": now,
     }
+    result_status = "changed" if discoveries else "window_changed" if window_changed else "unchanged_content"
     return updated, discoveries, {
         "source_id": source["id"],
-        "status": "changed" if discoveries else "unchanged_content",
+        "status": result_status,
         "discoveries": len(discoveries),
+        "window_changed": window_changed,
     }
 
 
