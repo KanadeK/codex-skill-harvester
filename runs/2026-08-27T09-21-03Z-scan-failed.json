@@ -1,0 +1,19 @@
+{
+  "discoveries": 0,
+  "error": "SourceFetchError: source returned HTTP 403",
+  "run_id": "2026-08-27T09-21-03Z",
+  "schema_version": 1,
+  "sources": [
+    {
+      "discoveries": 1,
+      "source_id": "openai-build-skills",
+      "status": "changed"
+    },
+    {
+      "discoveries": 1,
+      "source_id": "openai-build-plugins",
+      "status": "changed"
+    }
+  ],
+  "status": "failed"
+}

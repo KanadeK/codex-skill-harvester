@@ -1,0 +1,6 @@
+interface:
+  display_name: "Audit GitHub Release"
+  short_description: "Verify published release evidence and gaps"
+  default_prompt: "Audit whether this published GitHub release is complete using read-only remote evidence."
+policy:
+  allow_implicit_invocation: true

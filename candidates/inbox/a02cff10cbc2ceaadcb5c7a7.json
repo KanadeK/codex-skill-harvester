@@ -1,0 +1,47 @@
+{
+  "authority": "external-skill-comparison",
+  "canonical_url": "https://raw.githubusercontent.com/openai/skills/main/skills/.curated/gh-fix-ci/SKILL.md",
+  "evidence_sha256": "7b326b4a2f0f5f85122144628ec02077e48841e0e0e82efce88b3415bcfb7c26",
+  "extracted_facts": [
+    {
+      "kind": "heading",
+      "value": "Gh Pr Checks Plan Fix"
+    },
+    {
+      "kind": "heading",
+      "value": "Overview"
+    },
+    {
+      "kind": "heading",
+      "value": "Inputs"
+    },
+    {
+      "kind": "heading",
+      "value": "Quick start"
+    },
+    {
+      "kind": "heading",
+      "value": "Workflow"
+    },
+    {
+      "kind": "heading",
+      "value": "Bundled Resources"
+    },
+    {
+      "kind": "heading",
+      "value": "scripts/inspect_pr_checks.py"
+    }
+  ],
+  "id": "a02cff10cbc2ceaadcb5c7a7",
+  "license": {
+    "identifier": "Apache-2.0",
+    "status": "known"
+  },
+  "observed_at": "2026-08-27T09:26:05Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-gh-fix-ci",
+  "source_revision": "\"1a26fc110dbd0ed15f50e80aa3f346f36269112588af204db5d34bcca2ceb6fa\"",
+  "title": "Gh Pr Checks Plan Fix",
+  "trust": "representative"
+}

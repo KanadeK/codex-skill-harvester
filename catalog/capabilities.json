@@ -1,0 +1,129 @@
+{
+  "external": [
+    {
+      "artifact_sha256": "7b326b4a2f0f5f85122144628ec02077e48841e0e0e82efce88b3415bcfb7c26",
+      "fingerprint": {
+        "goal": "repair failing github actions pull request checks",
+        "inputs": [
+          "repository",
+          "pull request",
+          "github cli authentication"
+        ],
+        "outputs": [
+          "failure summary",
+          "repair plan",
+          "approved code fix"
+        ],
+        "platforms": [
+          "github actions"
+        ],
+        "side_effects": [
+          "repository changes after approval"
+        ],
+        "tools": [
+          "gh",
+          "inspect pr checks script"
+        ],
+        "triggers": [
+          "debug failing github pr checks",
+          "fix github actions ci"
+        ]
+      },
+      "id": "openai:gh-fix-ci",
+      "source_ref": "openai-gh-fix-ci",
+      "source_url": "https://github.com/openai/skills/tree/main/skills/.curated/gh-fix-ci"
+    },
+    {
+      "artifact_sha256": "77389eefd3fb6584210668ca8e43f4b8de87e7722ddd953474bc9e24cdfaaedd",
+      "fingerprint": {
+        "goal": "address selected review and issue comments on an open pull request",
+        "inputs": [
+          "current branch pull request",
+          "selected comments",
+          "github cli authentication"
+        ],
+        "outputs": [
+          "numbered comment summary",
+          "selected code fixes"
+        ],
+        "platforms": [
+          "github pull requests"
+        ],
+        "side_effects": [
+          "repository changes after user selection"
+        ],
+        "tools": [
+          "gh",
+          "fetch comments script"
+        ],
+        "triggers": [
+          "address github pr review comments",
+          "handle issue comments on this pull request"
+        ]
+      },
+      "id": "openai:gh-address-comments",
+      "source_ref": "openai-gh-address-comments",
+      "source_url": "https://github.com/openai/skills/tree/main/skills/.curated/gh-address-comments"
+    }
+  ],
+  "internal": [
+    {
+      "artifact_sha256": "518efc2e622f18c831e73bd8cf81636ab648fe2b394ae5b18c145cea8650f086",
+      "created_at": "2026-08-27T09:30:00Z",
+      "fingerprint": {
+        "goal": "audit published github release evidence",
+        "inputs": [
+          "expected assets and install acceptance",
+          "github repository",
+          "optional pull request",
+          "release tag"
+        ],
+        "outputs": [
+          "evidence matrix",
+          "gap report",
+          "source provenance"
+        ],
+        "platforms": [
+          "github",
+          "windows macos and linux"
+        ],
+        "side_effects": [
+          "read-only remote requests",
+          "temporary local evidence files"
+        ],
+        "tools": [
+          "gh",
+          "python snapshot checker"
+        ],
+        "triggers": [
+          "audit whether this github release is complete",
+          "verify the remote evidence for a published release"
+        ]
+      },
+      "id": "github-release-evidence:audit-github-release",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml",
+        "references/evidence-contract.md",
+        "scripts/check_snapshot.py"
+      ],
+      "plugin_id": "github-release-evidence",
+      "revision": 1,
+      "skill_name": "audit-github-release",
+      "source_refs": [
+        "github-cli-api",
+        "github-cli-pr-checks",
+        "github-cli-release-view",
+        "github-cli-repo-view",
+        "github-rest-releases",
+        "github-rest-repositories",
+        "openai-build-plugins",
+        "openai-build-skills",
+        "openai-gh-address-comments",
+        "openai-gh-fix-ci"
+      ],
+      "updated_at": "2026-08-27T09:30:00Z"
+    }
+  ],
+  "schema_version": 1
+}

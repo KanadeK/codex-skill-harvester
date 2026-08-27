@@ -1,0 +1,24 @@
+{
+  "discoveries": 0,
+  "error": "SourceFetchError: source returned HTTP 404",
+  "run_id": "2026-08-27T09-24-57Z",
+  "schema_version": 1,
+  "sources": [
+    {
+      "discoveries": 1,
+      "source_id": "openai-build-skills",
+      "status": "changed"
+    },
+    {
+      "discoveries": 1,
+      "source_id": "openai-build-plugins",
+      "status": "changed"
+    },
+    {
+      "discoveries": 10,
+      "source_id": "openai-codex-releases",
+      "status": "changed"
+    }
+  ],
+  "status": "failed"
+}

@@ -1,0 +1,18 @@
+{
+  "authority": "vendor-docs",
+  "canonical_url": "https://cli.github.com/manual/gh_repo_view",
+  "evidence_sha256": "c78e69088bc3f3769c2ba26180a9606cb3929252b55b776d927b89b33d08c927",
+  "extracted_facts": [],
+  "id": "78ad1aff2b84d2d515676d55",
+  "license": {
+    "identifier": "MIT",
+    "status": "known"
+  },
+  "observed_at": "2026-08-27T09:26:05Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "github-cli-repo-view",
+  "source_revision": "\"6a877e4e-1a094\"",
+  "title": "github-cli-repo-view",
+  "trust": "official"
+}

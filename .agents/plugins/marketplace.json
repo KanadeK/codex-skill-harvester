@@ -1,0 +1,20 @@
+{
+  "interface": {
+    "displayName": "Codex Skill Harvester"
+  },
+  "name": "codex-skill-harvester",
+  "plugins": [
+    {
+      "category": "Developer Tools",
+      "name": "github-release-evidence",
+      "policy": {
+        "authentication": "ON_INSTALL",
+        "installation": "AVAILABLE"
+      },
+      "source": {
+        "path": "./plugins/github-release-evidence",
+        "source": "local"
+      }
+    }
+  ]
+}

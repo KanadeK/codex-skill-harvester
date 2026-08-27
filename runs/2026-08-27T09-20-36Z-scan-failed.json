@@ -1,0 +1,8 @@
+{
+  "discoveries": 0,
+  "error": "SourceFetchError: source request failed: [WinError 10013] 以一种访问权限不允许的方式做了一个访问套接字的尝试。",
+  "run_id": "2026-08-27T09-20-36Z",
+  "schema_version": 1,
+  "sources": [],
+  "status": "failed"
+}

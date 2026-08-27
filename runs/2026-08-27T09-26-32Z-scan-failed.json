@@ -1,0 +1,19 @@
+{
+  "discoveries": 0,
+  "error": "SourceFetchError: source request failed: _ssl.c:993: The handshake operation timed out",
+  "run_id": "2026-08-27T09-26-32Z",
+  "schema_version": 1,
+  "sources": [
+    {
+      "discoveries": 0,
+      "source_id": "openai-build-skills",
+      "status": "unchanged_content"
+    },
+    {
+      "discoveries": 0,
+      "source_id": "openai-build-plugins",
+      "status": "not_modified"
+    }
+  ],
+  "status": "failed"
+}

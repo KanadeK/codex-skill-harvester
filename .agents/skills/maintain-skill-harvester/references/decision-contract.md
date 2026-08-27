@@ -27,7 +27,7 @@ Read this only when a changed-source discovery has survived the initial usefulne
 }
 ```
 
-For `create` and `update`, replace `artifact: null` with an object containing the target Plugin ID, Skill name, original `SKILL.md` text, optional original reference files, and optional original scripts. Every artifact file path must be relative, remain inside the selected Skill directory, and have no executable source copied from public material.
+For `create` and `update`, replace `artifact: null` with an object containing `"origin": "original-synthesis"`, the target Plugin ID and complete manifest, Skill name, original `SKILL.md` text, optional original reference files, and optional original scripts. Every artifact file path must be relative, remain inside the selected Skill directory, and have no executable source copied from public material.
 
 ## Outcome rules
 

@@ -1,0 +1,28 @@
+{
+  "authority": "release-changelog",
+  "canonical_url": "https://github.com/openai/codex/releases/tag/rust-v0.150.1",
+  "evidence_sha256": "446e9e0b74fa4c0e6861208b3d6f70ed83ed3d0a91c57f122bf23089defa33fe",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "2026-08-27T01:58:35Z"
+    },
+    {
+      "kind": "source_title",
+      "value": "0.150.1"
+    }
+  ],
+  "id": "d636c67e4adf91481dc534e1",
+  "license": {
+    "identifier": null,
+    "status": "facts-only"
+  },
+  "observed_at": "2026-08-27T09:26:05Z",
+  "review_status": "pending",
+  "schema_version": 1,
+  "source_id": "openai-codex-releases",
+  "source_item_id": "tag:github.com,2008:Repository/965415649/rust-v0.150.1",
+  "source_revision": "2026-08-27T01:58:35Z",
+  "title": "0.150.1",
+  "trust": "official"
+}
