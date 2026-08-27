@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-08-27T14-31-10Z",
+  "status": "published_verified",
+  "repository": {
+    "name_with_owner": "KanadeK/codex-skill-harvester",
+    "visibility": "public",
+    "default_branch": "main",
+    "url": "https://github.com/KanadeK/codex-skill-harvester"
+  },
+  "harvest": {
+    "registered_sources": 13,
+    "new_discoveries": 15,
+    "reviewed_this_round": 104,
+    "candidates": 110,
+    "applied_candidates": 110,
+    "pending_candidates": 0,
+    "decision_outcomes": {
+      "create": 1,
+      "discard": 103,
+      "merge": 4,
+      "update": 2
+    },
+    "plugins": 1,
+    "skills": 1
+  },
+  "pull_request": {
+    "number": 4,
+    "state": "MERGED",
+    "merged_at": "2026-08-27T14:13:14Z",
+    "merge_commit_sha": "c07088af1fe34638922b6c5cbbac15be23da2501",
+    "url": "https://github.com/KanadeK/codex-skill-harvester/pull/4"
+  },
+  "main_ci": {
+    "run_id": 33081025890,
+    "head_sha": "c07088af1fe34638922b6c5cbbac15be23da2501",
+    "conclusion": "success",
+    "checks": [
+      "validate (ubuntu-latest)",
+      "validate (windows-latest)"
+    ],
+    "url": "https://github.com/KanadeK/codex-skill-harvester/actions/runs/33081025890"
+  },
+  "release": {
+    "tag": "v0.1.1",
+    "annotated_tag_object": "83aaa49b377a5b321893121735602ef1cceddd4c",
+    "commit_sha": "c07088af1fe34638922b6c5cbbac15be23da2501",
+    "release_id": 377882951,
+    "published_at": "2026-08-27T14:21:20Z",
+    "immutable": true,
+    "draft": false,
+    "prerelease": false,
+    "url": "https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.1.1",
+    "assets": [
+      {
+        "name": "codex-skill-harvester-v0.1.1.zip",
+        "size": 391777,
+        "digest": "sha256:db9089abe25154a3e81d143ba301808511c2dec5d5004222eb3a0e30d516aaa5"
+      },
+      {
+        "name": "github-release-evidence-v0.1.1.zip",
+        "size": 5771,
+        "digest": "sha256:2135891a4eca7cfd20fea4e8636fb11f3dca2b4e143a5d9944e7f8a643ae2595"
+      },
+      {
+        "name": "SHA256SUMS.txt",
+        "size": 200,
+        "digest": "sha256:71920daeac3c134c8cbcf34ae0e2c15fa5b374a72f0cec95597a119e6295f9cb"
+      }
+    ]
+  },
+  "validations": [
+    {"name": "unit_and_integration_tests", "status": "passed", "details": "36 tests"},
+    {"name": "official_skill_validator", "status": "passed"},
+    {"name": "official_plugin_validator", "status": "passed"},
+    {"name": "trigger_review", "status": "passed", "details": "3 positive and 4 negative cases"},
+    {"name": "end_to_end_release_evidence", "status": "passed", "details": "9 gates"},
+    {"name": "repository_consistency", "status": "passed", "details": "110 candidates, 110 records, 0 secrets"},
+    {"name": "deterministic_release_build", "status": "passed"},
+    {"name": "downloaded_source_archive_install_and_call", "status": "passed"},
+    {"name": "published_plugin_live_skill_call", "status": "passed", "details": "complete, 9 of 9 gates"},
+    {"name": "five_axis_code_review", "status": "passed"}
+  ],
+  "remote_settings": {
+    "issues": true,
+    "projects": false,
+    "wiki": false,
+    "squash_merge_only": true,
+    "auto_merge": true,
+    "delete_branch_on_merge": true,
+    "dependabot_alerts": true,
+    "dependabot_security_updates": true,
+    "private_vulnerability_reporting": true,
+    "secret_scanning": true,
+    "secret_scanning_push_protection": true,
+    "main_protection": {
+      "strict_checks": true,
+      "required_checks": [
+        "validate (ubuntu-latest)",
+        "validate (windows-latest)"
+      ],
+      "enforce_admins": true,
+      "pull_request_required": true,
+      "required_approvals": 0,
+      "dismiss_stale_reviews": true,
+      "linear_history": true,
+      "conversation_resolution": true,
+      "force_pushes": false,
+      "deletions": false
+    }
+  },
+  "workflows": [
+    {"name": "CI", "status": "active"},
+    {"name": "Scheduled harvest", "status": "active"},
+    {"name": "Dependabot Updates", "status": "active"}
+  ],
+  "contributors": [
+    {"login": "KanadeK", "type": "User", "contributions": 5}
+  ],
+  "security": {
+    "raw_source_bodies_committed": false,
+    "external_scripts_executed": false,
+    "credentials_committed": false,
+    "copied_external_skill_bodies": false
+  },
+  "unresolved_issues": [
+    "The installed WindowsApps Codex executable returns access denied in this execution environment, so desktop marketplace registration could not be run here; the downloaded Plugin archive and its live Skill invocation both passed.",
+    "GitHub accepted requests for non-provider secret patterns and secret validity checks but continued to report both features disabled for this repository/account.",
+    "A moving GitHub search window can still reveal genuinely unseen repository identities, and large network scans can require bounded transactional retries."
+  ]
+}

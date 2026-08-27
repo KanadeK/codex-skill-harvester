@@ -58,14 +58,14 @@
 
 ## Task 9: automate and harden maintenance
 
-- [ ] Acceptance: scheduled/manual scans can open changed-only PRs without semantic publication; security/community metadata and remote protections are active.
-- [ ] Verify: workflow contract tests, remote API read-back, required CI, and unused-surface settings agree.
-- [ ] Files: `.github/*`, security/community documents, validator/tests, and remote repository settings.
+- [x] Acceptance: scheduled/manual scans can open changed-only PRs without semantic publication; security/community metadata and remote protections are active.
+- [x] Verify: workflow contract tests, remote API read-back, required CI, and unused-surface settings agree.
+- [x] Files: `.github/*`, security/community documents, validator/tests, and remote repository settings.
 - Dependencies: Task 8.
 
 ## Task 10: publish and verify v0.1.1
 
-- [ ] Acceptance: reviewed PR, green CI, immutable tag/Release, deterministic assets, isolated install/CLI, released Skill invocation, settings, and contributors are verified.
-- [ ] Verify: local release gates plus remote attestation and final report.
-- [ ] Files: changelog, release notes, final report, Git history, tag, and Release assets.
+- [x] Acceptance: reviewed PR, green CI, immutable tag/Release, deterministic assets, isolated install/CLI, released Skill invocation, settings, and contributors are verified.
+- [x] Verify: local release gates plus remote attestation and final report.
+- [x] Files: changelog, release notes, final report, Git history, tag, and Release assets.
 - Dependencies: Task 9 and completed code review.
