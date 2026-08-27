@@ -6,7 +6,14 @@ from typing import Any
 
 from .decisions import bundle_hash, normalize_fingerprint
 from .io import load_json
+from .scaling import (
+    ScalePolicyError,
+    evaluate_migration_triggers,
+    inventory_repository,
+    load_scale_policy,
+)
 from .sources import load_registry
+from .taxonomy import TaxonomyError, validate_catalog_taxonomy
 
 
 class ValidationError(ValueError):
@@ -66,6 +73,13 @@ def validate_repository(root: Path) -> dict[str, Any]:
         "LICENSE",
         "SECURITY.md",
         "pyproject.toml",
+        "catalog/taxonomy.json",
+        "config/scale-policy.json",
+        "docs/architecture.md",
+        "docs/roadmap.md",
+        "docs/scale-audit.md",
+        "docs/schema-migrations.md",
+        "docs/taxonomy.md",
         "sources/registry.json",
         ".github/dependabot.yml",
         ".github/ISSUE_TEMPLATE/bug_report.yml",
@@ -121,8 +135,19 @@ def validate_repository(root: Path) -> dict[str, Any]:
             f"state window_item_ids invalid: {source_id}",
         )
 
+    try:
+        scale_policy = load_scale_policy(root)
+        inventory = inventory_repository(root)
+        migration_triggers = evaluate_migration_triggers(inventory, scale_policy)
+    except ScalePolicyError as error:
+        raise ValidationError(str(error)) from error
+
     catalog = load_json(root / "catalog" / "capabilities.json")
-    _require(isinstance(catalog, dict) and catalog.get("schema_version") == 1, "catalog schema invalid")
+    taxonomy = load_json(root / "catalog" / "taxonomy.json")
+    try:
+        taxonomy_report = validate_catalog_taxonomy(catalog, taxonomy)
+    except TaxonomyError as error:
+        raise ValidationError(str(error)) from error
     internal = catalog.get("internal")
     external = catalog.get("external")
     _require(isinstance(internal, list) and isinstance(external, list), "catalog lists missing")
@@ -135,7 +160,6 @@ def validate_repository(root: Path) -> dict[str, Any]:
         normalize_fingerprint(entry["fingerprint"])
         plugin_id = entry["plugin_id"]
         skill_name = entry["skill_name"]
-        _require(entry["id"] == f"{plugin_id}:{skill_name}", f"capability id drift: {entry['id']}")
         plugin_root = root / "plugins" / plugin_id
         manifest = load_json(plugin_root / ".codex-plugin" / "plugin.json")
         _require(manifest["name"] == plugin_id and manifest["skills"] == "./skills/", f"plugin manifest invalid: {plugin_id}")
@@ -182,8 +206,20 @@ def validate_repository(root: Path) -> dict[str, Any]:
     _require(len(records) == applied_count, "applied candidate and decision record counts differ")
     for path in records:
         record = load_json(path)
+        _require(
+            record.get("schema_version") in {1, 2},
+            f"decision schema invalid: {path.name}",
+        )
         _require(record["reviewed_by"] == "codex", f"unreviewed decision record: {path.name}")
         _require(set(record["source_refs"]) <= set(source_by_id), f"decision source unknown: {path.name}")
+        if record.get("schema_version") == 2 and record.get("outcome") == "not_promoted":
+            conditions = record.get("reactivation_conditions")
+            _require(
+                isinstance(conditions, list)
+                and bool(conditions)
+                and all(isinstance(condition, str) and condition for condition in conditions),
+                f"decision reactivation conditions invalid: {path.name}",
+            )
 
     for path in (root / "runs").glob("*.json"):
         report = load_json(path)
@@ -203,5 +239,8 @@ def validate_repository(root: Path) -> dict[str, Any]:
         "skills": skill_count,
         "internal_capabilities": len(internal),
         "external_capabilities": len(external),
+        "taxonomy_version": taxonomy_report["taxonomy_version"],
+        "scale_backend": scale_policy["backend"],
+        "migration_triggers": migration_triggers,
         "secrets_found": 0,
     }

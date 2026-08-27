@@ -7,6 +7,7 @@ from typing import Any
 
 from .io import atomic_write_json, atomic_write_text, canonical_json_bytes, load_json, sha256_bytes
 from .sources import load_registry
+from .taxonomy import validate_catalog_taxonomy, validate_classification
 
 
 FINGERPRINT_FIELDS = (
@@ -57,8 +58,8 @@ def bundle_hash(artifact: Any) -> str:
 
 
 def _catalog_entries(catalog: Any) -> list[dict[str, Any]]:
-    if not isinstance(catalog, dict) or catalog.get("schema_version") != 1:
-        raise DecisionError("catalog must use schema_version 1")
+    if not isinstance(catalog, dict) or catalog.get("schema_version") not in {1, 2}:
+        raise DecisionError("catalog must use schema_version 1 or 2")
     internal = catalog.get("internal")
     external = catalog.get("external")
     if not isinstance(internal, list) or not isinstance(external, list):
@@ -218,6 +219,8 @@ def _catalog(root: Path) -> dict[str, Any]:
         {"schema_version": 1, "internal": [], "external": []},
     )
     _catalog_entries(value)
+    if value["schema_version"] == 2:
+        validate_catalog_taxonomy(value, load_json(root / "catalog" / "taxonomy.json"))
     return value
 
 
@@ -271,15 +274,23 @@ def _write_artifact(root: Path, artifact: dict[str, Any], previous: dict[str, An
 
 
 def _validate_decision(value: Any) -> dict[str, Any]:
-    if not isinstance(value, dict) or value.get("schema_version") != 1:
-        raise DecisionError("decision must use schema_version 1")
+    if not isinstance(value, dict) or value.get("schema_version") not in {1, 2}:
+        raise DecisionError("decision must use schema_version 1 or 2")
+    schema_version = value["schema_version"]
     candidate_id = _kebab(value.get("candidate_id"), "candidate_id")
     if value.get("reviewed_by") != "codex":
         raise DecisionError("reviewed_by must be codex before publication")
     if not isinstance(value.get("reviewed_at"), str) or not value["reviewed_at"]:
         raise DecisionError("decision needs reviewed_at")
-    if value.get("outcome") not in {"discard", "merge", "update", "create"}:
-        raise DecisionError("decision outcome must be discard, merge, update, or create")
+    outcomes = (
+        {"discard", "merge", "update", "create"}
+        if schema_version == 1
+        else {"not_promoted", "merge", "update", "create"}
+    )
+    if value.get("outcome") not in outcomes:
+        raise DecisionError(
+            "schema 1 uses discard; schema 2 uses not_promoted; both support merge, update, and create"
+        )
     if not isinstance(value.get("rationale"), str) or len(value["rationale"].strip()) < 40:
         raise DecisionError("decision rationale must contain a concrete comparison")
     source_refs = value.get("source_refs")
@@ -290,6 +301,15 @@ def _validate_decision(value: Any) -> dict[str, Any]:
     value = dict(value)
     value["candidate_id"] = candidate_id
     value["fingerprint"] = normalize_fingerprint(value.get("fingerprint"))
+    if schema_version == 2 and value["outcome"] == "not_promoted":
+        conditions = value.get("reactivation_conditions")
+        if not isinstance(conditions, list) or not conditions or any(
+            not isinstance(condition, str) or not condition.strip()
+            for condition in conditions
+        ):
+            raise DecisionError(
+                "schema 2 not_promoted decisions require reactivation_conditions"
+            )
     return value
 
 
@@ -313,6 +333,7 @@ def apply_decision(root: Path, decision_path: Path) -> dict[str, Any]:
     target_id = decision.get("target_capability_id")
     target = _internal_entry(catalog, target_id) if isinstance(target_id, str) else None
     outcome = decision["outcome"]
+    is_not_promoted = outcome in {"discard", "not_promoted"}
     _validate_source_refs(
         root,
         decision["source_refs"],
@@ -320,7 +341,7 @@ def apply_decision(root: Path, decision_path: Path) -> dict[str, Any]:
     )
     if outcome in {"merge", "update"} and target is None:
         raise DecisionError(f"{outcome} requires an internal target_capability_id")
-    if outcome in {"discard", "create"} and target_id is not None:
+    if (is_not_promoted or outcome == "create") and target_id is not None:
         raise DecisionError(f"{outcome} must not set target_capability_id")
 
     artifact = _validated_artifact(decision.get("artifact")) if outcome in {"create", "update"} else None
@@ -351,6 +372,21 @@ def apply_decision(root: Path, decision_path: Path) -> dict[str, Any]:
             "updated_at": decision["reviewed_at"],
             "managed_files": sorted(artifact["files"]),
         }
+        if catalog["schema_version"] == 2:
+            classification = decision.get("classification")
+            validate_classification(
+                classification,
+                load_json(root / "catalog" / "taxonomy.json"),
+                capability_id,
+            )
+            entry.update(
+                {
+                    "aliases": decision.get("aliases", []),
+                    "classification": classification,
+                    "merged_source_refs": [],
+                    "variants": decision.get("variants", []),
+                }
+            )
         _write_artifact(root, artifact, None)
         catalog["internal"].append(entry)
         marketplace = _marketplace_with_plugin(root, artifact["plugin_id"], artifact["plugin_manifest"])
@@ -371,18 +407,33 @@ def apply_decision(root: Path, decision_path: Path) -> dict[str, Any]:
                 "managed_files": sorted(artifact["files"]),
             }
         )
+        if catalog["schema_version"] == 2 and decision.get("classification") is not None:
+            validate_classification(
+                decision["classification"],
+                load_json(root / "catalog" / "taxonomy.json"),
+                capability_id,
+            )
+            target["classification"] = decision["classification"]
         marketplace = _marketplace_with_plugin(root, artifact["plugin_id"], artifact["plugin_manifest"])
         atomic_write_json(root / ".agents" / "plugins" / "marketplace.json", marketplace)
     elif outcome == "merge":
         capability_id = target["id"]
         target["source_refs"] = sorted(set(target.get("source_refs", []) + decision["source_refs"]))
         target["updated_at"] = decision["reviewed_at"]
+        if catalog["schema_version"] == 2:
+            target["merged_source_refs"] = sorted(
+                set(target.get("merged_source_refs", []) + decision["source_refs"])
+            )
     else:
         capability_id = None
 
+    if catalog["schema_version"] == 2:
+        validate_catalog_taxonomy(
+            catalog, load_json(root / "catalog" / "taxonomy.json")
+        )
     atomic_write_json(root / "catalog" / "capabilities.json", catalog)
     record = {
-        "schema_version": 1,
+        "schema_version": decision["schema_version"],
         "candidate_id": decision["candidate_id"],
         "reviewed_by": "codex",
         "reviewed_at": decision["reviewed_at"],
@@ -393,6 +444,8 @@ def apply_decision(root: Path, decision_path: Path) -> dict[str, Any]:
         "fingerprint": decision["fingerprint"],
         "recommendation": recommendation,
     }
+    if outcome == "not_promoted":
+        record["reactivation_conditions"] = decision["reactivation_conditions"]
     record_name = f"{decision['reviewed_at'].replace(':', '-')}-{decision['candidate_id']}.json"
     record_path = root / "decisions" / "records" / record_name
     atomic_write_json(record_path, record)

@@ -184,6 +184,55 @@ class ApplyDecisionTests(unittest.TestCase):
 
             self.assertFalse((root / "plugins").exists())
 
+    def test_schema_two_non_promotion_requires_reactivation_conditions(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_json(
+                root / "catalog" / "capabilities.json",
+                {"schema_version": 1, "internal": [], "external": []},
+            )
+            decision_path = create_decision(root)
+            decision = read_json(decision_path)
+            decision["schema_version"] = 2
+            decision["outcome"] = "not_promoted"
+            decision.pop("artifact")
+            write_json(decision_path, decision)
+
+            with self.assertRaisesRegex(DecisionError, "reactivation"):
+                apply_decision(root, decision_path)
+
+            self.assertFalse((root / "decisions").exists())
+
+    def test_schema_two_non_promotion_is_retained_without_publication(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_json(
+                root / "catalog" / "capabilities.json",
+                {"schema_version": 1, "internal": [], "external": []},
+            )
+            decision_path = create_decision(root)
+            decision = read_json(decision_path)
+            decision["schema_version"] = 2
+            decision["outcome"] = "not_promoted"
+            decision["reactivation_conditions"] = [
+                "Reconsider when an official source defines a distinct repeatable workflow."
+            ]
+            decision.pop("artifact")
+            write_json(decision_path, decision)
+
+            result = apply_decision(root, decision_path)
+
+            self.assertEqual(result["outcome"], "not_promoted")
+            self.assertEqual(
+                result["reactivation_conditions"],
+                decision["reactivation_conditions"],
+            )
+            self.assertFalse((root / "plugins").exists())
+            discovery = read_json(
+                root / "candidates" / "inbox" / "real-source-candidate.json"
+            )
+            self.assertEqual(discovery["decision_outcome"], "not_promoted")
+
 
 if __name__ == "__main__":
     unittest.main()

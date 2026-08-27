@@ -81,7 +81,7 @@ class ScanCliTests(unittest.TestCase):
             self.assertEqual(report["sources"]["registered"], 2)
             self.assertEqual(report["candidates"], {"total": 2, "pending": 1, "applied": 1})
             self.assertEqual(report["pending_by_source"], {"official-doc": 1})
-            self.assertEqual(report["decision_outcomes"], {"discard": 1})
+            self.assertEqual(report["decision_outcomes"], {"not_promoted": 1})
             self.assertEqual(report["catalog"]["plugins"], 1)
             self.assertEqual(report["catalog"]["skills"], 1)
 
@@ -134,6 +134,70 @@ class ScanCliTests(unittest.TestCase):
                 )
             self.assertEqual(exit_code, 1)
             self.assertIn("unknown source id: missing-source", error.getvalue())
+
+    def test_review_queue_is_priority_ordered_bounded_and_resumable(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            official = document_source("official-doc")
+            representative = document_source("representative-doc")
+            representative["trust"] = "representative"
+            discovery = document_source("discovery-doc")
+            discovery["trust"] = "discovery"
+            write_registry(root, [discovery, representative, official])
+            for candidate_id, source_id, trust in (
+                ("discovery-one", "discovery-doc", "discovery"),
+                ("representative-one", "representative-doc", "representative"),
+                ("official-one", "official-doc", "official"),
+            ):
+                write_json(
+                    root / "candidates" / "inbox" / f"{candidate_id}.json",
+                    {
+                        "id": candidate_id,
+                        "source_id": source_id,
+                        "title": candidate_id,
+                        "trust": trust,
+                        "license": {"status": "known"},
+                        "canonical_url": f"https://example.test/{candidate_id}",
+                        "observed_at": "2026-08-27T06:00:00Z",
+                        "review_status": "pending",
+                    },
+                )
+
+            first_output = io.StringIO()
+            with contextlib.redirect_stdout(first_output):
+                first_exit = main(
+                    ["review-queue", "--root", str(root), "--limit", "1", "--json"]
+                )
+            first = json.loads(first_output.getvalue())
+
+            self.assertEqual(first_exit, 0)
+            self.assertEqual(first["pending"], 3)
+            self.assertEqual(first["returned"], 1)
+            self.assertEqual(first["items"][0]["id"], "official-one")
+            self.assertEqual(first["items"][0]["priority"], "high")
+            self.assertEqual(first["next_cursor"], "official-one")
+
+            second_output = io.StringIO()
+            with contextlib.redirect_stdout(second_output):
+                second_exit = main(
+                    [
+                        "review-queue",
+                        "--root",
+                        str(root),
+                        "--limit",
+                        "1",
+                        "--after",
+                        first["next_cursor"],
+                        "--json",
+                    ]
+                )
+            second = json.loads(second_output.getvalue())
+
+            self.assertEqual(second_exit, 0)
+            self.assertEqual(second["items"][0]["id"], "representative-one")
+            self.assertNotEqual(
+                first["items"][0]["id"], second["items"][0]["id"]
+            )
 
     def test_scan_command_reports_changed_sources(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

@@ -1,7 +1,52 @@
 {
   "external": [
     {
+      "aliases": [
+        "fix github actions checks"
+      ],
       "artifact_sha256": "7b326b4a2f0f5f85122144628ec02077e48841e0e0e82efce88b3415bcfb7c26",
+      "classification": {
+        "facets": {
+          "domain": [
+            "software"
+          ],
+          "inputs": [
+            "repository"
+          ],
+          "intent": [
+            "diagnose",
+            "operate"
+          ],
+          "maturity": [
+            "verified"
+          ],
+          "outputs": [
+            "code",
+            "report"
+          ],
+          "platforms": [
+            "github",
+            "github-actions"
+          ],
+          "risk": [
+            "standard"
+          ],
+          "side_effects": [
+            "local-write",
+            "network-read"
+          ],
+          "tools": [
+            "gh"
+          ],
+          "trust": [
+            "official"
+          ],
+          "volatility": [
+            "fast-moving"
+          ]
+        },
+        "primary_family": "software.ci-remediation"
+      },
       "fingerprint": {
         "goal": "repair failing github actions pull request checks",
         "inputs": [
@@ -30,11 +75,57 @@
         ]
       },
       "id": "openai:gh-fix-ci",
+      "merged_source_refs": [],
       "source_ref": "openai-gh-fix-ci",
-      "source_url": "https://github.com/openai/skills/tree/main/skills/.curated/gh-fix-ci"
+      "source_url": "https://github.com/openai/skills/tree/main/skills/.curated/gh-fix-ci",
+      "variants": []
     },
     {
+      "aliases": [
+        "address github pull request comments"
+      ],
       "artifact_sha256": "77389eefd3fb6584210668ca8e43f4b8de87e7722ddd953474bc9e24cdfaaedd",
+      "classification": {
+        "facets": {
+          "domain": [
+            "software"
+          ],
+          "inputs": [
+            "repository"
+          ],
+          "intent": [
+            "diagnose",
+            "operate"
+          ],
+          "maturity": [
+            "verified"
+          ],
+          "outputs": [
+            "code",
+            "report"
+          ],
+          "platforms": [
+            "github"
+          ],
+          "risk": [
+            "standard"
+          ],
+          "side_effects": [
+            "local-write",
+            "network-read"
+          ],
+          "tools": [
+            "gh"
+          ],
+          "trust": [
+            "official"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "software.review-remediation"
+      },
       "fingerprint": {
         "goal": "address selected review and issue comments on an open pull request",
         "inputs": [
@@ -62,13 +153,66 @@
         ]
       },
       "id": "openai:gh-address-comments",
+      "merged_source_refs": [],
       "source_ref": "openai-gh-address-comments",
-      "source_url": "https://github.com/openai/skills/tree/main/skills/.curated/gh-address-comments"
+      "source_url": "https://github.com/openai/skills/tree/main/skills/.curated/gh-address-comments",
+      "variants": []
     }
   ],
   "internal": [
     {
+      "aliases": [
+        "github release audit",
+        "release evidence audit"
+      ],
       "artifact_sha256": "55501c46b8ad4c52fbcad92953be63aabf343542e9b43941ade9aef0f4452719",
+      "classification": {
+        "facets": {
+          "domain": [
+            "software"
+          ],
+          "inputs": [
+            "release",
+            "repository"
+          ],
+          "intent": [
+            "validate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "evidence",
+            "report"
+          ],
+          "platforms": [
+            "codex",
+            "github",
+            "linux",
+            "macos",
+            "windows"
+          ],
+          "risk": [
+            "standard"
+          ],
+          "side_effects": [
+            "local-write",
+            "network-read"
+          ],
+          "tools": [
+            "gh",
+            "python"
+          ],
+          "trust": [
+            "official",
+            "primary"
+          ],
+          "volatility": [
+            "fast-moving"
+          ]
+        },
+        "primary_family": "software.release-assurance"
+      },
       "created_at": "2026-08-27T09:30:00Z",
       "fingerprint": {
         "goal": "audit published github release evidence",
@@ -107,6 +251,12 @@
         "references/evidence-contract.md",
         "scripts/check_snapshot.py"
       ],
+      "merged_source_refs": [
+        "github-cli-api",
+        "github-cli-repo-view",
+        "github-rest-releases",
+        "openai-build-plugins"
+      ],
       "plugin_id": "github-release-evidence",
       "revision": 3,
       "skill_name": "audit-github-release",
@@ -122,8 +272,10 @@
         "openai-gh-address-comments",
         "openai-gh-fix-ci"
       ],
-      "updated_at": "2026-08-27T13:00:38Z"
+      "updated_at": "2026-08-27T13:00:38Z",
+      "variants": []
     }
   ],
-  "schema_version": 1
+  "schema_version": 2,
+  "taxonomy_version": "1.0.0"
 }
