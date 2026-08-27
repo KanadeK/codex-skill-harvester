@@ -1,4 +1,7 @@
 {
+  "requirements": {
+    "immutable_release": true
+  },
   "repository": {
     "name_with_owner": "KanadeK/codex-skill-harvester",
     "is_private": false,
@@ -9,6 +12,7 @@
     "tag_name": "v0.1.0",
     "is_draft": false,
     "published_at": "2026-08-27T10:00:00Z",
+    "immutable": true,
     "url": "https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.1.0",
     "target_commit_sha": "1111111111111111111111111111111111111111",
     "asset_names": [

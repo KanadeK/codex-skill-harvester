@@ -1,0 +1,33 @@
+{
+  "decisions": {
+    "create": 0,
+    "discard": 0,
+    "merge": 0,
+    "update": 0
+  },
+  "discoveries": 1,
+  "run_id": "2026-08-27T12-40-53.469405Z",
+  "schema_version": 1,
+  "sources": [
+    {
+      "discoveries": 0,
+      "source_id": "openai-build-skills",
+      "status": "unchanged_content",
+      "window_changed": false
+    },
+    {
+      "discoveries": 0,
+      "source_id": "openai-build-plugins",
+      "status": "not_modified"
+    },
+    {
+      "discoveries": 1,
+      "source_id": "openai-codex-releases",
+      "status": "changed",
+      "window_changed": false
+    }
+  ],
+  "status": "changed",
+  "unresolved_issues": [],
+  "validations": []
+}

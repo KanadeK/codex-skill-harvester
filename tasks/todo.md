@@ -41,3 +41,31 @@
 - [x] Verify: GitHub attestation read-back plus clean temporary extraction and released-Skill invocation.
 - [x] Files: release notes, final run report, Git history and remote objects.
 - Dependencies: Task 5 and completed code review.
+
+## Task 7: stabilize recurring scans
+
+- [x] Acceptance: moving search-window churn is reported separately and does not create revision-only duplicate candidates; status and review queue are directly inspectable.
+- [x] Verify: focused source and CLI tests cover revision-only change, reordering, new items, status output, and queue filtering.
+- [x] Files: source state/CLI modules, registry, tests, specification, and operator docs.
+- Dependencies: Task 6.
+
+## Task 8: review the inherited queue and update useful capability evidence
+
+- [x] Acceptance: all 89 pending discoveries have explicit records; no title-only or unknown-license signal becomes a Skill; any update is original and source-traceable.
+- [x] Verify: zero pending candidates, repository consistency, Skill format, trigger cases, and end-to-end evidence checker pass.
+- [x] Files: candidate status, decision records, catalog, selected Plugin Skill/evals, and run report.
+- Dependencies: Task 7.
+
+## Task 9: automate and harden maintenance
+
+- [ ] Acceptance: scheduled/manual scans can open changed-only PRs without semantic publication; security/community metadata and remote protections are active.
+- [ ] Verify: workflow contract tests, remote API read-back, required CI, and unused-surface settings agree.
+- [ ] Files: `.github/*`, security/community documents, validator/tests, and remote repository settings.
+- Dependencies: Task 8.
+
+## Task 10: publish and verify v0.1.1
+
+- [ ] Acceptance: reviewed PR, green CI, immutable tag/Release, deterministic assets, isolated install/CLI, released Skill invocation, settings, and contributors are verified.
+- [ ] Verify: local release gates plus remote attestation and final report.
+- [ ] Files: changelog, release notes, final report, Git history, tag, and Release assets.
+- Dependencies: Task 9 and completed code review.

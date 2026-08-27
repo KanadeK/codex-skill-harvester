@@ -69,6 +69,14 @@ The first original Skill will use official GitHub CLI documentation and GitHub A
 
 Representative external comparisons will include official `gh-fix-ci` and `gh-address-comments` metadata/fingerprints without copying their bodies.
 
+## Maintenance automation authority
+
+- GitHub `GITHUB_TOKEN` event behavior: https://docs.github.com/en/actions/concepts/security/github_token
+  - Pull requests created by a workflow token can require manual workflow approval. `workflow_dispatch` is an explicit exception that always creates a run, so the harvest workflow dispatches CI for its controlled discovery-only branch without adding a PAT or GitHub App secret.
+- GitHub repository rulesets: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/creating-rulesets-for-a-repository
+- GitHub rules available in rulesets: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets
+- Dependabot quickstart: https://docs.github.com/en/code-security/tutorials/secure-your-dependencies/dependabot-quickstart
+
 ## Research conclusion
 
 Proceed with `codex-skill-harvester`. Its defining invariant is not collection volume; it is trustworthy incremental maintenance: changed-only evidence, full capability fingerprints, explicit semantic decisions, original synthesis, and verified installable output.

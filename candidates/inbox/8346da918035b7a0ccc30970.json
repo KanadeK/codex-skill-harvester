@@ -1,6 +1,8 @@
 {
   "authority": "official-plugin-examples",
   "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/plugin-eval",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-01-25Z-8346da918035b7a0ccc30970.json",
   "evidence_sha256": "b3d2ed17be668cb61a5a3aabf7cba9a4361c974d98a5016d6e7d3972c9dfa96e",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "facts-only"
   },
   "observed_at": "2026-08-27T10:14:45.959028Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-plugin-catalog",
   "source_item_id": "32a63821b26939612c51ce710d05c190afdd7f05",

@@ -1,16 +1,35 @@
 {
-  "last_successful_run": "2026-08-27T10:16:09.152293Z",
+  "last_successful_run": "2026-08-27T12:43:35.524114Z",
   "schema_version": 1,
   "sources": {
     "github-agent-skills-search": {
       "adapter": "json-list",
-      "content_sha256": "59932aa78b0be2ad6a502bc19330318842d8385e796d247811f97715392a707d",
-      "cursor": "2026-08-27T10:12:23Z",
+      "content_sha256": "b691db9ba1175263d79a8d6aaede90e1ffdd377b2f8d9e5226a2efcff46a831b",
+      "cursor": "2026-08-27T12:41:38Z",
       "etag": null,
       "last_modified": null,
-      "last_success_at": "2026-08-27T10:16:09.152293Z",
+      "last_success_at": "2026-08-27T12:42:25.111014Z",
+      "material_items": {
+        "1037924780": "98c6f61f26b95a11dbe2a6211b0003059f8a037d60506479b02b07c55ad4eb90",
+        "1044302997": "6727b895438184351046c21ae54fda67d94701a9ff8c08a487c46479bc2c4fac",
+        "1181828077": "57f75092028daed3be4bfe7135351f5caa2846455a6328b27ec040a7e7d97a71",
+        "1256858923": "d25f32ad5ff8569b8b5ab353352ea96a8f4de9136e9d256b1402d77c6c432162",
+        "1319578119": "571b33ece500f7451347c9a12b7b8f4a5fbc47b7f07b5e6feb19c6855084b044",
+        "1331743519": "dc6e6e3bf7516dbea74fdd4b12139944f00def09e43f72eb67086028764492dd",
+        "1342744824": "f2ff6197f1a945a177fd664f05dc24cb1514053bfbb1985b63563d0d64b77852",
+        "1343052581": "3bbd5e30d7c1087c61456d946bfc1fc4471518c53c7591385ce5ed7804b35122",
+        "1343917278": "ea98869388e16fd6df03478eefd712d6da16ccb9cbcbbd8e9f6dce018317751b",
+        "1348135793": "c2da8b7fc21203009be679c7b9de6fe47e3fbb6bdcc7aba25b2df0658701ae67",
+        "1348467933": "95c4b04cc46b35a2e113a0a53a473fbe57fba20df24d526c86bde51d902100da",
+        "1348475121": "0e79df3f02dce255861f1cbf65ebabaa90ad27305e4642e1082bedc718da3d39",
+        "349372179": "0602137388d9d163ce61b3aa1e1930e60e0c46f7872d23cb622d49bb22a4692b",
+        "914938762": "430fb59b527149ef104474e3308b006ab2f823da255f189b6546864fc36f18d4"
+      },
       "seen_items": {
+        "1037924780": "1d895a0cc53458624c74a32e257b66e55bb8f6db5b4db0b406fba4065821fe0e",
+        "1044302997": "ad90f19f1bfb89b8387eb2dd2e5b45e448fd5b84b58910281b22901a9ceb259c",
         "1117480701": "d7a53dfa79088dad96904c3385b435de261fcc7cb9ff9ce401fe2486aaf25283",
+        "1181828077": "bee88d4d493c43be6acd86891d2db74a546dd2f16d5de331dff480e166dbec51",
         "1218899337": "e8fccb7e6c2a4a1bd297f5434afad3f13781da14ddfb482ef1ee26ce37d9cd3e",
         "1228640819": "97438366d9dcb7772bbc6531c402a12ed04153fd3222d6416af94bacc3e6cd2e",
         "1241442018": "62cfec6e973e439ad8bec6290490db8811c359e45a924589e86575e6e4eb6204",
@@ -22,18 +41,41 @@
         "1247931160": "a6ec0e968a690eec0096d0a66341337502d1df32f8fef2935cc86fa7ca78c851",
         "1247931386": "9aa051d8a8189aa88272b7aa6bd744744be8f0c2ce381655c766369ddfd71628",
         "1251137754": "f1cf7c9521d597ceee45c4e636060324bd60c679167667ed2e777bacff9fa544",
+        "1256858923": "39c507c3c5a896059f87b636b3acd102b0a2808ff15ddccc248984651e0aa214",
         "1319148247": "4a80acb2af9cdc34fa8b1cbec5e14b947b6b3b008d845b2996f8a2b5bcac4423",
+        "1319578119": "f5d33d3b00c9eca791f612a7772b69ccddf3cfbfb7e9ea8dec7197ef22cc7f58",
+        "1331743519": "fc28426653e02a4e892a64da626f791351fc9f8979954366315ecdd9287a65c9",
         "1333175049": "59efbe5f2c44b5f25b0b50498e7411fba55c1bed03c5d6d56d5204e81582fcf5",
         "1341408386": "800ac567b98a6a75c323b26ef611b8c4ac0bccc9903168bca2d256547b9b0419",
+        "1342744824": "d4a17a488d4feadebbba0ac59632a0423a66348752b383245543dab48317902c",
+        "1343052581": "3ccaa6a1b928116f9b45fb230ad100e48fac2523dd5ca6cf23a0f43631ddffa9",
+        "1343917278": "417f63fbaba9e2743a6df63b9b7f6ce55e245a78d339fbe0fdb4b94dc000360c",
         "1344817862": "fa3cb1f412a42b4523f5b1762844f0a6b784b816f425ac36c4e034f5f1006fb2",
         "1348044782": "cbc7d90c8113f3c2143a1f0466d1744355fecbe564dc2790d9f16bc41353c140",
+        "1348135793": "7eefb8890fd083bed617c4abde29ecf3dd7ca5f12fa13e19edbc37f3a53037b9",
         "1348222467": "3cff309fdc17ff2f2a0bdd561b8e40acf6909ee2f20f2761d0121c98dc6ed7a2",
         "1348229112": "7ee8c73a3682795d90586a30eeba314ceabcf922786e3d54ad1d3bcd87642b96",
         "1348340694": "1fd4147fc26445386d4d6f56eae2d1d9f5319b3101c12ef25a18227dfcaced93",
+        "1348467933": "86f2af1db523d987fc6660f2f588ab101318b0555880aeef675557b7b14fe278",
+        "1348475121": "99f3e6883e17a42ca757ce4ae70082efc5a91e7a0e6b11c66ce4e7582c6f83c2",
+        "349372179": "55630140fa4f4f04382c0e5a0dbadff6873b8114ba80d0806a23505088211337",
         "670544507": "c848e62cc64442167b2a2910c189ddda46d210f6bff0aed4a6014e0972b14fba",
+        "914938762": "b22ac8bcb91cce6f3466c4d78b4ee2c6c92fccb5478283a30e580a9ad331a29e",
         "917167823": "cd0af540eb22b61bb6e64ac608a5d873cdfebb72c3e07417c9490cf147b28fc7"
       },
-      "url": "https://api.github.com/search/repositories?q=%22agent%20skills%22%20in%3Aname%2Cdescription%2Creadme&sort=updated&order=desc&per_page=10"
+      "url": "https://api.github.com/search/repositories?q=%22agent%20skills%22%20in%3Aname%2Cdescription%2Creadme&sort=updated&order=desc&per_page=10",
+      "window_item_ids": [
+        "1342744824",
+        "1348475121",
+        "1348467933",
+        "1331743519",
+        "1181828077",
+        "1343052581",
+        "1348135793",
+        "1256858923",
+        "914938762",
+        "1319578119"
+      ]
     },
     "github-cli-api": {
       "adapter": "document",
@@ -41,7 +83,7 @@
       "cursor": "529855e680bc56be3dfc2cb0bb6dfb9bcb8b8f820bc2c6b2b0678032d244641e",
       "etag": "\"6a877e4f-1b3f4\"",
       "last_modified": "Thu, 20 Aug 2026 22:23:11 GMT",
-      "last_success_at": "2026-08-27T09:27:31Z",
+      "last_success_at": "2026-08-27T12:43:13.413715Z",
       "seen_items": {},
       "url": "https://cli.github.com/manual/gh_api"
     },
@@ -51,7 +93,7 @@
       "cursor": "8e649be863a030519c5b5580bff0ccf80e50510af348edc82f6dbe2289ec8cf5",
       "etag": "\"6a877e4f-18d52\"",
       "last_modified": "Thu, 20 Aug 2026 22:23:11 GMT",
-      "last_success_at": "2026-08-27T09:27:31Z",
+      "last_success_at": "2026-08-27T12:43:13.413715Z",
       "seen_items": {},
       "url": "https://cli.github.com/manual/gh_pr_checks"
     },
@@ -61,7 +103,7 @@
       "cursor": "e3b9ed91d156858a7d2e94d4b3ffdb563c11644b5f57f06447c8e974f8cc9802",
       "etag": "\"6a877e4f-18b8b\"",
       "last_modified": "Thu, 20 Aug 2026 22:23:11 GMT",
-      "last_success_at": "2026-08-27T09:27:31Z",
+      "last_success_at": "2026-08-27T12:43:13.413715Z",
       "seen_items": {},
       "url": "https://cli.github.com/manual/gh_release_view"
     },
@@ -71,7 +113,7 @@
       "cursor": "c78e69088bc3f3769c2ba26180a9606cb3929252b55b776d927b89b33d08c927",
       "etag": "\"6a877e4f-1a094\"",
       "last_modified": "Thu, 20 Aug 2026 22:23:11 GMT",
-      "last_success_at": "2026-08-27T09:27:31Z",
+      "last_success_at": "2026-08-27T12:43:13.413715Z",
       "seen_items": {},
       "url": "https://cli.github.com/manual/gh_repo_view"
     },
@@ -81,7 +123,7 @@
       "cursor": "d7e9c3afab82701940851e6de60e1ccf53e15863970f84bb16bbb06ce05a36c9",
       "etag": "\"85f364dc2c75661d81498ade24166d71c9e426064db726ae5ce0b2d56de7aeae\"",
       "last_modified": null,
-      "last_success_at": "2026-08-27T09:27:31Z",
+      "last_success_at": "2026-08-27T12:43:35.524114Z",
       "seen_items": {},
       "url": "https://raw.githubusercontent.com/github/docs/main/content/rest/releases/releases.md"
     },
@@ -91,7 +133,7 @@
       "cursor": "e0d58574b719a07686576976d73f30eeff8f254ad784cda4296420002081755f",
       "etag": "\"910b42d372af4da679b75a483281331f59fbe6aad22a38c0f334da0014948d82\"",
       "last_modified": null,
-      "last_success_at": "2026-08-27T09:27:31Z",
+      "last_success_at": "2026-08-27T12:43:35.524114Z",
       "seen_items": {},
       "url": "https://raw.githubusercontent.com/github/docs/main/content/rest/repos/repos.md"
     },
@@ -101,7 +143,7 @@
       "cursor": "605face331e44ea6befdc54c63b3d1e560f0595635db9083a20b9bbd19554e18",
       "etag": "\"624127e189eedff9749a68d95b9afed8\"",
       "last_modified": "Thu, 27 Aug 2026 07:17:48 GMT",
-      "last_success_at": "2026-08-27T09:27:31Z",
+      "last_success_at": "2026-08-27T12:40:53.469405Z",
       "seen_items": {},
       "url": "https://developers.openai.com/plugins/build/plugins.md"
     },
@@ -111,17 +153,31 @@
       "cursor": "d15791562748e64a53dfec534b8558aa522e732cec0fdedcf7257fa4ef486a20",
       "etag": null,
       "last_modified": null,
-      "last_success_at": "2026-08-27T09:27:31Z",
+      "last_success_at": "2026-08-27T12:40:53.469405Z",
+      "material_items": {},
       "seen_items": {},
-      "url": "https://developers.openai.com/codex/skills.md"
+      "url": "https://developers.openai.com/codex/skills.md",
+      "window_item_ids": []
     },
     "openai-codex-releases": {
       "adapter": "atom",
-      "content_sha256": "c6a902bb6c4ced56c16e49cf94802c923d135e86e4240a2157fcfc1a6fadb9dc",
-      "cursor": "2026-08-27T07:25:38Z",
-      "etag": "W/\"c6a902bb6c4ced56c16e49cf94802c92\"",
+      "content_sha256": "530bda6b53641b4d73c5013ba25254c4fb3fc44c3ffccfada9d0edc26a77ad6b",
+      "cursor": "2026-08-27T12:35:28Z",
+      "etag": "W/\"530bda6b53641b4d73c5013ba25254c4\"",
       "last_modified": null,
-      "last_success_at": "2026-08-27T09:27:31Z",
+      "last_success_at": "2026-08-27T12:40:53.469405Z",
+      "material_items": {
+        "tag:github.com,2008:Repository/965415649/rust-v0.150.0": "60718938166946ca0f5e781b962b6add05f1a5397ca4b44ec635020d9e8573a3",
+        "tag:github.com,2008:Repository/965415649/rust-v0.150.0-alpha.12.2": "62a1b2462ba19599ed9ef2c971af7a25a46dccb1219397e203710fa24a3d114f",
+        "tag:github.com,2008:Repository/965415649/rust-v0.150.0-alpha.13": "589de8e6e113852265f320e108b86f27c8cd034e7184a66a6654a2cf6a3a9b58",
+        "tag:github.com,2008:Repository/965415649/rust-v0.150.1": "4939998d25cb75c58c81c743b800df8c746b1faf1eeb58a3a47928472490f6bf",
+        "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.1": "49add85a1784267c5eb17770e17a41776af01e3d70f8dd16092e8c4af54b596f",
+        "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.2": "b683acc97684063e4568b8041f597735b8b9fccb547305328d1a79d88e6f0fe3",
+        "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.3": "d9f6f30d0dea9a899f5158fc5c1d7481537d7fa26cc72de6d3b69e0a8652e612",
+        "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.4": "e69139fd384ec9c6d3c14a8654859ad31d6c416dc03ec67f24bc8f8b937070c1",
+        "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.5": "d1656ae48b491449739e065af50ee811178d3f2e12e7b94795deccb3629807d1",
+        "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.6": "881647a2ddb4a9837ecc1daf510aaa12bc91e27cca4a9ebb01a44f59d27d138f"
+      },
       "seen_items": {
         "tag:github.com,2008:Repository/965415649/rust-v0.150.0": "07f2e141a440fb7d50da12e3cac9d935bd44e3cc2443c74528dcebdb27a3b8b1",
         "tag:github.com,2008:Repository/965415649/rust-v0.150.0-alpha.12.1": "b67c0e6f65d6875bfe75de272c248a38a7608c2b9dc42e4bbd2a01f4ae3f4db0",
@@ -132,9 +188,22 @@
         "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.2": "eef0acdf167fdc3e98fbed3e834d5d2659f638e2599c1642dc0f0d1b96c5de81",
         "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.3": "aef2283da70a77437c0ae01f8898a7c7ab8c3dc58c5655534ca72497ecd9ce45",
         "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.4": "611dd6d98a22cac823d4f7aa2a41ecc83eaa48c1f0c62926b8eadaf0984dd1eb",
-        "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.5": "102f5e065e219ebd361a48bc413c0243336350069350a7948e6563f94ebf12ae"
+        "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.5": "102f5e065e219ebd361a48bc413c0243336350069350a7948e6563f94ebf12ae",
+        "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.6": "6d92cc860b34754a4570dfeaf71d130a83719768a8af09ba8bac2c3c2590d1f4"
       },
-      "url": "https://github.com/openai/codex/releases.atom"
+      "url": "https://github.com/openai/codex/releases.atom",
+      "window_item_ids": [
+        "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.6",
+        "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.5",
+        "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.4",
+        "tag:github.com,2008:Repository/965415649/rust-v0.150.1",
+        "tag:github.com,2008:Repository/965415649/rust-v0.150.0-alpha.12.2",
+        "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.3",
+        "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.2",
+        "tag:github.com,2008:Repository/965415649/rust-v0.151.0-alpha.1",
+        "tag:github.com,2008:Repository/965415649/rust-v0.150.0",
+        "tag:github.com,2008:Repository/965415649/rust-v0.150.0-alpha.13"
+      ]
     },
     "openai-gh-address-comments": {
       "adapter": "document",
@@ -142,7 +211,7 @@
       "cursor": "77389eefd3fb6584210668ca8e43f4b8de87e7722ddd953474bc9e24cdfaaedd",
       "etag": "\"2ab0093089080e5dde3b51f69126b867e5cec8511f51ae44435cab51de9ca4ce\"",
       "last_modified": null,
-      "last_success_at": "2026-08-27T09:27:31Z",
+      "last_success_at": "2026-08-27T12:43:35.524114Z",
       "seen_items": {},
       "url": "https://raw.githubusercontent.com/openai/skills/main/skills/.curated/gh-address-comments/SKILL.md"
     },
@@ -152,7 +221,7 @@
       "cursor": "7b326b4a2f0f5f85122144628ec02077e48841e0e0e82efce88b3415bcfb7c26",
       "etag": "\"1a26fc110dbd0ed15f50e80aa3f346f36269112588af204db5d34bcca2ceb6fa\"",
       "last_modified": null,
-      "last_success_at": "2026-08-27T09:27:31Z",
+      "last_success_at": "2026-08-27T12:43:35.524114Z",
       "seen_items": {},
       "url": "https://raw.githubusercontent.com/openai/skills/main/skills/.curated/gh-fix-ci/SKILL.md"
     },
@@ -162,7 +231,8 @@
       "cursor": "667f135e271ee21c3669a68466c2e047f5519a38ad947c506b74928dad778675",
       "etag": null,
       "last_modified": null,
-      "last_success_at": "2026-08-27T10:15:07.674022Z",
+      "last_success_at": "2026-08-27T12:41:29.416626Z",
+      "material_items": {},
       "seen_items": {
         "062a1ea33dd9bd9195a2988e1a526637f97a5eb3": "484c958e263baef1c3bc2dd93bffa43322a90d75477f033b235ae4427a92bbc9",
         "0fbf841f2f821be0deceaa167cfc4e585df20ca3": "475aae344f6518ce05c43c29cbe6f0de4e4196e001056d862798cced102e9413",
@@ -218,7 +288,8 @@
         "fb50a887e029f442f1824012b7be763aa88939a1": "0c7ed843c6a70dea2a97c3053ec801d9db3c8d6cf0fc42ebddab699d68bcf650",
         "ff6244f5930be59916bb75275a5a7e2cfc6c89cd": "ceb8440ccc8991a4e6a3e472b2355734c6aeef6db2093ade50bdee196ed47a4e"
       },
-      "url": "https://api.github.com/repos/openai/plugins/contents/plugins?ref=main"
+      "url": "https://api.github.com/repos/openai/plugins/contents/plugins?ref=main",
+      "window_item_ids": []
     }
   }
 }

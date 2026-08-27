@@ -1,6 +1,8 @@
 {
   "authority": "official-plugin-examples",
   "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/outlook-calendar",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-01-23Z-febfa83a409b81a1af0c5126.json",
   "evidence_sha256": "2df8c2be90d6e834e7e06f7527868392db53d740d42f65bfa606974b4312c539",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "facts-only"
   },
   "observed_at": "2026-08-27T10:14:45.959028Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-plugin-catalog",
   "source_item_id": "6ff643c4df8b262db28720ebde9df879cb38f9b8",

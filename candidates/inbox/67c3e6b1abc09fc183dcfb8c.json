@@ -1,6 +1,8 @@
 {
   "authority": "official-plugin-examples",
   "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/test-android-apps",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-01-38Z-67c3e6b1abc09fc183dcfb8c.json",
   "evidence_sha256": "417f70f824e2259bc682f7c15c3c307f41223389ccd9b96c6cf2f125978d5a62",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "facts-only"
   },
   "observed_at": "2026-08-27T10:14:45.959028Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-plugin-catalog",
   "source_item_id": "a8b3024448390d0f9c24e5ec78059c890bab50cd",

@@ -1,0 +1,38 @@
+{
+  "candidate_id": "2b45caa26f4ac8a334e6535b",
+  "fingerprint": {
+    "goal": "evaluate discovery signal thiennc-tesoglobal/flutter-skills",
+    "inputs": [
+      "source identity and extracted facts"
+    ],
+    "outputs": [
+      "review decision and rationale"
+    ],
+    "platforms": [
+      "github"
+    ],
+    "side_effects": [
+      "append-only decision record"
+    ],
+    "tools": [
+      "codex semantic review"
+    ],
+    "triggers": [
+      "review a harvested public workflow signal"
+    ]
+  },
+  "outcome": "discard",
+  "rationale": "Compared discovery-only GitHub result thiennc-tesoglobal/flutter-skills with the internal release-audit capability and representative external PR Skills. The candidate contains only repository identity and update metadata, has unknown license, and is not an authoritative workflow source. It cannot support verified inputs, outputs, or non-obvious decisions without copying or running third-party material, so discard.",
+  "recommendation": {
+    "artifact_sha256": null,
+    "matches": [],
+    "outcome": "create_new"
+  },
+  "reviewed_at": "2026-08-27T13:00:35Z",
+  "reviewed_by": "codex",
+  "schema_version": 1,
+  "source_refs": [
+    "github-agent-skills-search"
+  ],
+  "target_capability_id": null
+}

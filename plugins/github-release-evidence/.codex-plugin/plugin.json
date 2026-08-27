@@ -9,7 +9,9 @@
       "Read"
     ],
     "category": "Developer Tools",
-    "defaultPrompt": "Audit whether this published GitHub release is genuinely complete and report evidence gaps.",
+    "defaultPrompt": [
+      "Audit whether this published GitHub release is genuinely complete and report evidence gaps."
+    ],
     "developerName": "KanadeK",
     "displayName": "GitHub Release Evidence",
     "longDescription": "Collect read-only remote evidence for an already-published GitHub release and report confirmed gates, contradictions, and missing proof.",
@@ -25,5 +27,5 @@
   "name": "github-release-evidence",
   "repository": "https://github.com/KanadeK/codex-skill-harvester",
   "skills": "./skills/",
-  "version": "0.1.0"
+  "version": "0.1.1"
 }

@@ -1,6 +1,8 @@
 {
   "authority": "demand-signal-only",
   "canonical_url": "https://github.com/civaapple-alt/mini-agent-harness",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-00-13Z-395efa754b799ebfff098ef0.json",
   "evidence_sha256": "fa3cb1f412a42b4523f5b1762844f0a6b784b816f425ac36c4e034f5f1006fb2",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "unknown"
   },
   "observed_at": "2026-08-27T10:14:45.959028Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "github-agent-skills-search",
   "source_item_id": "1344817862",

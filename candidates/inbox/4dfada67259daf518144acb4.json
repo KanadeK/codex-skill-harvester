@@ -1,6 +1,8 @@
 {
   "authority": "codex-plugin-format",
   "canonical_url": "https://developers.openai.com/plugins/build/plugins.md",
+  "decision_outcome": "merge",
+  "decision_record": "decisions/records/2026-08-27T13-00-38Z-4dfada67259daf518144acb4.json",
   "evidence_sha256": "605face331e44ea6befdc54c63b3d1e560f0595635db9083a20b9bbd19554e18",
   "extracted_facts": [
     {
@@ -74,7 +76,7 @@
     "status": "facts-only"
   },
   "observed_at": "2026-08-27T09:26:05Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-build-plugins",
   "source_revision": "\"624127e189eedff9749a68d95b9afed8\"",

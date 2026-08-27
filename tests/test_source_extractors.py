@@ -14,6 +14,123 @@ from _support import QueueFetcher, read_json, write_registry
 
 
 class SourceExtractorTests(unittest.TestCase):
+    def test_material_policy_separates_window_churn_from_real_item_changes(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = {
+                "id": "github-search",
+                "adapter": "json-list",
+                "url": "https://api.github.com/search/repositories?q=agent-skills",
+                "trust": "discovery",
+                "authority": "demand-signal",
+                "license": {"status": "unknown", "identifier": None},
+                "change_policy": "material",
+                "extract": {
+                    "items_path": "items",
+                    "id_field": "id",
+                    "title_field": "full_name",
+                    "url_field": "html_url",
+                    "revision_field": "updated_at",
+                },
+            }
+            write_registry(root, [source])
+
+            first_body = json.dumps(
+                {
+                    "items": [
+                        {
+                            "id": 1,
+                            "full_name": "example/one",
+                            "html_url": "https://github.com/example/one",
+                            "updated_at": "2026-08-26T00:00:00Z",
+                        },
+                        {
+                            "id": 2,
+                            "full_name": "example/two",
+                            "html_url": "https://github.com/example/two",
+                            "updated_at": "2026-08-26T00:00:00Z",
+                        },
+                    ]
+                }
+            ).encode()
+            first = run_scan(
+                root,
+                QueueFetcher(
+                    FetchResponse(200, "https://api.github.com/search/repositories", {}, first_body)
+                ),
+                now="2026-08-27T03:00:00Z",
+            )
+            self.assertEqual(first["discoveries"], 2)
+
+            reordered_revision_only = json.dumps(
+                {
+                    "items": [
+                        {
+                            "id": 2,
+                            "full_name": "example/two",
+                            "html_url": "https://github.com/example/two",
+                            "updated_at": "2026-08-27T00:00:00Z",
+                        },
+                        {
+                            "id": 1,
+                            "full_name": "example/one",
+                            "html_url": "https://github.com/example/one",
+                            "updated_at": "2026-08-26T00:00:00Z",
+                        },
+                    ]
+                }
+            ).encode()
+            second = run_scan(
+                root,
+                QueueFetcher(
+                    FetchResponse(
+                        200,
+                        "https://api.github.com/search/repositories",
+                        {},
+                        reordered_revision_only,
+                    )
+                ),
+                now="2026-08-27T03:05:00Z",
+            )
+
+            self.assertEqual(second["status"], "no_op")
+            self.assertEqual(second["discoveries"], 0)
+            self.assertEqual(second["sources"][0]["status"], "window_changed")
+            self.assertTrue(second["sources"][0]["window_changed"])
+
+            changed_body = json.dumps(
+                {
+                    "items": [
+                        {
+                            "id": 2,
+                            "full_name": "example/two-renamed",
+                            "html_url": "https://github.com/example/two",
+                            "updated_at": "2026-08-27T00:00:00Z",
+                        },
+                        {
+                            "id": 3,
+                            "full_name": "example/three",
+                            "html_url": "https://github.com/example/three",
+                            "updated_at": "2026-08-27T00:00:00Z",
+                        },
+                    ]
+                }
+            ).encode()
+            third = run_scan(
+                root,
+                QueueFetcher(
+                    FetchResponse(200, "https://api.github.com/search/repositories", {}, changed_body)
+                ),
+                now="2026-08-27T03:10:00Z",
+            )
+
+            self.assertEqual(third["status"], "changed")
+            self.assertEqual(third["discoveries"], 2)
+            state = read_json(root / "state" / "harvest-state.json")
+            search_state = state["sources"]["github-search"]
+            self.assertEqual(set(search_state["material_items"]), {"1", "2", "3"})
+            self.assertEqual(search_state["window_item_ids"], ["2", "3"])
+
     def test_json_list_emits_only_new_or_changed_items(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

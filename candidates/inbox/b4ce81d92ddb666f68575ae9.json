@@ -1,6 +1,8 @@
 {
   "authority": "official-plugin-examples",
   "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/openai-ads-conversions",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-01-21Z-b4ce81d92ddb666f68575ae9.json",
   "evidence_sha256": "3a3aa8a45c139b4790da46ab7621578cff5295973b9b55f971993456bc69c034",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "facts-only"
   },
   "observed_at": "2026-08-27T10:14:45.959028Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-plugin-catalog",
   "source_item_id": "60b9ad23b69de5ce7b06ab6399b8aad600033bae",

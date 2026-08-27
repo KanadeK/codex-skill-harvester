@@ -1,6 +1,8 @@
 {
   "authority": "official-plugin-examples",
   "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/circleci",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-00-58Z-27eaf81b24ec77aaaa61c3ba.json",
   "evidence_sha256": "975f8a3b76feb0a193a3cad9786bc64d43b71eea5060a8357fc9591f5bfdf9ac",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "facts-only"
   },
   "observed_at": "2026-08-27T10:14:45.959028Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-plugin-catalog",
   "source_item_id": "c07c153d604229b232b1f09640438c8af4a6a08e",

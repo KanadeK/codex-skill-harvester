@@ -1,6 +1,8 @@
 {
   "authority": "external-skill-comparison",
   "canonical_url": "https://raw.githubusercontent.com/openai/skills/main/skills/.curated/gh-address-comments/SKILL.md",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-00-49Z-433e239dc61aa643cdac43d9.json",
   "evidence_sha256": "77389eefd3fb6584210668ca8e43f4b8de87e7722ddd953474bc9e24cdfaaedd",
   "extracted_facts": [
     {
@@ -26,7 +28,7 @@
     "status": "known"
   },
   "observed_at": "2026-08-27T09:26:05Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-gh-address-comments",
   "source_revision": "\"2ab0093089080e5dde3b51f69126b867e5cec8511f51ae44435cab51de9ca4ce\"",

@@ -1,4 +1,4 @@
-# Spec: Codex Skill Harvester v0.1.0
+# Spec: Codex Skill Harvester v0.1.x
 
 ## Objective
 
@@ -27,6 +27,8 @@ Framework-specific behavior is limited to the documented Codex Skill/Plugin file
 - Scan configured sources: `python -m skill_harvester scan --root .`
 - Scan with the current official GitHub CLI keyring login: `python -m skill_harvester scan --root . --github-auth gh-cli`
 - Scan a subset: `python -m skill_harvester scan --root . --source <source-id>`
+- Inspect durable repository state: `python -m skill_harvester status --root .`
+- List pending candidate reviews: `python -m skill_harvester review-queue --root .`
 - Apply one reviewed candidate decision: `python -m skill_harvester apply --root . --decision candidates/reviewed/<id>.json`
 - Validate repository and generated artifacts: `python scripts/validate_repo.py`
 - Run tests: `python -m unittest discover -s tests -v`
@@ -142,4 +144,14 @@ Only a reviewed decision marked `reviewed_by: codex` may merge, update, or creat
 
 ## Open questions
 
-None that block v0.1.0. Hosted semantic embeddings, scheduled remote execution, and a large multi-plugin catalog are explicit non-goals for this release.
+None that block v0.1.x. Hosted semantic embeddings, unattended semantic publication, and a large multi-plugin catalog remain explicit non-goals.
+
+## v0.1.1 maintenance scope
+
+- Review every candidate carried over from v0.1.0 and persist a concrete Codex decision; source listings and release titles are rejected when they do not contain enough authoritative workflow evidence.
+- Treat the moving GitHub repository-search window separately from material item changes. Revision-only churn and reordering must not create discoveries, while new identities or changed titles/URLs must.
+- Add read-only `status` and `review-queue` commands for durable operator handoff.
+- Add a scheduled/manual GitHub workflow that performs deterministic scans and opens a pull request only when discoveries exist. It must never apply semantic decisions or publish Skills.
+- Add repository security/community metadata, dependency update configuration, and remote default-branch protection without adding runtime dependencies.
+- Update the existing release-audit Skill only when reviewed authoritative evidence changes a useful gate; validate its format, triggers, and isolated end-to-end behavior before release.
+- Publish changes as immutable v0.1.1 after local gates, pull-request CI, remote settings, release assets, source installation, Skill invocation, and contributors are verified.

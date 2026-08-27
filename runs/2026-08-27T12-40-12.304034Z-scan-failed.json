@@ -1,0 +1,20 @@
+{
+  "discoveries": 0,
+  "error": "SourceFetchError: gh api request failed: Get \"https://api.github.com/repos/openai/plugins/contents/plugins?ref=main\": EOF",
+  "run_id": "2026-08-27T12-40-12.304034Z",
+  "schema_version": 1,
+  "sources": [
+    {
+      "discoveries": 0,
+      "source_id": "openai-build-skills",
+      "status": "unchanged_content",
+      "window_changed": false
+    },
+    {
+      "discoveries": 0,
+      "source_id": "openai-build-plugins",
+      "status": "not_modified"
+    }
+  ],
+  "status": "failed"
+}

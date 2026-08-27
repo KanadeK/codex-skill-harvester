@@ -1,6 +1,8 @@
 {
   "authority": "official-plugin-examples",
   "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/build-ios-apps",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-00-53Z-c8f35ff0985955d981384c9e.json",
   "evidence_sha256": "87af38944ca2d506c16437ae012b9cd709c8d1173151e5008dc95adb0c7c4afc",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "facts-only"
   },
   "observed_at": "2026-08-27T10:14:45.959028Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-plugin-catalog",
   "source_item_id": "f9a0d9e756f52a8a6764e823dc7760b64b6ec2f1",

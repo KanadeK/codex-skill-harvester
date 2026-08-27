@@ -1,0 +1,22 @@
+{
+  "decisions": {
+    "create": 0,
+    "discard": 0,
+    "merge": 0,
+    "update": 0
+  },
+  "discoveries": 10,
+  "run_id": "2026-08-27T12-41-55.827368Z",
+  "schema_version": 1,
+  "sources": [
+    {
+      "discoveries": 10,
+      "source_id": "github-agent-skills-search",
+      "status": "changed",
+      "window_changed": false
+    }
+  ],
+  "status": "changed",
+  "unresolved_issues": [],
+  "validations": []
+}

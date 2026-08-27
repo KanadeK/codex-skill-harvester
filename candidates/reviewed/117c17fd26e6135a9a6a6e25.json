@@ -1,0 +1,32 @@
+{
+  "candidate_id": "117c17fd26e6135a9a6a6e25",
+  "fingerprint": {
+    "goal": "evaluate discovery signal temporal",
+    "inputs": [
+      "source identity and extracted facts"
+    ],
+    "outputs": [
+      "review decision and rationale"
+    ],
+    "platforms": [
+      "codex"
+    ],
+    "side_effects": [
+      "append-only decision record"
+    ],
+    "tools": [
+      "codex semantic review"
+    ],
+    "triggers": [
+      "review a harvested public workflow signal"
+    ]
+  },
+  "outcome": "discard",
+  "rationale": "Compared official Plugin catalog listing temporal with the internal catalog. The listing provides only a Plugin name and commit identity: useful demand discovery, but not vendor operational documentation or a repeatable workflow contract. No independent, verifiable capability can be synthesized from these facts alone, so discard rather than create filler; authoritative vendor evidence may re-enter later.",
+  "reviewed_at": "2026-08-27T13:01:37Z",
+  "reviewed_by": "codex",
+  "schema_version": 1,
+  "source_refs": [
+    "openai-plugin-catalog"
+  ]
+}

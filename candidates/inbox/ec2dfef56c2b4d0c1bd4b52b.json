@@ -1,0 +1,30 @@
+{
+  "authority": "demand-signal-only",
+  "canonical_url": "https://github.com/makursi/my-agent-skills",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-00-28Z-ec2dfef56c2b4d0c1bd4b52b.json",
+  "evidence_sha256": "39c507c3c5a896059f87b636b3acd102b0a2808ff15ddccc248984651e0aa214",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "2026-08-25T09:49:24Z"
+    },
+    {
+      "kind": "source_title",
+      "value": "makursi/my-agent-skills"
+    }
+  ],
+  "id": "ec2dfef56c2b4d0c1bd4b52b",
+  "license": {
+    "identifier": null,
+    "status": "unknown"
+  },
+  "observed_at": "2026-08-27T12:41:55.827368Z",
+  "review_status": "applied",
+  "schema_version": 1,
+  "source_id": "github-agent-skills-search",
+  "source_item_id": "1256858923",
+  "source_revision": "2026-08-25T09:49:24Z",
+  "title": "makursi/my-agent-skills",
+  "trust": "discovery"
+}

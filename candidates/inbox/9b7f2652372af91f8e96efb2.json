@@ -1,6 +1,8 @@
 {
   "authority": "official-plugin-examples",
   "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/build-macos-apps",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-00-54Z-9b7f2652372af91f8e96efb2.json",
   "evidence_sha256": "46ca0892b8c4ae5f34c034e3dc38018788e188c8dd23358c2303256d971d8a84",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "facts-only"
   },
   "observed_at": "2026-08-27T10:14:45.959028Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-plugin-catalog",
   "source_item_id": "b150c7ad29479b9431f9028a281f5667ea3a673a",

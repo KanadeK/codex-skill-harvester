@@ -1,6 +1,8 @@
 {
   "authority": "vendor-docs",
   "canonical_url": "https://cli.github.com/manual/gh_api",
+  "decision_outcome": "merge",
+  "decision_record": "decisions/records/2026-08-27T13-00-36Z-faf055fc515442a65f29f377.json",
   "evidence_sha256": "529855e680bc56be3dfc2cb0bb6dfb9bcb8b8f820bc2c6b2b0678032d244641e",
   "extracted_facts": [],
   "id": "faf055fc515442a65f29f377",
@@ -9,7 +11,7 @@
     "status": "known"
   },
   "observed_at": "2026-08-27T09:26:05Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "github-cli-api",
   "source_revision": "\"6a877e4e-1b3f4\"",

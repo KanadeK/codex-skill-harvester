@@ -18,6 +18,13 @@ def audit(snapshot: dict[str, Any]) -> dict[str, Any]:
     add("repository_public", "PASS" if repository["is_private"] is False else "FAIL", repository["url"])
     published = release["is_draft"] is False and bool(release["published_at"])
     add("release_published", "PASS" if published else "FAIL", release["url"])
+    immutable_required = snapshot.get("requirements", {}).get("immutable_release", False)
+    immutable = release.get("immutable")
+    add(
+        "release_immutable",
+        "PASS" if not immutable_required or immutable is True else "FAIL",
+        f"required={str(immutable_required).lower()} immutable={str(immutable).lower()}",
+    )
     aligned = release["tag_name"] == tag["name"] and release["target_commit_sha"] == tag["commit_sha"]
     add("tag_target_alignment", "PASS" if aligned else "FAIL", f"tag={tag['commit_sha']} target={release['target_commit_sha']}")
 

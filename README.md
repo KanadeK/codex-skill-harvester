@@ -2,24 +2,26 @@
 
 [![CI](https://github.com/KanadeK/codex-skill-harvester/actions/workflows/ci.yml/badge.svg)](https://github.com/KanadeK/codex-skill-harvester/actions/workflows/ci.yml)
 
-[v0.1.0](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.1.0) is published as an immutable GitHub Release with verified source, Plugin, and checksum assets.
+The current source version is **0.1.1**. Tagged releases are published as immutable GitHub Releases with verified source, Plugin, and checksum assets; the prior [v0.1.0](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.1.0) attestation remains available.
 
 Codex Skill Harvester incrementally turns changed, authoritative public workflow evidence into reviewed, original Codex Skills grouped by user task domain. It persists source cursors, evidence hashes, capability fingerprints, semantic decisions, generated artifacts, and run reports in the repository, so a later scan resumes without chat memory.
 
 It is deliberately not a Skill mirror. Deterministic Python owns fetching, change detection, exact deduplication, state, validation, and packaging. Codex owns semantic comparison and the decision to discard, merge, update, or create.
 
-## What v0.1.0 proves
+## What v0.1.1 proves
 
 - 13 registered and live-scanned sources across official OpenAI format authority, vendor documentation, GitHub search/API, Release/Atom, and representative external Skills.
-- A real 11-source scan produced 20 changed discoveries; the next successful identical scan produced `status=no_op` and zero discoveries.
-- The authenticated GitHub API scan produced 63 discoveries. Its immediate repeat processed only two genuinely changed search results while the official Plugin catalog produced zero; a later focused search processed ten more entries because the live `sort=updated` window had changed again.
+- A real incremental maintenance scan resumed from the committed cursors, completed all 13 sources through transactional subsets, and discovered 15 genuinely unseen items without recreating previously seen candidates.
+- JSON-list sources separate material item identity from a moving result window. Revision-only changes and reordering are observable but do not create duplicate candidates; genuinely unseen repository identities still do.
 - Controlled tests distinguish exact duplicates, semantic/capability duplicates, updates, and genuinely new capabilities.
-- Six real discoveries are reviewed: three discarded, one merged, one created, and one corrective update. Eighty-nine remain explicitly pending rather than being converted into filler.
-- The generated `github-release-evidence` Plugin contains one original `audit-github-release` Skill with source provenance, positive/negative trigger reviews, and a deterministic end-to-end evidence checker.
+- All 110 real discoveries have explicit decisions: 103 discarded, 4 merged, 2 updates, and 1 creation. The review queue is zero; no catalog name, release title, or unknown-license community result became filler.
+- The generated `github-release-evidence` Plugin contains one original `audit-github-release` Skill with source provenance, positive/negative trigger reviews, and a deterministic nine-gate end-to-end checker including optional immutable Release proof.
+- Read-only `status` and `review-queue` commands expose durable handoff state without opening JSON files.
+- A weekly/manual GitHub Actions workflow performs only deterministic scanning and opens a changed-only review PR. It never applies a semantic decision or publishes a Skill.
 - Repository validation covers structure, state/catalog/decision consistency, generated artifact hashes, source references, and secret-like material. Release ZIPs are deterministic and are installed and invoked from an isolated temporary directory.
-- The published source archive installs and invokes successfully, and the released Plugin's own Skill returns `complete` against the live v0.1.0 repository, PR, CI, tag, asset, installation, and contributor evidence.
+- The previous published source archive and Plugin were live-verified against the v0.1.0 repository, PR, CI, tag, asset, installation, and contributor evidence. v0.1.1 is not declared published until the same remote gates pass.
 
-GitHub API sources support either `GITHUB_TOKEN` from the current process or the official `gh` keyring via `--github-auth gh-cli`. Environment tokens are sent only to `api.github.com`, are not forwarded across redirects, and are never persisted or printed. The `gh-cli` path invokes `gh api` without exporting or placing a credential on the command line. The discovery search intentionally follows a moving `sort=updated` window, so an immediate repeat can truthfully contain a small number of changed entries instead of being a no-op.
+GitHub API sources support either `GITHUB_TOKEN` from the current process or the official `gh` keyring via `--github-auth gh-cli`. Environment tokens are sent only to `api.github.com`, are not forwarded across redirects, and are never persisted or printed. The `gh-cli` path invokes `gh api` without exporting or placing a credential on the command line. The discovery search intentionally follows a moving `sort=updated` window, so an immediate repeat can truthfully discover new repository identities while revision-only churn is suppressed.
 
 ## Product boundary
 
@@ -57,6 +59,13 @@ Or reuse an existing official GitHub CLI login without exporting its keyring cre
 .\.venv\Scripts\skill-harvester scan --root . --github-auth gh-cli
 ```
 
+Inspect the durable handoff state and pending review queue:
+
+```powershell
+.\.venv\Scripts\skill-harvester status --root .
+.\.venv\Scripts\skill-harvester review-queue --root .
+```
+
 A scan stores only source metadata, necessary extracted facts, and evidence hashes. It does not store raw pages or execute fetched code. Review a discovery by creating the explicit decision contract documented in [.agents/skills/maintain-skill-harvester](.agents/skills/maintain-skill-harvester/SKILL.md), then apply it:
 
 ```powershell
@@ -73,10 +82,10 @@ py -3.12 scripts/build_release.py
 py -3.12 scripts/verify_release_archive.py
 ```
 
-CI runs the same gates on current Ubuntu and Windows runners. The build creates:
+CI runs the same gates on current Ubuntu and Windows runners. A separate weekly/manual workflow scans from the persisted cursor and opens a PR only when discoveries exist. The build creates:
 
-- `codex-skill-harvester-v0.1.0.zip`
-- `github-release-evidence-v0.1.0.zip`
+- `codex-skill-harvester-v0.1.1.zip`
+- `github-release-evidence-v0.1.1.zip`
 - `SHA256SUMS.txt`
 
 ## Install the generated Plugin
@@ -84,7 +93,7 @@ CI runs the same gates on current Ubuntu and Windows runners. The build creates:
 Add this repository as a Codex marketplace source, pinned to the release tag:
 
 ```text
-codex plugin marketplace add KanadeK/codex-skill-harvester --ref v0.1.0
+codex plugin marketplace add KanadeK/codex-skill-harvester --ref v0.1.1
 ```
 
 Restart the ChatGPT desktop app, open the Plugins Directory in Codex or Work mode, choose **Codex Skill Harvester**, and install **GitHub Release Evidence**. This follows the [official repo-marketplace flow](https://developers.openai.com/plugins/build/plugins#add-a-marketplace-from-the-cli).

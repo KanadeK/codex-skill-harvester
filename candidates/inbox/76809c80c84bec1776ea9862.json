@@ -1,6 +1,8 @@
 {
   "authority": "official-plugin-examples",
   "canonical_url": "https://github.com/openai/plugins/tree/main/plugins/remotion",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-01-28Z-76809c80c84bec1776ea9862.json",
   "evidence_sha256": "654af7756e3440323593167983e9dedc5e00b22fe821b8a8d13af07de9a69667",
   "extracted_facts": [
     {
@@ -18,7 +20,7 @@
     "status": "facts-only"
   },
   "observed_at": "2026-08-27T10:14:45.959028Z",
-  "review_status": "pending",
+  "review_status": "applied",
   "schema_version": 1,
   "source_id": "openai-plugin-catalog",
   "source_item_id": "e0c41f92edec7863e66db4200e25743e58ab734e",

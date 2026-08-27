@@ -1,0 +1,30 @@
+{
+  "authority": "demand-signal-only",
+  "canonical_url": "https://github.com/lightdash/lightdash",
+  "decision_outcome": "discard",
+  "decision_record": "decisions/records/2026-08-27T13-00-20Z-7554bff23205a0519db2b768.json",
+  "evidence_sha256": "55630140fa4f4f04382c0e5a0dbadff6873b8114ba80d0806a23505088211337",
+  "extracted_facts": [
+    {
+      "kind": "source_revision",
+      "value": "2026-08-27T12:41:18Z"
+    },
+    {
+      "kind": "source_title",
+      "value": "lightdash/lightdash"
+    }
+  ],
+  "id": "7554bff23205a0519db2b768",
+  "license": {
+    "identifier": null,
+    "status": "unknown"
+  },
+  "observed_at": "2026-08-27T12:41:55.827368Z",
+  "review_status": "applied",
+  "schema_version": 1,
+  "source_id": "github-agent-skills-search",
+  "source_item_id": "349372179",
+  "source_revision": "2026-08-27T12:41:18Z",
+  "title": "lightdash/lightdash",
+  "trust": "discovery"
+}

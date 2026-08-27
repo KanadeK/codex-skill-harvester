@@ -1,12 +1,20 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Sequence
 
 from .decisions import DecisionError, apply_decision
+from .reporting import (
+    ReportingError,
+    render_review_queue,
+    render_status,
+    repository_status,
+    review_queue,
+)
 from .sources import (
     Fetcher,
     GitHubCliFetcher,
@@ -35,6 +43,13 @@ def _parser() -> argparse.ArgumentParser:
     apply = commands.add_parser("apply", help="apply one explicit Codex-reviewed decision")
     apply.add_argument("--root", type=Path, default=Path.cwd(), help="harvester repository root")
     apply.add_argument("--decision", type=Path, required=True, help="reviewed decision JSON path")
+    status = commands.add_parser("status", help="show durable source, queue, decision, and catalog state")
+    status.add_argument("--root", type=Path, default=Path.cwd(), help="harvester repository root")
+    status.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+    queue = commands.add_parser("review-queue", help="list pending discoveries for Codex review")
+    queue.add_argument("--root", type=Path, default=Path.cwd(), help="harvester repository root")
+    queue.add_argument("--source", help="filter by one registered source id")
+    queue.add_argument("--json", action="store_true", help="emit machine-readable JSON")
     return parser
 
 
@@ -47,6 +62,18 @@ def main(
     args = _parser().parse_args(argv)
     try:
         root = args.root.resolve()
+        if args.command == "status":
+            report = repository_status(root)
+            print(json.dumps(report, indent=2, sort_keys=True) if args.json else render_status(report))
+            return 0
+        if args.command == "review-queue":
+            report = review_queue(root, args.source)
+            print(
+                json.dumps(report, indent=2, sort_keys=True)
+                if args.json
+                else render_review_queue(report)
+            )
+            return 0
         if args.command == "apply":
             record = apply_decision(root, args.decision.resolve())
             print(f"outcome={record['outcome']} candidate={record['candidate_id']}")
@@ -63,7 +90,7 @@ def main(
             now=observed_at,
             source_ids=set(args.source) if args.source else None,
         )
-    except (DecisionError, RegistryError, SourceFetchError, OSError) as error:
+    except (DecisionError, RegistryError, ReportingError, SourceFetchError, OSError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
     print(f"status={report['status']} discoveries={report['discoveries']} run={report['run_id']}")
