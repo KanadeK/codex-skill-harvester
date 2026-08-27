@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/KanadeK/codex-skill-harvester/actions/workflows/ci.yml/badge.svg)](https://github.com/KanadeK/codex-skill-harvester/actions/workflows/ci.yml)
 
+[v0.1.0](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.1.0) is published as an immutable GitHub Release with verified source, Plugin, and checksum assets.
+
 Codex Skill Harvester incrementally turns changed, authoritative public workflow evidence into reviewed, original Codex Skills grouped by user task domain. It persists source cursors, evidence hashes, capability fingerprints, semantic decisions, generated artifacts, and run reports in the repository, so a later scan resumes without chat memory.
 
 It is deliberately not a Skill mirror. Deterministic Python owns fetching, change detection, exact deduplication, state, validation, and packaging. Codex owns semantic comparison and the decision to discard, merge, update, or create.
@@ -15,6 +17,7 @@ It is deliberately not a Skill mirror. Deterministic Python owns fetching, chang
 - Six real discoveries are reviewed: three discarded, one merged, one created, and one corrective update. Eighty-nine remain explicitly pending rather than being converted into filler.
 - The generated `github-release-evidence` Plugin contains one original `audit-github-release` Skill with source provenance, positive/negative trigger reviews, and a deterministic end-to-end evidence checker.
 - Repository validation covers structure, state/catalog/decision consistency, generated artifact hashes, source references, and secret-like material. Release ZIPs are deterministic and are installed and invoked from an isolated temporary directory.
+- The published source archive installs and invokes successfully, and the released Plugin's own Skill returns `complete` against the live v0.1.0 repository, PR, CI, tag, asset, installation, and contributor evidence.
 
 GitHub API sources support either `GITHUB_TOKEN` from the current process or the official `gh` keyring via `--github-auth gh-cli`. Environment tokens are sent only to `api.github.com`, are not forwarded across redirects, and are never persisted or printed. The `gh-cli` path invokes `gh api` without exporting or placing a credential on the command line. The discovery search intentionally follows a moving `sort=updated` window, so an immediate repeat can truthfully contain a small number of changed entries instead of being a no-op.
 

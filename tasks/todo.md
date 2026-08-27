@@ -37,7 +37,7 @@
 
 ## Task 6: publish and verify v0.1.0
 
-- [ ] Acceptance: public remote, merged PR, green CI, annotated tag, Release assets, installation/call proof, and contributor evidence are current and consistent.
-- [ ] Verify: GitHub read-back plus clean temporary extraction.
-- [ ] Files: release notes, final run report, Git history and remote objects.
+- [x] Acceptance: public remote, merged PR, green CI, immutable annotated tag, Release assets, installation/call proof, and contributor evidence are current and consistent.
+- [x] Verify: GitHub attestation read-back plus clean temporary extraction and released-Skill invocation.
+- [x] Files: release notes, final run report, Git history and remote objects.
 - Dependencies: Task 5 and completed code review.
