@@ -1,0 +1,69 @@
+{
+  "canonical_id": {
+    "immutable": true,
+    "pattern": "^[a-z0-9]+(?:[.:-][a-z0-9]+)*$"
+  },
+  "facets": {
+    "domain": {
+      "cardinality": "one-or-more",
+      "extensible": true,
+      "values": ["business", "data", "design", "documents", "education", "life", "media", "operations", "research", "science", "software"]
+    },
+    "inputs": {
+      "cardinality": "one-or-more",
+      "extensible": true,
+      "values": ["api", "audio", "code", "document", "file", "image", "release", "report", "repository", "spreadsheet", "webpage"]
+    },
+    "intent": {
+      "cardinality": "one-or-more",
+      "extensible": true,
+      "values": ["analyze", "create", "diagnose", "discover", "maintain", "operate", "publish", "research", "transform", "validate"]
+    },
+    "maturity": {
+      "cardinality": "exactly-one",
+      "extensible": false,
+      "values": ["candidate", "deprecated", "published", "signal", "verified"]
+    },
+    "outputs": {
+      "cardinality": "one-or-more",
+      "extensible": true,
+      "values": ["code", "decision", "evidence", "file", "release", "report"]
+    },
+    "platforms": {
+      "cardinality": "one-or-more",
+      "extensible": true,
+      "values": ["codex", "github", "github-actions", "linux", "macos", "windows"]
+    },
+    "risk": {
+      "cardinality": "one-or-more",
+      "extensible": true,
+      "values": ["credentials", "financial", "high-risk", "legal", "medical", "standard"]
+    },
+    "side_effects": {
+      "cardinality": "one-or-more",
+      "extensible": true,
+      "values": ["external-publish", "local-write", "network-read", "network-write", "read-only"]
+    },
+    "tools": {
+      "cardinality": "one-or-more",
+      "extensible": true,
+      "values": ["codex", "gh", "python"]
+    },
+    "trust": {
+      "cardinality": "one-or-more",
+      "extensible": true,
+      "values": ["community", "discovery", "official", "primary"]
+    },
+    "volatility": {
+      "cardinality": "exactly-one",
+      "extensible": false,
+      "values": ["fast-moving", "periodic", "stable"]
+    }
+  },
+  "primary_family": {
+    "cardinality": "exactly-one",
+    "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$"
+  },
+  "schema_version": 1,
+  "taxonomy_version": "1.0.0"
+}

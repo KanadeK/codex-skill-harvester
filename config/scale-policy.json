@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "backend": "git-json-v1",
+  "benchmark_fixture_records": 1000,
+  "review_batch": {
+    "default": 100,
+    "maximum": 1000
+  },
+  "migration_triggers": {
+    "candidate_records": 50000,
+    "candidate_lifecycle_files": 150000,
+    "full_validation_seconds": 60,
+    "harvest_state_bytes": 33554432,
+    "seen_source_items": 100000
+  },
+  "projection_targets": {
+    "candidate_records": [10000, 50000, 100000, 1000000],
+    "source_records": [100000, 1000000]
+  }
+}

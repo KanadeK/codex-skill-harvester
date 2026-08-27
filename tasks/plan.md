@@ -116,3 +116,45 @@ None for the first vertical slice.
 - [x] Complete five-axis review and all local tests, evals, validation, archive, and isolated install gates.
 - [x] Push an exact-path commit series, open a PR, wait for CI, merge, and verify `main`.
 - [x] Tag and publish immutable v0.1.1, then verify assets, installation/invocation, Skill behavior, settings, and contributors.
+
+## Scale architecture foundation plan
+
+### Phase 10: audit the current scale boundary
+
+- [ ] Inventory record counts, byte sizes, full-enumeration paths, whole-file rewrites, and current validation latency.
+- [ ] Record the three-layer target architecture and a phased backend evolution path.
+- [ ] Define evidence-backed migration triggers rather than selecting a database from projected scale alone.
+
+### Checkpoint: architecture
+
+- [ ] The audit separates measured current behavior, projections, decisions, and deferred work.
+- [ ] The active backend and every migration trigger are explicit.
+
+### Phase 11: version capability semantics and taxonomy
+
+- [ ] Add a versioned primary-family plus facets taxonomy contract.
+- [ ] Decouple canonical capability identity from its current Plugin/Skill packaging location.
+- [ ] Define schema compatibility, legacy `discard` interpretation, aliases, merges, variants, and reactivation rules.
+
+### Checkpoint: contracts
+
+- [ ] Current catalog entries validate against the taxonomy.
+- [ ] A fixture proves catalog v1 to v2 migration and idempotent v2 handling.
+
+### Phase 12: bound work and expose honest metrics
+
+- [ ] Add failing tests for bounded/cursor review pages and `not_promoted` semantics.
+- [ ] Add failing tests for discovery-stage success, failure, enqueue, and duplicate metrics.
+- [ ] Implement only the behavior required to make those tests pass.
+
+### Checkpoint: operations
+
+- [ ] Review work is budget bounded and resumable.
+- [ ] Reports distinguish measured zero from a stage that was not run.
+
+### Phase 13: benchmark, review, and submit
+
+- [ ] Add and run a temporary-directory storage benchmark with projections and trigger evaluation.
+- [ ] Run focused tests, the full suite, validator, evals, release build, and isolated archive verification.
+- [ ] Complete correctness/readability/architecture/security/performance review and resolve required findings.
+- [ ] Commit exact paths, push the `codex/` branch, open one PR, and wait for CI without merging or releasing.
