@@ -72,7 +72,7 @@ class UrllibFetcher:
             raise SourceFetchError(f"source request failed: {error.reason}") from error
 
 
-def _load_registry(root: Path) -> list[dict[str, Any]]:
+def load_registry(root: Path) -> list[dict[str, Any]]:
     registry = load_json(root / "sources" / "registry.json")
     if not isinstance(registry, dict) or registry.get("schema_version") != 1:
         raise RegistryError("source registry must use schema_version 1")
@@ -330,7 +330,7 @@ def run_scan(
     now: str,
     source_ids: set[str] | None = None,
 ) -> dict[str, Any]:
-    sources = _load_registry(root)
+    sources = load_registry(root)
     if source_ids is not None:
         known = {source["id"] for source in sources}
         unknown = source_ids - known

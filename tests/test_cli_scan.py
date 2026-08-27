@@ -13,6 +13,7 @@ from skill_harvester.cli import main
 from skill_harvester.sources import FetchResponse
 
 from _support import QueueFetcher, document_source, write_registry
+from test_apply_decision import create_decision, write_json
 
 
 class ScanCliTests(unittest.TestCase):
@@ -40,6 +41,25 @@ class ScanCliTests(unittest.TestCase):
             self.assertEqual(exit_code, 0)
             self.assertIn("status=changed", output.getvalue())
             self.assertIn("discoveries=1", output.getvalue())
+
+    def test_apply_command_reports_reviewed_outcome(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_json(
+                root / "catalog" / "capabilities.json",
+                {"schema_version": 1, "internal": [], "external": []},
+            )
+            decision_path = create_decision(root)
+            output = io.StringIO()
+
+            with contextlib.redirect_stdout(output):
+                exit_code = main(
+                    ["apply", "--root", str(root), "--decision", str(decision_path)]
+                )
+
+            self.assertEqual(exit_code, 0)
+            self.assertIn("outcome=create", output.getvalue())
+            self.assertIn("candidate=real-source-candidate", output.getvalue())
 
 
 if __name__ == "__main__":
