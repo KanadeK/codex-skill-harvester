@@ -90,3 +90,29 @@ Deliver one thin but complete path: scan official public sources with persisted 
 ## Open questions
 
 None for the first vertical slice.
+
+## v0.1.1 maintenance plan
+
+### Phase 6: stabilize recurring scans
+
+- [ ] Distinguish moving-window churn from material JSON-list changes with regression tests.
+- [ ] Add durable `status` and `review-queue` operator commands.
+- [ ] Run a real incremental scan from the persisted cursor and record changed/no-op truthfully.
+
+### Phase 7: close the review queue
+
+- [ ] Review all 89 pending discoveries in source batches and persist individual decisions.
+- [ ] Update the release-evidence Skill only if authoritative evidence supports a useful non-duplicate gate.
+- [ ] Confirm no unsupported second Plugin is created from catalog names or community demand signals alone.
+
+### Phase 8: automate and harden maintenance
+
+- [ ] Add a scheduled/manual deterministic scan workflow that opens PRs only for real discoveries.
+- [ ] Add dependency update, security policy, contribution templates, and repository validation for the new contracts.
+- [ ] Enable remote vulnerability features, disable unused repository surfaces, and protect `main` with required CI and PRs.
+
+### Phase 9: verify and release v0.1.1
+
+- [ ] Complete five-axis review and all local tests, evals, validation, archive, and isolated install gates.
+- [ ] Push an exact-path commit series, open a PR, wait for CI, merge, and verify `main`.
+- [ ] Tag and publish immutable v0.1.1, then verify assets, installation/invocation, Skill behavior, settings, and contributors.
