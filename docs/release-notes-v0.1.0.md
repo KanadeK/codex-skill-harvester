@@ -12,4 +12,4 @@ Release assets:
 - standalone Plugin archive;
 - checksum manifest.
 
-Known limitation: anonymous GitHub API requests can be rate-limited. `GITHUB_TOKEN` is supported for `api.github.com` only and is never stored. Fifteen first-round discoveries remain intentionally pending for later reviewed scan rounds.
+Known limitation: anonymous GitHub API requests can be rate-limited. `GITHUB_TOKEN` is supported for `api.github.com` only and is never stored. Fourteen first-round discoveries remain intentionally pending for later reviewed scan rounds.

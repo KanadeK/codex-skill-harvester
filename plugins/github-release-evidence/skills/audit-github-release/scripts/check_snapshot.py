@@ -30,17 +30,20 @@ def audit(snapshot: dict[str, Any]) -> dict[str, Any]:
     if pull_request is None:
         add("pull_request_merged", "NOT_CHECKED", "no pull request supplied")
         add("pull_request_checks", "NOT_CHECKED", "no pull request supplied")
+        add("pull_request_release_alignment", "NOT_CHECKED", "no pull request supplied")
     else:
-        add("pull_request_merged", "PASS" if pull_request["state"] == "MERGED" else "FAIL", pull_request["url"] )
+        add("pull_request_merged", "PASS" if pull_request["state"] == "MERGED" else "FAIL", pull_request["url"])
         buckets = [item["bucket"] for item in pull_request["checks"]]
         checks_pass = bool(buckets) and all(bucket in {"pass", "skipping"} for bucket in buckets)
         add("pull_request_checks", "PASS" if checks_pass else "FAIL", "buckets=" + (",".join(buckets) or "none"))
+        merge_aligned = pull_request["merge_commit_sha"] == tag["commit_sha"]
+        add("pull_request_release_alignment", "PASS" if merge_aligned else "FAIL", f"merge={pull_request['merge_commit_sha']} tag={tag['commit_sha']}")
 
     installation = snapshot["installation"]
     if installation is None:
         add("installation_or_invocation", "NOT_CHECKED", "no isolated acceptance run recorded")
     else:
-        add("installation_or_invocation", "PASS" if installation["exit_code"] == 0 else "FAIL", installation["command"] )
+        add("installation_or_invocation", "PASS" if installation["exit_code"] == 0 else "FAIL", installation["command"])
 
     failed = any(item["status"] == "FAIL" for item in checks)
     unchecked = any(item["status"] == "NOT_CHECKED" for item in checks)
@@ -48,12 +51,16 @@ def audit(snapshot: dict[str, Any]) -> dict[str, Any]:
     return {"result": result, "checks": checks, "contributors": [item["login"] for item in snapshot["contributors"]]}
 
 
+def _cell(value: str) -> str:
+    return " ".join(value.splitlines()).replace("|", "\\|")
+
+
 def render(report: dict[str, Any]) -> str:
     lines = [f"# Release audit: {report['result']}", "", "| Gate | Status | Evidence |", "| --- | --- | --- |"]
     for item in report["checks"]:
-        evidence = item["evidence"].replace("|", "\\|")
-        lines.append(f"| {item['gate']} | {item['status']} | {evidence} |")
-    lines.extend(["", "Contributors: " + (", ".join(report["contributors"]) or "none reported"), ""] )
+        lines.append(f"| {item['gate']} | {item['status']} | {_cell(item['evidence'])} |")
+    contributors = ", ".join(_cell(login) for login in report["contributors"])
+    lines.extend(["", "Contributors: " + (contributors or "none reported"), ""])
     return "\n".join(lines)
 
 

@@ -11,7 +11,7 @@ It is deliberately not a Skill mirror. Deterministic Python owns fetching, chang
 - 13 registered sources across official OpenAI format authority, vendor documentation, GitHub search/API, Release/Atom, and representative external Skills.
 - A real 11-source scan produced 20 changed discoveries; the next successful identical scan produced `status=no_op` and zero discoveries.
 - Controlled tests distinguish exact duplicates, semantic/capability duplicates, updates, and genuinely new capabilities.
-- Five real discoveries are reviewed: three discarded, one merged, and one created. Fifteen remain explicitly pending rather than being converted into filler.
+- Six real discoveries are reviewed: three discarded, one merged, one created, and one corrective update. Fourteen remain explicitly pending rather than being converted into filler.
 - The generated `github-release-evidence` Plugin contains one original `audit-github-release` Skill with source provenance, positive/negative trigger reviews, and a deterministic end-to-end evidence checker.
 - Repository validation covers structure, state/catalog/decision consistency, generated artifact hashes, source references, and secret-like material. Release ZIPs are deterministic and are installed and invoked from an isolated temporary directory.
 

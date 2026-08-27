@@ -25,6 +25,7 @@ Obtain `OWNER/REPO`, the exact release tag, any pull request that delivered the 
 5. When a pull request is supplied, read it and its checks:
    `gh pr view PR -R OWNER/REPO --json number,state,mergeCommit,url`
    `gh pr checks PR -R OWNER/REPO --json name,state,bucket,link`
+   Resolve `mergeCommit` to its full OID and require it to equal the resolved tag commit; a merged PR alone does not prove it delivered the tagged release.
 6. Read contributors with pagination:
    `gh api --paginate --slurp repos/OWNER/REPO/contributors?per_page=100`
 
@@ -36,7 +37,7 @@ Create a temporary JSON snapshot matching [the evidence contract](references/evi
 
 `python scripts/check_snapshot.py SNAPSHOT.json --output REPORT.md`
 
-The checker is deterministic: it verifies public visibility, published Release state, tag/target alignment, expected asset names, merged PR/check state when supplied, and whether installation or invocation evidence was actually recorded. Run it from a temporary directory when validating an artifact.
+The checker is deterministic: it verifies public visibility, published Release state, tag/target alignment, expected asset names, merged PR/check and PR-to-release commit alignment when supplied, and whether installation or invocation evidence was actually recorded. Run it from a temporary directory when validating an artifact.
 
 Installation proof is separate from publication metadata. Only run the documented user-authorized install or invocation command in an isolated temporary directory, record the exact command and exit code in the snapshot, and do not execute downloaded third-party scripts.
 

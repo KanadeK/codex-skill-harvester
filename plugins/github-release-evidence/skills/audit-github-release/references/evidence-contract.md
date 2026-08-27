@@ -39,7 +39,7 @@ Use this normalized JSON shape as input to `scripts/check_snapshot.py`. Values m
 }
 ```
 
-`pull_request` and `installation` may be `null`; their gates then remain `NOT_CHECKED`. An empty `expected_assets` list means the audit makes no custom-asset claim.
+`pull_request` and `installation` may be `null`; their gates then remain `NOT_CHECKED`. When a pull request is present, its `merge_commit_sha` must equal `tag.commit_sha`. An empty `expected_assets` list means the audit makes no custom-asset claim.
 
 ## Authority sources
 
