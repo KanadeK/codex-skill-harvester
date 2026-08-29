@@ -231,5 +231,5 @@ PR #7 remains the deterministic scale base. This work starts from `2ea8771cfbc45
 ### Phase 21: submit the stacked slice
 
 - [x] Run full tests, evals, validator, benchmark, build/install, Skill validation, and diff checks without tracked-state pollution.
-- [ ] Commit exact paths, push the new branch, open one PR with base `codex/plan-adoption-audit`, and wait for Ubuntu/Windows CI.
-- [ ] Stop without merging either PR or creating a tag/Release.
+- [x] Commit exact paths, push the new branch, open one PR with base `codex/plan-adoption-audit`, and wait for Ubuntu/Windows CI.
+- [x] Stop without merging either PR or creating a tag/Release.
