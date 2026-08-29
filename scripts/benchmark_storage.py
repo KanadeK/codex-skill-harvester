@@ -12,6 +12,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from skill_harvester.scaling import (
     benchmark_json_lifecycle,
+    benchmark_sqlite_runtime,
     evaluate_migration_triggers,
     inventory_repository,
     load_scale_policy,
@@ -22,7 +23,7 @@ from skill_harvester.validation import validate_repository
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Measure the active Git-JSON lifecycle layout in a temporary directory."
+        description="Measure active SQLite runtime storage and the legacy JSON lifecycle baseline."
     )
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--records", type=int)
@@ -46,7 +47,8 @@ def main() -> int:
         "backend": policy["backend"],
         "inventory": inventory,
         "full_validation_seconds": round(full_validation_seconds, 6),
-        "benchmark": benchmark_json_lifecycle(records),
+        "benchmark": benchmark_sqlite_runtime(records),
+        "legacy_json_baseline": benchmark_json_lifecycle(records),
         "projections": project_storage(inventory, policy),
         "migration_triggers": evaluate_migration_triggers(
             inventory,

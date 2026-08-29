@@ -10,6 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from skill_harvester.scaling import (
     ScalePolicyError,
     benchmark_json_lifecycle,
+    benchmark_sqlite_runtime,
     evaluate_migration_triggers,
     inventory_repository,
     load_scale_policy,
@@ -25,14 +26,8 @@ class ScalingTests(unittest.TestCase):
         policy = load_scale_policy(ROOT)
         inventory = inventory_repository(ROOT)
 
-        candidate_files = list((ROOT / "candidates" / "inbox").glob("*.json"))
-        reviewed_files = list((ROOT / "candidates" / "reviewed").glob("*.json"))
-        decision_files = list((ROOT / "decisions" / "records").glob("*.json"))
-        self.assertEqual(inventory["candidate_records"], len(candidate_files))
-        self.assertEqual(
-            inventory["candidate_lifecycle_files"],
-            len(candidate_files) + len(reviewed_files) + len(decision_files),
-        )
+        self.assertGreaterEqual(inventory["candidate_records"], 110)
+        self.assertEqual(inventory["candidate_lifecycle_files"], 1)
         self.assertEqual(evaluate_migration_triggers(inventory, policy), [])
 
         projections = project_storage(inventory, policy)
@@ -41,8 +36,8 @@ class ScalingTests(unittest.TestCase):
             for item in projections["candidate_records"]
             if item["records"] == 10000
         )
-        self.assertEqual(ten_thousand["lifecycle_files"], 30000)
-        self.assertGreater(ten_thousand["estimated_payload_bytes"], 30_000_000)
+        self.assertEqual(ten_thousand["lifecycle_files"], 1)
+        self.assertGreater(ten_thousand["estimated_payload_bytes"], 20_000_000)
 
     def test_crossing_a_named_threshold_opens_migration_evaluation(self) -> None:
         policy = load_scale_policy(ROOT)
@@ -81,6 +76,15 @@ class ScalingTests(unittest.TestCase):
     def test_temporary_benchmark_rejects_zero_records(self) -> None:
         with self.assertRaisesRegex(ScalePolicyError, "positive integer"):
             benchmark_json_lifecycle(0)
+
+    def test_temporary_sqlite_benchmark_writes_and_reads_one_runtime_store(self) -> None:
+        result = benchmark_sqlite_runtime(25)
+
+        self.assertEqual(result["records"], 25)
+        self.assertEqual(result["parsed_records"], 25)
+        self.assertGreater(result["bytes"], 0)
+        self.assertGreaterEqual(result["write_seconds"], 0)
+        self.assertGreaterEqual(result["read_seconds"], 0)
 
     def test_scale_policy_rejects_an_invalid_review_budget(self) -> None:
         policy = load_scale_policy(ROOT)

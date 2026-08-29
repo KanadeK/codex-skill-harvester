@@ -121,6 +121,14 @@
       "trust": "representative",
       "authority": "external-skill-comparison",
       "license": { "status": "known", "identifier": "Apache-2.0" }
+    },
+    {
+      "id": "pypi-updates",
+      "adapter": "rss",
+      "url": "https://pypi.org/rss/updates.xml",
+      "trust": "official",
+      "authority": "official-package-feed",
+      "license": { "status": "facts-only", "identifier": null }
     }
   ]
 }

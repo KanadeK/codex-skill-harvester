@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from .decisions import bundle_hash, normalize_fingerprint
+from .campaign import CampaignPolicyError, load_campaign_policy
 from .io import load_json
 from .scaling import (
     ScalePolicyError,
@@ -12,6 +13,7 @@ from .scaling import (
     inventory_repository,
     load_scale_policy,
 )
+from .runtime_store import RuntimeStoreError, open_runtime_store
 from .sources import load_registry
 from .taxonomy import TaxonomyError, validate_catalog_taxonomy
 
@@ -75,6 +77,8 @@ def validate_repository(root: Path) -> dict[str, Any]:
         "pyproject.toml",
         "catalog/taxonomy.json",
         "config/scale-policy.json",
+        "config/campaign-policy.json",
+        "state/harvest.sqlite3",
         "docs/architecture.md",
         "docs/roadmap.md",
         "docs/scale-audit.md",
@@ -102,7 +106,7 @@ def validate_repository(root: Path) -> dict[str, Any]:
         "contents: write",
         "pull-requests: write",
         "python -m skill_harvester scan --root .",
-        "git add -- state/harvest-state.json candidates/inbox runs",
+        "git add -- state/harvest.sqlite3 runs",
         'gh workflow run ci.yml --ref "$branch"',
     ):
         _require(marker in harvest_workflow, f"harvest workflow contract missing: {marker}")
@@ -119,11 +123,28 @@ def validate_repository(root: Path) -> dict[str, Any]:
 
     sources = load_registry(root)
     source_by_id = {source["id"]: source for source in sources}
-    state = load_json(root / "state" / "harvest-state.json")
-    _require(isinstance(state, dict) and state.get("schema_version") == 1, "state schema invalid")
-    _require(isinstance(state.get("last_successful_run"), str), "state has no successful cursor")
-    state_sources = state.get("sources")
-    _require(isinstance(state_sources, dict), "state sources must be an object")
+    try:
+        campaign_policy = load_campaign_policy(root)
+    except CampaignPolicyError as error:
+        raise ValidationError(str(error)) from error
+    campaign_source_ids = {
+        source_id
+        for group in campaign_policy["source_groups"].values()
+        for source_id in group["source_ids"]
+    }
+    _require(
+        campaign_source_ids <= set(source_by_id),
+        "campaign policy references unknown source",
+    )
+    try:
+        with open_runtime_store(root) as store:
+            last_successful_run = store.last_successful_run()
+            state_sources = dict(store.source_states())
+            candidates = list(store.discoveries())
+            records = list(store.decisions())
+    except RuntimeStoreError as error:
+        raise ValidationError(str(error)) from error
+    _require(isinstance(last_successful_run, str), "runtime store has no successful cursor")
     for source_id, cursor in state_sources.items():
         _require(source_id in source_by_id, f"state references unknown source: {source_id}")
         source = source_by_id[source_id]
@@ -193,37 +214,40 @@ def validate_repository(root: Path) -> dict[str, Any]:
 
     candidate_count = 0
     applied_count = 0
-    for path in sorted((root / "candidates" / "inbox").glob("*.json")):
-        candidate = load_json(path)
-        _require(candidate["id"] == path.stem, f"candidate filename drift: {path.name}")
-        _require(candidate["source_id"] in source_by_id, f"candidate source unknown: {path.name}")
-        _require(candidate["review_status"] in {"pending", "applied"}, f"candidate status invalid: {path.name}")
-        _require(not ({"raw_body", "body", "content", "instructions"} & set(candidate)), f"raw source content persisted: {path.name}")
+    decisions_by_candidate = {record.get("candidate_id"): record for record in records}
+    for candidate in candidates:
+        candidate_id = candidate.get("id")
+        _require(isinstance(candidate_id, str), "runtime candidate id invalid")
+        _require(candidate["source_id"] in source_by_id, f"candidate source unknown: {candidate_id}")
+        _require(candidate["review_status"] in {"pending", "applied"}, f"candidate status invalid: {candidate_id}")
+        _require(not ({"raw_body", "body", "content", "instructions"} & set(candidate)), f"raw source content persisted: {candidate_id}")
         if candidate["review_status"] == "applied":
-            record_path = _relative_path(root, candidate["decision_record"])
-            record = load_json(record_path)
-            _require(record["candidate_id"] == candidate["id"], f"decision record mismatch: {path.name}")
-            _require(record["outcome"] == candidate["decision_outcome"], f"decision outcome mismatch: {path.name}")
+            record = decisions_by_candidate.get(candidate_id)
+            _require(record is not None, f"decision record missing: {candidate_id}")
+            _require(record["candidate_id"] == candidate_id, f"decision record mismatch: {candidate_id}")
+            _require(record["outcome"] == candidate["decision_outcome"], f"decision outcome mismatch: {candidate_id}")
+            _require(
+                candidate.get("decision_record") == f"sqlite:decisions/{candidate_id}",
+                f"decision reference invalid: {candidate_id}",
+            )
             applied_count += 1
         candidate_count += 1
 
-    records = list((root / "decisions" / "records").glob("*.json"))
     _require(len(records) == applied_count, "applied candidate and decision record counts differ")
-    for path in records:
-        record = load_json(path)
+    for record in records:
         _require(
             record.get("schema_version") in {1, 2},
-            f"decision schema invalid: {path.name}",
+            "decision schema invalid",
         )
-        _require(record["reviewed_by"] == "codex", f"unreviewed decision record: {path.name}")
-        _require(set(record["source_refs"]) <= set(source_by_id), f"decision source unknown: {path.name}")
+        _require(record["reviewed_by"] == "codex", "unreviewed decision record")
+        _require(set(record["source_refs"]) <= set(source_by_id), "decision source unknown")
         if record.get("schema_version") == 2 and record.get("outcome") == "not_promoted":
             conditions = record.get("reactivation_conditions")
             _require(
                 isinstance(conditions, list)
                 and bool(conditions)
                 and all(isinstance(condition, str) and condition for condition in conditions),
-                f"decision reactivation conditions invalid: {path.name}",
+                "decision reactivation conditions invalid",
             )
 
     for path in (root / "runs").glob("*.json"):

@@ -1,0 +1,74 @@
+{
+  "discoveries": 9,
+  "metrics": {
+    "candidates_enqueued": 9,
+    "discoveries_staged": 9,
+    "downloaded_bytes": 246457,
+    "exact_record_duplicates": 0,
+    "observations_seen": 10,
+    "source_success_rate": 1.0,
+    "sources_failed": 0,
+    "sources_selected": 7,
+    "sources_succeeded": 7,
+    "stage": "discovery"
+  },
+  "run_id": "2026-08-29T12-01-50.923333Z",
+  "schema_version": 1,
+  "sources": [
+    {
+      "discoveries": 0,
+      "downloaded_bytes": 0,
+      "observations": 0,
+      "source_id": "openai-build-plugins",
+      "status": "not_modified"
+    },
+    {
+      "discoveries": 9,
+      "downloaded_bytes": 28209,
+      "observations": 10,
+      "source_id": "openai-codex-releases",
+      "status": "changed",
+      "window_changed": true
+    },
+    {
+      "discoveries": 0,
+      "downloaded_bytes": 106644,
+      "observations": 0,
+      "source_id": "github-cli-repo-view",
+      "status": "unchanged_content",
+      "window_changed": false
+    },
+    {
+      "discoveries": 0,
+      "downloaded_bytes": 0,
+      "observations": 0,
+      "source_id": "github-cli-pr-checks",
+      "status": "not_modified"
+    },
+    {
+      "discoveries": 0,
+      "downloaded_bytes": 111604,
+      "observations": 0,
+      "source_id": "github-cli-api",
+      "status": "unchanged_content",
+      "window_changed": false
+    },
+    {
+      "discoveries": 0,
+      "downloaded_bytes": 0,
+      "observations": 0,
+      "source_id": "github-rest-releases",
+      "status": "not_modified"
+    },
+    {
+      "discoveries": 0,
+      "downloaded_bytes": 0,
+      "observations": 0,
+      "source_id": "github-rest-repositories",
+      "status": "not_modified"
+    }
+  ],
+  "status": "changed",
+  "unresolved_issues": [],
+  "validations": []
+}

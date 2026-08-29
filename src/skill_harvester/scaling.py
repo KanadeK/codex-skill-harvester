@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+import sqlite3
 import tempfile
 from pathlib import Path
 from time import perf_counter
 from typing import Any
 
 from .io import load_json
+from .runtime_store import RuntimeStoreError, open_runtime_store, runtime_store_path
 
 
 TRIGGER_FIELDS = (
@@ -30,8 +32,8 @@ def _positive_integer(value: Any, label: str) -> int:
 def validate_scale_policy(value: Any) -> dict[str, Any]:
     if not isinstance(value, dict) or value.get("schema_version") != 1:
         raise ScalePolicyError("scale policy must use schema_version 1")
-    if value.get("backend") != "git-json-v1":
-        raise ScalePolicyError("scale policy backend must be git-json-v1")
+    if value.get("backend") not in {"git-json-v1", "sqlite-v1"}:
+        raise ScalePolicyError("scale policy backend must be git-json-v1 or sqlite-v1")
     review_batch = value.get("review_batch")
     if not isinstance(review_batch, dict):
         raise ScalePolicyError("scale policy review batch is missing")
@@ -85,23 +87,23 @@ def load_scale_policy(root: Path) -> dict[str, Any]:
     return validate_scale_policy(load_json(root / "config" / "scale-policy.json"))
 
 
-def _files_and_bytes(path: Path) -> tuple[list[Path], int]:
-    files = sorted(path.glob("*.json"))
-    return files, sum(file.stat().st_size for file in files)
-
-
 def inventory_repository(root: Path) -> dict[str, Any]:
-    candidates, candidate_bytes = _files_and_bytes(root / "candidates" / "inbox")
-    reviewed, reviewed_bytes = _files_and_bytes(root / "candidates" / "reviewed")
-    decisions, decision_bytes = _files_and_bytes(root / "decisions" / "records")
-    state_path = root / "state" / "harvest-state.json"
-    state = load_json(state_path)
-    if not isinstance(state, dict) or not isinstance(state.get("sources"), dict):
-        raise ScalePolicyError("harvest state is invalid")
+    path = runtime_store_path(root)
+    if not path.is_file():
+        raise ScalePolicyError("runtime SQLite store is missing")
+    try:
+        with open_runtime_store(root) as store:
+            candidates = list(store.discoveries())
+            decisions = list(store.decisions())
+            source_states = list(store.source_states())
+    except RuntimeStoreError as error:
+        raise ScalePolicyError(str(error)) from error
 
+    candidate_bytes = sum(len(json.dumps(value, ensure_ascii=False)) for value in candidates)
+    decision_bytes = sum(len(json.dumps(value, ensure_ascii=False)) for value in decisions)
     seen_items = 0
     material_items = 0
-    for source in state["sources"].values():
+    for _, source in source_states:
         if not isinstance(source, dict):
             raise ScalePolicyError("harvest source state is invalid")
         seen = source.get("seen_items", {})
@@ -111,22 +113,20 @@ def inventory_repository(root: Path) -> dict[str, Any]:
         seen_items += len(seen)
         material_items += len(material)
 
-    lifecycle_bytes = candidate_bytes + reviewed_bytes + decision_bytes
+    lifecycle_bytes = path.stat().st_size
     candidate_count = len(candidates)
     return {
         "schema_version": 1,
         "candidate_records": candidate_count,
-        "candidate_lifecycle_files": (
-            len(candidates) + len(reviewed) + len(decisions)
-        ),
+        "candidate_lifecycle_files": 1,
         "candidate_bytes": candidate_bytes,
-        "reviewed_decision_bytes": reviewed_bytes,
+        "reviewed_decision_bytes": 0,
         "applied_decision_bytes": decision_bytes,
         "candidate_lifecycle_bytes": lifecycle_bytes,
         "candidate_lifecycle_average_bytes": (
             lifecycle_bytes / candidate_count if candidate_count else 0
         ),
-        "harvest_state_bytes": state_path.stat().st_size,
+        "harvest_state_bytes": path.stat().st_size,
         "seen_source_items": seen_items,
         "material_source_items": material_items,
     }
@@ -166,7 +166,7 @@ def project_storage(
         "candidate_records": [
             {
                 "records": target,
-                "lifecycle_files": target * 3,
+                "lifecycle_files": 1,
                 "estimated_payload_bytes": round(lifecycle_average * target),
             }
             for target in policy["projection_targets"]["candidate_records"]
@@ -236,6 +236,53 @@ def benchmark_json_lifecycle(records: int) -> dict[str, Any]:
             "files": len(files),
             "bytes": byte_count,
             "parsed_files": len(parsed),
+            "write_seconds": round(write_seconds, 6),
+            "read_seconds": round(read_seconds, 6),
+        }
+
+
+def benchmark_sqlite_runtime(records: int) -> dict[str, Any]:
+    _positive_integer(records, "benchmark records")
+    with tempfile.TemporaryDirectory(prefix="skill-harvester-sqlite-") as directory:
+        path = Path(directory) / "runtime.sqlite3"
+        connection = sqlite3.connect(path)
+        try:
+            connection.execute(
+                "CREATE TABLE discoveries (id TEXT PRIMARY KEY, record_json TEXT NOT NULL)"
+            )
+            write_started = perf_counter()
+            with connection:
+                connection.executemany(
+                    "INSERT INTO discoveries(id, record_json) VALUES(?, ?)",
+                    [
+                        (
+                            f"candidate-{index:08d}",
+                            json.dumps(
+                                {
+                                    "schema_version": 1,
+                                    "id": f"candidate-{index:08d}",
+                                    "source_id": "benchmark-source",
+                                    "review_status": "pending",
+                                    "evidence_sha256": "a" * 64,
+                                },
+                                ensure_ascii=False,
+                                sort_keys=True,
+                            ),
+                        )
+                        for index in range(records)
+                    ],
+                )
+            write_seconds = perf_counter() - write_started
+            read_started = perf_counter()
+            parsed = list(connection.execute("SELECT record_json FROM discoveries ORDER BY id"))
+            read_seconds = perf_counter() - read_started
+        finally:
+            connection.close()
+        return {
+            "schema_version": 1,
+            "records": records,
+            "bytes": path.stat().st_size,
+            "parsed_records": len(parsed),
             "write_seconds": round(write_seconds, 6),
             "read_seconds": round(read_seconds, 6),
         }

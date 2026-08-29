@@ -38,7 +38,7 @@ class RepositoryValidationTests(unittest.TestCase):
         self.assertIn("pull-requests: write", workflow)
         self.assertIn("actions: write", workflow)
         self.assertIn("python -m skill_harvester scan --root .", workflow)
-        self.assertIn("git add -- state/harvest-state.json candidates/inbox runs", workflow)
+        self.assertIn("git add -- state/harvest.sqlite3 runs", workflow)
         self.assertIn('gh workflow run ci.yml --ref "$branch"', workflow)
         self.assertNotIn("skill_harvester apply", workflow)
 
@@ -60,7 +60,7 @@ class RepositoryValidationTests(unittest.TestCase):
         self.assertEqual(report["skills"], 1)
         self.assertEqual(report["internal_capabilities"], 1)
         self.assertEqual(report["taxonomy_version"], "1.0.0")
-        self.assertEqual(report["scale_backend"], "git-json-v1")
+        self.assertEqual(report["scale_backend"], "sqlite-v1")
         self.assertEqual(report["migration_triggers"], [])
         self.assertEqual(report["secrets_found"], 0)
 

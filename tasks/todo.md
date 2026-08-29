@@ -104,3 +104,24 @@
 - [x] Verify: local/remote branch SHA, PR status, CI jobs, clean worktree, and absent Release change are read back.
 - [x] Files: change summary and Git/GitHub objects only.
 - Dependencies: Task 14 and completed five-axis review.
+
+## Task 16: adopt the bounded scale route
+
+- [x] Acceptance: the complete external planning input is classified as adopted, modified, deferred, or rejected against the merged runtime and controller decisions; every deferred boundary has an entry condition and one authority.
+- [x] Verify: `docs/plan-adoption-audit.md` distinguishes confirmed facts, assumptions, measurement prerequisites, and explicit exclusions; repository validation remains green.
+- [x] Files: `docs/plan-adoption-audit.md`, roadmap, and task records only.
+- Dependencies: Task 15 and merged PR #6.
+
+## Task 17: implement the first calibration vertical slice
+
+- [x] Acceptance: a one-time validated importer atomically converts active JSON runtime state to SQLite, then scan/review/apply/validation use only SQLite while Git retains published artifacts and readable manifests.
+- [x] Verify: fixtures cover successful import, failed import preservation, JSON independence after cutover, duplicate levels, continuation, queue placement, and no-op; full CI passes.
+- [ ] Files: runtime store plus existing callers, migration ADR/manifest, one exercised campaign policy, fixtures/tests, and harvest workflow.
+- Dependencies: Task 16 and a new total-control authorization.
+
+## Task 18: execute the first high-throughput campaign canary
+
+- [x] Acceptance: official OpenAI format, GitHub delivery, and Python packaging source groups ran as a three-source structural canary; 10 safe endpoints then completed with persisted counters and Usage `measured=false`. The future 5–10% full-inventory condition remains an explicit expansion gate, not a false completion claim.
+- [x] Verify: unchanged-source no-op and failed-ramp checkpoint fixtures pass; normal stop-loss metrics permitted continuation to the currently registered safe capacity without automatic publication, merge, or Release.
+- [x] Files: SQLite runtime state, source registry/policy, run reports, and reviewed PR material only.
+- Dependencies: Task 17 and green implementation CI.

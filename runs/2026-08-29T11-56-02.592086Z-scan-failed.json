@@ -1,0 +1,21 @@
+{
+  "discoveries": 0,
+  "error": "SourceFetchError: source request failed: [WinError 10013] 以一种访问权限不允许的方式做了一个访问套接字的尝试。",
+  "failed_source_id": "openai-build-skills",
+  "metrics": {
+    "candidates_enqueued": 0,
+    "discoveries_staged": 0,
+    "downloaded_bytes": 0,
+    "exact_record_duplicates": 0,
+    "observations_seen": 0,
+    "source_success_rate": 0.0,
+    "sources_failed": 1,
+    "sources_selected": 3,
+    "sources_succeeded": 0,
+    "stage": "discovery"
+  },
+  "run_id": "2026-08-29T11-56-02.592086Z",
+  "schema_version": 1,
+  "sources": [],
+  "status": "failed"
+}

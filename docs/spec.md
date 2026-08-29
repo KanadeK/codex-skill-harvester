@@ -38,7 +38,7 @@ Framework-specific behavior is limited to the documented Codex Skill/Plugin file
 
 - `src/skill_harvester/`: deterministic CLI, source adapters, state, dedupe recommendations, decision application, and validation
 - `sources/registry.json`: fixed source registry with authority, trust, license, and adapter metadata
-- `state/harvest-state.json`: last successful cursors and seen evidence
+- `state/harvest.sqlite3`: authoritative runtime cursors, discoveries, queue state, decisions, and checkpoints
 - `catalog/capabilities.json`: published capabilities and full fingerprints
 - `candidates/inbox/`: changed-source discoveries awaiting Codex review
 - `candidates/reviewed/`: explicit reviewed decisions ready to apply
@@ -164,7 +164,7 @@ Prepare the harvester to evolve toward millions of source observations, hundreds
 
 ### Assumptions and decisions
 
-- The current Git-native JSON layout remains the active backend until a measured migration trigger is crossed. This change does not introduce SQLite, Parquet, embeddings, hosted services, or a runtime dependency.
+- The current runtime backend is one local SQLite store, adopted after a measured JSON lifecycle traversal bottleneck. Git retains formal Skills, Plugin manifests, catalog, evals, releases, and readable run records; no JSON fallback or dual writer remains.
 - Legacy decision outcome `discard` means `not_promoted`: the evidence and decision stay durable and may be reconsidered. New operator output must not imply deletion.
 - A capability has one immutable canonical `id`. Its Plugin, Skill path, aliases, facets, evidence, and variants may evolve without changing that identity.
 - Classification uses one primary capability family plus versioned multi-dimensional facets. Taxonomy values may grow from evidence; the initial registry is not an exhaustive ontology.

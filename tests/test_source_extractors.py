@@ -10,7 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from skill_harvester.sources import FetchResponse, RegistryError, run_scan
 
-from _support import QueueFetcher, read_json, write_registry
+from _support import QueueFetcher, runtime_source_state, write_registry
 
 
 class SourceExtractorTests(unittest.TestCase):
@@ -126,8 +126,7 @@ class SourceExtractorTests(unittest.TestCase):
 
             self.assertEqual(third["status"], "changed")
             self.assertEqual(third["discoveries"], 2)
-            state = read_json(root / "state" / "harvest-state.json")
-            search_state = state["sources"]["github-search"]
+            search_state = runtime_source_state(root, "github-search")
             self.assertEqual(set(search_state["material_items"]), {"1", "2", "3"})
             self.assertEqual(search_state["window_item_ids"], ["2", "3"])
 
@@ -214,8 +213,10 @@ class SourceExtractorTests(unittest.TestCase):
             )
 
             self.assertEqual(second["discoveries"], 2)
-            state = read_json(root / "state" / "harvest-state.json")
-            self.assertEqual(set(state["sources"]["github-search"]["seen_items"]), {"1", "2", "3"})
+            self.assertEqual(
+                set(runtime_source_state(root, "github-search")["seen_items"]),
+                {"1", "2", "3"},
+            )
 
     def test_atom_feed_uses_entry_ids_for_incremental_discovery(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -246,6 +247,39 @@ class SourceExtractorTests(unittest.TestCase):
                 root,
                 QueueFetcher(FetchResponse(200, "https://github.com/openai/codex/releases.atom", {}, body)),
                 now="2026-08-27T04:05:00Z",
+            )
+
+            self.assertEqual(first["discoveries"], 1)
+            self.assertEqual(second["status"], "no_op")
+
+    def test_rss_feed_uses_guid_for_incremental_discovery(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_registry(
+                root,
+                [
+                    {
+                        "id": "pypi-updates",
+                        "adapter": "rss",
+                        "url": "https://pypi.org/rss/updates.xml",
+                        "trust": "official",
+                        "authority": "official-package-feed",
+                        "license": {"status": "facts-only", "identifier": None},
+                    }
+                ],
+            )
+            body = b"""<?xml version='1.0' encoding='utf-8'?>
+<rss version='2.0'><channel><item><guid>package-1</guid><title>package 1</title><pubDate>Wed, 29 Aug 2026 00:00:00 GMT</pubDate><link>https://pypi.org/project/package-1/</link></item></channel></rss>"""
+
+            first = run_scan(
+                root,
+                QueueFetcher(FetchResponse(200, "https://pypi.org/rss/updates.xml", {}, body)),
+                now="2026-08-29T04:00:00Z",
+            )
+            second = run_scan(
+                root,
+                QueueFetcher(FetchResponse(200, "https://pypi.org/rss/updates.xml", {}, body)),
+                now="2026-08-29T04:05:00Z",
             )
 
             self.assertEqual(first["discoveries"], 1)

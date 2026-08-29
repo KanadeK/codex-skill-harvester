@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "backend": "git-json-v1",
+  "backend": "sqlite-v1",
   "benchmark_fixture_records": 1000,
   "review_batch": {
     "default": 100,

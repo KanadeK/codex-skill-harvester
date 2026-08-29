@@ -8,6 +8,8 @@ from pathlib import Path
 from typing import Sequence
 
 from .decisions import DecisionError, apply_decision
+from .campaign import CampaignPolicyError, run_campaign
+from .io import atomic_write_json
 from .reporting import (
     ReportingError,
     render_review_queue,
@@ -16,6 +18,8 @@ from .reporting import (
     review_queue,
 )
 from .scaling import ScalePolicyError
+from .runtime_store import RuntimeStoreError
+from .runtime_store import import_legacy_runtime
 from .sources import (
     Fetcher,
     GitHubCliFetcher,
@@ -60,6 +64,25 @@ def _parser() -> argparse.ArgumentParser:
     )
     queue.add_argument("--after", help="resume after this candidate id")
     queue.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+    migrate = commands.add_parser(
+        "migrate-runtime",
+        help="one-time import of legacy Git-JSON runtime records into SQLite",
+    )
+    migrate.add_argument("--root", type=Path, default=Path.cwd(), help="harvester repository root")
+    migrate.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+    campaign = commands.add_parser(
+        "campaign",
+        help="run the configured three-group canary and optionally ramp within stop-loss",
+    )
+    campaign.add_argument("--root", type=Path, default=Path.cwd(), help="harvester repository root")
+    campaign.add_argument("--ramp", action="store_true", help="continue to remaining registered campaign sources when the canary is healthy")
+    campaign.add_argument(
+        "--github-auth",
+        choices=("environment", "gh-cli"),
+        default="environment",
+        help="authenticate api.github.com with GITHUB_TOKEN or the official gh keyring",
+    )
+    campaign.add_argument("--json", action="store_true", help="emit machine-readable JSON")
     return parser
 
 
@@ -72,6 +95,11 @@ def main(
     args = _parser().parse_args(argv)
     try:
         root = args.root.resolve()
+        if args.command == "migrate-runtime":
+            report = import_legacy_runtime(root)
+            atomic_write_json(root / "runs" / "runtime-migration.json", report)
+            print(json.dumps(report, indent=2, sort_keys=True) if args.json else "runtime migration complete")
+            return 0
         if args.command == "status":
             report = repository_status(root)
             print(json.dumps(report, indent=2, sort_keys=True) if args.json else render_status(report))
@@ -99,6 +127,15 @@ def main(
         selected_fetcher = fetcher or (
             GitHubCliFetcher() if args.github_auth == "gh-cli" else UrllibFetcher()
         )
+        if args.command == "campaign":
+            report = run_campaign(
+                root,
+                selected_fetcher,
+                now=observed_at,
+                ramp=args.ramp,
+            )
+            print(json.dumps(report, indent=2, sort_keys=True) if args.json else f"campaign={report['status']}")
+            return 0
         report = run_scan(
             root,
             selected_fetcher,
@@ -110,6 +147,8 @@ def main(
         RegistryError,
         ReportingError,
         ScalePolicyError,
+        CampaignPolicyError,
+        RuntimeStoreError,
         SourceFetchError,
         OSError,
     ) as error:

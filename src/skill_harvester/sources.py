@@ -14,12 +14,12 @@ from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
 from .io import (
-    atomic_write_json,
     atomic_write_text,
     canonical_json_bytes,
     load_json,
     sha256_bytes,
 )
+from .runtime_store import open_runtime_store, queue_for_discovery
 
 
 class RegistryError(ValueError):
@@ -148,7 +148,7 @@ def load_registry(root: Path) -> list[dict[str, Any]]:
         url = source.get("url")
         if not isinstance(url, str) or urlparse(url).scheme != "https":
             raise RegistryError(f"source {source_id} must use an https URL")
-        if source.get("adapter") not in {"document", "json-list", "atom"}:
+        if source.get("adapter") not in {"document", "json-list", "atom", "rss"}:
             raise RegistryError(f"source {source_id} has an unsupported adapter")
         change_policy = source.get("change_policy", "revision")
         if change_policy not in {"revision", "material"}:
@@ -300,6 +300,27 @@ def _atom_items(source: dict[str, Any], body: bytes) -> list[dict[str, str]]:
     return items
 
 
+def _rss_items(source: dict[str, Any], body: bytes) -> list[dict[str, str]]:
+    if b"<!DOCTYPE" in body.upper() or b"<!ENTITY" in body.upper():
+        raise SourceFetchError(f"source {source['id']} RSS feed contains a forbidden declaration")
+    try:
+        root = ElementTree.fromstring(body)
+    except ElementTree.ParseError as error:
+        raise SourceFetchError(f"source {source['id']} returned invalid RSS XML") from error
+    items: list[dict[str, str]] = []
+    for entry in root.findall(".//item"):
+        identifier = entry.findtext("guid") or entry.findtext("link")
+        title = entry.findtext("title")
+        revision = entry.findtext("pubDate") or entry.findtext("date")
+        url = entry.findtext("link")
+        if not all((identifier, title, revision, url)):
+            raise SourceFetchError(f"source {source['id']} RSS item is missing required fields")
+        if urlparse(url).scheme != "https":
+            raise SourceFetchError(f"source {source['id']} RSS item URL must use https")
+        items.append({"id": identifier, "title": title, "url": url, "revision": revision})
+    return items
+
+
 def _incremental_items(
     source: dict[str, Any], items: list[dict[str, str]], previous: dict[str, Any], now: str
 ) -> tuple[
@@ -347,7 +368,13 @@ def _process_source(
             raise SourceFetchError(f"source {source['id']} returned 304 without prior state")
         updated = deepcopy(previous)
         updated["last_success_at"] = now
-        return updated, [], {"source_id": source["id"], "status": "not_modified", "discoveries": 0}
+        return updated, [], {
+            "source_id": source["id"],
+            "status": "not_modified",
+            "discoveries": 0,
+            "observations": 0,
+            "downloaded_bytes": 0,
+        }
     if response.status != 200:
         raise SourceFetchError(f"source {source['id']} returned HTTP {response.status}")
     if urlparse(response.final_url).scheme != "https":
@@ -360,10 +387,14 @@ def _process_source(
     window_item_ids = deepcopy(previous.get("window_item_ids", []))
     window_changed = False
     cursor = evidence_hash
+    observations = 0
     if previous.get("content_sha256") != evidence_hash:
         if source["adapter"] == "document":
             discoveries.append(_document_discovery(source, response, evidence_hash, now))
+            observations = 1
         elif source["adapter"] == "json-list":
+            items = _json_items(source, response.body)
+            observations = len(items)
             (
                 discoveries,
                 seen_items,
@@ -372,9 +403,11 @@ def _process_source(
                 window_changed,
                 cursor,
             ) = _incremental_items(
-                source, _json_items(source, response.body), previous, now
+                source, items, previous, now
             )
         elif source["adapter"] == "atom":
+            items = _atom_items(source, response.body)
+            observations = len(items)
             (
                 discoveries,
                 seen_items,
@@ -383,7 +416,20 @@ def _process_source(
                 window_changed,
                 cursor,
             ) = _incremental_items(
-                source, _atom_items(source, response.body), previous, now
+                source, items, previous, now
+            )
+        elif source["adapter"] == "rss":
+            items = _rss_items(source, response.body)
+            observations = len(items)
+            (
+                discoveries,
+                seen_items,
+                material_items,
+                window_item_ids,
+                window_changed,
+                cursor,
+            ) = _incremental_items(
+                source, items, previous, now
             )
 
     updated = {
@@ -404,6 +450,8 @@ def _process_source(
         "status": result_status,
         "discoveries": len(discoveries),
         "window_changed": window_changed,
+        "observations": observations,
+        "downloaded_bytes": len(response.body),
     }
 
 
@@ -419,6 +467,8 @@ def _discovery_metrics(
     staged: int,
     enqueued: int,
     exact_duplicates: int,
+    observations_seen: int = 0,
+    downloaded_bytes: int = 0,
 ) -> dict[str, Any]:
     return {
         "stage": "discovery",
@@ -429,6 +479,8 @@ def _discovery_metrics(
         "discoveries_staged": staged,
         "candidates_enqueued": enqueued,
         "exact_record_duplicates": exact_duplicates,
+        "observations_seen": observations_seen,
+        "downloaded_bytes": downloaded_bytes,
     }
 
 
@@ -470,21 +522,17 @@ def run_scan(
             raise RegistryError(f"unknown source ids: {', '.join(sorted(unknown))}")
         sources = [source for source in sources if source["id"] in source_ids]
 
-    state_path = root / "state" / "harvest-state.json"
-    current_state = load_json(
-        state_path, {"schema_version": 1, "last_successful_run": None, "sources": {}}
-    )
-    staged_state = deepcopy(current_state)
-    staged_state["schema_version"] = 1
+    store = open_runtime_store(root)
+    staged_state: dict[str, dict[str, Any]] = {}
     staged_discoveries: list[dict[str, Any]] = []
     source_results: list[dict[str, Any]] = []
     run_id = _run_id(now)
 
     try:
         for source in sources:
-            previous = current_state.get("sources", {}).get(source["id"], {})
+            previous = store.source_state(source["id"])
             source_state, discoveries, result = _process_source(source, previous, fetcher, now)
-            staged_state.setdefault("sources", {})[source["id"]] = source_state
+            staged_state[source["id"]] = source_state
             staged_discoveries.extend(discoveries)
             source_results.append(result)
     except (RegistryError, SourceFetchError, OSError) as error:
@@ -502,41 +550,54 @@ def run_scan(
                 staged=len(staged_discoveries),
                 enqueued=0,
                 exact_duplicates=0,
+                observations_seen=sum(item.get("observations", 0) for item in source_results),
+                downloaded_bytes=sum(item.get("downloaded_bytes", 0) for item in source_results),
             ),
             "error": f"{type(error).__name__}: {error}",
         }
-        atomic_write_json(root / "runs" / f"{run_id}-scan-failed.json", failed_report)
+        store.record_failed_run(failed_report)
+        atomic_write_text(
+            root / "runs" / f"{run_id}-scan-failed.json",
+            json.dumps(failed_report, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        )
+        store.close()
+        raise
+    except BaseException:
+        store.close()
         raise
 
-    staged_state["last_successful_run"] = now
-    enqueued_discoveries: list[dict[str, Any]] = []
-    exact_record_duplicates = 0
-    for discovery in staged_discoveries:
-        path = root / "candidates" / "inbox" / f"{discovery['id']}.json"
-        if path.exists():
-            exact_record_duplicates += 1
-            continue
-        atomic_write_json(path, discovery)
-        enqueued_discoveries.append(discovery)
-    atomic_write_json(state_path, staged_state)
+    queue_names = {discovery["id"]: queue_for_discovery(discovery) for discovery in staged_discoveries}
+    enqueued, exact_record_duplicates = store.commit_scan(
+        now=now,
+        source_states=staged_state,
+        discoveries=staged_discoveries,
+        queue_names=queue_names,
+    )
 
     report = {
         "schema_version": 1,
         "run_id": run_id,
-        "status": "changed" if enqueued_discoveries else "no_op",
-        "discoveries": len(enqueued_discoveries),
+        "status": "changed" if enqueued else "no_op",
+        "discoveries": enqueued,
         "sources": source_results,
         "metrics": _discovery_metrics(
             selected=len(sources),
             succeeded=len(source_results),
             failed=0,
             staged=len(staged_discoveries),
-            enqueued=len(enqueued_discoveries),
+            enqueued=enqueued,
             exact_duplicates=exact_record_duplicates,
+            observations_seen=sum(item.get("observations", 0) for item in source_results),
+            downloaded_bytes=sum(item.get("downloaded_bytes", 0) for item in source_results),
         ),
         "validations": [],
         "unresolved_issues": [],
     }
-    atomic_write_json(root / "runs" / f"{run_id}-scan.json", report)
+    store.record_run(report)
+    store.close()
+    atomic_write_text(
+        root / "runs" / f"{run_id}-scan.json",
+        json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+    )
     atomic_write_text(root / "runs" / f"{run_id}-scan.md", _markdown_report(report))
     return report

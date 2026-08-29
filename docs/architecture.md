@@ -10,8 +10,8 @@ Users install small task-domain Plugins or Collections. They do not install the 
 
 | Layer | Owns | Does not own | Current implementation | Scale target |
 | --- | --- | --- | --- | --- |
-| Evidence/Discovery | Source identity, cursor, revision, trust, license, necessary facts, evidence hash, exact dedupe | Semantic approval, copied third-party bodies, published instructions | `sources/registry.json`, `state/harvest-state.json`, `candidates/inbox/*.json`, temporary raw responses | Partitioned evidence metadata with per-source cursors; indexed storage only after a trigger |
-| Capability Registry | Canonical id, fingerprint, family, facets, aliases, variants, merge/update history, non-promotion rationale and reactivation conditions | Plugin installation layout as identity, raw pages | `catalog/capabilities.json`, `candidates/reviewed/*.json`, `decisions/records/*.json` | Indexed queue and immutable decision log with a rebuildable semantic index |
+| Evidence/Discovery | Source identity, cursor, revision, trust, license, necessary facts, evidence hash, exact dedupe | Semantic approval, copied third-party bodies, published instructions | `sources/registry.json`, `state/harvest.sqlite3`, temporary raw responses | Partitioned evidence metadata with per-source cursors; indexed storage only after a measured need |
+| Capability Registry | Canonical id, fingerprint, family, facets, aliases, variants, merge/update history, non-promotion rationale and reactivation conditions | Plugin installation layout as identity, raw pages | Git catalog plus SQLite runtime decision/queue records | Indexed queue and immutable decision log with a rebuildable semantic index |
 | Published Skills | Original validated Skill bodies, scripts, evals, Plugin/Collection manifests | Discovery noise or every candidate | `plugins/`, `.agents/plugins/marketplace.json`, `evals/` | Curated, task-domain Plugins containing a bounded set of coherent Skills |
 
 ## Data flow
@@ -54,13 +54,12 @@ Deterministic code owns fetching, exact hashes, cursors, persistence, schema val
 
 ## Incremental, sharded, and recoverable execution
 
-The current backend is intentionally simple and Git-reviewable. Each source has its own logical cursor, each discovery and decision has a stable id, and each run is independently reportable. Selection by source already provides a transactional shard.
+The current backend is intentionally local-first and single-writer. Each source has its own logical cursor, each discovery and decision has a stable id, and each run is independently reportable. Selection by source already provides a transactional shard.
 
-Before a storage migration, bounded review pages prevent one round from attempting the complete queue. High-trust sources are checked every scheduled cycle; discovery queries rotate by topic once there is more than one discovery query. Each rotation owns its cursor and next-due time.
+Bounded review pages prevent one round from attempting the complete queue. High-trust sources are checked every scheduled cycle; discovery queries rotate by topic once there is more than one discovery query. Each rotation owns its cursor and next-due time.
 
-After a measured migration trigger:
+After a measured need beyond the SQLite envelope:
 
-- SQLite becomes the local-first operational store for cursors, exact hashes, queue priority, canonical capabilities, aliases, and decision links.
 - Parquet may hold cold evidence metadata partitioned by source and observation month when analytical scans justify it.
 - Git continues to hold schemas, source definitions, taxonomy, summaries, published Skills, evals, and migration manifests.
 - Any semantic/vector index is derived and can be rebuilt without losing authority.

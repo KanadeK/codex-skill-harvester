@@ -158,3 +158,24 @@ None for the first vertical slice.
 - [x] Run focused tests, the full suite, validator, evals, release build, and isolated archive verification.
 - [x] Complete correctness/readability/architecture/security/performance review and resolve required findings.
 - [x] Commit exact paths, push the `codex/` branch, open one PR, and wait for CI without merging or releasing.
+
+## Plan-adoption audit
+
+### Phase 14: adopt a bounded scale route
+
+- [x] Reconcile the full external scale proposal as untrusted planning input with merged PR #6 and the actual source, reporting, decision, taxonomy, and storage-policy call paths.
+- [x] Record adopted, modified, deferred, and rejected elements with a single authority and entry condition for each.
+- [x] Define the 0–30 day mainline, `v0.2.0` release reservation, model/risk controls, campaign ceilings, labeled-set prerequisite, and first vertical-slice acceptance boundary.
+
+### Checkpoint: adoption audit
+
+- [x] The route explicitly separates confirmed implementation, assumptions to measure, and excluded work.
+- [x] No connector, scan, migration, release, or merge is performed by this documentation work package.
+
+### Next gated slice: source group/topic/queues/L0–L3
+
+- [x] Total control authorized a high-throughput dual-speed campaign route and SQLite runtime cutover after the observed file-traversal bottleneck.
+- [x] Replace the active Git-JSON runtime lifecycle with one imported, validated SQLite authority; delete old active runtime JSON at cutover rather than retain a compatibility path.
+- [x] Add the smallest exercised source group/topic, five-queue, L0–L3 recall, checkpoint, and no-op path with fixtures.
+- [ ] Establish an adjudicated labeled set before claiming retrieval or semantic quality metrics.
+- [x] Run the three-source structural canary and automatically continue to the current 10-endpoint safe capacity while stop-loss metrics remain normal; retain the explicit 5–10% full-inventory gap as the next expansion gate.

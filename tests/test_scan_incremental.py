@@ -9,8 +9,16 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from skill_harvester.sources import FetchResponse, SourceFetchError, run_scan
+from skill_harvester.runtime_store import open_runtime_store
 
-from _support import QueueFetcher, document_source, read_json, write_registry
+from _support import (
+    QueueFetcher,
+    document_source,
+    read_json,
+    runtime_last_successful_run,
+    runtime_source_state,
+    write_registry,
+)
 
 
 class IncrementalScanTests(unittest.TestCase):
@@ -42,10 +50,12 @@ class IncrementalScanTests(unittest.TestCase):
                     "discoveries_staged": 1,
                     "candidates_enqueued": 1,
                     "exact_record_duplicates": 0,
+                    "observations_seen": 1,
+                    "downloaded_bytes": len(b"# Release evidence\n\nVerify remote state."),
                 },
             )
-            first_candidates = sorted((root / "candidates" / "inbox").glob("*.json"))
-            self.assertEqual(len(first_candidates), 1)
+            with open_runtime_store(root) as store:
+                self.assertEqual(store.discovery_count(), 1)
 
             second_fetcher = QueueFetcher(
                 FetchResponse(
@@ -60,7 +70,8 @@ class IncrementalScanTests(unittest.TestCase):
             self.assertEqual(second["status"], "no_op")
             self.assertEqual(second["discoveries"], 0)
             self.assertEqual(second["metrics"]["candidates_enqueued"], 0)
-            self.assertEqual(len(list((root / "candidates" / "inbox").glob("*.json"))), 1)
+            with open_runtime_store(root) as store:
+                self.assertEqual(store.discovery_count(), 1)
             self.assertEqual(second_fetcher.requests[0][1]["If-None-Match"], '"v1"')
 
             third_fetcher = QueueFetcher(
@@ -75,24 +86,16 @@ class IncrementalScanTests(unittest.TestCase):
 
             self.assertEqual(third["status"], "changed")
             self.assertEqual(third["discoveries"], 1)
-            self.assertEqual(len(list((root / "candidates" / "inbox").glob("*.json"))), 2)
-            state = read_json(root / "state" / "harvest-state.json")
-            self.assertEqual(state["sources"]["official-doc"]["etag"], '"v2"')
-            self.assertEqual(state["last_successful_run"], "2026-08-27T01:10:00Z")
+            with open_runtime_store(root) as store:
+                self.assertEqual(store.discovery_count(), 2)
+            self.assertEqual(runtime_source_state(root, "official-doc")["etag"], '"v2"')
+            self.assertEqual(runtime_last_successful_run(root), "2026-08-27T01:10:00Z")
 
     def test_selected_sources_commit_state_only_when_all_succeed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             write_registry(root, [document_source("one"), document_source("two")])
-            initial_state = {
-                "schema_version": 1,
-                "last_successful_run": "2026-08-26T00:00:00Z",
-                "sources": {},
-            }
-            state_path = root / "state" / "harvest-state.json"
-            state_path.parent.mkdir(parents=True)
-            state_path.write_text(json.dumps(initial_state, indent=2) + "\n", encoding="utf-8")
-            before = state_path.read_bytes()
+            before = runtime_last_successful_run(root)
             fetcher = QueueFetcher(
                 FetchResponse(
                     status=200,
@@ -106,8 +109,9 @@ class IncrementalScanTests(unittest.TestCase):
             with self.assertRaisesRegex(SourceFetchError, "source two failed"):
                 run_scan(root, fetcher, now="2026-08-27T02:00:00Z")
 
-            self.assertEqual(state_path.read_bytes(), before)
-            self.assertFalse((root / "candidates" / "inbox").exists())
+            self.assertEqual(runtime_last_successful_run(root), before)
+            with open_runtime_store(root) as store:
+                self.assertEqual(store.discovery_count(), 0)
             failed_reports = list((root / "runs").glob("*-failed.json"))
             self.assertEqual(len(failed_reports), 1)
             self.assertEqual(read_json(failed_reports[0])["status"], "failed")
@@ -134,7 +138,9 @@ class IncrementalScanTests(unittest.TestCase):
                 QueueFetcher(response),
                 now="2026-08-27T02:20:00Z",
             )
-            (root / "state" / "harvest-state.json").unlink()
+            with open_runtime_store(root) as store:
+                store.connection.execute("DELETE FROM source_states")
+                store.connection.commit()
 
             recovered = run_scan(
                 root,
@@ -148,10 +154,8 @@ class IncrementalScanTests(unittest.TestCase):
             self.assertEqual(recovered["metrics"]["discoveries_staged"], 1)
             self.assertEqual(recovered["metrics"]["candidates_enqueued"], 0)
             self.assertEqual(recovered["metrics"]["exact_record_duplicates"], 1)
-            self.assertEqual(
-                len(list((root / "candidates" / "inbox").glob("*.json"))),
-                1,
-            )
+            with open_runtime_store(root) as store:
+                self.assertEqual(store.discovery_count(), 1)
 
     def test_programming_errors_are_not_reported_as_source_failures(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

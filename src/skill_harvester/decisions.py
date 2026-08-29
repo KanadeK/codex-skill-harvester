@@ -6,6 +6,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 from .io import atomic_write_json, atomic_write_text, canonical_json_bytes, load_json, sha256_bytes
+from .runtime_store import open_runtime_store
 from .sources import load_registry
 from .taxonomy import TaxonomyError, validate_catalog_taxonomy, validate_classification
 
@@ -19,6 +20,16 @@ FINGERPRINT_FIELDS = (
     "side_effects",
     "platforms",
 )
+
+FINGERPRINT_WEIGHTS = {
+    "goal": 0.30,
+    "triggers": 0.15,
+    "inputs": 0.10,
+    "outputs": 0.15,
+    "tools": 0.08,
+    "side_effects": 0.12,
+    "platforms": 0.10,
+}
 
 
 class DecisionError(ValueError):
@@ -111,6 +122,38 @@ def recommend_decision(candidate: Any, catalog: Any) -> dict[str, Any]:
             "artifact_sha256": artifact_sha256,
         }
     return {"outcome": "create_new", "matches": [], "artifact_sha256": artifact_sha256}
+
+
+def _terms(value: str) -> set[str]:
+    return set(re.findall(r"[a-z0-9]+", value))
+
+
+def _field_similarity(field: str, left: Any, right: Any) -> float:
+    if field == "goal":
+        left_terms = _terms(left)
+        right_terms = _terms(right)
+    else:
+        left_terms = {term for item in left for term in _terms(item)}
+        right_terms = {term for item in right for term in _terms(item)}
+    union = left_terms | right_terms
+    return len(left_terms & right_terms) / len(union) if union else 0.0
+
+
+def recall_capabilities(fingerprint: Any, catalog: Any, *, limit: int = 30) -> list[dict[str, Any]]:
+    if not isinstance(limit, int) or isinstance(limit, bool) or not 1 <= limit <= 50:
+        raise DecisionError("recall limit must be between 1 and 50")
+    normalized = normalize_fingerprint(fingerprint)
+    scored: list[dict[str, Any]] = []
+    for entry in _catalog_entries(catalog):
+        existing = normalize_fingerprint(entry.get("fingerprint"))
+        score = sum(
+            FINGERPRINT_WEIGHTS[field]
+            * _field_similarity(field, normalized[field], existing[field])
+            for field in FINGERPRINT_FIELDS
+        )
+        if score:
+            scored.append({"id": entry["id"], "score": round(score, 6)})
+    return sorted(scored, key=lambda item: (-item["score"], item["id"]))[:limit]
 
 
 def _kebab(value: Any, label: str) -> str:
@@ -356,9 +399,12 @@ def _validate_source_refs(root: Path, source_refs: list[str], *, require_officia
 
 def apply_decision(root: Path, decision_path: Path) -> dict[str, Any]:
     decision = _validate_decision(load_json(decision_path))
-    discovery_path = root / "candidates" / "inbox" / f"{decision['candidate_id']}.json"
-    discovery = load_json(discovery_path)
-    if not isinstance(discovery, dict) or discovery.get("id") != decision["candidate_id"]:
+    with open_runtime_store(root) as store:
+        try:
+            discovery = store.discovery(decision["candidate_id"])
+        except ValueError as error:
+            raise DecisionError("decision candidate_id must name a runtime discovery") from error
+    if discovery.get("id") != decision["candidate_id"]:
         raise DecisionError("decision candidate_id must name an inbox discovery")
 
     catalog = _catalog(root)
@@ -495,11 +541,6 @@ def apply_decision(root: Path, decision_path: Path) -> dict[str, Any]:
     }
     if outcome == "not_promoted":
         record["reactivation_conditions"] = decision["reactivation_conditions"]
-    record_name = f"{decision['reviewed_at'].replace(':', '-')}-{decision['candidate_id']}.json"
-    record_path = root / "decisions" / "records" / record_name
-    atomic_write_json(record_path, record)
-    discovery["review_status"] = "applied"
-    discovery["decision_outcome"] = outcome
-    discovery["decision_record"] = record_path.relative_to(root).as_posix()
-    atomic_write_json(discovery_path, discovery)
+    with open_runtime_store(root) as store:
+        store.record_decision(decision["candidate_id"], record)
     return record

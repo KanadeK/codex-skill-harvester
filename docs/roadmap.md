@@ -8,13 +8,22 @@ Volume is a capacity trigger, not a publication KPI. Every phase retains the sam
 - Normalize deletion-like terminology to `not_promoted`.
 - Bound review batches and add continuation.
 - Add stage-owned metrics, storage inventory, projections, and migration triggers.
-- Keep Git-JSON and runtime dependencies unchanged.
+- Keep the Git-native published catalog and artifacts unchanged; runtime lifecycle has moved to SQLite after the measured file-traversal bottleneck.
 
 Exit: contracts validate, benchmark is reproducible, CI is green, and no broad scan was run.
 
+## Current work package: high-throughput vertical slice
+
+- Record the total-control route in `docs/plan-adoption-audit.md` after reconciling the untrusted external planning input with the merged scale foundation.
+- Reserve `v0.2.0` without issuing it. A release needs a first vertical slice, one real calibration campaign, all gates, and a new total-control approval.
+- Run the SQLite-backed source-group/topic/five-queue/L0–L3 slice with a structural three-group canary and automatic ramp to currently executable registered capacity.
+- Keep the long-horizon 180–260 endpoint campaign gated on a real endpoint inventory and query-cursor implementation; current 10-endpoint ramp is not relabeled as that full campaign.
+
+Exit: the next worker can implement one bounded slice from a single authority without treating projected volume, a green PR, or a foundation merge as a publication commitment.
+
 ## Phase B: larger Git-native operation
 
-Trigger: queue growth is material but below storage thresholds.
+Trigger: the endpoint inventory and query connector exist to make the 5–10% same-campaign canary meaningful.
 
 - Add discovery-query topics and a round-robin cursor for each.
 - Check all high-trust sources each cycle; rotate discovery topics under explicit source/review budgets.
@@ -28,7 +37,7 @@ Exit: large queues are bounded, prioritized, resumable, and observable without c
 
 Trigger: a policy threshold is crossed and a benchmark confirms file traversal or whole-state rewrites are limiting.
 
-- Migrate cursors, hashes, queue, capability links, aliases, and decision indexes to SQLite.
+- Operate the existing SQLite authority; add worker claims only after measured concurrent-writer demand.
 - Keep schemas, taxonomy, published Skills, evals, and review summaries in Git.
 - Provide deterministic import/export and side-by-side validation.
 - Add worker claims only if parallel writers are actually required.

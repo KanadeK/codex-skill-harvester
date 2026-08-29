@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "campaign_id": "first-high-throughput",
+  "planned_capacity_range": {
+    "endpoints": [180, 260],
+    "actual_queries": [1500, 3000],
+    "observations": [80000, 250000],
+    "normalized_candidates": [4000, 12000],
+    "deep_reviews": [400, 1000]
+  },
+  "source_groups": {
+    "openai-format-authority": {
+      "topic_id": "software.create.codex-skills",
+      "source_ids": [
+        "openai-build-skills",
+        "openai-build-plugins",
+        "openai-codex-releases"
+      ]
+    },
+    "github-delivery": {
+      "topic_id": "software.validate.github-delivery",
+      "source_ids": [
+        "github-cli-repo-view",
+        "github-cli-pr-checks",
+        "github-cli-release-view",
+        "github-cli-api",
+        "github-rest-releases",
+        "github-rest-repositories"
+      ]
+    },
+    "python-packaging": {
+      "topic_id": "software.publish.python-packaging",
+      "source_ids": ["pypi-updates"]
+    }
+  },
+  "canary_source_ids": [
+    "openai-build-skills",
+    "github-cli-release-view",
+    "pypi-updates"
+  ],
+  "queue_order": [
+    "urgent-impact",
+    "official-gap",
+    "reactivation",
+    "novel-discovery",
+    "aged-backlog"
+  ],
+  "stop_loss": {
+    "minimum_source_requests": 3,
+    "minimum_source_success_rate": 0.95,
+    "max_source_requests": 3000,
+    "max_download_bytes": 500000000,
+    "max_runtime_store_bytes": 268435456
+  }
+}
