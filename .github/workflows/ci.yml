@@ -39,6 +39,8 @@ jobs:
         run: python scripts/run_evals.py
       - name: Validate repository and generated artifacts
         run: python scripts/validate_repo.py
+      - name: Exercise JSON lifecycle benchmark
+        run: python scripts/benchmark_storage.py --root . --records 100
       - name: Build deterministic release assets
         run: python scripts/build_release.py
       - name: Install source archive and invoke CLI

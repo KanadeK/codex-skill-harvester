@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import shutil
 import sys
 import tempfile
@@ -45,6 +46,10 @@ class RepositoryValidationTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("workflow_dispatch:", ci_workflow)
+        self.assertIn(
+            "python scripts/benchmark_storage.py --root . --records 100",
+            ci_workflow,
+        )
 
     def test_current_repository_is_consistent(self) -> None:
         root = Path(__file__).resolve().parents[1]
@@ -54,6 +59,9 @@ class RepositoryValidationTests(unittest.TestCase):
         self.assertEqual(report["plugins"], 1)
         self.assertEqual(report["skills"], 1)
         self.assertEqual(report["internal_capabilities"], 1)
+        self.assertEqual(report["taxonomy_version"], "1.0.0")
+        self.assertEqual(report["scale_backend"], "git-json-v1")
+        self.assertEqual(report["migration_triggers"], [])
         self.assertEqual(report["secrets_found"], 0)
 
     def test_detects_generated_skill_drift(self) -> None:
@@ -76,6 +84,42 @@ class RepositoryValidationTests(unittest.TestCase):
             skill.write_text(skill.read_text(encoding="utf-8") + "\nDrift.\n", encoding="utf-8")
 
             with self.assertRaisesRegex(ValidationError, "artifact hash"):
+                validate_repository(root)
+
+    def test_detects_catalog_taxonomy_drift(self) -> None:
+        source = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            shutil.copytree(
+                source,
+                root,
+                ignore=shutil.ignore_patterns(".git", "dist", "__pycache__", "*.pyc"),
+            )
+            path = root / "catalog" / "capabilities.json"
+            catalog = json.loads(path.read_text(encoding="utf-8"))
+            catalog["internal"][0]["classification"]["facets"]["domain"] = [
+                "unregistered-domain"
+            ]
+            path.write_text(json.dumps(catalog), encoding="utf-8")
+
+            with self.assertRaisesRegex(ValidationError, "unregistered facet"):
+                validate_repository(root)
+
+    def test_detects_invalid_scale_policy(self) -> None:
+        source = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            shutil.copytree(
+                source,
+                root,
+                ignore=shutil.ignore_patterns(".git", "dist", "__pycache__", "*.pyc"),
+            )
+            path = root / "config" / "scale-policy.json"
+            policy = json.loads(path.read_text(encoding="utf-8"))
+            policy["review_batch"]["default"] = 1001
+            path.write_text(json.dumps(policy), encoding="utf-8")
+
+            with self.assertRaisesRegex(ValidationError, "review batch"):
                 validate_repository(root)
 
 

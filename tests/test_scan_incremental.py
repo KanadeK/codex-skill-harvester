@@ -31,6 +31,19 @@ class IncrementalScanTests(unittest.TestCase):
 
             self.assertEqual(first["status"], "changed")
             self.assertEqual(first["discoveries"], 1)
+            self.assertEqual(
+                first["metrics"],
+                {
+                    "stage": "discovery",
+                    "sources_selected": 1,
+                    "sources_succeeded": 1,
+                    "sources_failed": 0,
+                    "source_success_rate": 1.0,
+                    "discoveries_staged": 1,
+                    "candidates_enqueued": 1,
+                    "exact_record_duplicates": 0,
+                },
+            )
             first_candidates = sorted((root / "candidates" / "inbox").glob("*.json"))
             self.assertEqual(len(first_candidates), 1)
 
@@ -46,6 +59,7 @@ class IncrementalScanTests(unittest.TestCase):
 
             self.assertEqual(second["status"], "no_op")
             self.assertEqual(second["discoveries"], 0)
+            self.assertEqual(second["metrics"]["candidates_enqueued"], 0)
             self.assertEqual(len(list((root / "candidates" / "inbox").glob("*.json"))), 1)
             self.assertEqual(second_fetcher.requests[0][1]["If-None-Match"], '"v1"')
 
@@ -97,6 +111,47 @@ class IncrementalScanTests(unittest.TestCase):
             failed_reports = list((root / "runs").glob("*-failed.json"))
             self.assertEqual(len(failed_reports), 1)
             self.assertEqual(read_json(failed_reports[0])["status"], "failed")
+            failed = read_json(failed_reports[0])
+            self.assertEqual(failed["failed_source_id"], "two")
+            self.assertEqual(failed["metrics"]["sources_selected"], 2)
+            self.assertEqual(failed["metrics"]["sources_succeeded"], 1)
+            self.assertEqual(failed["metrics"]["sources_failed"], 1)
+            self.assertEqual(failed["metrics"]["source_success_rate"], 0.5)
+            self.assertEqual(failed["metrics"]["candidates_enqueued"], 0)
+
+    def test_existing_exact_discovery_record_is_not_reenqueued(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_registry(root, [document_source()])
+            response = FetchResponse(
+                status=200,
+                final_url="https://example.test/official-doc.md",
+                headers={"etag": '"v1"'},
+                body=b"# Evidence",
+            )
+            first = run_scan(
+                root,
+                QueueFetcher(response),
+                now="2026-08-27T02:20:00Z",
+            )
+            (root / "state" / "harvest-state.json").unlink()
+
+            recovered = run_scan(
+                root,
+                QueueFetcher(response),
+                now="2026-08-27T02:25:00Z",
+            )
+
+            self.assertEqual(first["status"], "changed")
+            self.assertEqual(recovered["status"], "no_op")
+            self.assertEqual(recovered["discoveries"], 0)
+            self.assertEqual(recovered["metrics"]["discoveries_staged"], 1)
+            self.assertEqual(recovered["metrics"]["candidates_enqueued"], 0)
+            self.assertEqual(recovered["metrics"]["exact_record_duplicates"], 1)
+            self.assertEqual(
+                len(list((root / "candidates" / "inbox").glob("*.json"))),
+                1,
+            )
 
     def test_programming_errors_are_not_reported_as_source_failures(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

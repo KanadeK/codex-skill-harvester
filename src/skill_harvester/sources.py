@@ -411,17 +411,38 @@ def _run_id(now: str) -> str:
     return now.replace(":", "-")
 
 
+def _discovery_metrics(
+    *,
+    selected: int,
+    succeeded: int,
+    failed: int,
+    staged: int,
+    enqueued: int,
+    exact_duplicates: int,
+) -> dict[str, Any]:
+    return {
+        "stage": "discovery",
+        "sources_selected": selected,
+        "sources_succeeded": succeeded,
+        "sources_failed": failed,
+        "source_success_rate": succeeded / selected,
+        "discoveries_staged": staged,
+        "candidates_enqueued": enqueued,
+        "exact_record_duplicates": exact_duplicates,
+    }
+
+
 def _markdown_report(report: dict[str, Any]) -> str:
+    metrics = report["metrics"]
     lines = [
         f"# Harvest run {report['run_id']}",
         "",
         f"- Status: `{report['status']}`",
         f"- Sources: {len(report['sources'])}",
         f"- Discoveries: {report['discoveries']}",
-        "- Discards: 0",
-        "- Merges: 0",
-        "- Updates: 0",
-        "- Creations: 0",
+        f"- Candidates enqueued: {metrics['candidates_enqueued']}",
+        f"- Exact record duplicates: {metrics['exact_record_duplicates']}",
+        "- Semantic decisions: not run in the discovery stage",
         "",
         "## Sources",
         "",
@@ -473,25 +494,46 @@ def run_scan(
             "status": "failed",
             "discoveries": 0,
             "sources": source_results,
+            "failed_source_id": source["id"],
+            "metrics": _discovery_metrics(
+                selected=len(sources),
+                succeeded=len(source_results),
+                failed=1,
+                staged=len(staged_discoveries),
+                enqueued=0,
+                exact_duplicates=0,
+            ),
             "error": f"{type(error).__name__}: {error}",
         }
         atomic_write_json(root / "runs" / f"{run_id}-scan-failed.json", failed_report)
         raise
 
     staged_state["last_successful_run"] = now
+    enqueued_discoveries: list[dict[str, Any]] = []
+    exact_record_duplicates = 0
     for discovery in staged_discoveries:
         path = root / "candidates" / "inbox" / f"{discovery['id']}.json"
-        if not path.exists():
-            atomic_write_json(path, discovery)
+        if path.exists():
+            exact_record_duplicates += 1
+            continue
+        atomic_write_json(path, discovery)
+        enqueued_discoveries.append(discovery)
     atomic_write_json(state_path, staged_state)
 
     report = {
         "schema_version": 1,
         "run_id": run_id,
-        "status": "changed" if staged_discoveries else "no_op",
-        "discoveries": len(staged_discoveries),
+        "status": "changed" if enqueued_discoveries else "no_op",
+        "discoveries": len(enqueued_discoveries),
         "sources": source_results,
-        "decisions": {"discard": 0, "merge": 0, "update": 0, "create": 0},
+        "metrics": _discovery_metrics(
+            selected=len(sources),
+            succeeded=len(source_results),
+            failed=0,
+            staged=len(staged_discoveries),
+            enqueued=len(enqueued_discoveries),
+            exact_duplicates=exact_record_duplicates,
+        ),
         "validations": [],
         "unresolved_issues": [],
     }

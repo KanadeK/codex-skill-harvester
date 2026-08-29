@@ -5,11 +5,23 @@ from pathlib import Path
 from typing import Any
 
 from .io import load_json
+from .scaling import load_scale_policy
 from .sources import load_registry
 
 
 class ReportingError(ValueError):
     pass
+
+
+REVIEW_PRIORITY = {
+    "official": (0, "high"),
+    "representative": (1, "normal"),
+    "discovery": (2, "low"),
+}
+
+
+def _outcome_name(value: object) -> object:
+    return "not_promoted" if value == "discard" else value
 
 
 def _candidate_files(root: Path) -> list[Path]:
@@ -41,7 +53,7 @@ def repository_status(root: Path) -> dict[str, Any]:
     records = [load_json(path) for path in sorted((root / "decisions" / "records").glob("*.json"))]
     if any(not isinstance(record, dict) for record in records):
         raise ReportingError("decision records contain an invalid record")
-    decision_outcomes = Counter(record.get("outcome") for record in records)
+    decision_outcomes = Counter(_outcome_name(record.get("outcome")) for record in records)
 
     return {
         "schema_version": 1,
@@ -66,41 +78,89 @@ def repository_status(root: Path) -> dict[str, Any]:
     }
 
 
-def review_queue(root: Path, source_id: str | None = None) -> dict[str, Any]:
+def _queue_item(candidate: dict[str, Any], path: Path) -> dict[str, Any]:
+    license_value = candidate.get("license")
+    if not isinstance(license_value, dict):
+        raise ReportingError(f"candidate license is invalid: {path.name}")
+    trust = candidate.get("trust")
+    if trust not in REVIEW_PRIORITY:
+        raise ReportingError(f"candidate trust is invalid: {path.name}")
+    return {
+        "id": candidate.get("id"),
+        "source_id": candidate.get("source_id"),
+        "title": candidate.get("title"),
+        "trust": trust,
+        "priority": REVIEW_PRIORITY[trust][1],
+        "license_status": license_value.get("status"),
+        "canonical_url": candidate.get("canonical_url"),
+        "observed_at": candidate.get("observed_at"),
+    }
+
+
+def _queue_sort_key(item: dict[str, Any]) -> tuple[int, str, str]:
+    return (
+        REVIEW_PRIORITY[item["trust"]][0],
+        str(item["observed_at"]),
+        str(item["id"]),
+    )
+
+
+def review_queue(
+    root: Path,
+    source_id: str | None = None,
+    *,
+    limit: int | None = None,
+    after: str | None = None,
+) -> dict[str, Any]:
+    review_batch = load_scale_policy(root)["review_batch"]
+    selected_limit = review_batch["default"] if limit is None else limit
+    maximum_limit = review_batch["maximum"]
     source_ids = {source["id"] for source in load_registry(root)}
     if source_id is not None and source_id not in source_ids:
         raise ReportingError(f"unknown source id: {source_id}")
+    if (
+        not isinstance(selected_limit, int)
+        or isinstance(selected_limit, bool)
+        or not 1 <= selected_limit <= maximum_limit
+    ):
+        raise ReportingError(
+            f"review limit must be between 1 and {maximum_limit}"
+        )
 
     items: list[dict[str, Any]] = []
+    cursor_item: dict[str, Any] | None = None
     for path in _candidate_files(root):
         candidate = load_json(path)
         if not isinstance(candidate, dict):
             raise ReportingError(f"candidate is invalid: {path.name}")
+        if candidate.get("id") == after:
+            if source_id is not None and candidate.get("source_id") != source_id:
+                raise ReportingError("review cursor is outside the selected source")
+            cursor_item = _queue_item(candidate, path)
         if candidate.get("review_status") != "pending":
             continue
         if source_id is not None and candidate.get("source_id") != source_id:
             continue
-        license_value = candidate.get("license")
-        if not isinstance(license_value, dict):
-            raise ReportingError(f"candidate license is invalid: {path.name}")
-        items.append(
-            {
-                "id": candidate.get("id"),
-                "source_id": candidate.get("source_id"),
-                "title": candidate.get("title"),
-                "trust": candidate.get("trust"),
-                "license_status": license_value.get("status"),
-                "canonical_url": candidate.get("canonical_url"),
-                "observed_at": candidate.get("observed_at"),
-            }
-        )
-    items.sort(key=lambda item: (str(item["source_id"]), str(item["title"]).casefold(), str(item["id"])))
+        items.append(_queue_item(candidate, path))
+    if after is not None and cursor_item is None:
+        raise ReportingError(f"unknown review cursor: {after}")
+
+    items.sort(key=_queue_sort_key)
+    pending = len(items)
     by_source = Counter(str(item["source_id"]) for item in items)
+    if cursor_item is not None:
+        cursor_key = _queue_sort_key(cursor_item)
+        items = [item for item in items if _queue_sort_key(item) > cursor_key]
+    page = items[:selected_limit]
+    next_cursor = page[-1]["id"] if len(items) > len(page) else None
     return {
         "schema_version": 1,
-        "pending": len(items),
+        "pending": pending,
+        "returned": len(page),
+        "limit": selected_limit,
+        "next_cursor": next_cursor,
         "by_source": dict(sorted(by_source.items())),
-        "items": items,
+        "items": page,
     }
 
 
@@ -128,7 +188,12 @@ def render_status(report: dict[str, Any]) -> str:
 
 
 def render_review_queue(report: dict[str, Any]) -> str:
-    lines = [f"pending={report['pending']}"]
+    lines = [
+        (
+            f"pending={report['pending']} returned={report['returned']} "
+            f"limit={report['limit']} next_cursor={report['next_cursor']}"
+        )
+    ]
     for source_id, count in report["by_source"].items():
         lines.append(f"source={source_id} count={count}")
     for item in report["items"]:
@@ -137,6 +202,7 @@ def render_review_queue(report: dict[str, Any]) -> str:
                 (
                     f"id={_line(item['id'])}",
                     f"source={_line(item['source_id'])}",
+                    f"priority={_line(item['priority'])}",
                     f"trust={_line(item['trust'])}",
                     f"license={_line(item['license_status'])}",
                     f"title={_line(item['title'])}",

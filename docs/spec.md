@@ -28,7 +28,7 @@ Framework-specific behavior is limited to the documented Codex Skill/Plugin file
 - Scan with the current official GitHub CLI keyring login: `python -m skill_harvester scan --root . --github-auth gh-cli`
 - Scan a subset: `python -m skill_harvester scan --root . --source <source-id>`
 - Inspect durable repository state: `python -m skill_harvester status --root .`
-- List pending candidate reviews: `python -m skill_harvester review-queue --root .`
+- List a bounded pending review page: `python -m skill_harvester review-queue --root . [--limit <count>] [--after <candidate-id>]`; the omitted default and explicit maximum are owned by `config/scale-policy.json`.
 - Apply one reviewed candidate decision: `python -m skill_harvester apply --root . --decision candidates/reviewed/<id>.json`
 - Validate repository and generated artifacts: `python scripts/validate_repo.py`
 - Run tests: `python -m unittest discover -s tests -v`
@@ -155,3 +155,52 @@ None that block v0.1.x. Hosted semantic embeddings, unattended semantic publicat
 - Add repository security/community metadata, dependency update configuration, and remote default-branch protection without adding runtime dependencies.
 - Update the existing release-audit Skill only when reviewed authoritative evidence changes a useful gate; validate its format, triggers, and isolated end-to-end behavior before release.
 - Publish changes as immutable v0.1.1 after local gates, pull-request CI, remote settings, release assets, source installation, Skill invocation, and contributors are verified.
+
+## Scale architecture foundation scope
+
+### Objective
+
+Prepare the harvester to evolve toward millions of source observations, hundreds of thousands of discoveries, tens of thousands of normalized capability candidates, and thousands of published Skills without treating those numbers as publication targets. Preserve the existing quality gates and implement only the foundations that are required before another broad scan.
+
+### Assumptions and decisions
+
+- The current Git-native JSON layout remains the active backend until a measured migration trigger is crossed. This change does not introduce SQLite, Parquet, embeddings, hosted services, or a runtime dependency.
+- Legacy decision outcome `discard` means `not_promoted`: the evidence and decision stay durable and may be reconsidered. New operator output must not imply deletion.
+- A capability has one immutable canonical `id`. Its Plugin, Skill path, aliases, facets, evidence, and variants may evolve without changing that identity.
+- Classification uses one primary capability family plus versioned multi-dimensional facets. Taxonomy values may grow from evidence; the initial registry is not an exhaustive ontology.
+- Source fetching, semantic review, and publication remain separate stages. A metric is emitted only by the stage that actually measured it; unperformed semantic work is never reported as zero.
+
+### Required behavior in this change
+
+- Document the three-layer architecture: Evidence/Discovery, Capability Registry, and Published Skills.
+- Add a validated, versioned taxonomy contract covering domain, intent, inputs, outputs, tools, platforms, side effects, risk, volatility, maturity, and trust.
+- Add an explicit schema/taxonomy migration policy and prove legacy catalog migration with deterministic fixtures.
+- Normalize legacy `discard` counts to `not_promoted` in operator-facing status while retaining old append-only records unchanged.
+- Require explicit reactivation conditions for new schema-version-2 `not_promoted` decisions.
+- Bound review queue pages with a stable continuation cursor and deterministic trust-based priority.
+- Add discovery-stage metrics for selected/succeeded/failed sources, staged discoveries, newly enqueued candidates, and exact record duplicates.
+- Add a reproducible storage inventory/benchmark and explicit thresholds that decide when the Git-JSON backend must be replaced or indexed.
+- Update repository validation and CI so these contracts cannot silently drift.
+
+### Success criteria
+
+- Existing 110 candidates and 110 decision records remain valid and byte-preserved unless a file is directly required by the new catalog contract.
+- Status reports 103 legacy `discard` records as 103 `not_promoted` decisions and reports zero deleted records.
+- A schema-version-2 `not_promoted` decision without reactivation conditions fails; one with conditions is accepted and remains unpublished.
+- Review queue output defaults to a bounded batch, exposes priority and a continuation cursor, and can resume without duplicating an item.
+- Scan fixtures distinguish staged discoveries, new queue entries, and exact queue-record duplicates; failed transactional runs report the measured source failure without advancing state.
+- The scale benchmark inventories the current backend, exercises temporary synthetic records, projects the named target sizes, and evaluates migration triggers without writing benchmark data into the repository.
+- The complete unit/integration suite, repository validator, evals, release build, isolated archive verification, and Linux/Windows CI remain green.
+- Work is submitted on a `codex/` branch in one reviewable PR. This change is not merged, tagged, or released automatically.
+
+### Non-goals
+
+- No broad source scan or candidate-generation campaign.
+- No automatic semantic approval or Skill publication.
+- No storage backend rewrite before a measured trigger.
+- No attempt to enumerate every possible domain or publish thousands of Skills into one Plugin.
+
+### Open questions for later control-plane decisions
+
+- Which model-usage and cost telemetry is authoritative enough to populate per-candidate token and currency metrics without estimates being mistaken for measurements?
+- When a storage trigger is crossed, should the first indexed backend optimize for a single maintainer (SQLite) or coordinated workers (a service-backed queue)? The current local-first default is SQLite unless operational evidence changes the requirement.
