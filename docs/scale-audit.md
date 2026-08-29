@@ -1,6 +1,6 @@
 # Scale adaptation audit
 
-Measured on 2026-08-27 against v0.1.1 before the scale foundation.
+Inventory measured on 2026-08-27 against v0.1.1 before the scale foundation. The temporary lifecycle benchmark was run on 2026-08-28 in the local Windows workspace with the bundled Python 3.12 runtime.
 
 ## Current inventory
 
@@ -63,10 +63,22 @@ Crossing one trigger starts evaluation; it does not silently migrate. SQLite is 
 - evaluates migration triggers;
 - prints JSON and persists nothing.
 
-CI uses a smaller deterministic fixture to prove the benchmark remains runnable without treating noisy wall-clock values as release gates. Measured 10,000-record results will be added after the script runs.
+CI uses a smaller deterministic fixture to prove the benchmark remains runnable without treating noisy wall-clock values as release gates.
+
+## Measured benchmark results
+
+| Lifecycle records | Files | Synthetic bytes | Write | Parse/enumerate |
+| ---: | ---: | ---: | ---: | ---: |
+| 100 | 300 | 50,100 | 0.094 s | 3.703 s |
+| 10,000 | 30,000 | 5,010,000 | 14.768 s | 524.405 s |
+
+The fixture deliberately keeps each JSON payload small, so these timings isolate the current three-files-per-lifecycle traversal shape rather than reproduce the projected 37.6 MB of real candidate payload. The 10,000-record result confirms that filesystem enumeration, per-file open/parse work, Git metadata, and local antivirus effects can dominate raw bytes.
+
+The same benchmark command measured current in-process full repository validation at 0.178 seconds and passed that value into trigger evaluation. This does not trigger an immediate migration: the real repository still has 110 candidate records, 330 lifecycle files, a 21,772-byte harvest state, 100 seen source items, and no active trigger. It does show that the 60-second full-validation trigger is likely to open a migration evaluation before the 150,000-file ceiling as the repository grows. The backend remains `git-json-v1` until a real trigger is crossed and an ADR selects the replacement.
 
 ## Limitations
 
 - Initial shell timings included Windows sandbox and process startup, so they are not used as algorithmic results.
+- Benchmark wall time is environment-specific and is not a portable throughput guarantee or a CI pass/fail threshold.
 - Projections are planning evidence, not throughput guarantees.
 - Semantic-review time and model cost are unavailable without a trusted runtime meter and are not estimated.

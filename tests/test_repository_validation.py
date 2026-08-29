@@ -46,6 +46,10 @@ class RepositoryValidationTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("workflow_dispatch:", ci_workflow)
+        self.assertIn(
+            "python scripts/benchmark_storage.py --root . --records 100",
+            ci_workflow,
+        )
 
     def test_current_repository_is_consistent(self) -> None:
         root = Path(__file__).resolve().parents[1]

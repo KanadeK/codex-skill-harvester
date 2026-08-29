@@ -28,7 +28,7 @@ Framework-specific behavior is limited to the documented Codex Skill/Plugin file
 - Scan with the current official GitHub CLI keyring login: `python -m skill_harvester scan --root . --github-auth gh-cli`
 - Scan a subset: `python -m skill_harvester scan --root . --source <source-id>`
 - Inspect durable repository state: `python -m skill_harvester status --root .`
-- List pending candidate reviews: `python -m skill_harvester review-queue --root .`
+- List a bounded pending review page: `python -m skill_harvester review-queue --root . --limit 100 [--after <candidate-id>]`
 - Apply one reviewed candidate decision: `python -m skill_harvester apply --root . --decision candidates/reviewed/<id>.json`
 - Validate repository and generated artifacts: `python scripts/validate_repo.py`
 - Run tests: `python -m unittest discover -s tests -v`

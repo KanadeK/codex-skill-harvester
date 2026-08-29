@@ -80,6 +80,7 @@ def validate_repository(root: Path) -> dict[str, Any]:
         "docs/scale-audit.md",
         "docs/schema-migrations.md",
         "docs/taxonomy.md",
+        "scripts/benchmark_storage.py",
         "sources/registry.json",
         ".github/dependabot.yml",
         ".github/ISSUE_TEMPLATE/bug_report.yml",
@@ -111,6 +112,10 @@ def validate_repository(root: Path) -> dict[str, Any]:
     )
     ci_workflow = (root / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
     _require("workflow_dispatch:" in ci_workflow, "CI workflow must support explicit dispatch")
+    _require(
+        "python scripts/benchmark_storage.py --root . --records 100" in ci_workflow,
+        "CI workflow must exercise the storage benchmark",
+    )
 
     sources = load_registry(root)
     source_by_id = {source["id"]: source for source in sources}

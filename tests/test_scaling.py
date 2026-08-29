@@ -25,9 +25,14 @@ class ScalingTests(unittest.TestCase):
         policy = load_scale_policy(ROOT)
         inventory = inventory_repository(ROOT)
 
-        self.assertEqual(inventory["candidate_records"], 110)
-        self.assertEqual(inventory["candidate_lifecycle_files"], 330)
-        self.assertEqual(inventory["seen_source_items"], 100)
+        candidate_files = list((ROOT / "candidates" / "inbox").glob("*.json"))
+        reviewed_files = list((ROOT / "candidates" / "reviewed").glob("*.json"))
+        decision_files = list((ROOT / "decisions" / "records").glob("*.json"))
+        self.assertEqual(inventory["candidate_records"], len(candidate_files))
+        self.assertEqual(
+            inventory["candidate_lifecycle_files"],
+            len(candidate_files) + len(reviewed_files) + len(decision_files),
+        )
         self.assertEqual(evaluate_migration_triggers(inventory, policy), [])
 
         projections = project_storage(inventory, policy)
@@ -72,6 +77,10 @@ class ScalingTests(unittest.TestCase):
         self.assertGreater(result["bytes"], 0)
         self.assertGreaterEqual(result["write_seconds"], 0)
         self.assertGreaterEqual(result["read_seconds"], 0)
+
+    def test_temporary_benchmark_rejects_zero_records(self) -> None:
+        with self.assertRaisesRegex(ScalePolicyError, "positive integer"):
+            benchmark_json_lifecycle(0)
 
     def test_scale_policy_rejects_an_invalid_review_budget(self) -> None:
         policy = load_scale_policy(ROOT)

@@ -4,7 +4,7 @@ This maintenance release makes the harvester ready for recurring operation witho
 
 The scanner now separates a moving GitHub search result window from material repository identity. Revision-only updates and reordering remain observable state but do not create duplicate candidates. New repository identities and meaningful title or URL changes remain real discoveries. Read-only `status` and `review-queue` commands expose the persisted cursor, catalog, decision totals, and pending work directly.
 
-The real maintenance round resumed from v0.1.0 state, discovered 15 new items, and reviewed those together with 89 inherited candidates. Its 104 decisions were 100 discards, 3 merges, 1 update, and no forced creation. Across the repository, all 110 candidates now have explicit records: 103 discarded, 4 merged, 2 updated, and 1 created.
+The real maintenance round resumed from v0.1.0 state, discovered 15 new items, and reviewed those together with 89 inherited candidates. Its 104 decisions used the then-current schema-1 outcomes: 100 legacy `discard` records, 3 merges, 1 update, and no forced creation. Across the repository, all 110 candidates now have explicit records: 103 are reported as not promoted to independent Skills, 4 merged, 2 updated, and 1 created. No discovery record was deleted.
 
 The existing **GitHub Release Evidence** Plugin remains the only published task domain. Its `audit-github-release` Skill can now require the official REST Release record to prove `immutable: true`; the deterministic checker fails when immutability is required but absent.
 

@@ -7,7 +7,7 @@ from typing import Any
 
 from .io import atomic_write_json, atomic_write_text, canonical_json_bytes, load_json, sha256_bytes
 from .sources import load_registry
-from .taxonomy import validate_catalog_taxonomy, validate_classification
+from .taxonomy import TaxonomyError, validate_catalog_taxonomy, validate_classification
 
 
 FINGERPRINT_FIELDS = (
@@ -220,8 +220,30 @@ def _catalog(root: Path) -> dict[str, Any]:
     )
     _catalog_entries(value)
     if value["schema_version"] == 2:
-        validate_catalog_taxonomy(value, load_json(root / "catalog" / "taxonomy.json"))
+        _validate_catalog_for_decision(
+            value, load_json(root / "catalog" / "taxonomy.json")
+        )
     return value
+
+
+def _validate_catalog_for_decision(
+    catalog: dict[str, Any], taxonomy: dict[str, Any]
+) -> None:
+    try:
+        validate_catalog_taxonomy(catalog, taxonomy)
+    except TaxonomyError as error:
+        raise DecisionError(str(error)) from error
+
+
+def _validate_classification_for_decision(
+    value: Any,
+    taxonomy: dict[str, Any],
+    capability_id: str,
+) -> None:
+    try:
+        validate_classification(value, taxonomy, capability_id)
+    except TaxonomyError as error:
+        raise DecisionError(str(error)) from error
 
 
 def _internal_entry(catalog: dict[str, Any], capability_id: str) -> dict[str, Any] | None:
@@ -291,6 +313,16 @@ def _validate_decision(value: Any) -> dict[str, Any]:
         raise DecisionError(
             "schema 1 uses discard; schema 2 uses not_promoted; both support merge, update, and create"
         )
+    if schema_version == 2 and value["outcome"] == "create":
+        canonical_id = value.get("canonical_capability_id")
+        if not isinstance(canonical_id, str) or not canonical_id:
+            raise DecisionError(
+                "schema 2 create decisions require canonical_capability_id"
+            )
+    elif schema_version == 2 and value.get("canonical_capability_id") is not None:
+        raise DecisionError(
+            "schema 2 canonical_capability_id is only valid for create decisions"
+        )
     if not isinstance(value.get("rationale"), str) or len(value["rationale"].strip()) < 40:
         raise DecisionError("decision rationale must contain a concrete comparison")
     source_refs = value.get("source_refs")
@@ -330,6 +362,11 @@ def apply_decision(root: Path, decision_path: Path) -> dict[str, Any]:
         raise DecisionError("decision candidate_id must name an inbox discovery")
 
     catalog = _catalog(root)
+    taxonomy = (
+        load_json(root / "catalog" / "taxonomy.json")
+        if catalog["schema_version"] == 2
+        else None
+    )
     target_id = decision.get("target_capability_id")
     target = _internal_entry(catalog, target_id) if isinstance(target_id, str) else None
     outcome = decision["outcome"]
@@ -356,8 +393,15 @@ def apply_decision(root: Path, decision_path: Path) -> dict[str, Any]:
     if recommendation["outcome"] == "discard_exact" and outcome in {"create", "update"}:
         raise DecisionError("an exact bundle duplicate cannot be created or used as an update")
 
+    artifact_previous: dict[str, Any] | None = None
+    marketplace: dict[str, Any] | None = None
     if outcome == "create":
-        capability_id = f"{artifact['plugin_id']}:{artifact['skill_name']}"
+        if decision["schema_version"] == 2:
+            capability_id = decision["canonical_capability_id"]
+            if not re.fullmatch(taxonomy["canonical_id"]["pattern"], capability_id):
+                raise DecisionError("canonical_capability_id is invalid")
+        else:
+            capability_id = f"{artifact['plugin_id']}:{artifact['skill_name']}"
         if _internal_entry(catalog, capability_id):
             raise DecisionError("create capability already exists; choose update or merge")
         entry = {
@@ -374,9 +418,9 @@ def apply_decision(root: Path, decision_path: Path) -> dict[str, Any]:
         }
         if catalog["schema_version"] == 2:
             classification = decision.get("classification")
-            validate_classification(
+            _validate_classification_for_decision(
                 classification,
-                load_json(root / "catalog" / "taxonomy.json"),
+                taxonomy,
                 capability_id,
             )
             entry.update(
@@ -387,16 +431,18 @@ def apply_decision(root: Path, decision_path: Path) -> dict[str, Any]:
                     "variants": decision.get("variants", []),
                 }
             )
-        _write_artifact(root, artifact, None)
         catalog["internal"].append(entry)
         marketplace = _marketplace_with_plugin(root, artifact["plugin_id"], artifact["plugin_manifest"])
-        atomic_write_json(root / ".agents" / "plugins" / "marketplace.json", marketplace)
     elif outcome == "update":
         capability_id = target["id"]
-        artifact_id = f"{artifact['plugin_id']}:{artifact['skill_name']}"
-        if artifact_id != capability_id:
-            raise DecisionError("update artifact identity must match the target capability")
-        _write_artifact(root, artifact, target)
+        if (
+            artifact["plugin_id"] != target["plugin_id"]
+            or artifact["skill_name"] != target["skill_name"]
+        ):
+            raise DecisionError(
+                "update artifact packaging must match the target capability"
+            )
+        artifact_previous = dict(target)
         target.update(
             {
                 "artifact_sha256": bundle_hash(artifact),
@@ -408,14 +454,13 @@ def apply_decision(root: Path, decision_path: Path) -> dict[str, Any]:
             }
         )
         if catalog["schema_version"] == 2 and decision.get("classification") is not None:
-            validate_classification(
+            _validate_classification_for_decision(
                 decision["classification"],
-                load_json(root / "catalog" / "taxonomy.json"),
+                taxonomy,
                 capability_id,
             )
             target["classification"] = decision["classification"]
         marketplace = _marketplace_with_plugin(root, artifact["plugin_id"], artifact["plugin_manifest"])
-        atomic_write_json(root / ".agents" / "plugins" / "marketplace.json", marketplace)
     elif outcome == "merge":
         capability_id = target["id"]
         target["source_refs"] = sorted(set(target.get("source_refs", []) + decision["source_refs"]))
@@ -427,9 +472,13 @@ def apply_decision(root: Path, decision_path: Path) -> dict[str, Any]:
     else:
         capability_id = None
 
-    if catalog["schema_version"] == 2:
-        validate_catalog_taxonomy(
-            catalog, load_json(root / "catalog" / "taxonomy.json")
+    if taxonomy is not None:
+        _validate_catalog_for_decision(catalog, taxonomy)
+    if artifact is not None:
+        assert marketplace is not None
+        _write_artifact(root, artifact, artifact_previous)
+        atomic_write_json(
+            root / ".agents" / "plugins" / "marketplace.json", marketplace
         )
     atomic_write_json(root / "catalog" / "capabilities.json", catalog)
     record = {

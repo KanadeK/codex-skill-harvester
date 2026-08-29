@@ -23,6 +23,23 @@ FINGERPRINT = {
     "platforms": ["github"],
 }
 
+CLASSIFICATION = {
+    "primary_family": "software.release-assurance",
+    "facets": {
+        "domain": ["software"],
+        "intent": ["validate"],
+        "inputs": ["repository", "release"],
+        "outputs": ["report", "evidence"],
+        "tools": ["gh", "python"],
+        "platforms": ["github", "codex", "windows"],
+        "side_effects": ["network-read", "local-write"],
+        "risk": ["standard"],
+        "volatility": ["fast-moving"],
+        "maturity": ["published"],
+        "trust": ["official", "primary"],
+    },
+}
+
 
 def write_json(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -232,6 +249,111 @@ class ApplyDecisionTests(unittest.TestCase):
                 root / "candidates" / "inbox" / "real-source-candidate.json"
             )
             self.assertEqual(discovery["decision_outcome"], "not_promoted")
+
+    def test_schema_two_canonical_id_is_independent_of_packaging(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            repository = Path(__file__).resolve().parents[1]
+            taxonomy = read_json(repository / "catalog" / "taxonomy.json")
+            write_json(root / "catalog" / "taxonomy.json", taxonomy)
+            write_json(
+                root / "catalog" / "capabilities.json",
+                {
+                    "schema_version": 2,
+                    "taxonomy_version": taxonomy["taxonomy_version"],
+                    "internal": [],
+                    "external": [],
+                },
+            )
+            create_path = create_decision(root)
+            create = read_json(create_path)
+            create["schema_version"] = 2
+            create["canonical_capability_id"] = "software.release-audit"
+            create["classification"] = CLASSIFICATION
+            write_json(create_path, create)
+
+            created = apply_decision(root, create_path)
+
+            self.assertEqual(created["target_capability_id"], "software.release-audit")
+            catalog = read_json(root / "catalog" / "capabilities.json")
+            self.assertEqual(catalog["internal"][0]["id"], "software.release-audit")
+            self.assertEqual(
+                catalog["internal"][0]["plugin_id"], "github-release-evidence"
+            )
+
+            candidate_id = "changed-source-candidate"
+            write_json(
+                root / "candidates" / "inbox" / f"{candidate_id}.json",
+                {"schema_version": 1, "id": candidate_id, "review_status": "pending"},
+            )
+            update = read_json(create_path)
+            update["candidate_id"] = candidate_id
+            update["reviewed_at"] = "2026-08-27T08:00:00Z"
+            update["outcome"] = "update"
+            update["target_capability_id"] = "software.release-audit"
+            update.pop("canonical_capability_id")
+            update["artifact"]["files"]["SKILL.md"] += "Revision 2.\n"
+            update_path = root / "candidates" / "reviewed" / f"{candidate_id}.json"
+            write_json(update_path, update)
+
+            updated = apply_decision(root, update_path)
+
+            self.assertEqual(updated["target_capability_id"], "software.release-audit")
+            catalog = read_json(root / "catalog" / "capabilities.json")
+            self.assertEqual(catalog["internal"][0]["revision"], 2)
+
+    def test_schema_two_create_requires_a_canonical_id(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            repository = Path(__file__).resolve().parents[1]
+            taxonomy = read_json(repository / "catalog" / "taxonomy.json")
+            write_json(root / "catalog" / "taxonomy.json", taxonomy)
+            write_json(
+                root / "catalog" / "capabilities.json",
+                {
+                    "schema_version": 2,
+                    "taxonomy_version": taxonomy["taxonomy_version"],
+                    "internal": [],
+                    "external": [],
+                },
+            )
+            decision_path = create_decision(root)
+            decision = read_json(decision_path)
+            decision["schema_version"] = 2
+            decision["classification"] = CLASSIFICATION
+            write_json(decision_path, decision)
+
+            with self.assertRaisesRegex(DecisionError, "canonical_capability_id"):
+                apply_decision(root, decision_path)
+
+    def test_schema_two_catalog_validation_precedes_artifact_writes(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            repository = Path(__file__).resolve().parents[1]
+            taxonomy = read_json(repository / "catalog" / "taxonomy.json")
+            write_json(root / "catalog" / "taxonomy.json", taxonomy)
+            write_json(
+                root / "catalog" / "capabilities.json",
+                {
+                    "schema_version": 2,
+                    "taxonomy_version": taxonomy["taxonomy_version"],
+                    "internal": [],
+                    "external": [],
+                },
+            )
+            decision_path = create_decision(root)
+            decision = read_json(decision_path)
+            decision["schema_version"] = 2
+            decision["canonical_capability_id"] = "software.release-audit"
+            decision["classification"] = CLASSIFICATION
+            decision["aliases"] = [""]
+            write_json(decision_path, decision)
+
+            with self.assertRaisesRegex(DecisionError, "aliases"):
+                apply_decision(root, decision_path)
+
+            self.assertFalse((root / "plugins").exists())
+            self.assertFalse((root / ".agents" / "plugins").exists())
 
 
 if __name__ == "__main__":

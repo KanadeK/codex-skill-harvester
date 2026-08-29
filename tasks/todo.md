@@ -72,29 +72,29 @@
 
 ## Task 11: document the measured scale architecture
 
-- [ ] Acceptance: the repository defines the three product layers, measured current limits, explicit migration triggers, and a phased roadmap without claiming projected volume as a KPI.
-- [ ] Verify: documentation references the same thresholds as the machine-readable scale policy.
+- [x] Acceptance: the repository defines the three product layers, measured current limits, explicit migration triggers, and a phased roadmap without claiming projected volume as a KPI.
+- [x] Verify: documentation references the same thresholds as the machine-readable scale policy.
 - [ ] Files: `docs/architecture.md`, `docs/scale-audit.md`, `docs/roadmap.md`, `docs/decisions/*`, `config/scale-policy.json`.
 - Dependencies: Task 10.
 
 ## Task 12: version taxonomy and schema migration
 
-- [ ] Acceptance: every current catalog capability has one stable canonical id, one primary family, validated facets, aliases/variants/merged evidence fields, and taxonomy/schema versions.
-- [ ] Verify: focused taxonomy and v1-to-v2 migration fixtures pass; repository validation rejects drift.
+- [x] Acceptance: every current catalog capability has one stable canonical id, one primary family, validated facets, aliases/variants/merged evidence fields, and taxonomy/schema versions.
+- [x] Verify: focused taxonomy and v1-to-v2 migration fixtures pass; repository validation rejects drift.
 - [ ] Files: `catalog/taxonomy.json`, `catalog/capabilities.json`, taxonomy/migration modules, fixtures, and tests.
 - Dependencies: Task 11.
 
 ## Task 13: make non-promotion and review batching explicit
 
-- [ ] Acceptance: legacy `discard` records display as `not_promoted`; new v2 non-promotion decisions require reactivation conditions; queue pages are priority ordered, bounded, and resumable.
-- [ ] Verify: focused decision/reporting/CLI tests prove compatibility, failure paths, and cursor continuation.
+- [x] Acceptance: legacy `discard` records display as `not_promoted`; new v2 non-promotion decisions require reactivation conditions; queue pages are priority ordered, bounded, and resumable.
+- [x] Verify: focused decision/reporting/CLI tests prove compatibility, failure paths, and cursor continuation.
 - [ ] Files: decision/reporting/CLI modules and tests.
 - Dependencies: Task 12.
 
 ## Task 14: add stage-owned observability and scale benchmark
 
-- [ ] Acceptance: scan reports contain measured source/enqueue/duplicate metrics, and a reproducible temporary benchmark inventories, projects, and evaluates the active backend.
-- [ ] Verify: changed/no-op/failure fixtures and benchmark tests pass without external network or persistent fixture output.
+- [x] Acceptance: scan reports contain measured source/enqueue/duplicate metrics, and a reproducible temporary benchmark inventories, projects, and evaluates the active backend.
+- [x] Verify: changed/no-op/failure fixtures and benchmark tests pass without external network or persistent fixture output.
 - [ ] Files: source/scaling modules, benchmark script, policy, CI, and tests.
 - Dependencies: Tasks 12 and 13.
 
