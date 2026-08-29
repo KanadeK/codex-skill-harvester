@@ -75,9 +75,11 @@ Inspect the durable handoff state and pending review queue:
 
 ```powershell
 .\.venv\Scripts\skill-harvester status --root .
-.\.venv\Scripts\skill-harvester review-queue --root . --limit 100
-.\.venv\Scripts\skill-harvester review-queue --root . --limit 100 --after CANDIDATE_ID
+.\.venv\Scripts\skill-harvester review-queue --root .
+.\.venv\Scripts\skill-harvester review-queue --root . --after CANDIDATE_ID
 ```
+
+The review page size defaults to `review_batch.default` in `config/scale-policy.json`. An explicit `--limit <count>` must not exceed the policy's `review_batch.maximum`.
 
 A scan stores only source metadata, necessary extracted facts, and evidence hashes. It does not store raw pages or execute fetched code. Review a discovery by creating the explicit decision contract documented in [.agents/skills/maintain-skill-harvester](.agents/skills/maintain-skill-harvester/SKILL.md), then apply it:
 

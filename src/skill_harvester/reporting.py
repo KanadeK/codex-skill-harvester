@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from .io import load_json
+from .scaling import load_scale_policy
 from .sources import load_registry
 
 
@@ -12,8 +13,6 @@ class ReportingError(ValueError):
     pass
 
 
-DEFAULT_REVIEW_LIMIT = 100
-MAXIMUM_REVIEW_LIMIT = 1000
 REVIEW_PRIORITY = {
     "official": (0, "high"),
     "representative": (1, "normal"),
@@ -110,15 +109,22 @@ def review_queue(
     root: Path,
     source_id: str | None = None,
     *,
-    limit: int = DEFAULT_REVIEW_LIMIT,
+    limit: int | None = None,
     after: str | None = None,
 ) -> dict[str, Any]:
+    review_batch = load_scale_policy(root)["review_batch"]
+    selected_limit = review_batch["default"] if limit is None else limit
+    maximum_limit = review_batch["maximum"]
     source_ids = {source["id"] for source in load_registry(root)}
     if source_id is not None and source_id not in source_ids:
         raise ReportingError(f"unknown source id: {source_id}")
-    if not isinstance(limit, int) or not 1 <= limit <= MAXIMUM_REVIEW_LIMIT:
+    if (
+        not isinstance(selected_limit, int)
+        or isinstance(selected_limit, bool)
+        or not 1 <= selected_limit <= maximum_limit
+    ):
         raise ReportingError(
-            f"review limit must be between 1 and {MAXIMUM_REVIEW_LIMIT}"
+            f"review limit must be between 1 and {maximum_limit}"
         )
 
     items: list[dict[str, Any]] = []
@@ -145,13 +151,13 @@ def review_queue(
     if cursor_item is not None:
         cursor_key = _queue_sort_key(cursor_item)
         items = [item for item in items if _queue_sort_key(item) > cursor_key]
-    page = items[:limit]
+    page = items[:selected_limit]
     next_cursor = page[-1]["id"] if len(items) > len(page) else None
     return {
         "schema_version": 1,
         "pending": pending,
         "returned": len(page),
-        "limit": limit,
+        "limit": selected_limit,
         "next_cursor": next_cursor,
         "by_source": dict(sorted(by_source.items())),
         "items": page,

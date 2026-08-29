@@ -9,14 +9,13 @@ from typing import Sequence
 
 from .decisions import DecisionError, apply_decision
 from .reporting import (
-    DEFAULT_REVIEW_LIMIT,
-    MAXIMUM_REVIEW_LIMIT,
     ReportingError,
     render_review_queue,
     render_status,
     repository_status,
     review_queue,
 )
+from .scaling import ScalePolicyError
 from .sources import (
     Fetcher,
     GitHubCliFetcher,
@@ -54,8 +53,10 @@ def _parser() -> argparse.ArgumentParser:
     queue.add_argument(
         "--limit",
         type=int,
-        default=DEFAULT_REVIEW_LIMIT,
-        help=f"return at most this many candidates (maximum {MAXIMUM_REVIEW_LIMIT})",
+        help=(
+            "return at most this many candidates; default and maximum come from "
+            "config/scale-policy.json"
+        ),
     )
     queue.add_argument("--after", help="resume after this candidate id")
     queue.add_argument("--json", action="store_true", help="emit machine-readable JSON")
@@ -104,7 +105,14 @@ def main(
             now=observed_at,
             source_ids=set(args.source) if args.source else None,
         )
-    except (DecisionError, RegistryError, ReportingError, SourceFetchError, OSError) as error:
+    except (
+        DecisionError,
+        RegistryError,
+        ReportingError,
+        ScalePolicyError,
+        SourceFetchError,
+        OSError,
+    ) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
     print(f"status={report['status']} discoveries={report['discoveries']} run={report['run_id']}")

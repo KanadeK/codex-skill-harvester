@@ -19,6 +19,17 @@ from _support import QueueFetcher, document_source, write_registry
 from test_apply_decision import create_decision, write_json
 
 
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def write_scale_policy(root: Path, *, default: int = 100, maximum: int = 1000) -> None:
+    policy = json.loads(
+        (ROOT / "config" / "scale-policy.json").read_text(encoding="utf-8")
+    )
+    policy["review_batch"] = {"default": default, "maximum": maximum}
+    write_json(root / "config" / "scale-policy.json", policy)
+
+
 class ScanCliTests(unittest.TestCase):
     def test_status_command_reports_durable_repository_counts_as_json(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -89,6 +100,7 @@ class ScanCliTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             write_registry(root, [document_source("official-doc"), document_source("other-doc")])
+            write_scale_policy(root)
             for candidate_id, source_id, status in (
                 ("pending-one", "official-doc", "pending"),
                 ("pending-two", "other-doc", "pending"),
@@ -144,6 +156,7 @@ class ScanCliTests(unittest.TestCase):
             discovery = document_source("discovery-doc")
             discovery["trust"] = "discovery"
             write_registry(root, [discovery, representative, official])
+            write_scale_policy(root)
             for candidate_id, source_id, trust in (
                 ("discovery-one", "discovery-doc", "discovery"),
                 ("representative-one", "representative-doc", "representative"),
@@ -198,6 +211,61 @@ class ScanCliTests(unittest.TestCase):
             self.assertNotEqual(
                 first["items"][0]["id"], second["items"][0]["id"]
             )
+
+    def test_review_queue_uses_repository_policy_default_page_size(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_registry(root, [document_source("official-doc")])
+            write_scale_policy(root, default=2, maximum=3)
+            for index in range(3):
+                candidate_id = f"pending-{index}"
+                write_json(
+                    root / "candidates" / "inbox" / f"{candidate_id}.json",
+                    {
+                        "id": candidate_id,
+                        "source_id": "official-doc",
+                        "title": candidate_id,
+                        "trust": "official",
+                        "license": {"status": "known"},
+                        "canonical_url": f"https://example.test/{candidate_id}",
+                        "observed_at": "2026-08-27T06:00:00Z",
+                        "review_status": "pending",
+                    },
+                )
+            output = io.StringIO()
+
+            with contextlib.redirect_stdout(output):
+                exit_code = main(
+                    ["review-queue", "--root", str(root), "--json"]
+                )
+
+            self.assertEqual(exit_code, 0)
+            report = json.loads(output.getvalue())
+            self.assertEqual(report["limit"], 2)
+            self.assertEqual(report["returned"], 2)
+            self.assertIsNotNone(report["next_cursor"])
+
+    def test_review_queue_rejects_limit_above_repository_policy_maximum(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_registry(root, [document_source("official-doc")])
+            write_scale_policy(root, default=2, maximum=3)
+            error = io.StringIO()
+            output = io.StringIO()
+
+            with contextlib.redirect_stdout(output), contextlib.redirect_stderr(error):
+                exit_code = main(
+                    [
+                        "review-queue",
+                        "--root",
+                        str(root),
+                        "--limit",
+                        "4",
+                    ]
+                )
+
+            self.assertEqual(exit_code, 1)
+            self.assertIn("review limit must be between 1 and 3", error.getvalue())
 
     def test_scan_command_reports_changed_sources(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

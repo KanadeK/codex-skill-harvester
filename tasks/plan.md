@@ -157,4 +157,4 @@ None for the first vertical slice.
 - [x] Add and run a temporary-directory storage benchmark with projections and trigger evaluation.
 - [x] Run focused tests, the full suite, validator, evals, release build, and isolated archive verification.
 - [x] Complete correctness/readability/architecture/security/performance review and resolve required findings.
-- [ ] Commit exact paths, push the `codex/` branch, open one PR, and wait for CI without merging or releasing.
+- [x] Commit exact paths, push the `codex/` branch, open one PR, and wait for CI without merging or releasing.

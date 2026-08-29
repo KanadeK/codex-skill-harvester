@@ -10,7 +10,7 @@ Build and maintain a repeatable, evidence-backed harvester that turns changed pu
 - Validate: `python scripts/validate_repo.py`
 - Scan: `python -m skill_harvester scan --root .`
 - Status: `python -m skill_harvester status --root .`
-- Review queue: `python -m skill_harvester review-queue --root . --limit 100 [--after <candidate-id>]`
+- Review queue: `python -m skill_harvester review-queue --root . [--limit <count>] [--after <candidate-id>]` (the default and maximum come from `config/scale-policy.json`)
 - Apply one reviewed decision: `python -m skill_harvester apply --root . --decision <path>`
 - Storage benchmark: `python scripts/benchmark_storage.py --root . --records 100`
 - Build release assets: `python scripts/build_release.py`
