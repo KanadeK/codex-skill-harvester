@@ -12,20 +12,20 @@ Volume is a capacity trigger, not a publication KPI. Every phase retains the sam
 
 Exit: contracts validate, benchmark is reproducible, CI is green, and no broad scan was run.
 
-## Current work package: high-throughput vertical slice
+## Current work package: content-driven production slice
 
-- Record the total-control route in `docs/plan-adoption-audit.md` after reconciling the untrusted external planning input with the merged scale foundation.
-- Reserve `v0.2.0` without issuing it. A release needs a first vertical slice, one real calibration campaign, all gates, and a new total-control approval.
-- Keep observations separate from normalized candidates; prove source-group/topic, five queues, L0–L3, SQL-bounded paging, runtime stop-loss, and source-level checkpoints in one exercised path.
-- Run a structural three-group canary and automatic ramp to currently executable registered capacity. Keep the long-horizon 180–260 endpoint campaign gated on a real endpoint inventory and query-cursor implementation; the current inventory is not relabeled as that full campaign.
+- Keep PR #7 as the deterministic stacked base and reserve `v0.2.0` without issuing it.
+- Persist content/query work in SQLite schema 3, make source-level workflow hints non-authoritative, and require Codex-reviewed Evidence Packs before candidate creation.
+- Exercise 21 Domain × Intent queries, 26 executable endpoints, resumable failures, three semantic batches, L2/L3, L4, original synthesis, evals, and no-op replay in one real slice.
+- Submit one new Python package-delivery Skill and one GitHub release-evidence update for review without merging either PR or publishing a Release.
 
-Exit: the next worker can implement one bounded slice from a single authority without treating projected volume, a green PR, or a foundation merge as a publication commitment.
+Exit: the stacked PR is reviewable with code-generated metrics, all local/remote gates, and zero pending query, semantic, or candidate work. Projected campaign ranges remain capacity direction, not completion claims.
 
 ## Phase B: larger SQLite-backed operation
 
-Trigger: the endpoint inventory and query connector exist to make the 5–10% same-campaign canary meaningful.
+Trigger: the current 26-endpoint/21-query slice remains stable, its stacked change is accepted in the approved merge order, and a new explicit campaign cycle is opened. Ordinary inventory expansion inside the existing stop-loss policy does not require a separate volume approval.
 
-- Add discovery-query topics and a round-robin cursor for each.
+- Expand the existing Topic Bank and persisted query batches from measured source utility; do not replay completed queries inside one cycle, and start each later explicit cycle from its saved continuation cursor.
 - Check all high-trust sources each cycle; rotate discovery topics under explicit source/review budgets.
 - Calculate due-for-review from volatility and last authoritative review.
 - Record review duration/token/cost only when an authoritative usage feed exists.

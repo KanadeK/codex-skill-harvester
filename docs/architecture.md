@@ -23,7 +23,9 @@ registered sources
 bounded fetch -> temporary raw body -> observation/evidence metadata
       |                                      |
       | source cursor + L0/L1 dedupe         v
-      +--------------------------> workflow-signal normalization
+      +-----------------------> resumable Codex content review
+                                             |
+                                    original Evidence Pack
                                              |
                                seven-field candidate fingerprint
                                              |
@@ -52,8 +54,8 @@ Deterministic code owns fetching, exact hashes, cursors, persistence, schema val
 ## Invariants
 
 - External content is untrusted data. Raw bodies remain temporary and downloaded scripts are never executed.
-- A successful scan selection commits source cursors, observations, and normalized candidates atomically. Campaigns run one source per checkpoint so a later source failure retains earlier successful cursors.
-- Trust identifies evidence provenance; only explicit operational workflow authority can place a normalized candidate in `official-gap`. Package/registry feeds remain observations unless a separate workflow signal is proven.
+- A successful scan selection commits source cursors and observations atomically; only a later imported Evidence Pack can create candidates. Campaigns run one source per checkpoint so a later source failure retains earlier successful cursors.
+- Trust identifies evidence provenance; only content-reviewed operational workflow authority can place a normalized candidate in `official-gap`. Package/registry feeds remain observations unless high-trust workflow evidence corroborates them.
 - Every capability has one immutable canonical `id`. Plugin id, Skill directory, display name, aliases, facets, and variants may change without rewriting that id.
 - Exact byte equality is only duplicate detection. Capability equivalence uses the full fingerprint and reviewed evidence.
 - `not_promoted` is a reversible registry decision, not deletion. Provenance, rationale, and a reactivation condition remain queryable.
@@ -64,7 +66,7 @@ Deterministic code owns fetching, exact hashes, cursors, persistence, schema val
 
 The current backend is intentionally local-first and single-writer. Each source has its own logical cursor, each discovery and decision has a stable id, and each run is independently reportable. Selection by source already provides a transactional shard.
 
-Bounded review pages prevent one round from attempting the complete queue. High-trust sources are checked every scheduled cycle; discovery queries rotate by topic once there is more than one discovery query. Each rotation owns its cursor and next-due time.
+Bounded review pages prevent one round from attempting the complete queue. High-trust sources are checked every scheduled cycle; 21 current Domain × Intent queries rotate through persisted batches. Failed items remain in their batch, completed items do not replay inside the same explicit cycle, and the next cycle receives the saved continuation cursor instead of treating the query as permanently finished.
 
 After a measured need beyond the SQLite envelope:
 

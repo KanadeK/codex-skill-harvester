@@ -8,7 +8,9 @@ Codex Skill Harvester incrementally turns changed, authoritative public workflow
 
 It is deliberately not a Skill mirror. Deterministic Python owns fetching, change detection, exact deduplication, state, validation, and packaging. Codex owns semantic comparison and the decision to not promote, merge, update, or create.
 
-The current unreleased high-throughput slice uses one SQLite runtime store with separate observations and normalized candidates, plus cursors, queues, decisions, and checkpoints. Git continues to hold Skills, manifests, evals, and readable run records. It does not claim that the currently registered source inventory already reaches the long-term capacity envelope.
+The current unreleased content-production slice uses one SQLite runtime store with separate observations, Evidence Packs, normalized candidates, query/semantic batches, queues, decisions, and checkpoints. Git continues to hold Skills, manifests, evals, and readable run records. It does not claim that the currently registered source inventory already reaches the long-term capacity envelope.
+
+Its first real content campaign expanded the executable inventory from 10 to 26 endpoints and ran all 21 Topic Bank queries. It made 28 source requests, read 26 high-trust observations in resumable semantic batches, produced seven Evidence Packs, normalized three candidates, executed nine L3 recalls and three supervised L4 decisions, then created one Python release-readiness Skill, updated one GitHub release Skill, and merged one narrower version-consistency capability. Query, semantic, and stable-source replay all ended in code-generated no-op checkpoints. [The production report](runs/2026-08-29-content-production.json) is rebuilt by the validator from SQLite and its referenced run reports.
 
 ## What v0.1.1 proves
 
@@ -41,7 +43,7 @@ The long-term model has three layers:
 - Capability Registry owns stable canonical capability IDs, one primary family, versioned facets, aliases, variants, merged evidence, decision history, and reactivation conditions.
 - Published Skills contains only capabilities that pass the quality gates, packaged into small user-task Plugins or Collections rather than one enormous installation.
 
-The active runtime backend is `sqlite-v2`, selected after the measured JSON lifecycle bottleneck and corrected to keep observations separate from candidates. See [architecture](docs/architecture.md), [taxonomy](docs/taxonomy.md), [schema migrations](docs/schema-migrations.md), [scale audit](docs/scale-audit.md), [roadmap](docs/roadmap.md), and [ADR-002](docs/decisions/0002-adopt-sqlite-runtime-store.md).
+The active runtime backend is `sqlite-v3`, selected after the measured JSON lifecycle bottleneck and extended with content-review and query state while retaining one authority. See [architecture](docs/architecture.md), [taxonomy](docs/taxonomy.md), [schema migrations](docs/schema-migrations.md), [scale audit](docs/scale-audit.md), [roadmap](docs/roadmap.md), and [ADR-002](docs/decisions/0002-adopt-sqlite-runtime-store.md).
 
 ## Quick start
 
@@ -81,6 +83,15 @@ Inspect the durable handoff state and pending review queue:
 
 The review page size defaults to `review_batch.default` in `config/scale-policy.json`. An explicit `--limit <count>` must not exceed the policy's `review_batch.maximum`.
 
+Export or resume deterministic discovery and content-review work batches; Codex executes the untrusted semantic work and imports factual/query or Evidence Pack results:
+
+```powershell
+.\.venv\Scripts\skill-harvester query-export --root . --cycle content-production-YYYY-MM-DD --limit 100 --output .harvester-cache/query-batch.json
+.\.venv\Scripts\skill-harvester query-import --root . --batch BATCH_ID --results .harvester-cache/query-results.json
+.\.venv\Scripts\skill-harvester semantic-export --root . --limit 100 --output .harvester-cache/semantic-batch.json
+.\.venv\Scripts\skill-harvester semantic-import --root . --batch BATCH_ID --review .harvester-cache/review.json
+```
+
 A campaign stores only source metadata, necessary extracted facts, evidence hashes, and explicitly normalized candidate metadata. It does not store raw pages or execute fetched code. Review a candidate by creating the explicit decision contract documented in [.agents/skills/maintain-skill-harvester](.agents/skills/maintain-skill-harvester/SKILL.md), then apply it:
 
 ```powershell
@@ -102,6 +113,7 @@ CI runs the same gates on current Ubuntu and Windows runners. A separate weekly/
 
 - `codex-skill-harvester-v0.1.1.zip`
 - `github-release-evidence-v0.1.1.zip`
+- `python-package-delivery-v0.1.1.zip` (unreleased branch build only)
 - `SHA256SUMS.txt`
 
 ## Install the generated Plugin
@@ -114,10 +126,12 @@ codex plugin marketplace add KanadeK/codex-skill-harvester --ref v0.1.1
 
 Restart the ChatGPT desktop app, open the Plugins Directory in Codex or Work mode, choose **Codex Skill Harvester**, and install **GitHub Release Evidence**. This follows the [official repo-marketplace flow](https://developers.openai.com/plugins/build/plugins#add-a-marketplace-from-the-cli).
 
+The current branch marketplace also contains **Python Package Delivery**, but it is not part of published v0.1.1 and must not be described as released before controller approval, merge, tag, and Release.
+
 ## Repository map
 
 - `sources/registry.json` — fixed source, trust, license, adapter, and optional authentication metadata.
-- `state/harvest.sqlite3` — authoritative runtime cursor, observation, normalized candidate, queue, decision, and checkpoint state.
+- `state/harvest.sqlite3` — authoritative runtime cursor, observation, query batch, Evidence Pack, normalized candidate, queue, decision, and checkpoint state.
 - `catalog/capabilities.json` and `catalog/taxonomy.json` — canonical capabilities, representative external fingerprints, and versioned classification.
 - `config/scale-policy.json` — active backend, review budget, projection targets, and measured migration triggers.
 - `plugins/` and `.agents/plugins/marketplace.json` — installable task-domain Plugin output.

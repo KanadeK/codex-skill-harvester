@@ -182,13 +182,13 @@ None for the first vertical slice.
 
 ## PR #7 required repair: restore the dual-speed funnel
 
-The earlier Task 17/18 implementation conflated observations with candidates and its reported candidate yield is superseded. Preserve its acquired evidence, but use only the repaired schema-2 metrics and later generated campaign report as current evidence.
+The earlier Task 17/18 implementation conflated observations with candidates and its reported candidate yield is superseded. Preserve its acquired evidence; PR #7's repaired schema-2 separation is historical base work, while Phase 18–20 schema-3 content reports are the current production authority.
 
 ### Phase 15: separate evidence from candidate work
 
-- [x] Replace the unmerged SQLite schema 1 with one schema-2 authority containing separate observations and candidates.
+- [x] Replace the unmerged SQLite schema 1 with an intermediate schema-2 authority containing separate observations and candidates; Phase 18 later replaced it with final schema 3 in one migration slice.
 - [x] Preserve 319 observations and all 110 reviewed candidates/decisions; reclassify 200 PyPI and nine later Codex-release records without creating rejection decisions.
-- [x] Require explicit workflow-signal normalization, source group/topic, seven-field fingerprint, L2 matches, and bounded L3 recall before queue entry.
+- [x] Require explicit normalized workflow evidence, source group/topic, seven-field fingerprint, L2 matches, and bounded L3 recall before queue entry; Phase 18 removed source-level `workflow_signal` as admission authority.
 - [x] Exercise all five queues through the source pipeline.
 
 ### Phase 16: make paging, automation, and stop-loss operational
@@ -205,3 +205,31 @@ The earlier Task 17/18 implementation conflated observations with candidates and
 - [x] Complete the correctness, readability, architecture, security, and performance review.
 - [x] Commit exact paths, push the existing PR #7, and wait for Ubuntu/Windows CI.
 - [x] Stop without merge, tag, Release, or automatic Skill publication.
+
+## Stacked content-driven production campaign
+
+PR #7 remains the deterministic scale base. This work starts from `2ea8771cfbc45bb3f52953727eba20244f1f4180` on `codex/content-driven-production-campaign` and must open a stacked PR against `codex/plan-adoption-audit`.
+
+### Phase 18: replace source-level admission with resumable content review
+
+- [x] Add RED fixtures proving a source without `workflow_signal` can enter a semantic batch and only a Codex-reviewed Evidence Pack can create a candidate.
+- [x] Persist query batches, semantic batches, Evidence Packs, review progress, source utility, and continuation cursors in the sole SQLite authority.
+- [x] Make `workflow_signal` a non-authoritative hint and remove it from automatic candidate/queue admission.
+
+### Phase 19: expand and execute real discovery
+
+- [x] Add a versioned Domain × Intent Topic Bank with real query rotation and T0–T4 constraints.
+- [x] Use agent-reach's background Web/GitHub route to execute real queries, register selected T0/T1/T2 endpoints, and expand beyond the inherited 10-endpoint campaign.
+- [x] Run a 5–10% canary and continue within stop-loss while metrics remain healthy; preserve actual query/source checkpoints.
+
+### Phase 20: Codex L4 and original production
+
+- [x] Read complete high-trust semantic batches, import evidence-backed candidate/not-promoted conclusions, and record L2/L3 plus supervised L4 outcomes.
+- [x] Synthesize every qualified create/update with skill-creator; package by installation intent and pass positive/negative trigger, E2E, isolated script/install, originality, and license gates.
+- [x] Re-run unchanged/stable work to prove query and semantic no-op/resume behavior, then report every measured funnel stage honestly.
+
+### Phase 21: submit the stacked slice
+
+- [x] Run full tests, evals, validator, benchmark, build/install, Skill validation, and diff checks without tracked-state pollution.
+- [ ] Commit exact paths, push the new branch, open one PR with base `codex/plan-adoption-audit`, and wait for Ubuntu/Windows CI.
+- [ ] Stop without merging either PR or creating a tag/Release.

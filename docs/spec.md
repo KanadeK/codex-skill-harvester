@@ -16,10 +16,11 @@ A later “scan again” resumes from SQLite cursors and checkpoints without cha
 ## Runtime and authority
 
 - Python 3.12+ and the standard library only.
-- `sources/registry.json` owns source identity, adapter, trust, authority, license, and optional workflow signal.
+- `sources/registry.json` owns source identity, adapter, trust, authority, license, and optional non-authoritative workflow hints.
+- `config/topic-bank.json` owns versioned Domain × Intent discovery queries and their source-tier constraints.
 - `config/campaign-policy.json` owns campaign groups, topics, canary, queue precedence, and stop-loss.
 - `config/scale-policy.json` owns review page default and maximum.
-- `state/harvest.sqlite3` schema 2 is the only runtime authority for cursors, observations, candidates, queues, decisions, and checkpoints.
+- `state/harvest.sqlite3` schema 3 is the only runtime authority for cursors, observations, query/semantic batches, Evidence Packs, candidates, queues, decisions, source utility, and checkpoints.
 - Git owns source/config schemas, taxonomy, capability catalog, published Skills/Plugins, evals, readable reports, and release history.
 - Raw source bodies are temporary and never committed. Third-party scripts are never executed.
 
@@ -33,6 +34,11 @@ There is no runtime JSON fallback, SQLite-schema-1 reader, dual write, or compat
 - Inspect state: `python -m skill_harvester status --root .`
 - Page candidates: `python -m skill_harvester review-queue --root . [--source <id>] [--limit <count>] [--after <candidate-id>]`
 - Apply one reviewed decision: `python -m skill_harvester apply --root . --decision <path>`
+- Export or resume a discovery-query batch within one explicit campaign cycle: `python -m skill_harvester query-export --root . --cycle <cycle-id> --limit <count> --output <ignored-path>`
+- Import actual query results and advance only completed query cursors: `python -m skill_harvester query-import --root . --batch <batch-id> --results <path>`
+- Export or resume an observation content-review batch: `python -m skill_harvester semantic-export --root . --limit <count> --output <ignored-path>`
+- Import Codex-authored Evidence Packs and candidate/not-promoted conclusions: `python -m skill_harvester semantic-import --root . --batch <batch-id> --review <path>`
+- Rebuild an auditable end-to-end funnel report from generated run reports and SQLite decisions: `python -m skill_harvester production-report --root . <report inputs> --output runs/<name>-production.json`
 - Test: `python -m unittest discover -s tests -p "test_*.py" -v`
 - Evals: `python scripts/run_evals.py`
 - Validate: `python scripts/validate_repo.py`
@@ -42,7 +48,8 @@ There is no runtime JSON fallback, SQLite-schema-1 reader, dual write, or compat
 ## Project structure
 
 - `src/skill_harvester/`: source boundaries, fingerprints, SQLite store, campaign, reporting, decisions, validation, packaging
-- `sources/registry.json`: fixed sources and explicit workflow signals
+- `sources/registry.json`: registered executable sources and optional non-authoritative hints
+- `config/topic-bank.json`: query rotation and source-tier policy
 - `config/`: campaign and scale policy
 - `state/harvest.sqlite3`: sole runtime authority
 - `catalog/`: taxonomy and canonical capability catalog
@@ -76,7 +83,11 @@ An observation is evidence, not candidate work. Official package/registry proven
 
 ### Normalized candidate
 
-Only a registered explicit workflow signal can promote an unpromoted observation. It must provide a repeatable user goal and the normalized seven-field fingerprint:
+`workflow_signal`, when present, is a seed/hint only. It cannot promote an observation, supply the authoritative fingerprint, choose a queue, or count as content review. A completed query is a no-op only within its explicit cycle; a later cycle re-exports the query with its saved continuation cursor and previous completion time.
+
+Any T0/T1/T2 observation may enter a persisted semantic batch. T3/T4 observations may enter as demand/discovery signals but cannot support publication without corroborating T0/T1/T2 evidence. Codex reads the actual evidence as untrusted data and writes an original Evidence Pack containing source revisions, necessary paraphrased facts, one candidate user goal, inputs/outputs, non-obvious decisions, tools, platforms, side effects, license/risk notes, and adjacent capabilities. Raw bodies remain in ignored temporary cache only.
+
+Only an imported Codex-reviewed Evidence Pack can promote one or more observations into a normalized candidate. A promoted candidate must contain the normalized seven-field fingerprint:
 
 - `goal`
 - `triggers`
@@ -86,7 +97,11 @@ Only a registered explicit workflow signal can promote an unpromoted observation
 - `side_effects`
 - `platforms`
 
-The candidate persists its observation link, source group/topic, fingerprint, L2 exact fingerprint matches, bounded L3 capability recalls, and one queue. L2/L3 are recall evidence only.
+The candidate persists its Evidence Pack and observation links, source group/topic, fingerprint, L2 exact fingerprint matches, bounded L3 capability recalls, and one queue. L2/L3 are recall evidence only. The semantic batch remains pending until every exported observation is reviewed, so interruption resumes from SQLite rather than chat memory.
+
+### Discovery-query rotation
+
+The Topic Bank supplies real queries rather than forecast counts. A persisted query batch records the exact query, topic, source-tier constraint, cursor, result count, selected endpoints, and completion status. Codex executes it through the approved background search/GitHub route and imports only factual result metadata. Failed or unexecuted queries keep their cursor. Source utility accumulates successful requests, bytes, observations, candidate yield, and failures; it informs later rotation but never weakens evidence gates.
 
 ### Queues
 
@@ -132,9 +147,11 @@ Campaign reports use schema 2 and separate measured stages:
 
 Numeric observation/candidate/L3 totals are recomputed from embedded generated scan runs by repository validation. Unexecuted or unobservable stages use `{"measured": false}`; a hand-edited zero is invalid.
 
+Query reports distinguish unique completed queries from attempts and retain failed work in the same batch until it succeeds. Semantic reports are recomputed from Evidence Packs and candidate links. A content-production report references its campaign, query, semantic, and replay reports; validation rebuilds the complete document from those inputs plus SQLite L4 decisions, so fabricated candidate, deep-review, decision, or artifact counts fail.
+
 ## Migration contract
 
-The supported legacy upgrade reads v0.1.1 Git-JSON, creates a temporary schema-2 database, imports every discovery as an observation, imports a candidate only when a reviewed decision exists, validates counts/ids/references, and atomically installs the database. The active legacy JSON paths are then deleted. A second runtime authority is rejected.
+The supported legacy upgrade reads v0.1.1 Git-JSON, creates a temporary schema-3 database, imports every discovery as an observation, creates an Evidence Pack and candidate only when a reviewed decision exists, validates counts/ids/references, and atomically installs the database. The active legacy JSON paths are then deleted. A second runtime authority is rejected.
 
 Future migrations follow the same one-write/validate/swap pattern and state the old-path deletion condition. Parquet is cold evidence only after measured need; semantic indexes are rebuildable recall only.
 

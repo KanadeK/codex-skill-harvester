@@ -136,7 +136,16 @@ The Task 18 candidate-yield interpretation was invalidated by controller review:
 - [x] Acceptance: campaign metrics distinguish raw observations, inserted/duplicate observations, normalized/duplicate candidates, L3 recalls, pending queue, and unmeasured deep review/Usage.
 - [x] Acceptance: SQLite review pagination uses indexed database ordering/cursor/LIMIT and status uses SQL aggregation.
 - [x] Verify: controlled tests cover the complete funnel, L2/L3, all queues, no-op, changed PyPI, every required checkpoint, bounded pagination/query plan, migration preservation, and forged metrics.
-- [x] Files: schema-2 runtime store, source/campaign/reporting/validation call paths, policies, workflow, fixtures, and synchronized authority documents.
+- [x] Files: PR #7 schema-2 separation base, source/campaign/reporting/validation call paths, policies, workflow, fixtures, and synchronized authority documents; Task 20 advances the runtime authority to schema 3.
 - [x] Verify: corrected real campaign, complete local gates, clean verification behavior, and five-axis review are complete.
 - [x] Submit: exact commits were pushed to PR #7 and Ubuntu/Windows CI passed; PR remains open for total-control merge approval, with no tag or Release.
 - Dependencies: Task 18 review finding and explicit controller authorization. Do not merge or release.
+
+## Task 20: run the first content-driven production campaign
+
+- [x] Acceptance: `workflow_signal` is hint-only; T0/T1/T2 observations can enter a persisted content-review batch; Evidence Packs and partial progress survive interruption.
+- [x] Acceptance: real Topic Bank queries and selected official/primary endpoints expand the executable inventory beyond the inherited 10 endpoints, with query cursor and source utility.
+- [x] Acceptance: Codex performs actual evidence reading, normalized candidate extraction, L2/L3, L4, and original synthesis; every qualified Skill passes format, trigger, E2E, isolated install/script, originality, and license gates.
+- [x] Verify: stable repeats process only changed evidence or unfinished batches; reports separate queries, requests, bytes, observations, candidates, recalls, deep reviews, decisions, artifacts, failures, Usage measurement, and checkpoints.
+- [ ] Submit: open a stacked PR against `codex/plan-adoption-audit`, wait for Ubuntu/Windows CI, and leave both PRs open without tag or Release.
+- Dependencies: PR #7 final HEAD `2ea8771cfbc45bb3f52953727eba20244f1f4180` and explicit content-production authorization.
