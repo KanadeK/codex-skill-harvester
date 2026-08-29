@@ -15,8 +15,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  scan:
-    name: scan public sources
+  campaign:
+    name: run bounded harvest campaign
     if: github.repository == 'KanadeK/codex-skill-harvester'
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -32,25 +32,25 @@ jobs:
         uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - name: Scan from persisted cursors
-        id: scan
+      - name: Run canary and bounded ramp from persisted cursors
+        id: campaign
         shell: bash
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          output="$(python -m skill_harvester scan --root .)"
+          output="$(python -m skill_harvester campaign --root . --ramp)"
           printf '%s\n' "$output"
-          if [[ "$output" == status=changed* ]]; then
+          if [[ "$output" == status=changed* || "$output" == status=checkpoint* ]]; then
             printf 'changed=true\n' >> "$GITHUB_OUTPUT"
           elif [[ "$output" == status=no_op* ]]; then
             printf 'changed=false\n' >> "$GITHUB_OUTPUT"
           else
-            printf 'Unexpected scanner result: %s\n' "$output" >&2
+            printf 'Unexpected campaign result: %s\n' "$output" >&2
             exit 1
           fi
       - name: Open a review-only harvest pull request
-        if: steps.scan.outputs.changed == 'true'
+        if: steps.campaign.outputs.changed == 'true'
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -62,12 +62,12 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- state/harvest.sqlite3 runs
           if git diff --cached --quiet; then
-            printf 'Scanner reported changes but produced no reviewable diff.\n' >&2
+            printf 'Campaign reported changes but produced no reviewable diff.\n' >&2
             exit 1
           fi
-          git commit -m "chore: harvest changed public sources"
+          git commit -m "chore: checkpoint bounded public-source campaign"
           git push --set-upstream origin "$branch"
           gh pr create \
             --title "chore: review harvested public-source changes" \
-            --body "Automated incremental scan only. Review every pending candidate with Codex before applying a discard, merge, update, or create decision. No external source body or script was executed."
+            --body "Automated bounded campaign only: canary, stop-loss, checkpoint, and ramp all ran through the campaign policy. Observations remain evidence until explicit workflow normalization promotes a candidate. No L4 merge, publication, Release, external source body, or third-party script was executed."
           gh workflow run ci.yml --ref "$branch"

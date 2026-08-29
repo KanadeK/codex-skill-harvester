@@ -19,7 +19,8 @@ from .io import (
     load_json,
     sha256_bytes,
 )
-from .runtime_store import open_runtime_store, queue_for_discovery
+from .fingerprints import FingerprintError, normalize_fingerprint, recall_capabilities
+from .runtime_store import open_runtime_store
 
 
 class RegistryError(ValueError):
@@ -171,6 +172,25 @@ def load_registry(root: Path) -> list[dict[str, Any]]:
             "unknown",
         }:
             raise RegistryError(f"source {source_id} must declare license status")
+        workflow_signal = source.get("workflow_signal")
+        if workflow_signal is not None:
+            if not isinstance(workflow_signal, dict):
+                raise RegistryError(f"source {source_id} workflow signal must be an object")
+            if not isinstance(workflow_signal.get("operational_authority"), bool):
+                raise RegistryError(
+                    f"source {source_id} workflow signal must declare operational_authority"
+                )
+            try:
+                normalize_fingerprint(workflow_signal.get("fingerprint"))
+            except FingerprintError as error:
+                raise RegistryError(
+                    f"source {source_id} workflow signal is invalid: {error}"
+                ) from error
+            for flag in ("published_impact", "reactivated", "aged_backlog"):
+                if flag in workflow_signal and not isinstance(workflow_signal[flag], bool):
+                    raise RegistryError(
+                        f"source {source_id} workflow signal {flag} must be boolean"
+                    )
     return sources
 
 
@@ -183,17 +203,17 @@ def _request_headers(previous: dict[str, Any]) -> dict[str, str]:
     return headers
 
 
-def _document_discovery(
+def _document_observation(
     source: dict[str, Any], response: FetchResponse, evidence_hash: str, now: str
 ) -> dict[str, Any]:
     text = response.body.decode("utf-8", errors="replace")
     headings = [match.group(1).strip() for match in re.finditer(r"(?m)^#{1,3}\s+(.+?)\s*$", text)]
     title = headings[0] if headings else source["id"]
-    discovery_id = sha256_bytes(f"{source['id']}:{evidence_hash}".encode())[:24]
+    observation_id = sha256_bytes(f"{source['id']}:{evidence_hash}".encode())[:24]
     revision = response.headers.get("etag") or response.headers.get("last-modified") or evidence_hash
     return {
-        "schema_version": 1,
-        "id": discovery_id,
+        "schema_version": 2,
+        "id": observation_id,
         "source_id": source["id"],
         "source_revision": revision,
         "observed_at": now,
@@ -204,17 +224,16 @@ def _document_discovery(
         "authority": source["authority"],
         "license": source["license"],
         "extracted_facts": [{"kind": "heading", "value": heading} for heading in headings[:20]],
-        "review_status": "pending",
     }
 
 
-def _item_discovery(
+def _item_observation(
     source: dict[str, Any], item: dict[str, Any], item_hash: str, now: str
 ) -> dict[str, Any]:
-    discovery_id = sha256_bytes(f"{source['id']}:{item['id']}:{item_hash}".encode())[:24]
+    observation_id = sha256_bytes(f"{source['id']}:{item['id']}:{item_hash}".encode())[:24]
     return {
-        "schema_version": 1,
-        "id": discovery_id,
+        "schema_version": 2,
+        "id": observation_id,
         "source_id": source["id"],
         "source_item_id": item["id"],
         "source_revision": item["revision"],
@@ -229,7 +248,6 @@ def _item_discovery(
             {"kind": "source_revision", "value": item["revision"]},
             {"kind": "source_title", "value": item["title"]},
         ],
-        "review_status": "pending",
     }
 
 
@@ -352,7 +370,7 @@ def _incremental_items(
         else:
             changed = seen_items.get(item["id"]) != item_hash
         if changed:
-            discoveries.append(_item_discovery(source, item, item_hash, now))
+            discoveries.append(_item_observation(source, item, item_hash, now))
         seen_items[item["id"]] = item_hash
         material_items[item["id"]] = material_hash
     cursor = max(revisions) if revisions else previous.get("cursor", "")
@@ -362,7 +380,8 @@ def _incremental_items(
 def _process_source(
     source: dict[str, Any], previous: dict[str, Any], fetcher: Fetcher, now: str
 ) -> tuple[dict[str, Any], list[dict[str, Any]], dict[str, Any]]:
-    response = fetcher.fetch(source["url"], _request_headers(previous))
+    conditional_state = previous if previous.get("url") == source["url"] else {}
+    response = fetcher.fetch(source["url"], _request_headers(conditional_state))
     if response.status == 304:
         if not previous:
             raise SourceFetchError(f"source {source['id']} returned 304 without prior state")
@@ -371,8 +390,8 @@ def _process_source(
         return updated, [], {
             "source_id": source["id"],
             "status": "not_modified",
-            "discoveries": 0,
-            "observations": 0,
+            "observations_staged": 0,
+            "raw_observations": 0,
             "downloaded_bytes": 0,
         }
     if response.status != 200:
@@ -390,7 +409,7 @@ def _process_source(
     observations = 0
     if previous.get("content_sha256") != evidence_hash:
         if source["adapter"] == "document":
-            discoveries.append(_document_discovery(source, response, evidence_hash, now))
+            discoveries.append(_document_observation(source, response, evidence_hash, now))
             observations = 1
         elif source["adapter"] == "json-list":
             items = _json_items(source, response.body)
@@ -448,9 +467,9 @@ def _process_source(
     return updated, discoveries, {
         "source_id": source["id"],
         "status": result_status,
-        "discoveries": len(discoveries),
+        "observations_staged": len(discoveries),
         "window_changed": window_changed,
-        "observations": observations,
+        "raw_observations": observations,
         "downloaded_bytes": len(response.body),
     }
 
@@ -459,29 +478,76 @@ def _run_id(now: str) -> str:
     return now.replace(":", "-")
 
 
-def _discovery_metrics(
+def _scan_metrics(
     *,
     selected: int,
     succeeded: int,
     failed: int,
     staged: int,
-    enqueued: int,
-    exact_duplicates: int,
-    observations_seen: int = 0,
-    downloaded_bytes: int = 0,
+    inserted: int,
+    observation_duplicates: int,
+    normalized_candidates: int,
+    candidate_duplicates: int,
+    l3_recalls: int,
+    raw_observations: int,
+    downloaded_bytes: int,
 ) -> dict[str, Any]:
     return {
-        "stage": "discovery",
-        "sources_selected": selected,
+        "source_requests": selected,
         "sources_succeeded": succeeded,
-        "sources_failed": failed,
+        "failures": failed,
         "source_success_rate": succeeded / selected,
-        "discoveries_staged": staged,
-        "candidates_enqueued": enqueued,
-        "exact_record_duplicates": exact_duplicates,
-        "observations_seen": observations_seen,
+        "raw_observations": raw_observations,
+        "observations_staged": staged,
+        "observations_inserted": inserted,
+        "observation_duplicates": observation_duplicates,
+        "normalized_candidates": normalized_candidates,
+        "candidate_duplicates": candidate_duplicates,
+        "l3_recalls": l3_recalls,
         "downloaded_bytes": downloaded_bytes,
+        "deep_reviews": {"measured": False},
     }
+
+
+def _candidate_from_observation(
+    source: dict[str, Any],
+    observation: dict[str, Any],
+    catalog: dict[str, Any],
+    store: Any,
+) -> dict[str, Any] | None:
+    signal = source.get("workflow_signal")
+    if signal is None:
+        return None
+    fingerprint = normalize_fingerprint(signal["fingerprint"])
+    candidate_id = sha256_bytes(
+        b"candidate\0"
+        + observation["id"].encode("utf-8")
+        + b"\0"
+        + canonical_json_bytes(fingerprint)
+    )[:24]
+    candidate = {
+        "schema_version": 2,
+        "id": candidate_id,
+        "observation_id": observation["id"],
+        "source_id": observation["source_id"],
+        "source_group": observation["source_group"],
+        "topic_id": observation["topic_id"],
+        "observed_at": observation["observed_at"],
+        "title": observation["title"],
+        "canonical_url": observation["canonical_url"],
+        "evidence_sha256": observation["evidence_sha256"],
+        "trust": observation["trust"],
+        "license": observation["license"],
+        "fingerprint": fingerprint,
+        "l2_matches": store.l2_matches(fingerprint),
+        "l3_recall": recall_capabilities(fingerprint, catalog, limit=30),
+        "review_status": "pending",
+        "operational_authority": signal["operational_authority"],
+    }
+    for flag in ("published_impact", "reactivated", "aged_backlog"):
+        if signal.get(flag):
+            candidate[flag] = True
+    return candidate
 
 
 def _markdown_report(report: dict[str, Any]) -> str:
@@ -491,9 +557,9 @@ def _markdown_report(report: dict[str, Any]) -> str:
         "",
         f"- Status: `{report['status']}`",
         f"- Sources: {len(report['sources'])}",
-        f"- Discoveries: {report['discoveries']}",
-        f"- Candidates enqueued: {metrics['candidates_enqueued']}",
-        f"- Exact record duplicates: {metrics['exact_record_duplicates']}",
+        f"- Observations inserted: {metrics['observations_inserted']}",
+        f"- Candidates normalized: {metrics['normalized_candidates']}",
+        f"- L3 recalls: {metrics['l3_recalls']}",
         "- Semantic decisions: not run in the discovery stage",
         "",
         "## Sources",
@@ -501,7 +567,8 @@ def _markdown_report(report: dict[str, Any]) -> str:
     ]
     for source in report["sources"]:
         lines.append(
-            f"- `{source['source_id']}`: {source['status']} ({source['discoveries']} discoveries)"
+            f"- `{source['source_id']}`: {source['status']} "
+            f"({source['observations_staged']} staged observations)"
         )
     lines.extend(["", "## Unresolved issues", "", "- None.", ""])
     return "\n".join(lines)
@@ -513,6 +580,7 @@ def run_scan(
     *,
     now: str,
     source_ids: set[str] | None = None,
+    source_context: dict[str, dict[str, str]],
 ) -> dict[str, Any]:
     sources = load_registry(root)
     if source_ids is not None:
@@ -522,35 +590,59 @@ def run_scan(
             raise RegistryError(f"unknown source ids: {', '.join(sorted(unknown))}")
         sources = [source for source in sources if source["id"] in source_ids]
 
+    selected_ids = {source["id"] for source in sources}
+    if set(source_context) != selected_ids:
+        raise RegistryError("source context must exactly cover the selected sources")
+    for source_id, context in source_context.items():
+        if (
+            not isinstance(context, dict)
+            or not isinstance(context.get("source_group"), str)
+            or not context["source_group"]
+            or not isinstance(context.get("topic_id"), str)
+            or not context["topic_id"]
+        ):
+            raise RegistryError(f"source context is invalid: {source_id}")
+
     store = open_runtime_store(root)
     staged_state: dict[str, dict[str, Any]] = {}
-    staged_discoveries: list[dict[str, Any]] = []
+    staged_observations: list[dict[str, Any]] = []
     source_results: list[dict[str, Any]] = []
     run_id = _run_id(now)
 
     try:
         for source in sources:
             previous = store.source_state(source["id"])
-            source_state, discoveries, result = _process_source(source, previous, fetcher, now)
+            source_state, observations, result = _process_source(source, previous, fetcher, now)
             staged_state[source["id"]] = source_state
-            staged_discoveries.extend(discoveries)
+            context = source_context[source["id"]]
+            for observation in observations:
+                observation["source_group"] = context["source_group"]
+                observation["topic_id"] = context["topic_id"]
+            staged_observations.extend(observations)
+            result.update(context)
             source_results.append(result)
     except (RegistryError, SourceFetchError, OSError) as error:
         failed_report = {
-            "schema_version": 1,
+            "schema_version": 2,
+            "report_type": "scan",
             "run_id": run_id,
             "status": "failed",
-            "discoveries": 0,
+            "observations": 0,
             "sources": source_results,
             "failed_source_id": source["id"],
-            "metrics": _discovery_metrics(
+            "metrics": _scan_metrics(
                 selected=len(sources),
                 succeeded=len(source_results),
                 failed=1,
-                staged=len(staged_discoveries),
-                enqueued=0,
-                exact_duplicates=0,
-                observations_seen=sum(item.get("observations", 0) for item in source_results),
+                staged=len(staged_observations),
+                inserted=0,
+                observation_duplicates=0,
+                normalized_candidates=0,
+                candidate_duplicates=0,
+                l3_recalls=0,
+                raw_observations=sum(
+                    item.get("raw_observations", 0) for item in source_results
+                ),
                 downloaded_bytes=sum(item.get("downloaded_bytes", 0) for item in source_results),
             ),
             "error": f"{type(error).__name__}: {error}",
@@ -566,28 +658,73 @@ def run_scan(
         store.close()
         raise
 
-    queue_names = {discovery["id"]: queue_for_discovery(discovery) for discovery in staged_discoveries}
-    enqueued, exact_record_duplicates = store.commit_scan(
+    source_by_id = {source["id"]: source for source in sources}
+    signaled_sources = {
+        source_id for source_id, source in source_by_id.items() if "workflow_signal" in source
+    }
+    observations_to_normalize = (
+        {
+            observation["id"]: observation
+            for observation in store.unpromoted_observations(signaled_sources)
+        }
+        if signaled_sources
+        else {}
+    )
+    observations_to_normalize.update(
+        {
+            observation["id"]: observation
+            for observation in staged_observations
+            if observation["source_id"] in signaled_sources
+        }
+    )
+    catalog: dict[str, Any] = (
+        load_json(root / "catalog" / "capabilities.json")
+        if signaled_sources
+        else {"schema_version": 2, "internal": [], "external": []}
+    )
+    staged_candidates = [
+        candidate
+        for observation in observations_to_normalize.values()
+        if observation["source_id"] in signaled_sources
+        for candidate in [
+            _candidate_from_observation(
+                source_by_id[observation["source_id"]], observation, catalog, store
+            )
+        ]
+        if candidate is not None
+    ]
+    committed = store.commit_scan(
         now=now,
         source_states=staged_state,
-        discoveries=staged_discoveries,
-        queue_names=queue_names,
+        observations=staged_observations,
+        candidates=staged_candidates,
     )
 
     report = {
-        "schema_version": 1,
+        "schema_version": 2,
+        "report_type": "scan",
         "run_id": run_id,
-        "status": "changed" if enqueued else "no_op",
-        "discoveries": enqueued,
+        "status": (
+            "changed"
+            if committed["observations_inserted"]
+            or committed["normalized_candidates"]
+            else "no_op"
+        ),
+        "observations": committed["observations_inserted"],
         "sources": source_results,
-        "metrics": _discovery_metrics(
+        "metrics": _scan_metrics(
             selected=len(sources),
             succeeded=len(source_results),
             failed=0,
-            staged=len(staged_discoveries),
-            enqueued=enqueued,
-            exact_duplicates=exact_record_duplicates,
-            observations_seen=sum(item.get("observations", 0) for item in source_results),
+            staged=len(staged_observations),
+            inserted=committed["observations_inserted"],
+            observation_duplicates=committed["observation_duplicates"],
+            normalized_candidates=committed["normalized_candidates"],
+            candidate_duplicates=committed["candidate_duplicates"],
+            l3_recalls=committed["l3_recalls"],
+            raw_observations=sum(
+                item.get("raw_observations", 0) for item in source_results
+            ),
             downloaded_bytes=sum(item.get("downloaded_bytes", 0) for item in source_results),
         ),
         "validations": [],

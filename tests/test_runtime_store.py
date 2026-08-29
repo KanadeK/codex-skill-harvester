@@ -10,12 +10,92 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from skill_harvester.io import atomic_write_json
 from skill_harvester.runtime_store import (
     RuntimeStoreError,
+    create_empty_runtime,
     import_legacy_runtime,
     open_runtime_store,
 )
 
+from _support import document_source, write_registry
+
 
 class RuntimeStoreTests(unittest.TestCase):
+    def test_review_page_is_sql_bounded_and_stable(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_registry(root, [document_source()])
+            with open_runtime_store(root) as store, store.connection:
+                for index in range(1200):
+                    candidate = {
+                        "schema_version": 2,
+                        "id": f"candidate-{index:04d}",
+                        "observation_id": f"observation-{index:04d}",
+                        "source_id": "official-doc",
+                        "source_group": "github-delivery",
+                        "topic_id": "software.validate.delivery",
+                        "title": f"Candidate {index}",
+                        "trust": "official",
+                        "license": {"status": "known"},
+                        "canonical_url": f"https://example.test/{index}",
+                        "observed_at": "2026-08-29T08:00:00Z",
+                        "review_status": "pending",
+                        "queue": "official-gap",
+                        "fingerprint": {
+                            "goal": f"goal {index}",
+                            "triggers": ["trigger"],
+                            "inputs": ["input"],
+                            "outputs": ["output"],
+                            "tools": ["tool"],
+                            "side_effects": ["read-only"],
+                            "platforms": ["github"],
+                        },
+                        "l3_recall": [],
+                    }
+                    store.insert_observation(
+                        {
+                            "schema_version": 2,
+                            "id": candidate["observation_id"],
+                            "source_id": "official-doc",
+                            "source_group": "github-delivery",
+                            "topic_id": "software.validate.delivery",
+                            "source_revision": str(index),
+                            "observed_at": candidate["observed_at"],
+                            "trust": "official",
+                            "authority": "vendor-docs",
+                            "canonical_url": candidate["canonical_url"],
+                            "evidence_sha256": f"{index:064x}",
+                            "license": {"status": "known"},
+                        }
+                    )
+                    store.insert_candidate(candidate)
+
+                statements: list[str] = []
+                store.connection.set_trace_callback(statements.append)
+                first = store.review_page(source_id=None, limit=37, after=None)
+                second = store.review_page(
+                    source_id=None, limit=37, after=first["next_cursor"]
+                )
+                plan = store.connection.execute(
+                    "EXPLAIN QUERY PLAN SELECT record_json FROM candidates "
+                    "WHERE review_status = 'pending' "
+                    "ORDER BY queue_rank, trust_rank, observed_at, id LIMIT 38"
+                ).fetchall()
+
+            self.assertEqual(len(first["records"]), 37)
+            self.assertEqual(len(second["records"]), 37)
+            self.assertTrue(set(record["id"] for record in first["records"]).isdisjoint(
+                record["id"] for record in second["records"]
+            ))
+            page_selects = [
+                statement
+                for statement in statements
+                if "FROM candidates" in statement and "record_json" in statement
+            ]
+            self.assertTrue(page_selects)
+            self.assertTrue(all("LIMIT 38" in statement for statement in page_selects))
+            self.assertTrue(
+                any("candidates_review_page" in str(row[3]) for row in plan)
+            )
+
     def test_import_preserves_legacy_runtime_records_then_sqlite_is_authoritative(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -63,18 +143,29 @@ class RuntimeStoreTests(unittest.TestCase):
                     "candidate_id": "candidate-one",
                     "outcome": "not_promoted",
                     "reactivation_conditions": ["new official evidence"],
+                    "fingerprint": {
+                        "goal": "review official workflow",
+                        "triggers": ["review workflow"],
+                        "inputs": ["documentation"],
+                        "outputs": ["report"],
+                        "tools": ["codex"],
+                        "side_effects": ["read-only"],
+                        "platforms": ["codex"],
+                    },
                 },
             )
 
             report = import_legacy_runtime(root)
 
             self.assertEqual(report["source_states"], 1)
-            self.assertEqual(report["discoveries"], 1)
+            self.assertEqual(report["observations"], 1)
+            self.assertEqual(report["candidates"], 1)
             self.assertEqual(report["decisions"], 1)
             with open_runtime_store(root) as store:
                 self.assertEqual(store.last_successful_run(), "2026-08-29T00:00:00Z")
                 self.assertEqual(store.source_state("official-doc")["etag"], '"v1"')
-                self.assertEqual(store.discovery("candidate-one")["title"], "Official workflow")
+                self.assertEqual(store.observation("candidate-one")["title"], "Official workflow")
+                self.assertEqual(store.candidate("candidate-one")["review_status"], "applied")
                 self.assertEqual(store.decision_count(), 1)
 
             atomic_write_json(

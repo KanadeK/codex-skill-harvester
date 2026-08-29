@@ -16,12 +16,12 @@ Exit: contracts validate, benchmark is reproducible, CI is green, and no broad s
 
 - Record the total-control route in `docs/plan-adoption-audit.md` after reconciling the untrusted external planning input with the merged scale foundation.
 - Reserve `v0.2.0` without issuing it. A release needs a first vertical slice, one real calibration campaign, all gates, and a new total-control approval.
-- Run the SQLite-backed source-group/topic/five-queue/L0–L3 slice with a structural three-group canary and automatic ramp to currently executable registered capacity.
-- Keep the long-horizon 180–260 endpoint campaign gated on a real endpoint inventory and query-cursor implementation; current 10-endpoint ramp is not relabeled as that full campaign.
+- Keep observations separate from normalized candidates; prove source-group/topic, five queues, L0–L3, SQL-bounded paging, runtime stop-loss, and source-level checkpoints in one exercised path.
+- Run a structural three-group canary and automatic ramp to currently executable registered capacity. Keep the long-horizon 180–260 endpoint campaign gated on a real endpoint inventory and query-cursor implementation; the current inventory is not relabeled as that full campaign.
 
 Exit: the next worker can implement one bounded slice from a single authority without treating projected volume, a green PR, or a foundation merge as a publication commitment.
 
-## Phase B: larger Git-native operation
+## Phase B: larger SQLite-backed operation
 
 Trigger: the endpoint inventory and query connector exist to make the 5–10% same-campaign canary meaningful.
 
@@ -33,14 +33,14 @@ Trigger: the endpoint inventory and query connector exist to make the 5–10% sa
 
 Exit: large queues are bounded, prioritized, resumable, and observable without changing storage authority.
 
-## Phase C: indexed local-first registry
+## Phase C: concurrent local-first registry
 
-Trigger: a policy threshold is crossed and a benchmark confirms file traversal or whole-state rewrites are limiting.
+Trigger: measured single-writer queue latency or campaign backlog exceeds the current SQLite execution envelope.
 
 - Operate the existing SQLite authority; add worker claims only after measured concurrent-writer demand.
 - Keep schemas, taxonomy, published Skills, evals, and review summaries in Git.
-- Provide deterministic import/export and side-by-side validation.
-- Add worker claims only if parallel writers are actually required.
+- Migrate in one validated write/swap slice with one runtime authority; do not retain side-by-side readers or writers.
+- Add worker claims only if parallel writers are actually required and lease/recovery behavior is tested.
 
 Exit: old and new backend fixtures produce equivalent cursors, pages, canonical ids, and decisions.
 

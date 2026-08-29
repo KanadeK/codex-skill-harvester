@@ -11,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from skill_harvester.decisions import DecisionError, apply_decision
 from skill_harvester.runtime_store import create_empty_runtime, open_runtime_store
 
-from _support import read_json
+from _support import read_json, write_runtime_discovery
 
 
 FINGERPRINT = {
@@ -74,9 +74,9 @@ def create_decision(root: Path, *, reviewed_by: str = "codex") -> Path:
         },
     )
     create_empty_runtime(root)
-    with open_runtime_store(root) as store, store.connection:
-        store.insert_discovery(
-            {
+    write_runtime_discovery(
+        root,
+        {
                 "schema_version": 1,
                 "id": candidate_id,
                 "source_id": "github-cli-release-view",
@@ -90,9 +90,10 @@ def create_decision(root: Path, *, reviewed_by: str = "codex") -> Path:
                 "license": {"status": "known", "identifier": "MIT"},
                 "extracted_facts": [],
                 "review_status": "pending",
+                "fingerprint": FINGERPRINT,
             },
-            queue_name="official-gap",
-        )
+        queue="official-gap",
+    )
     decision = {
         "schema_version": 1,
         "candidate_id": candidate_id,
@@ -180,7 +181,7 @@ class ApplyDecisionTests(unittest.TestCase):
             )
             with open_runtime_store(root) as store:
                 self.assertEqual(store.decision_count(), 1)
-                discovery = store.discovery("real-source-candidate")
+                discovery = store.candidate("real-source-candidate")
                 self.assertEqual(list(store.decisions())[0]["outcome"], "create")
             self.assertEqual(discovery["review_status"], "applied")
             self.assertEqual(result["outcome"], "create")
@@ -262,7 +263,7 @@ class ApplyDecisionTests(unittest.TestCase):
             )
             self.assertFalse((root / "plugins").exists())
             with open_runtime_store(root) as store:
-                discovery = store.discovery("real-source-candidate")
+                discovery = store.candidate("real-source-candidate")
             self.assertEqual(discovery["decision_outcome"], "not_promoted")
 
     def test_schema_two_canonical_id_is_independent_of_packaging(self) -> None:
@@ -297,9 +298,9 @@ class ApplyDecisionTests(unittest.TestCase):
             )
 
             candidate_id = "changed-source-candidate"
-            with open_runtime_store(root) as store, store.connection:
-                store.insert_discovery(
-                    {
+            write_runtime_discovery(
+                root,
+                {
                         "schema_version": 1,
                         "id": candidate_id,
                         "source_id": "github-cli-release-view",
@@ -313,9 +314,10 @@ class ApplyDecisionTests(unittest.TestCase):
                         "license": {"status": "known", "identifier": "MIT"},
                         "extracted_facts": [],
                         "review_status": "pending",
+                        "fingerprint": FINGERPRINT,
                     },
-                    queue_name="official-gap",
-                )
+                queue="official-gap",
+            )
             update = read_json(create_path)
             update["candidate_id"] = candidate_id
             update["reviewed_at"] = "2026-08-27T08:00:00Z"

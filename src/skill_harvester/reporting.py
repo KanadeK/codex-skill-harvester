@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from collections import Counter
 from pathlib import Path
 from typing import Any
 
 from .io import load_json
-from .runtime_store import open_runtime_store
+from .runtime_store import RuntimeStoreError, open_runtime_store
 from .scaling import load_scale_policy
 from .sources import load_registry
 
@@ -20,19 +19,6 @@ REVIEW_PRIORITY = {
     "discovery": (2, "low"),
 }
 
-QUEUE_PRIORITY = {
-    "urgent-impact": 0,
-    "official-gap": 1,
-    "reactivation": 2,
-    "novel-discovery": 3,
-    "aged-backlog": 4,
-}
-
-
-def _outcome_name(value: object) -> object:
-    return "not_promoted" if value == "discard" else value
-
-
 def repository_status(root: Path) -> dict[str, Any]:
     sources = load_registry(root)
     catalog = load_json(root / "catalog" / "capabilities.json")
@@ -43,18 +29,13 @@ def repository_status(root: Path) -> dict[str, Any]:
         raise ReportingError("plugin marketplace is invalid")
 
     with open_runtime_store(root) as store:
-        candidates = list(store.discoveries())
+        observation_count = store.observation_count()
+        candidate_count = store.candidate_count()
+        candidate_statuses = store.candidate_status_counts()
         source_states = store.source_state_count()
         last_successful_run = store.last_successful_run()
-        records = list(store.decisions())
-    candidate_statuses = Counter(candidate.get("review_status") for candidate in candidates)
-    pending_by_source = Counter(
-        candidate["source_id"]
-        for candidate in candidates
-        if candidate.get("review_status") == "pending"
-    )
-
-    decision_outcomes = Counter(_outcome_name(record.get("outcome")) for record in records)
+        pending_by_source = store.pending_by_source()
+        decision_outcomes = store.decision_outcome_counts()
 
     return {
         "schema_version": 1,
@@ -63,13 +44,14 @@ def repository_status(root: Path) -> dict[str, Any]:
             "registered": len(sources),
             "with_state": source_states,
         },
+        "observations": {"total": observation_count},
         "candidates": {
-            "total": len(candidates),
-            "pending": candidate_statuses["pending"],
-            "applied": candidate_statuses["applied"],
+            "total": candidate_count,
+            "pending": candidate_statuses.get("pending", 0),
+            "applied": candidate_statuses.get("applied", 0),
         },
-        "pending_by_source": dict(sorted(pending_by_source.items())),
-        "decision_outcomes": dict(sorted(decision_outcomes.items())),
+        "pending_by_source": pending_by_source,
+        "decision_outcomes": decision_outcomes,
         "catalog": {
             "plugins": len(marketplace["plugins"]),
             "skills": len(catalog["internal"]),
@@ -79,14 +61,15 @@ def repository_status(root: Path) -> dict[str, Any]:
     }
 
 
-def _queue_item(candidate: dict[str, Any], queue_name: str) -> dict[str, Any]:
+def _queue_item(candidate: dict[str, Any]) -> dict[str, Any]:
     license_value = candidate.get("license")
     if not isinstance(license_value, dict):
         raise ReportingError("candidate license is invalid")
     trust = candidate.get("trust")
     if trust not in REVIEW_PRIORITY:
         raise ReportingError("candidate trust is invalid")
-    if queue_name not in QUEUE_PRIORITY:
+    queue_name = candidate.get("queue")
+    if not isinstance(queue_name, str):
         raise ReportingError("candidate queue is invalid")
     return {
         "id": candidate.get("id"),
@@ -99,17 +82,6 @@ def _queue_item(candidate: dict[str, Any], queue_name: str) -> dict[str, Any]:
         "canonical_url": candidate.get("canonical_url"),
         "observed_at": candidate.get("observed_at"),
     }
-
-
-def _queue_sort_key(item: dict[str, Any]) -> tuple[int, int, str, str]:
-    return (
-        QUEUE_PRIORITY[item["queue"]],
-        REVIEW_PRIORITY[item["trust"]][0],
-        str(item["observed_at"]),
-        str(item["id"]),
-    )
-
-
 def review_queue(
     root: Path,
     source_id: str | None = None,
@@ -132,37 +104,22 @@ def review_queue(
             f"review limit must be between 1 and {maximum_limit}"
         )
 
-    items: list[dict[str, Any]] = []
-    cursor_item: dict[str, Any] | None = None
-    with open_runtime_store(root) as store:
-        entries = list(store.queue_entries())
-    for candidate, queue_name in entries:
-        if candidate.get("id") == after:
-            if source_id is not None and candidate.get("source_id") != source_id:
-                raise ReportingError("review cursor is outside the selected source")
-            cursor_item = _queue_item(candidate, queue_name)
-        if source_id is not None and candidate.get("source_id") != source_id:
-            continue
-        items.append(_queue_item(candidate, queue_name))
-    if after is not None and cursor_item is None:
-        raise ReportingError(f"unknown review cursor: {after}")
-
-    items.sort(key=_queue_sort_key)
-    pending = len(items)
-    by_source = Counter(str(item["source_id"]) for item in items)
-    if cursor_item is not None:
-        cursor_key = _queue_sort_key(cursor_item)
-        items = [item for item in items if _queue_sort_key(item) > cursor_key]
-    page = items[:selected_limit]
-    next_cursor = page[-1]["id"] if len(items) > len(page) else None
+    try:
+        with open_runtime_store(root) as store:
+            page = store.review_page(
+                source_id=source_id, limit=selected_limit, after=after
+            )
+    except RuntimeStoreError as error:
+        raise ReportingError(str(error)) from error
+    items = [_queue_item(candidate) for candidate in page["records"]]
     return {
         "schema_version": 1,
-        "pending": pending,
-        "returned": len(page),
+        "pending": page["pending"],
+        "returned": len(items),
         "limit": selected_limit,
-        "next_cursor": next_cursor,
-        "by_source": dict(sorted(by_source.items())),
-        "items": page,
+        "next_cursor": page["next_cursor"],
+        "by_source": page["by_source"],
+        "items": items,
     }
 
 

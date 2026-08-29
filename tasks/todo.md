@@ -116,7 +116,7 @@
 
 - [x] Acceptance: a one-time validated importer atomically converts active JSON runtime state to SQLite, then scan/review/apply/validation use only SQLite while Git retains published artifacts and readable manifests.
 - [x] Verify: fixtures cover successful import, failed import preservation, JSON independence after cutover, duplicate levels, continuation, queue placement, and no-op; full CI passes.
-- [ ] Files: runtime store plus existing callers, migration ADR/manifest, one exercised campaign policy, fixtures/tests, and harvest workflow.
+- [x] Files: runtime store plus existing callers, migration ADR/manifest, one exercised campaign policy, fixtures/tests, and harvest workflow.
 - Dependencies: Task 16 and a new total-control authorization.
 
 ## Task 18: execute the first high-throughput campaign canary
@@ -125,3 +125,18 @@
 - [x] Verify: unchanged-source no-op and failed-ramp checkpoint fixtures pass; normal stop-loss metrics permitted continuation to the currently registered safe capacity without automatic publication, merge, or Release.
 - [x] Files: SQLite runtime state, source registry/policy, run reports, and reviewed PR material only.
 - Dependencies: Task 17 and green implementation CI.
+
+The Task 18 candidate-yield interpretation was invalidated by controller review: that run acquired useful evidence but treated every observation as a candidate. Task 19 below is the current authority; Task 18's old counts must not be used as normalized-candidate evidence.
+
+## Task 19: repair PR #7's observation-to-candidate boundary
+
+- [x] Acceptance: package/registry/release signals remain observations unless explicit workflow normalization produces a seven-field candidate; official trust alone cannot select `official-gap`.
+- [x] Acceptance: source group/topic, L2 exact fingerprint lookup, L3 bounded recall, and all five queues execute on the real source path.
+- [x] Acceptance: campaign checkpoints canary/ramp errors and request/byte/store/workload stop-loss before more work; scheduled automation uses campaign.
+- [x] Acceptance: campaign metrics distinguish raw observations, inserted/duplicate observations, normalized/duplicate candidates, L3 recalls, pending queue, and unmeasured deep review/Usage.
+- [x] Acceptance: SQLite review pagination uses indexed database ordering/cursor/LIMIT and status uses SQL aggregation.
+- [x] Verify: controlled tests cover the complete funnel, L2/L3, all queues, no-op, changed PyPI, every required checkpoint, bounded pagination/query plan, migration preservation, and forged metrics.
+- [x] Files: schema-2 runtime store, source/campaign/reporting/validation call paths, policies, workflow, fixtures, and synchronized authority documents.
+- [x] Verify: corrected real campaign, complete local gates, clean verification behavior, and five-axis review are complete.
+- [ ] Submit: exact commit/push to PR #7 and Ubuntu/Windows CI remain; do not merge or release.
+- Dependencies: Task 18 review finding and explicit controller authorization. Do not merge or release.

@@ -179,3 +179,29 @@ None for the first vertical slice.
 - [x] Add the smallest exercised source group/topic, five-queue, L0–L3 recall, checkpoint, and no-op path with fixtures.
 - [ ] Establish an adjudicated labeled set before claiming retrieval or semantic quality metrics.
 - [x] Run the three-source structural canary and automatically continue to the current 10-endpoint safe capacity while stop-loss metrics remain normal; retain the explicit 5–10% full-inventory gap as the next expansion gate.
+
+## PR #7 required repair: restore the dual-speed funnel
+
+The earlier Task 17/18 implementation conflated observations with candidates and its reported candidate yield is superseded. Preserve its acquired evidence, but use only the repaired schema-2 metrics and later generated campaign report as current evidence.
+
+### Phase 15: separate evidence from candidate work
+
+- [x] Replace the unmerged SQLite schema 1 with one schema-2 authority containing separate observations and candidates.
+- [x] Preserve 319 observations and all 110 reviewed candidates/decisions; reclassify 200 PyPI and nine later Codex-release records without creating rejection decisions.
+- [x] Require explicit workflow-signal normalization, source group/topic, seven-field fingerprint, L2 matches, and bounded L3 recall before queue entry.
+- [x] Exercise all five queues through the source pipeline.
+
+### Phase 16: make paging, automation, and stop-loss operational
+
+- [x] Push review filters/order/cursor/LIMIT and status aggregation into indexed SQL.
+- [x] Route scheduled harvest through campaign canary/checkpoint/ramp rather than bare scan.
+- [x] Check request, byte, store, and workload limits before the next source; preserve canary and ramp failure checkpoints.
+- [x] Unify code-generated scan/campaign stage metrics and reject forged candidate/deep-review numbers.
+
+### Phase 17: current verification and PR update
+
+- [x] Run the corrected real canary/ramp and commit only its generated report and authoritative SQLite changes.
+- [x] Run full tests, evals, validator, benchmark, release build/install verification, and diff checks without tracked test pollution.
+- [x] Complete the correctness, readability, architecture, security, and performance review.
+- [ ] Commit exact paths, push the existing PR #7, and wait for Ubuntu/Windows CI.
+- [ ] Stop without merge, tag, Release, or automatic Skill publication.

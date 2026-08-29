@@ -41,17 +41,59 @@ class FailingRampFetcher(MappingFetcher):
         return super().fetch(url, headers)
 
 
+class FailingCanaryFetcher(MappingFetcher):
+    def fetch(self, url: str, headers: dict[str, str]) -> FetchResponse:
+        if url.endswith("skills.md"):
+            self.requests.append(url)
+            raise SourceFetchError("canary unavailable")
+        return super().fetch(url, headers)
+
+
+class ChangingPyPIFetcher(MappingFetcher):
+    def __init__(self, package_id: str) -> None:
+        super().__init__()
+        self.package_id = package_id
+
+    def fetch(self, url: str, headers: dict[str, str]) -> FetchResponse:
+        if url.endswith("updates.xml"):
+            self.requests.append(url)
+            body = (
+                "<rss><channel><item>"
+                f"<guid>{self.package_id}</guid><title>{self.package_id}</title>"
+                "<pubDate>Wed, 29 Aug 2026 00:00:00 GMT</pubDate>"
+                f"<link>https://pypi.org/project/{self.package_id}/</link>"
+                "</item></channel></rss>"
+            ).encode()
+            return FetchResponse(200, url, {}, body)
+        return super().fetch(url, headers)
+
+
+def write_campaign_fixture(root: Path, *, mutate: object | None = None) -> None:
+    registry = json.loads(
+        (ROOT / "sources" / "registry.json").read_text(encoding="utf-8")
+    )
+    policy = json.loads(
+        (ROOT / "config" / "campaign-policy.json").read_text(encoding="utf-8")
+    )
+    if mutate is not None:
+        mutate(policy)
+    write_registry(root, registry["sources"])
+    (root / "config").mkdir()
+    (root / "config" / "campaign-policy.json").write_text(
+        json.dumps(policy, indent=2) + "\n", encoding="utf-8"
+    )
+    (root / "catalog").mkdir()
+    (root / "catalog" / "capabilities.json").write_text(
+        (ROOT / "catalog" / "capabilities.json").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+
+
 class CampaignTests(unittest.TestCase):
     def test_healthy_canary_automatically_ramps_to_registered_capacity(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            registry = json.loads((ROOT / "sources" / "registry.json").read_text(encoding="utf-8"))
-            policy = json.loads((ROOT / "config" / "campaign-policy.json").read_text(encoding="utf-8"))
-            write_registry(root, registry["sources"])
-            (root / "config").mkdir()
-            (root / "config" / "campaign-policy.json").write_text(
-                json.dumps(policy, indent=2) + "\n", encoding="utf-8"
-            )
+            write_campaign_fixture(root)
             fetcher = MappingFetcher()
 
             report = run_campaign(
@@ -61,28 +103,32 @@ class CampaignTests(unittest.TestCase):
                 ramp=True,
             )
 
-            self.assertEqual(report["status"], "continued")
+            self.assertEqual(report["status"], "changed")
             self.assertTrue(report["ramped"])
             self.assertEqual(report["registered_endpoints"], 10)
             self.assertEqual(report["canary_endpoints"], 3)
             self.assertEqual(report["metrics"]["source_requests"], 10)
             self.assertGreater(report["metrics"]["downloaded_bytes"], 0)
-            self.assertEqual(report["metrics"]["normalized_candidates"], 10)
-            self.assertEqual(report["metrics"]["deep_reviews"], 0)
+            self.assertEqual(report["metrics"]["normalized_candidates"], 2)
+            self.assertEqual(report["metrics"]["deep_reviews"], {"measured": False})
             self.assertEqual(report["metrics"]["usage_credits"], {"measured": False})
+            self.assertEqual(report["metrics"]["observations_inserted"], 10)
+            self.assertEqual(report["metrics"]["failures"], 0)
+            persisted = json.loads(
+                (root / "runs" / "2026-08-29T05-00-00Z-campaign.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            self.assertEqual(persisted, report)
 
     def test_failed_ramp_keeps_a_checkpoint_report(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            registry = json.loads((ROOT / "sources" / "registry.json").read_text(encoding="utf-8"))
-            policy = json.loads((ROOT / "config" / "campaign-policy.json").read_text(encoding="utf-8"))
-            policy["source_groups"]["openai-format-authority"]["source_ids"].append(
-                "openai-plugin-catalog"
-            )
-            write_registry(root, registry["sources"])
-            (root / "config").mkdir()
-            (root / "config" / "campaign-policy.json").write_text(
-                json.dumps(policy, indent=2) + "\n", encoding="utf-8"
+            write_campaign_fixture(
+                root,
+                mutate=lambda policy: policy["source_groups"][
+                    "openai-format-authority"
+                ]["source_ids"].append("openai-plugin-catalog"),
             )
 
             report = run_campaign(
@@ -95,8 +141,93 @@ class CampaignTests(unittest.TestCase):
             self.assertEqual(report["status"], "checkpoint")
             self.assertFalse(report["ramped"])
             self.assertIn("ramp source failure", report["stop_reasons"])
-            self.assertIn("HTTP 403", report["ramp_error"])
+            self.assertIn("HTTP 403", report["failure"]["error"])
+            self.assertEqual(report["failure"]["phase"], "ramp")
+            self.assertTrue(report["checkpoint"]["completed_source_ids"])
             self.assertTrue((root / "runs" / "2026-08-29T06-00-00Z-campaign.json").is_file())
+
+    def test_canary_failure_also_writes_a_checkpoint(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_campaign_fixture(root)
+
+            report = run_campaign(
+                root,
+                FailingCanaryFetcher(),
+                now="2026-08-29T06:10:00Z",
+                ramp=True,
+            )
+
+            self.assertEqual(report["status"], "checkpoint")
+            self.assertIn("canary source failure", report["stop_reasons"])
+            self.assertEqual(report["failure"]["phase"], "canary")
+            self.assertEqual(report["metrics"]["failures"], 1)
+            self.assertTrue(
+                (root / "runs" / "2026-08-29T06-10-00Z-campaign.json").is_file()
+            )
+
+    def test_request_byte_and_store_stop_loss_checkpoint_before_more_work(self) -> None:
+        cases = (
+            (
+                "requests",
+                lambda policy: policy["stop_loss"].update(max_source_requests=1),
+                "max_source_requests reached",
+                1,
+            ),
+            (
+                "bytes",
+                lambda policy: policy["stop_loss"].update(max_download_bytes=10),
+                "max_download_bytes reached",
+                1,
+            ),
+            (
+                "store",
+                lambda policy: policy["stop_loss"].update(max_runtime_store_bytes=1),
+                "max_runtime_store_bytes reached",
+                0,
+            ),
+        )
+        for index, (label, mutate, reason, expected_requests) in enumerate(cases):
+            with self.subTest(label=label), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                write_campaign_fixture(root, mutate=mutate)
+
+                report = run_campaign(
+                    root,
+                    MappingFetcher(),
+                    now=f"2026-08-29T07:0{index}:00Z",
+                    ramp=True,
+                )
+
+                self.assertEqual(report["status"], "checkpoint")
+                self.assertIn(reason, report["stop_reasons"])
+                self.assertEqual(
+                    report["metrics"]["source_requests"], expected_requests
+                )
+                self.assertTrue(report["checkpoint"]["pending_source_ids"])
+
+    def test_changed_pypi_feed_keeps_campaign_truthfully_changed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_campaign_fixture(root)
+
+            first = run_campaign(
+                root,
+                ChangingPyPIFetcher("package-one"),
+                now="2026-08-29T07:10:00Z",
+                ramp=True,
+            )
+            second = run_campaign(
+                root,
+                ChangingPyPIFetcher("package-two"),
+                now="2026-08-29T07:11:00Z",
+                ramp=True,
+            )
+
+            self.assertEqual(first["status"], "changed")
+            self.assertEqual(second["status"], "changed")
+            self.assertEqual(second["metrics"]["observations_inserted"], 1)
+            self.assertEqual(second["metrics"]["normalized_candidates"], 0)
 
 
 if __name__ == "__main__":

@@ -32,8 +32,8 @@ def _positive_integer(value: Any, label: str) -> int:
 def validate_scale_policy(value: Any) -> dict[str, Any]:
     if not isinstance(value, dict) or value.get("schema_version") != 1:
         raise ScalePolicyError("scale policy must use schema_version 1")
-    if value.get("backend") not in {"git-json-v1", "sqlite-v1"}:
-        raise ScalePolicyError("scale policy backend must be git-json-v1 or sqlite-v1")
+    if value.get("backend") not in {"git-json-v1", "sqlite-v2"}:
+        raise ScalePolicyError("scale policy backend must be git-json-v1 or sqlite-v2")
     review_batch = value.get("review_batch")
     if not isinstance(review_batch, dict):
         raise ScalePolicyError("scale policy review batch is missing")
@@ -93,7 +93,7 @@ def inventory_repository(root: Path) -> dict[str, Any]:
         raise ScalePolicyError("runtime SQLite store is missing")
     try:
         with open_runtime_store(root) as store:
-            candidates = list(store.discoveries())
+            candidates = list(store.candidates())
             decisions = list(store.decisions())
             source_states = list(store.source_states())
     except RuntimeStoreError as error:

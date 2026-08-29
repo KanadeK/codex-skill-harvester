@@ -4,10 +4,22 @@
     {
       "id": "openai-build-skills",
       "adapter": "document",
-      "url": "https://developers.openai.com/codex/skills.md",
+      "url": "https://learn.chatgpt.com/docs/build-skills.md",
       "trust": "official",
       "authority": "codex-skill-format",
-      "license": { "status": "facts-only", "identifier": null }
+      "license": { "status": "facts-only", "identifier": null },
+      "workflow_signal": {
+        "operational_authority": true,
+        "fingerprint": {
+          "goal": "create or update a Codex Agent Skill from a repeatable workflow",
+          "triggers": ["create a Codex Skill", "package reusable agent instructions"],
+          "inputs": ["repeatable workflow", "trusted source evidence"],
+          "outputs": ["validated Skill directory"],
+          "tools": ["Codex", "filesystem"],
+          "side_effects": ["local-write"],
+          "platforms": ["Codex"]
+        }
+      }
     },
     {
       "id": "openai-build-plugins",
@@ -80,7 +92,19 @@
       "url": "https://cli.github.com/manual/gh_release_view",
       "trust": "official",
       "authority": "vendor-docs",
-      "license": { "status": "known", "identifier": "MIT" }
+      "license": { "status": "known", "identifier": "MIT" },
+      "workflow_signal": {
+        "operational_authority": true,
+        "fingerprint": {
+          "goal": "inspect a GitHub release and return its published metadata",
+          "triggers": ["view a GitHub release", "inspect release metadata"],
+          "inputs": ["repository", "release tag"],
+          "outputs": ["release metadata"],
+          "tools": ["gh release view"],
+          "side_effects": ["network-read"],
+          "platforms": ["GitHub"]
+        }
+      }
     },
     {
       "id": "github-cli-api",

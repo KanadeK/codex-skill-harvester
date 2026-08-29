@@ -1,62 +1,30 @@
 from __future__ import annotations
 
 import re
-import unicodedata
 from pathlib import Path, PurePosixPath
 from typing import Any
 
 from .io import atomic_write_json, atomic_write_text, canonical_json_bytes, load_json, sha256_bytes
+from .fingerprints import (
+    FINGERPRINT_FIELDS,
+    FingerprintError,
+    normalize_fingerprint as _normalize_fingerprint,
+    recall_capabilities as _recall_capabilities,
+)
 from .runtime_store import open_runtime_store
 from .sources import load_registry
 from .taxonomy import TaxonomyError, validate_catalog_taxonomy, validate_classification
-
-
-FINGERPRINT_FIELDS = (
-    "goal",
-    "triggers",
-    "inputs",
-    "outputs",
-    "tools",
-    "side_effects",
-    "platforms",
-)
-
-FINGERPRINT_WEIGHTS = {
-    "goal": 0.30,
-    "triggers": 0.15,
-    "inputs": 0.10,
-    "outputs": 0.15,
-    "tools": 0.08,
-    "side_effects": 0.12,
-    "platforms": 0.10,
-}
 
 
 class DecisionError(ValueError):
     pass
 
 
-def _normalized_text(value: str) -> str:
-    return " ".join(unicodedata.normalize("NFKC", value).casefold().split())
-
-
 def normalize_fingerprint(value: Any) -> dict[str, Any]:
-    if not isinstance(value, dict):
-        raise DecisionError("fingerprint must be an object")
-    normalized: dict[str, Any] = {}
-    for field in FINGERPRINT_FIELDS:
-        field_value = value.get(field)
-        if field == "goal":
-            if not isinstance(field_value, str) or not field_value.strip():
-                raise DecisionError("fingerprint goal must be a non-empty string")
-            normalized[field] = _normalized_text(field_value)
-            continue
-        if not isinstance(field_value, list) or not field_value:
-            raise DecisionError(f"fingerprint {field} must be a non-empty list")
-        if any(not isinstance(item, str) or not item.strip() for item in field_value):
-            raise DecisionError(f"fingerprint {field} values must be non-empty strings")
-        normalized[field] = sorted({_normalized_text(item) for item in field_value})
-    return normalized
+    try:
+        return _normalize_fingerprint(value)
+    except FingerprintError as error:
+        raise DecisionError(str(error)) from error
 
 
 def bundle_hash(artifact: Any) -> str:
@@ -124,36 +92,11 @@ def recommend_decision(candidate: Any, catalog: Any) -> dict[str, Any]:
     return {"outcome": "create_new", "matches": [], "artifact_sha256": artifact_sha256}
 
 
-def _terms(value: str) -> set[str]:
-    return set(re.findall(r"[a-z0-9]+", value))
-
-
-def _field_similarity(field: str, left: Any, right: Any) -> float:
-    if field == "goal":
-        left_terms = _terms(left)
-        right_terms = _terms(right)
-    else:
-        left_terms = {term for item in left for term in _terms(item)}
-        right_terms = {term for item in right for term in _terms(item)}
-    union = left_terms | right_terms
-    return len(left_terms & right_terms) / len(union) if union else 0.0
-
-
 def recall_capabilities(fingerprint: Any, catalog: Any, *, limit: int = 30) -> list[dict[str, Any]]:
-    if not isinstance(limit, int) or isinstance(limit, bool) or not 1 <= limit <= 50:
-        raise DecisionError("recall limit must be between 1 and 50")
-    normalized = normalize_fingerprint(fingerprint)
-    scored: list[dict[str, Any]] = []
-    for entry in _catalog_entries(catalog):
-        existing = normalize_fingerprint(entry.get("fingerprint"))
-        score = sum(
-            FINGERPRINT_WEIGHTS[field]
-            * _field_similarity(field, normalized[field], existing[field])
-            for field in FINGERPRINT_FIELDS
-        )
-        if score:
-            scored.append({"id": entry["id"], "score": round(score, 6)})
-    return sorted(scored, key=lambda item: (-item["score"], item["id"]))[:limit]
+    try:
+        return _recall_capabilities(fingerprint, catalog, limit=limit)
+    except FingerprintError as error:
+        raise DecisionError(str(error)) from error
 
 
 def _kebab(value: Any, label: str) -> str:
@@ -401,7 +344,7 @@ def apply_decision(root: Path, decision_path: Path) -> dict[str, Any]:
     decision = _validate_decision(load_json(decision_path))
     with open_runtime_store(root) as store:
         try:
-            discovery = store.discovery(decision["candidate_id"])
+            discovery = store.candidate(decision["candidate_id"])
         except ValueError as error:
             raise DecisionError("decision candidate_id must name a runtime discovery") from error
     if discovery.get("id") != decision["candidate_id"]:

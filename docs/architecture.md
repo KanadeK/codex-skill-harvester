@@ -20,12 +20,19 @@ Users install small task-domain Plugins or Collections. They do not install the 
 registered sources
       |
       v
-bounded fetch -> temporary raw body -> normalized evidence metadata
+bounded fetch -> temporary raw body -> observation/evidence metadata
       |                                      |
-      | exact hash / source cursor           v
-      +------------------------------> discovery queue
+      | source cursor + L0/L1 dedupe         v
+      +--------------------------> workflow-signal normalization
                                              |
-                                      budgeted Codex review
+                               seven-field candidate fingerprint
+                                             |
+                                      L2 exact fingerprint +
+                                      L3 bounded recall
+                                             |
+                                      five candidate queues
+                                             |
+                                      budgeted L4 review
                                              |
                     +------------------------+----------------------+
                     |                        |                      |
@@ -45,7 +52,8 @@ Deterministic code owns fetching, exact hashes, cursors, persistence, schema val
 ## Invariants
 
 - External content is untrusted data. Raw bodies remain temporary and downloaded scripts are never executed.
-- A successful selected scan commits all selected source cursors and queue records atomically; a failed selection advances none.
+- A successful scan selection commits source cursors, observations, and normalized candidates atomically. Campaigns run one source per checkpoint so a later source failure retains earlier successful cursors.
+- Trust identifies evidence provenance; only explicit operational workflow authority can place a normalized candidate in `official-gap`. Package/registry feeds remain observations unless a separate workflow signal is proven.
 - Every capability has one immutable canonical `id`. Plugin id, Skill directory, display name, aliases, facets, and variants may change without rewriting that id.
 - Exact byte equality is only duplicate detection. Capability equivalence uses the full fingerprint and reviewed evidence.
 - `not_promoted` is a reversible registry decision, not deletion. Provenance, rationale, and a reactivation condition remain queryable.

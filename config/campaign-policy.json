@@ -50,6 +50,10 @@
     "minimum_source_success_rate": 0.95,
     "max_source_requests": 3000,
     "max_download_bytes": 500000000,
-    "max_runtime_store_bytes": 268435456
+    "max_runtime_store_bytes": 268435456,
+    "max_observations": 250000,
+    "max_normalized_candidates": 12000,
+    "max_l3_recalls": 360000,
+    "max_usage_credits": 100
   }
 }

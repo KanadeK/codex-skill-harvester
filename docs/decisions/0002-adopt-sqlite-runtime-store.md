@@ -12,7 +12,7 @@ This is an observed filesystem traversal and whole-state-rewrite bottleneck, not
 
 ## Decision
 
-Use the standard-library `sqlite3` module and one single-writer database at `state/harvest.sqlite3` as the authority for runtime source cursors, observations/discoveries, candidates, queue state, decision records, and run checkpoints.
+Use the standard-library `sqlite3` module and one single-writer database at `state/harvest.sqlite3` as the authority for runtime source cursors, observations, normalized candidates, queue state, decision records, and run checkpoints. Schema 2 uses separate `observations` and `candidates` tables: evidence never enters a review queue merely because its source is official.
 
 The database schema owns runtime state only. Git continues to own source definitions, taxonomy, capability catalog, original Skill and Plugin files, evaluation definitions/results, release assets, and readable run/migration manifests. SQLite receives no copied raw page bodies and no executable third-party script.
 
@@ -39,7 +39,8 @@ Deferred. Cold analytical evidence, semantic recall, and multi-writer service co
 ## Consequences
 
 - The first slice must update every runtime caller together: scanner, reporting, decision application, validation, benchmark, CLI, fixtures, and harvest workflow.
-- The importer must prove source-state, candidate/discovery, and decision id/count preservation before legacy deletion.
+- The importer must prove source-state, observation, candidate, and decision id/count preservation before legacy deletion. A legacy discovery is always preserved as an observation; only a discovery with an existing reviewed decision becomes a migrated candidate.
+- Queue paging and status aggregation execute in SQLite. Stable queue order, cursor predicates, and `LIMIT` use matching indexes; runtime callers do not load the full pending queue for pagination.
 - Commands fail fast if the SQLite store is absent, malformed, or at an unsupported schema version; they must not silently read legacy JSON.
 - A run report records which stages were measured, checkpoint/cursor state, source/observation/candidate/queue metrics, failures, and Usage `measured=false` when no authoritative meter is available.
 - SQLite transaction handling uses explicit short transactions and parameterized queries. Connections are closed explicitly; no new dependency is introduced.

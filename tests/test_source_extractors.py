@@ -8,9 +8,27 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from skill_harvester.sources import FetchResponse, RegistryError, run_scan
+from skill_harvester.sources import FetchResponse, RegistryError, run_scan as _run_scan
 
-from _support import QueueFetcher, runtime_source_state, write_registry
+from _support import QueueFetcher, runtime_source_state, scan_context, write_registry
+
+
+def run_scan(
+    root: Path,
+    fetcher: QueueFetcher,
+    *,
+    now: str,
+    source_ids: set[str] | None = None,
+) -> dict[str, object]:
+    registry = json.loads((root / "sources" / "registry.json").read_text(encoding="utf-8"))
+    selected = source_ids or {source["id"] for source in registry["sources"]}
+    return _run_scan(
+        root,
+        fetcher,
+        now=now,
+        source_ids=selected,
+        source_context=scan_context(*selected),
+    )
 
 
 class SourceExtractorTests(unittest.TestCase):
@@ -60,7 +78,7 @@ class SourceExtractorTests(unittest.TestCase):
                 ),
                 now="2026-08-27T03:00:00Z",
             )
-            self.assertEqual(first["discoveries"], 2)
+            self.assertEqual(first["observations"], 2)
 
             reordered_revision_only = json.dumps(
                 {
@@ -94,7 +112,7 @@ class SourceExtractorTests(unittest.TestCase):
             )
 
             self.assertEqual(second["status"], "no_op")
-            self.assertEqual(second["discoveries"], 0)
+            self.assertEqual(second["observations"], 0)
             self.assertEqual(second["sources"][0]["status"], "window_changed")
             self.assertTrue(second["sources"][0]["window_changed"])
 
@@ -125,7 +143,7 @@ class SourceExtractorTests(unittest.TestCase):
             )
 
             self.assertEqual(third["status"], "changed")
-            self.assertEqual(third["discoveries"], 2)
+            self.assertEqual(third["observations"], 2)
             search_state = runtime_source_state(root, "github-search")
             self.assertEqual(set(search_state["material_items"]), {"1", "2", "3"})
             self.assertEqual(search_state["window_item_ids"], ["2", "3"])
@@ -178,7 +196,7 @@ class SourceExtractorTests(unittest.TestCase):
                 ),
                 now="2026-08-27T03:00:00Z",
             )
-            self.assertEqual(first["discoveries"], 2)
+            self.assertEqual(first["observations"], 2)
 
             second_body = json.dumps(
                 {
@@ -212,7 +230,7 @@ class SourceExtractorTests(unittest.TestCase):
                 now="2026-08-27T03:05:00Z",
             )
 
-            self.assertEqual(second["discoveries"], 2)
+            self.assertEqual(second["observations"], 2)
             self.assertEqual(
                 set(runtime_source_state(root, "github-search")["seen_items"]),
                 {"1", "2", "3"},
@@ -249,7 +267,7 @@ class SourceExtractorTests(unittest.TestCase):
                 now="2026-08-27T04:05:00Z",
             )
 
-            self.assertEqual(first["discoveries"], 1)
+            self.assertEqual(first["observations"], 1)
             self.assertEqual(second["status"], "no_op")
 
     def test_rss_feed_uses_guid_for_incremental_discovery(self) -> None:
@@ -282,7 +300,7 @@ class SourceExtractorTests(unittest.TestCase):
                 now="2026-08-29T04:05:00Z",
             )
 
-            self.assertEqual(first["discoveries"], 1)
+            self.assertEqual(first["observations"], 1)
             self.assertEqual(second["status"], "no_op")
 
     def test_registry_rejects_non_https_sources(self) -> None:

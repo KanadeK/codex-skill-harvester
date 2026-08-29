@@ -290,14 +290,24 @@ class ScanCliTests(unittest.TestCase):
 
             with contextlib.redirect_stdout(output):
                 exit_code = main(
-                    ["scan", "--root", str(root)],
+                    [
+                        "scan",
+                        "--root",
+                        str(root),
+                        "--source",
+                        "official-doc",
+                        "--source-group",
+                        "fixture-group",
+                        "--topic",
+                        "fixture.topic",
+                    ],
                     fetcher=fetcher,
                     now="2026-08-27T06:00:00Z",
                 )
 
             self.assertEqual(exit_code, 0)
             self.assertIn("status=changed", output.getvalue())
-            self.assertIn("discoveries=1", output.getvalue())
+            self.assertIn("observations=1", output.getvalue())
 
     def test_apply_command_reports_reviewed_outcome(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -335,8 +345,19 @@ class ScanCliTests(unittest.TestCase):
             )
 
             with contextlib.redirect_stdout(io.StringIO()):
-                self.assertEqual(main(["scan", "--root", str(root)], fetcher=first), 0)
-                self.assertEqual(main(["scan", "--root", str(root)], fetcher=second), 0)
+                command = [
+                    "scan",
+                    "--root",
+                    str(root),
+                    "--source",
+                    "official-doc",
+                    "--source-group",
+                    "fixture-group",
+                    "--topic",
+                    "fixture.topic",
+                ]
+                self.assertEqual(main(command, fetcher=first), 0)
+                self.assertEqual(main(command, fetcher=second), 0)
 
             self.assertEqual(len(list((root / "runs").glob("*-scan.json"))), 2)
 

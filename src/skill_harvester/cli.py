@@ -8,7 +8,12 @@ from pathlib import Path
 from typing import Sequence
 
 from .decisions import DecisionError, apply_decision
-from .campaign import CampaignPolicyError, run_campaign
+from .campaign import (
+    CampaignPolicyError,
+    campaign_source_context,
+    load_campaign_policy,
+    run_campaign,
+)
 from .io import atomic_write_json
 from .reporting import (
     ReportingError,
@@ -40,6 +45,14 @@ def _parser() -> argparse.ArgumentParser:
     scan.add_argument("--root", type=Path, default=Path.cwd(), help="harvester repository root")
     scan.add_argument("--source", action="append", help="scan only this registered source id")
     scan.add_argument(
+        "--source-group",
+        help="source group for an explicitly selected source outside campaign policy",
+    )
+    scan.add_argument(
+        "--topic",
+        help="topic id for an explicitly selected source outside campaign policy",
+    )
+    scan.add_argument(
         "--github-auth",
         choices=("environment", "gh-cli"),
         default="environment",
@@ -51,7 +64,7 @@ def _parser() -> argparse.ArgumentParser:
     status = commands.add_parser("status", help="show durable source, queue, decision, and catalog state")
     status.add_argument("--root", type=Path, default=Path.cwd(), help="harvester repository root")
     status.add_argument("--json", action="store_true", help="emit machine-readable JSON")
-    queue = commands.add_parser("review-queue", help="list pending discoveries for Codex review")
+    queue = commands.add_parser("review-queue", help="list normalized candidates pending Codex review")
     queue.add_argument("--root", type=Path, default=Path.cwd(), help="harvester repository root")
     queue.add_argument("--source", help="filter by one registered source id")
     queue.add_argument(
@@ -134,13 +147,48 @@ def main(
                 now=observed_at,
                 ramp=args.ramp,
             )
-            print(json.dumps(report, indent=2, sort_keys=True) if args.json else f"campaign={report['status']}")
+            print(
+                json.dumps(report, indent=2, sort_keys=True)
+                if args.json
+                else (
+                    f"status={report['status']} "
+                    f"observations={report['metrics']['observations_inserted']} "
+                    f"candidates={report['metrics']['normalized_candidates']} "
+                    f"run={report['run_id']}"
+                )
+            )
             return 0
+        if args.source_group is not None or args.topic is not None:
+            if not args.source or not args.source_group or not args.topic:
+                raise RegistryError(
+                    "manual source context requires --source, --source-group, and --topic"
+                )
+            selected_sources = set(args.source)
+            selected_contexts = {
+                source_id: {
+                    "source_group": args.source_group,
+                    "topic_id": args.topic,
+                }
+                for source_id in selected_sources
+            }
+        else:
+            policy = load_campaign_policy(root)
+            contexts = campaign_source_context(policy)
+            selected_sources = set(args.source) if args.source else set(contexts)
+            outside_campaign = selected_sources - set(contexts)
+            if outside_campaign:
+                raise RegistryError(
+                    "sources outside campaign policy require --source-group and --topic"
+                )
+            selected_contexts = {
+                source_id: contexts[source_id] for source_id in selected_sources
+            }
         report = run_scan(
             root,
             selected_fetcher,
             now=observed_at,
-            source_ids=set(args.source) if args.source else None,
+            source_ids=selected_sources,
+            source_context=selected_contexts,
         )
     except (
         DecisionError,
@@ -154,5 +202,10 @@ def main(
     ) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
-    print(f"status={report['status']} discoveries={report['discoveries']} run={report['run_id']}")
+    print(
+        f"status={report['status']} "
+        f"observations={report['metrics']['observations_inserted']} "
+        f"candidates={report['metrics']['normalized_candidates']} "
+        f"run={report['run_id']}"
+    )
     return 0

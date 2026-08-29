@@ -1,244 +1,188 @@
 # Plan adoption audit
 
-**Status:** authoritative execution plan for the next bounded work package.  
-**Baseline:** `main` at `6a54e7fc2748b02463fb269c7e9036f77812fae3` (merged PR #6).  
-**Scope of this PR:** adopt the route and implement one replayable high-throughput vertical slice: SQLite runtime cutover, one official RSS connector, source-group/topic policy, five-queue ordering, L0–L3 deterministic evidence, checkpoint/no-op behavior, and a real canary. It does not merge or release.
+**Status:** current execution authority for the high-throughput route.
 
-## Binding 2026-08-29 scale revision
+**Baseline:** merged PR #6 at `6a54e7fc2748b02463fb269c7e9036f77812fae3`.
 
-This section supersedes every conflicting ceiling, deferral, and “do not implement” statement elsewhere in this audit. It records the later explicit controller and user decision to move from a deliberately small calibration proposal to a high-throughput, quality-gated production route. Historical text remains below to show why the earlier boundary existed; it is not current execution authority.
+**Current work package:** PR #7 repairs and proves one observation-to-candidate vertical slice. It must not merge, tag, release, perform L4 semantic merges, or publish Skills without a later controller decision.
 
-### Adopted route
+## What is confirmed now
 
-- The first complete campaign plans for **180–260 endpoints, 1,500–3,000 actual queries, 80,000–250,000 observations, 4,000–12,000 normalized candidates, and 400–1,000 deep reviews**. These are capacity and observation ranges, never minimums, maximum publication counts, or a reason to weaken evidence gates.
-- Every qualified, original, independently useful Skill may be proposed in its review PR. The former 30–90 number is an estimate only: neither a cap nor a promise.
-- Operation uses a dual-speed funnel: inexpensive acquisition/normalization runs broadly; semantic adjudication, synthesis, and evaluation consume the five priority queues continuously. `not_promoted` remains a retained decision with a reason and reactivation condition.
-- A canary is the first 5–10% of the same campaign. It records technical, quality, and cost stop-loss metrics. When every applicable metric stays within policy, the runner continues to the remaining registered capacity without waiting after each small batch. A breach stops at a durable checkpoint and reports the smallest repair.
-- The measured Git-JSON lifecycle bottleneck authorizes a **single-writer SQLite runtime store now**. Runtime source cursors, observations/discoveries, candidates, queue state, and decision records have one authority: SQLite. Published Skills, Plugin manifests, catalog, evals, release assets, and human-readable run/migration reports remain in Git.
+- PR #6 is the scale-planning foundation; it is not the complete production line.
+- SQLite schema 2 is the sole runtime authority. It has separate `observations` and `candidates` tables plus source cursors, candidate queues, decisions, and run checkpoints. There is no JSON fallback, dual read, or dual write.
+- The schema-2 conversion preserved 319 observations and 110 reviewed candidates/decisions. The former 209 pending `discoveries` were retained as evidence: 200 PyPI package updates and nine later Codex release entries were not candidate queue work. The corrected live campaign then added 100 newer PyPI observations, so the current store has 419 observations, 110 reviewed candidates, and no pending candidate. No `not_promoted` records were fabricated to clear evidence.
+- A candidate exists only after an explicit workflow-signal normalization step produces one user goal, clear inputs and outputs, and the complete seven-field fingerprint: `goal`, `triggers`, `inputs`, `outputs`, `tools`, `side_effects`, and `platforms`.
+- Source trust and workflow authority are separate. An official registry or package feed may be authentic while remaining discovery-only. `official-gap` requires explicit operational workflow authority.
+- Topic, source group, fingerprint, L2 matches, and bounded L3 recalls are persisted on the real scan path. L3 is recall only; it cannot merge, update, create, reject, or publish.
+- Scheduled and manual production harvest automation runs `campaign --ramp`; it cannot bypass canary, policy, checkpoints, or stop-loss with a bare scan.
+- Review pagination and status counts execute in SQLite. Queue filters, stable ordering, cursor comparison, and `LIMIT` are database operations backed by matching indexes.
 
-### Migration authority and deletion condition
+## Capacity direction, not production KPI
 
-`docs/decisions/0002-adopt-sqlite-runtime-store.md` is the sole migration decision. The cutover is complete only when all of the following hold in one tested slice:
+The first complete campaign is planned to exercise **180–260 endpoints, 1,500–3,000 actual queries, 80,000–250,000 observations, 4,000–12,000 normalized candidates, and 400–1,000 deep reviews**. These are capacity and observation ranges. They are not minimum counts, publication promises, or a reason to weaken evidence, originality, trigger, installation, or E2E gates.
 
-1. a temporary SQLite import validates source-state, discovery/candidate, and decision counts and stable ids against the legacy records;
-2. the SQLite database is atomically installed and its schema/version validates;
-3. `scan`, `status`, `review-queue`, and `apply` read/write only SQLite runtime data; a change to a legacy JSON file cannot affect them;
-4. a repeated import is rejected or an explicit no-op, never a second writer; and
-5. legacy runtime JSON (`state/harvest-state.json`, candidate lifecycle files, and decision-record files) is deleted from the active tree in the same cutover commit after the migration manifest records their counts and hashes.
+There is no artificial output ceiling for qualified Skills. Every independently useful and fully validated Skill may enter a review PR. The earlier 30–90 estimate is neither a cap nor a quota. Zero published Skills can be the correct campaign result.
 
-There is no compatibility reader, dual write, fallback path, or feature flag after cutover. Git history preserves the deleted JSON snapshots; the migration manifest preserves auditable counts and ids. If validation fails, the temporary database is discarded and the old runtime remains authoritative until a repaired migration PR is reviewed.
+The first 5–10% of a complete campaign is its canary, not a separate small campaign. Healthy applicable metrics permit automatic ramp through the registered capacity. A stop-loss breach writes a checkpoint and retains every unprocessed source or candidate; it never converts unfinished work into `not_promoted`.
 
-### Current vertical slice and stop-loss
+## Sole authority map
 
-The immediately authorized slice is: existing high-trust document/Atom/JSON connectors -> explicit source group/topic metadata -> SQLite queue classes -> L0 source identity, L1 evidence identity, L2 capability fingerprint, L3 deterministic bounded recall -> transactional checkpoint/no-op -> one real canary.
+| Boundary | Sole authority |
+| --- | --- |
+| Registered source identity, trust, authority, license, adapter | `sources/registry.json` |
+| Campaign source groups, topics, canary, queue order, workload/technical stop-loss | `config/campaign-policy.json` |
+| Review page default and maximum | `config/scale-policy.json` |
+| Runtime cursor, observation, candidate, queue, decision, checkpoint | `state/harvest.sqlite3` schema 2 |
+| Canonical capability ids, facets, aliases, variants | `catalog/capabilities.json` and `catalog/taxonomy.json` |
+| Published Skill, Plugin, eval, release history | Git-tracked `plugins/`, marketplace, `evals/`, and release reports |
+| Runtime behavior | Tested code under `src/skill_harvester/` |
 
-The canary may only use T0/T1 official OpenAI format material, GitHub delivery material, and official Python packaging feeds/APIs. Registries remain discovery signals. Medical, legal, financial, real-world-control, and high-privilege candidates remain evidence-only and cannot be auto-published.
+Reports summarize these authorities; a report never becomes a second state writer. Raw external bodies remain temporary and third-party scripts are never executed.
 
-Stop the campaign and preserve its cursor/queue checkpoint on any failed atomic write, source failure rate above the policy after a meaningful sample, budget/Usage limit, malformed/untrusted input crossing a validated boundary, duplicate/idempotency invariant failure, evaluation/installation failure, or a runtime-store size/latency threshold. Missing Usage telemetry is written as `measured=false`; credits are never bought and auto top-up remains disabled. Luna may route/extract/triage, Terra handles ordinary comparison/implementation, and Sol is limited to difficult or high-impact review/final audit.
+## Adopted product model
 
-`v0.2.0` remains reserved but unreleased. This PR must not merge or create a Release; later release authority still requires a complete campaign, gates, and a fresh controller approval.
+### Three layers
 
-### Implemented slice and measured result
+1. **Evidence/Discovery.** High-volume source responses become minimal observations containing provenance, revision, trust, license, source group, topic, facts, and L0/L1 identity. Raw bodies are not committed.
+2. **Capability Registry.** Explicit workflow signals may normalize observations into candidates. Candidates own the seven-field fingerprint, L2 structural matches, L3 recall, queue placement, decision history, aliases/variants, and reactivation conditions.
+3. **Published Skills.** Only supervised, original, installable, trigger-safe, E2E-verified artifacts are published. Users install small task-domain Plugins or Collections, not the evidence corpus or a giant universal bundle.
 
-The binding route above is now exercised by this branch. `state/harvest.sqlite3` is the only runtime authority: the one-time importer recorded 13 source states, 110 discoveries, and 110 decisions before the legacy runtime JSON was deleted. `scan`, `status`, `review-queue`, `apply`, validation, and the harvest workflow use the SQLite store; published artifacts and readable reports remain Git files.
+### Dual-speed funnel
 
-The first live run used the three policy groups. Its three-source structural canary passed, then automatically ramped to every currently unauthenticated executable policy endpoint (10 total). It made 10 successful requests, observed 110 feed/document items, enqueued 109 new normalized discovery candidates, and downloaded 289,733 bytes. Usage telemetry is `measured=false`; no deep semantic review or Skill publication was performed. The immediately preceding ramp attempt met an authenticated GitHub API `403`; it left a failed scan report, and the runner now records a campaign checkpoint rather than losing the successful canary state. `openai-plugin-catalog` remains registered but is deliberately outside the unauthenticated campaign selection until an official `gh` login is valid.
+```text
+cheap bounded acquisition
+    -> observation + source cursor
+    -> explicit workflow-signal normalization
+    -> candidate + L2/L3 recall + five queues
+    -> supervised L4 semantic decision
+    -> evidence pack / synthesis / eval / install / E2E / originality
+    -> review PR
+    -> controller decides merge and release
+```
 
-This is an operational vertical slice, **not** a claim that the 180–260 endpoint campaign is complete: three sources cannot simultaneously cover all three groups and be 5–10% of that future inventory. The automatic 3-to-10 ramp proves the current safe capacity. The next expansion gate is a versioned executable inventory large enough for a 5–10% same-campaign canary plus a query connector with durable topic cursors; neither is faked by relabeling this result.
+Acquisition and normalization may run broadly. Expensive comparison, synthesis, and validation continuously consume the five priority queues within policy. A large evidence backlog is normal and is not a candidate backlog.
 
-## Purpose and authority
+### T0–T4 sources
 
-The attached “Codex Skill Harvester 全面规模化执行规划” was reread in full as an **untrusted planning input**. It is useful for options and risks, but it is not an implementation instruction, a source of operating facts, or a release commitment. Its suggested source text, URLs, package interfaces, cost figures, and directory tree do not gain authority by appearing in that input.
+- **T0:** format and protocol authority.
+- **T1:** official operational documentation, CLI, OpenAPI, releases, changelogs, RSS, and sitemaps.
+- **T2:** primary project repositories and maintainers.
+- **T3:** representative implementations used for comparison.
+- **T4:** community directories, discussions, registries, and search results used as discovery or demand signals.
 
-This audit resolves that input against the merged repository and the total-control decisions. Until a later, explicitly approved replacement, authority is singular at each boundary:
+Package registries are early discovery signals. Their official status proves feed provenance, not an operational workflow or a new user-facing tool.
 
-| Boundary | Sole authority now | Notes |
-| --- | --- | --- |
-| User and total-control decisions, release and merge permission | The delegated task instruction and its future explicit approvals | A PR or green CI never grants release or merge authority. |
-| Current runtime behavior | `src/skill_harvester/` plus its tests | The active scan is `sources.load_registry` -> `run_scan`; review paging is `reporting.review_queue`; decisions are `decisions.recommend_decision` / `apply_decision`. |
-| Existing source definitions and their actual trust values | `sources/registry.json` | Its current values remain `official`, `representative`, and `discovery`; T0–T4 is a future vocabulary, not a silent reinterpretation. |
-| Current taxonomy and capability identity | `catalog/taxonomy.json` and `catalog/capabilities.json` | Taxonomy 1.0.0 already requires one canonical capability id, primary family, and facets. |
-| Existing review-page and migration numeric policy | `config/scale-policy.json` | This is the only source for the current review default/maximum and storage migration triggers. |
-| Executable campaign selection and stop-loss | `config/campaign-policy.json` | It is the sole runtime authority for the current three groups, canary, queue order, and stop-loss. This audit owns the long-range intent and entry conditions, not a duplicate machine policy. |
-| Codex Skill and Plugin format | Official OpenAI documentation and official repositories only | Community material is discovery or comparison evidence, never format authority. |
+### Classification
 
-`docs/architecture.md`, `docs/scale-audit.md`, and `docs/roadmap.md` remain explanatory records. They must not override the runtime files above. If a future change needs a new authority, it must retire or explicitly supersede the old one rather than create a fallback or dual-read path.
+Planning uses `Domain × Intent + Topic Bank`. Published and candidate classification remains one stable primary capability family plus versioned multidimensional facets: domain, intent, inputs, outputs, tools/platforms, side effects/risk, volatility, maturity, and trust. Evidence may add facet values through a versioned taxonomy change; coverage is not forced into a rigid directory tree.
 
-## Confirmed baseline, assumptions, and exclusions
+### Five queues
 
-### Confirmed
+Queue precedence is:
 
-- PR #6 is merged. It established scale foundations: the three layers, taxonomy and canonical ids, reversible `not_promoted`, bounded policy-owned review pages, stage-owned metrics, a storage benchmark, and measured migration triggers.
-- PR #6 is **not** a scalable production line. The current code has three adapters (`document`, `json-list`, and `atom`) in `sources.py`, source-level transactional selection, persisted source cursors, exact discovery-record dedupe, a seven-field exact fingerprint comparison, and file-based Git-JSON state.
-- The active backend is `git-json-v1`. The validated migration triggers are 50,000 candidate records, 150,000 lifecycle files, 100,000 seen source items, a 32 MiB harvest state, or 60 seconds full validation. None is currently active.
-- The published product is deliberately small: one published capability in one Plugin. That is evidence of one completed quality-gated slice, not a cap on the eventual catalog and not a claim that the world contains only one reusable workflow.
-- The catalog taxonomy already has a primary family plus facets for domain, intent, inputs, outputs, tools, platforms, side effects, risk, volatility, maturity, and trust. It is versioned and extensible where declared.
+1. `urgent-impact` — verified evidence affects a published capability.
+2. `official-gap` — explicit official operational workflow evidence has no resolved capability decision.
+3. `reactivation` — a retained decision's executable reactivation condition is met.
+4. `novel-discovery` — a normalized candidate with no stronger condition.
+5. `aged-backlog` — deliberately deferred normalized work.
 
-### Working assumptions to test, not facts
+Queue placement occurs only after normalization. Trust alone cannot enqueue an observation.
 
-- A bounded three-source-group campaign can show whether the existing Git-JSON path needs a small source/topic/queue extension before a storage decision is justified.
-- Candidate retrieval can first be bounded deterministically with the existing fingerprint, taxonomy, aliases, and explicit fixture corpus; a semantic index is unnecessary until measured recall or comparison cost says otherwise.
-- Usage credits may not be exposed through a reliable, attributable per-campaign meter. The initial budget contract must therefore work with `measured=false` and workload ceilings alone.
+### L0–L4 comparison
 
-### Explicitly not doing in this work package
+- **L0:** stable source item plus revision identity.
+- **L1:** exact evidence hash.
+- **L2:** exact normalized seven-field fingerprint lookup.
+- **L3:** deterministic bounded recall against the capability catalog.
+- **L4:** supervised semantic adjudication of duplicate, update, variant, merge, distinct, or uncertain.
 
-- No connector, source registry, source request, discovery query, raw-content download, or broad scan.
-- No schema v3, storage interface, SQLite, Parquet, embedding, service queue, multi-worker, feature flag, compatibility shim, or dual-read path.
-- No new Skill, Plugin, Collection, tag, Release, merge, or automatic semantic merge.
-- No quality-rate claim for semantic recall, false merge, trigger recall, or costs without a labeled data set or authoritative measurement.
+L2 and L3 are auditable evidence. Neither is an automatic semantic decision, and a future vector index remains derived and rebuildable.
 
-## Non-negotiable control decisions
+## Runtime stop-loss and checkpoints
 
-1. **Foundation is not completion.** PR #6 is merged and is the correct base, but it is not evidence that the large-scale production system exists.
-2. **Release policy.** `v0.2.0` is reserved as the next public version, not issued now. A human may release it only after: (a) the first vertical slice, (b) one real calibration campaign, (c) every applicable gate, and (d) a new total-control approval. Automatic Release is not considered until at least three stable campaigns, and still needs a separate approval.
-3. **Model roles and spend stop.** Luna is only for high-throughput routing, extraction, and initial triage; Terra performs ordinary semantic comparison and implementation; Sol is reserved for difficult/high-impact decisions and final audit. If campaign-scoped Usage is reliably observable, its incremental ceiling is 100 credits. Credits must not be purchased and auto top-up must remain disabled. If Usage cannot be measured reliably, record `measured=false`; do not fabricate a price or substitute an estimate for measured cost.
-4. **High-risk publication boundary.** Medical, legal, financial, real-world control, and high-privilege work may collect evidence in phase one, but automatic publication is blocked. Any publication in those areas needs explicit total-control and user approval. During the first three campaigns the system opens PRs only; total control decides every merge and release. Semantic merge remains supervised.
+Before each next source request, and again after each successful source checkpoint, the campaign enforces the policy-owned limits for:
+
+- source requests;
+- cumulative downloaded bytes;
+- runtime SQLite bytes;
+- observed work items;
+- normalized candidates; and
+- L3 recall work.
+
+The campaign also records the 100-credit boundary, but Usage remains `{"measured": false}` until an authoritative campaign-scoped meter exists. No credits may be bought and auto top-up must remain disabled. Missing measurement is never replaced with an estimate.
+
+Canary failures and ramp failures both produce campaign reports. Earlier successful sources retain their cursor and records because campaign execution checkpoints one source at a time. Pending source ids remain explicit. Unexecuted L4/deep-review stages use `{"measured": false}` rather than a fabricated zero.
+
+### Corrected live calibration result
+
+The code-generated `2026-08-29T13-55-27.992601Z` campaign completed its three-source canary and all 10 currently executable policy endpoints. It made 10 requests with a 100% source success rate, downloaded 363,165 bytes, and inserted 100 observations from the changing PyPI feed. It normalized zero candidates, produced zero L3 recalls, left zero pending candidates, and performed no deep review. Deep review and Usage are both `measured=false`; there were zero source failures. This is a truthful evidence-only yield, not a failed Skill-production target and not the full 180–260 endpoint campaign.
+
+## Migration decision and deletion condition
+
+The active upgrade route is one-way:
+
+1. read the v0.1.1 Git-JSON source state, discovery inbox, and reviewed decisions;
+2. create a temporary final-schema SQLite database;
+3. preserve every legacy discovery as an observation;
+4. create migrated candidates only for records that already have a reviewed decision;
+5. validate source-state, observation, candidate, decision counts and stable ids;
+6. atomically replace the destination; and
+7. delete legacy runtime JSON from the active tree.
+
+PR #7 was not merged when schema 1's conflation was found, so schema 1 receives no permanent reader, shim, flag, or dual-write transition. Git history is the rollback surface. The temporary PR-only conversion preserved the 110 reviewed records and reclassified its 209 unreviewed records as observations.
 
 ## Adoption ledger for the Pro plan
 
-The status below applies to the plan's substantive sections, not merely its preferred filenames. “Deferred” means useful but blocked by evidence or by the first-slice boundary. “Rejected” means it must not be introduced on the proposed basis.
+| Area | Decision | Reason and entry/deletion condition |
+| --- | --- | --- |
+| Three layers and million-scale evidence envelope | **adopted** | It separates evidence volume from publication quality. Counts remain capacity envelopes. |
+| T0–T4 source tiers | **adopted, modified** | Vocabulary is adopted; current registry fields remain authoritative until one exercised schema migration replaces them. |
+| Domain × Intent + Topic Bank | **adopted, modified** | Used for source rotation and planning; the versioned facet taxonomy remains publication authority. |
+| Five queues | **adopted** | Implemented only after candidate normalization, with policy-owned precedence and bounded SQL paging. |
+| L0–L4 | **adopted** | L0–L3 are deterministic pipeline evidence; L4 stays supervised. Quality rates wait for a labeled set. |
+| Candidate/artifact/capability lifecycle | **adopted** | Observation and candidate are now distinct; artifact and capability remain Git-reviewed lifecycles. |
+| Evidence Pack through install/E2E/originality | **adopted** | These remain mandatory publication gates; they are not bypassed by throughput. |
+| Plugins/Collections by installation intent | **adopted** | Product grouping follows user task domains, never source websites. |
+| Reverse evidence impact | **deferred** | Implement when real campaigns show one evidence change affecting multiple published capabilities. Delete any prototype that cannot trace to exercised lineage. |
+| HTTP/RSS/GitHub/OpenAPI/sitemap connector expansion | **modified and incremental** | Add one connector only for a selected source group with fixtures, cursor semantics, stop-loss, and no-op proof. No empty connector framework. |
+| Package registries as early authorities | **rejected** | They remain discovery signals until separate operational workflow evidence exists. |
+| Git-JSON → SQLite → Parquet → semantic index | **adopted as measured evolution** | SQLite is active hot-state authority. Parquet needs measured cold-analysis pressure; a semantic index needs labeled recall evidence and must be rebuildable. |
+| Storage interface, dual read/write, compatibility shim, feature flag | **rejected for this cutover** | They would create multiple truths. Introduce a transition only when an approved future migration genuinely requires it, with an explicit deletion condition. |
+| Multi-worker leases/service queue | **deferred** | Requires measured single-writer contention and a recovery/ownership design. |
+| Numeric recall/false-merge claims | **deferred** | No quality number is valid before a versioned labeled set and recorded adjudication method. |
+| 3,000-query one-shot sweep | **modified** | Queries rotate within a resumable complete campaign; canary and stop-loss govern ramp. |
+| Automatic semantic merge | **rejected** | L4 remains supervised during at least the first three campaigns and until separately approved. |
+| Automatic Release | **deferred** | Consider only after at least three stable campaigns and a later explicit decision. |
+| Count inflation, publication quotas, and unmeasured zeroes | **rejected** | They obscure actual funnel quality and stage ownership. |
+| Prebuilding an entire proposed module tree | **rejected** | Only exercised boundaries may create modules or schemas; unused abstractions are removed. |
 
-| Pro-plan area | Status | Decision, reason, and entry condition | Authority when it executes |
-| --- | --- | --- | --- |
-| Long-horizon capacity framing and three layers | **adopted** | Millions of observations and thousands of Skills are capacity envelopes, never publication quotas. Evidence/Discovery, Capability Registry, and Published Skills are already the architectural model. | `docs/architecture.md`; runtime records remain authoritative for their layer. |
-| T0–T4 source tiers | **modified** | Adopt the vocabulary: T0 format authority, T1 official operational, T2 primary project, T3 representative, T4 discovery signal. Do not remap existing registry values or claim compatibility until one exercised registry migration has a validated contract. | Current `sources/registry.json` until a future, versioned registry schema is approved. |
-| Connector expansion (HTTP/RSS/sitemap/GitHub/OpenAPI and registries) | **deferred** | The present three adapters remain in `sources.py`; no connector tree is pre-created. Add one connector only when a selected source group and fixtures require it, and prove changed/no-op/failure behavior. Package registries start as discovery signals, not operation authority. | Future connector slice specification and tested runtime code. |
-| Domain × Intent coverage matrix | **modified** | Adopt the matrix as a planning lens, not a 90-day coverage or publication quota. Existing taxonomy facets remain the only validated classification schema. | `catalog/taxonomy.json`; future topic policy only after it is exercised. |
-| Topic Bank and query generation | **adopted in principle; deferred in code** | Rotate explicit topics and retain cursors, but introduce only the smallest data contract used by the first three source groups. Do not create a `config/topics/` tree or thousands of generated queries in advance. | Future single campaign/topic policy file, once validated; this audit until then. |
-| High-trust source groups and cadence | **adopted in principle** | The first calibration selects exactly three groups named below. “All high-trust sources” means all registered members of the selected group, checked incrementally; it never means re-downloading a whole site. | The future exercised source-group manifest and `sources/registry.json`. |
-| Proposed `connectors/`, `extraction/`, `security/` module tree | **rejected now** | It is a speculative re-layout and would create empty abstractions or a parallel implementation before an actual boundary is proven. The first slice uses the minimum current call chain. | Existing `sources.py` remains sole runtime authority. |
-| Five queues and weighted scheduling | **modified** | Adopt five logical queue classes: `urgent-impact`, `official-gap`, `reactivation`, `novel-discovery`, and `aged-backlog`. The first slice implements deterministic classification and bounded ordering only—no service scheduler, quota optimization, or starvation SLO. | Future tested queue fields/order in the current reporting path; `config/scale-policy.json` still owns page size. |
-| L0–L4 deduplication | **adopted with staged evidence** | L0 source identity, L1 exact evidence, L2 structural fingerprint, L3 bounded deterministic recall, L4 supervised semantic judgement are the target. The current code already has portions of L0/L1 and exact seven-field L2. First slice proves L0–L3 with fixtures; L4 is budgeted human/Codex review, never an automatic merge. | Current decision code until a tested replacement; any derived index is non-authoritative. |
-| Numeric dedupe/quality thresholds from the Pro plan | **deferred** | No `>=98%` recall, false-merge rate, or similar value is a gate until a labeled, adjudicated set measures it. | Future labeled-set protocol and explicit total-control threshold approval. |
-| Candidate/artifact/capability lifecycle and reactivation | **adopted in principle; deferred schema change** | Keep three distinct lifecycles, durable decisions, aliases/variants, and reversible `not_promoted`. Current schema v2 and its required reactivation conditions remain active. Schema v3 is not started until a single migration slice is approved by evidence. | Current catalog/decision schemas; `docs/schema-migrations.md` for existing migration practice. |
-| Evidence Pack through synthesis, evaluations, install, and originality | **adopted** | Promotion continues to require provenance, original synthesis, format/trigger/E2E/installation checks, and no unlicensed copying. The proposed count of examples is a future evaluation design input, not a retroactive gate claim. | Existing validators/evals and official OpenAI format sources; future gate contract only when tested. |
-| Plugin/Collection organization by install intent | **adopted** | Small coherent task-domain Plugin boundaries are retained. Collection files and install previews are deferred until multiple real Plugins require them; no source-site taxonomy is used for product packaging. | Existing Plugin manifest and published capability catalog. |
-| Reverse evidence impact / revalidation graph | **deferred** | Useful once there are enough published capabilities and evidence links to query. Implement after the first calibration records show update/revalidation demand. | Future approved evidence-link slice. |
-| Git-JSON -> SQLite -> Parquet -> rebuildable semantic index | **adopted as a measured route** | Migration only opens after the existing machine policy trigger and benchmark evidence. SQLite is the likely hot-state option, Parquet is cold metadata only, and semantic retrieval is derived recall. No storage interface, shadow run, dual-read, shim, flag, database, or embedding is created now. | `config/scale-policy.json` and the existing storage ADR; a later migration ADR supplies the sole implementation decision. |
-| Shards, idempotency, checkpoints, retries, no-op | **modified** | Preserve source-level transactional selection and no-op behavior now. The first slice adds only the replay data it actually needs; staged multi-dimensional shard keys and retry taxonomy wait for a connector that needs them. Reaching a budget preserves its cursor and queue state, never creates `not_promoted`. | Existing `run_scan` state semantics, then one tested slice contract. |
-| Security, license, injection, and supply-chain hardening | **adopted with current boundary** | External material stays untrusted data; raw bodies remain temporary; downloaded scripts are never run; unknown/restricted licensing blocks copying. Add new checks only alongside the boundary that introduces the risk. | Repository `AGENTS.md`, source/decision validation, and official source policy. |
-| Round metrics and SLOs | **modified** | Keep stage-owned metrics and write `measured=false` for unexecuted/unobservable stages. The Pro plan's dashboards and rates are not commitments; metrics need no invented zeros, cost, or quality results. | Current reports for current stages; later canonical run-report schema after it is exercised. |
-| 30/60/90-day counts, large campaign estimates, and cost projections | **rejected as operating targets** | They conflict with quality-first bounded operation and imply unsupported capacity/cost facts. They may be retained only as non-binding historical ideas in the untrusted input, not copied into roadmap or policy. | This audit and future measured campaign reports. |
-| Work-package order (schema v3 first, then storage interface, connector split, etc.) | **rejected** | It front-loads abstractions without evidence and conflicts with the controller-selected first vertical slice. Replace it with the 0–30 day mainline below. | This audit. |
-| Luna/Terra/Sol division, supervised PR workflow, and high-risk block | **adopted** | These are controller decisions, not optional suggestions. They apply before the first campaign and survive any implementation refactor. | This audit until superseded by a controller-approved policy. |
+## Model, risk, and release policy
+
+- Luna performs high-throughput routing, extraction, and initial triage only.
+- Terra performs ordinary semantic comparisons and implementation.
+- Sol is reserved for difficult/high-impact adjudication and final audit.
+- Medical, legal, financial, real-world control, credential-heavy, and other high-risk domains may accumulate evidence in phase one but automatic publication is blocked. Publication requires explicit user and controller approval.
+- The first three campaigns may open PRs; the controller decides every merge and release. Semantic merge is not unattended.
+- `v0.2.0` is reserved but not released. It requires this vertical slice, a real calibrated campaign, all gates, and a fresh controller approval. This PR does not meet that release authority by itself.
 
 ## 0–30 day mainline
 
-The sole objective is to prove one bounded, replayable calibration path—not to maximize coverage, count candidates, or issue `v0.2.0`.
+1. Complete PR #7's observation/candidate repair, SQL paging, campaign automation, runtime stop-loss, unified reports, fixtures, real canary/ramp, and dual-platform CI.
+2. Build a small versioned labeled set before publishing recall, false-merge, or semantic quality rates.
+3. Expand executable inventory toward the campaign capacity range one connector/source slice at a time. Canary remains 5–10% of the same complete inventory.
+4. Run the complete campaign within existing credits and infrastructure. Retain every cursor and unresolved candidate; do not force a Skill count.
+5. Report measured throughput, failures, candidate yield, L3 recall work, deep-review work, validation yield, and bottlenecks. The controller selects the next narrow repair or expansion slice.
 
-1. **This audit (complete in this PR).** Freeze the adopted route, authority map, hard ceilings, and first-slice acceptance criteria.
-2. **First vertical-slice implementation (a future, separately authorized PR).** Extend only the existing scan/review/decision path to express one source group, one selected topic, five logical queues, and L0–L3 replay data. It must use fixtures before any public request.
-3. **Labeled-set preparation (in that same future slice or an immediately preceding approved measurement PR).** Establish the adjudicated examples and reporting method below. Do not announce recall or false-merge quality before it exists.
-4. **One real calibration campaign (a future, separately authorized run).** Use the exact hard ceilings below, retain every unprocessed cursor/queue item, open a PR only for reviewed changes, and stop at the first ceiling.
-5. **Checkpoint.** Report measured results, gaps, and whether a second campaign or a narrow corrective slice is justified. Only total control can authorize the next campaign, merge, or any `v0.2.0` release evaluation.
+## Current unknowns and measured entry conditions
 
-No parallel connector program, package registry expansion, broad query sweep, lifecycle migration, or storage migration belongs on this mainline.
+- **Unknown:** campaign-scoped credit usage is not authoritatively observable. Keep `measured=false`.
+- **Unknown:** labeled L3 recall and false-merge quality. Do not state percentages before adjudicated fixtures exist.
+- **Unknown:** throughput at 180–260 endpoints. The current registered inventory is smaller; do not extrapolate its latency or yield as measured full-campaign behavior.
+- **Parquet entry:** measured cold evidence size or analytical query cost exceeds SQLite/Git expectations.
+- **Semantic-index entry:** labeled recall shows deterministic L3 is insufficient at the measured catalog size.
+- **Multi-worker entry:** measured single-writer backlog or latency prevents the campaign target and recovery semantics are specified.
+- **Automatic Release entry:** at least three stable campaigns plus explicit controller and user approval.
 
-## First calibration campaign contract
+## Reserved decisions
 
-### Selected high-trust source groups
-
-The future manifest may name only these groups during campaign one:
-
-| Group | Role | Trust interpretation |
-| --- | --- | --- |
-| OpenAI format authority | Skill/Plugin format, installation, and evaluation constraints | T0 |
-| GitHub delivery | Repository, PR, CI, Release, and delivery workflows | T1/T2 evidence as the actual registered source establishes |
-| Python packaging | Packaging and publishing workflows | T1/T2 evidence as the actual registered source establishes |
-
-The names identify scope, not permission to fetch every related endpoint now. New endpoints require the future slice's validated manifest and must remain within the ceiling.
-
-### Hard stop ceilings
-
-Every campaign must emit its measured values and stop at the first reached ceiling. The number six is a **synthesis-proposal maximum**, never a publication target; there is no minimum published-Skill count.
-
-| Limit | Ceiling | Checkpoint behavior |
-| --- | ---: | --- |
-| High-trust source groups | 3 | Do not add a fourth group. |
-| Endpoints | 24 | Preserve remaining discovery cursor. |
-| Actual discovery queries | 60 | Do not mark unrun queries as non-promotion. |
-| Source requests | 250 | Stop safely and retain source cursor. |
-| Downloaded bytes | 100 MB | Stop before exceeding; record bytes actually measured. |
-| Observations | 2,000 | Preserve remaining page/topic cursor. |
-| Normalized candidates | 300 | Leave excess candidates queued. |
-| L4 semantic reviews | 60 | Leave candidates in the review queue. |
-| Synthesis proposals | 6 | Do not convert the remaining candidates to `not_promoted`. |
-| E2E time | 180 minutes | Preserve proposal/evaluation state. |
-| Semantic-review tokens | 3,000,000 | Stop semantic work and preserve queue state. |
-| Incremental Usage credits | 100 only if reliably observable | If not reliably observable, set `measured=false`; the workload limits still stop the campaign. |
-
-“Reliably observable” means a campaign-attributable Usage reading can be captured before and after the campaign without guessing, purchasing credits, or enabling auto top-up. A missing or ambiguous meter is not an error to compensate for with an estimated currency value.
-
-## First vertical-slice implementation boundary
-
-The next implementation must be a thin replayable extension of current behavior, not a new subsystem.
-
-### Existing call path to retain
-
-```text
-sources/registry.json
-  -> sources.load_registry()
-  -> sources.run_scan() (source-level atomic state and candidate inbox)
-  -> reporting.review_queue() (policy-bounded page)
-  -> decisions.recommend_decision() / apply_decision()
-```
-
-### Minimum additions allowed later
-
-1. **One exercised source-group and topic contract.** It may select the three named groups and at most the campaign limits. It must refer to actual registered sources; it must not contain a future connector catalog, fake endpoint inventory, or generated query bank.
-2. **Five logical queue labels in the existing review path.** Classification must be deterministic from persisted facts. The first slice needs clear precedence and fixtures for `urgent-impact`, `official-gap`, `reactivation`, `novel-discovery`, and `aged-backlog`; it does not need a worker, lease, service, or percentage allocator.
-3. **Replayable L0–L3 evidence.** Persist only the keys required to demonstrate: L0 source item/revision idempotency; L1 normalized evidence identity; L2 normalized seven-field fingerprint; L3 bounded deterministic comparison candidates. A derived recall list may never decide merge/create.
-4. **Budget checkpoint report.** Record only stages run, their actual counters, `measured=false` where relevant, next cursors, pending queue items, and why execution stopped. A limit stop is not a negative decision.
-5. **Fixtures before network.** Cover exact duplicate, source revision change, structurally distinct candidate, bounded L3 recall, all five queue placements, continuation, and no-op replay. Do not execute third-party scripts.
-
-### Required acceptance evidence
-
-- A controlled fixture run can be executed twice, with the second pass proving no-op/idempotent behavior.
-- A bounded L3 recall list is deterministic and does not alter L4's supervised decision authority.
-- Every ceiling produces a checkpoint with a continuation cursor or pending item, not a `not_promoted` record.
-- Existing `config/scale-policy.json` still solely controls review default and maximum; any campaign file has one separate, explicitly scoped authority with no duplicate values elsewhere.
-- Repository validator, full tests, and the relevant new fixtures pass on Ubuntu and Windows CI before any real campaign.
-
-## Labeled-set measurement before quality claims
-
-The first slice must create a small, versioned, adjudicated fixture corpus before it reports recall, false merge, or semantic automation quality.
-
-| Item | Required method |
-| --- | --- |
-| Unit under review | A candidate-to-capability pair plus its bounded L3 candidate list and cited evidence facts. |
-| Labels | `exact_duplicate`, `semantic_equivalent`, `update`, `variant`, `distinct`, or `uncertain`; `uncertain` is retained and excluded from favorable claims. |
-| Ground truth | At least two recorded human/total-control adjudications for disputed examples, with rationale and evidence references. A model-only label is not ground truth. |
-| Splits | Keep a fixed regression set separate from any later tuning/examples used to change retrieval. |
-| Measurements | Report candidate-recall coverage of known matching targets, false-merge rate only among adjudicated merge decisions, and the count/exclusion of uncertain examples. |
-| Reporting | Include sample size, label version, inclusion/exclusion rules, and confidence limitations. Never report an unlabeled rate as zero. |
-
-No threshold becomes a release or automation gate merely because it appears in the Pro plan. A future threshold needs this corpus, measured results, and total-control approval.
-
-## Later milestones and entry conditions
-
-| Milestone | Earliest entry condition | Still blocked until |
-| --- | --- | --- |
-| Additional connector | The first slice shows an actual source group cannot be represented by the tested current adapters. | A connector-specific fixture contract, bounded request behavior, and explicit approval. |
-| Schema v3/lifecycle expansion | A recorded first-slice field cannot be represented by current schemas without ambiguity. | One migration plan, fixtures, and a decision about the sole authoritative schema. |
-| SQLite | A named `config/scale-policy.json` trigger is crossed and a benchmark identifies the bottleneck. | A migration ADR and one migration slice; no shadow/dual-read before that decision. |
-| Parquet | Cold evidence volume or analytics needs exceed the selected SQLite/Git envelope. | A measured storage decision; it cannot own hot capability state. |
-| Semantic index | Labeled set shows deterministic L3 recall/cost is insufficient at a measured catalog size. | A rebuild proof and supervised L4 decisions. |
-| Reverse evidence impact | Calibration demonstrates evidence changes affecting multiple published capabilities. | A tested lineage slice and policy for revalidation. |
-| Multi-worker/service queue | Real throughput requires it and concurrent-writer evidence exists. | Ownership/lease/recovery evidence and explicit approval. |
-| Automatic Release | At least three stable campaigns and explicit later decision. | All release gates and user/total-control approval. |
-
-## Decisions still reserved for total control
-
-- Authorize the first implementation slice after reviewing this PR.
-- Authorize the real calibration campaign, its final registered endpoints, and whether Usage can be observed reliably.
-- Decide campaign continuation after its checkpoint; a green implementation PR does not authorize a network run.
-- Approve every merge/release during the first three campaigns and any high-risk-domain publication thereafter.
-- Approve any semantic quality threshold, storage migration, third-party runtime dependency, service queue, public Collection/product-line change, or automatic Release policy.
-
-## Execution checklist for the next worker
-
-1. Start from the then-current clean `main` on a new `codex/` branch; do not touch the outer workspace or unrelated repositories.
-2. Read this audit, the current source/decision/reporting path, `config/scale-policy.json`, and the existing migration ADR before editing.
-3. Implement only the five allowed additions above with failing fixtures first. Do not scaffold inactive module trees.
-4. Run repository validation, the full suite, and the new focused tests locally; push an exact-path PR and wait for both CI platforms.
-5. Stop. Do not scan, merge, tag, release, or create a new public Skill without a new total-control instruction.
+The controller still decides PR #7 merge, full campaign expansion, semantic quality thresholds, any new storage migration, multi-worker operation, high-risk publication, `v0.2.0`, and Release automation. A green test suite or campaign report is evidence for those decisions, not authorization to take them.

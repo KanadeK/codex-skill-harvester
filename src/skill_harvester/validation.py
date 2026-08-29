@@ -5,7 +5,11 @@ from pathlib import Path
 from typing import Any
 
 from .decisions import bundle_hash, normalize_fingerprint
-from .campaign import CampaignPolicyError, load_campaign_policy
+from .campaign import (
+    CampaignPolicyError,
+    campaign_source_context,
+    load_campaign_policy,
+)
 from .io import load_json
 from .scaling import (
     ScalePolicyError,
@@ -67,6 +71,147 @@ def _scan_secrets(root: Path) -> list[str]:
     return findings
 
 
+def _validate_unmeasured(value: Any, label: str) -> None:
+    _require(value == {"measured": False}, f"{label} must be measured=false")
+
+
+def _validate_campaign_report(
+    path: Path,
+    report: dict[str, Any],
+    source_by_id: dict[str, dict[str, Any]],
+    source_context: dict[str, dict[str, str]],
+) -> None:
+    _require(report.get("schema_version") == 2, f"campaign schema invalid: {path.name}")
+    _require(report.get("report_type") == "campaign", f"campaign type invalid: {path.name}")
+    _require(report.get("status") in {"changed", "no_op", "checkpoint"}, f"campaign status invalid: {path.name}")
+    metrics = report.get("metrics")
+    _require(isinstance(metrics, dict), f"campaign metrics missing: {path.name}")
+    integer_metrics = (
+        "source_requests",
+        "source_successes",
+        "failures",
+        "raw_observations",
+        "observations_inserted",
+        "observation_duplicates",
+        "normalized_candidates",
+        "candidate_duplicates",
+        "pending_queue",
+        "l3_recalls",
+        "downloaded_bytes",
+        "runtime_store_bytes",
+    )
+    for field in integer_metrics:
+        _require(
+            isinstance(metrics.get(field), int)
+            and not isinstance(metrics[field], bool)
+            and metrics[field] >= 0,
+            f"campaign metric {field} invalid: {path.name}",
+        )
+    _require(
+        isinstance(metrics.get("source_success_rate"), (int, float))
+        and not isinstance(metrics["source_success_rate"], bool)
+        and 0 <= metrics["source_success_rate"] <= 1,
+        f"campaign source_success_rate invalid: {path.name}",
+    )
+    _validate_unmeasured(metrics.get("deep_reviews"), f"campaign deep_reviews: {path.name}")
+    _validate_unmeasured(metrics.get("usage_credits"), f"campaign usage_credits: {path.name}")
+
+    stop_reasons = report.get("stop_reasons")
+    _require(
+        isinstance(stop_reasons, list)
+        and all(isinstance(reason, str) and reason for reason in stop_reasons),
+        f"campaign stop reasons invalid: {path.name}",
+    )
+    checkpoint = report.get("checkpoint")
+    _require(isinstance(checkpoint, dict), f"campaign checkpoint missing: {path.name}")
+    completed = checkpoint.get("completed_source_ids")
+    pending = checkpoint.get("pending_source_ids")
+    _require(
+        isinstance(completed, list)
+        and isinstance(pending, list)
+        and all(isinstance(source_id, str) for source_id in completed + pending)
+        and len(completed) == len(set(completed))
+        and len(pending) == len(set(pending))
+        and not (set(completed) & set(pending)),
+        f"campaign checkpoint source ids invalid: {path.name}",
+    )
+
+    runs = report.get("runs")
+    _require(isinstance(runs, list), f"campaign runs invalid: {path.name}")
+    recomputed = {
+        field: 0
+        for field in (
+            "raw_observations",
+            "observations_inserted",
+            "observation_duplicates",
+            "normalized_candidates",
+            "candidate_duplicates",
+            "l3_recalls",
+        )
+    }
+    completed_from_runs: list[str] = []
+    for run in runs:
+        _require(
+            isinstance(run, dict)
+            and run.get("schema_version") == 2
+            and run.get("report_type") == "scan",
+            f"campaign contains an invalid scan run: {path.name}",
+        )
+        _require(
+            run.get("campaign_phase") in {"canary", "ramp"},
+            f"campaign scan phase invalid: {path.name}",
+        )
+        run_metrics = run.get("metrics")
+        _require(isinstance(run_metrics, dict), f"campaign scan metrics invalid: {path.name}")
+        _validate_unmeasured(
+            run_metrics.get("deep_reviews"), f"scan deep_reviews: {path.name}"
+        )
+        for field in recomputed:
+            value = run_metrics.get(field)
+            _require(
+                isinstance(value, int) and not isinstance(value, bool) and value >= 0,
+                f"campaign scan metric {field} invalid: {path.name}",
+            )
+            recomputed[field] += value
+        run_sources = run.get("sources")
+        _require(
+            isinstance(run_sources, list) and len(run_sources) == 1,
+            f"campaign scan must contain one source checkpoint: {path.name}",
+        )
+        for source in run_sources:
+            source_id = source.get("source_id")
+            _require(
+                source_id in source_by_id and source_id in source_context,
+                f"campaign source unknown: {path.name}",
+            )
+            _require(
+                {
+                    "source_group": source.get("source_group"),
+                    "topic_id": source.get("topic_id"),
+                }
+                == source_context[source_id],
+                f"campaign source context drift: {path.name}",
+            )
+            completed_from_runs.append(source_id)
+    _require(
+        completed == completed_from_runs,
+        f"campaign checkpoint does not match generated runs: {path.name}",
+    )
+    for field, expected in recomputed.items():
+        _require(
+            metrics[field] == expected,
+            f"campaign metric {field} does not match generated runs: {path.name}",
+        )
+    _require(
+        metrics["source_successes"] == len(runs),
+        f"campaign source_successes does not match generated runs: {path.name}",
+    )
+    _require(
+        metrics["source_requests"] >= len(runs),
+        f"campaign source_requests is below generated runs: {path.name}",
+    )
+
+
 def validate_repository(root: Path) -> dict[str, Any]:
     root = root.resolve()
     for name in (
@@ -95,6 +240,15 @@ def validate_repository(root: Path) -> dict[str, Any]:
         ".github/workflows/harvest.yml",
     ):
         _require((root / name).is_file(), f"required repository file is missing: {name}")
+    for legacy_path in (
+        "state/harvest-state.json",
+        "candidates/inbox",
+        "decisions/records",
+    ):
+        _require(
+            not (root / legacy_path).exists(),
+            f"legacy runtime authority still exists: {legacy_path}",
+        )
 
     harvest_workflow = (root / ".github" / "workflows" / "harvest.yml").read_text(
         encoding="utf-8"
@@ -105,7 +259,7 @@ def validate_repository(root: Path) -> dict[str, Any]:
         "actions: write",
         "contents: write",
         "pull-requests: write",
-        "python -m skill_harvester scan --root .",
+        "python -m skill_harvester campaign --root . --ramp",
         "git add -- state/harvest.sqlite3 runs",
         'gh workflow run ci.yml --ref "$branch"',
     ):
@@ -136,11 +290,13 @@ def validate_repository(root: Path) -> dict[str, Any]:
         campaign_source_ids <= set(source_by_id),
         "campaign policy references unknown source",
     )
+    campaign_context = campaign_source_context(campaign_policy)
     try:
         with open_runtime_store(root) as store:
             last_successful_run = store.last_successful_run()
             state_sources = dict(store.source_states())
-            candidates = list(store.discoveries())
+            observations = list(store.observations())
+            candidates = list(store.candidates())
             records = list(store.decisions())
     except RuntimeStoreError as error:
         raise ValidationError(str(error)) from error
@@ -212,6 +368,29 @@ def validate_repository(root: Path) -> dict[str, Any]:
         _require(entry["source_ref"] in source_by_id, f"unknown external source: {entry['id']}")
         _require(bool(re.fullmatch(r"[0-9a-f]{64}", entry["artifact_sha256"])), f"external hash invalid: {entry['id']}")
 
+    observations_by_id: dict[str, dict[str, Any]] = {}
+    for observation in observations:
+        observation_id = observation.get("id")
+        _require(isinstance(observation_id, str), "runtime observation id invalid")
+        _require(
+            observation["source_id"] in source_by_id,
+            f"observation source unknown: {observation_id}",
+        )
+        _require(
+            isinstance(observation.get("source_group"), str)
+            and observation["source_group"],
+            f"observation source group invalid: {observation_id}",
+        )
+        _require(
+            isinstance(observation.get("topic_id"), str) and observation["topic_id"],
+            f"observation topic invalid: {observation_id}",
+        )
+        _require(
+            not ({"raw_body", "body", "content", "instructions"} & set(observation)),
+            f"raw source content persisted: {observation_id}",
+        )
+        observations_by_id[observation_id] = observation
+
     candidate_count = 0
     applied_count = 0
     decisions_by_candidate = {record.get("candidate_id"): record for record in records}
@@ -219,6 +398,23 @@ def validate_repository(root: Path) -> dict[str, Any]:
         candidate_id = candidate.get("id")
         _require(isinstance(candidate_id, str), "runtime candidate id invalid")
         _require(candidate["source_id"] in source_by_id, f"candidate source unknown: {candidate_id}")
+        observation = observations_by_id.get(candidate.get("observation_id"))
+        _require(observation is not None, f"candidate observation missing: {candidate_id}")
+        _require(
+            candidate.get("source_group") == observation["source_group"]
+            and candidate.get("topic_id") == observation["topic_id"],
+            f"candidate source context drift: {candidate_id}",
+        )
+        normalize_fingerprint(candidate.get("fingerprint"))
+        _require(
+            isinstance(candidate.get("l2_matches"), list)
+            or candidate.get("source_group") == "legacy-import",
+            f"candidate L2 evidence invalid: {candidate_id}",
+        )
+        _require(
+            isinstance(candidate.get("l3_recall"), list),
+            f"candidate L3 recall invalid: {candidate_id}",
+        )
         _require(candidate["review_status"] in {"pending", "applied"}, f"candidate status invalid: {candidate_id}")
         _require(not ({"raw_body", "body", "content", "instructions"} & set(candidate)), f"raw source content persisted: {candidate_id}")
         if candidate["review_status"] == "applied":
@@ -250,17 +446,17 @@ def validate_repository(root: Path) -> dict[str, Any]:
                 "decision reactivation conditions invalid",
             )
 
-    for path in (root / "runs").glob("*.json"):
+    for path in (root / "runs").glob("*-campaign.json"):
         report = load_json(path)
-        _require(report.get("schema_version") == 1, f"run schema invalid: {path.name}")
-        for source in report.get("sources", []):
-            _require(source["source_id"] in source_by_id, f"run source unknown: {path.name}")
+        _require(isinstance(report, dict), f"campaign report invalid: {path.name}")
+        _validate_campaign_report(path, report, source_by_id, campaign_context)
 
     secret_files = _scan_secrets(root)
     _require(not secret_files, "secret-like material found: " + ", ".join(secret_files))
     return {
         "sources": len(sources),
         "state_sources": len(state_sources),
+        "observations": len(observations),
         "candidates": candidate_count,
         "applied_candidates": applied_count,
         "decision_records": len(records),
