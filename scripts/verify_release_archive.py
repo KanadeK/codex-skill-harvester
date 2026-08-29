@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -66,7 +68,45 @@ def main(argv: list[str] | None = None) -> int:
             env=environment,
             check=True,
         )
+        sys.path.insert(0, str(target))
+        from skill_harvester.evals import run_eval_file
+
+        marketplace = json.loads(
+            (extracted / ".agents" / "plugins" / "marketplace.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        plugin_eval_root = temporary / "plugin-eval"
+        (plugin_eval_root / "plugins").mkdir(parents=True)
+        shutil.copytree(extracted / "evals", plugin_eval_root / "evals")
+        for entry in marketplace["plugins"]:
+            plugin_id = entry["name"]
+            plugin_archive = archive.parent / f"{plugin_id}-v{version}.zip"
+            plugin_extract = temporary / f"extract-{plugin_id}"
+            plugin_extract.mkdir()
+            with zipfile.ZipFile(plugin_archive) as package:
+                for member in package.infolist():
+                    destination = (plugin_extract / member.filename).resolve()
+                    if not destination.is_relative_to(plugin_extract.resolve()):
+                        raise ValueError(
+                            f"plugin archive member escapes extraction root: {member.filename}"
+                        )
+                package.extractall(plugin_extract)
+            isolated_plugin = plugin_extract / plugin_id
+            manifest = json.loads(
+                (isolated_plugin / ".codex-plugin" / "plugin.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            if manifest["name"] != plugin_id or manifest["skills"] != "./skills/":
+                raise ValueError(f"isolated plugin manifest is invalid: {plugin_id}")
+            shutil.copytree(
+                isolated_plugin, plugin_eval_root / "plugins" / plugin_id
+            )
+        for eval_path in sorted((plugin_eval_root / "evals").glob("*.json")):
+            run_eval_file(plugin_eval_root, eval_path, temporary)
     print("release_archive_install_and_call=PASS")
+    print("plugin_archives_install_and_e2e=PASS")
     return 0
 
 

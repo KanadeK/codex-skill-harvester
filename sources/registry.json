@@ -6,26 +6,16 @@
       "adapter": "document",
       "url": "https://learn.chatgpt.com/docs/build-skills.md",
       "trust": "official",
+      "tier": "T0",
       "authority": "codex-skill-format",
-      "license": { "status": "facts-only", "identifier": null },
-      "workflow_signal": {
-        "operational_authority": true,
-        "fingerprint": {
-          "goal": "create or update a Codex Agent Skill from a repeatable workflow",
-          "triggers": ["create a Codex Skill", "package reusable agent instructions"],
-          "inputs": ["repeatable workflow", "trusted source evidence"],
-          "outputs": ["validated Skill directory"],
-          "tools": ["Codex", "filesystem"],
-          "side_effects": ["local-write"],
-          "platforms": ["Codex"]
-        }
-      }
+      "license": { "status": "facts-only", "identifier": null }
     },
     {
       "id": "openai-build-plugins",
       "adapter": "document",
       "url": "https://developers.openai.com/plugins/build/plugins.md",
       "trust": "official",
+      "tier": "T0",
       "authority": "codex-plugin-format",
       "license": { "status": "facts-only", "identifier": null }
     },
@@ -34,6 +24,7 @@
       "adapter": "json-list",
       "url": "https://api.github.com/repos/openai/plugins/contents/plugins?ref=main",
       "trust": "official",
+      "tier": "T2",
       "authority": "official-plugin-examples",
       "authentication": { "type": "github", "methods": ["GITHUB_TOKEN", "gh-cli"] },
       "license": { "status": "facts-only", "identifier": null },
@@ -50,6 +41,7 @@
       "adapter": "json-list",
       "url": "https://api.github.com/search/repositories?q=%22agent%20skills%22%20in%3Aname%2Cdescription%2Creadme&sort=updated&order=desc&per_page=10",
       "trust": "discovery",
+      "tier": "T4",
       "authority": "demand-signal-only",
       "change_policy": "material",
       "authentication": { "type": "github", "methods": ["GITHUB_TOKEN", "gh-cli"] },
@@ -67,6 +59,7 @@
       "adapter": "atom",
       "url": "https://github.com/openai/codex/releases.atom",
       "trust": "official",
+      "tier": "T2",
       "authority": "release-changelog",
       "license": { "status": "facts-only", "identifier": null }
     },
@@ -75,6 +68,7 @@
       "adapter": "document",
       "url": "https://cli.github.com/manual/gh_repo_view",
       "trust": "official",
+      "tier": "T1",
       "authority": "vendor-docs",
       "license": { "status": "known", "identifier": "MIT" }
     },
@@ -83,6 +77,7 @@
       "adapter": "document",
       "url": "https://cli.github.com/manual/gh_pr_checks",
       "trust": "official",
+      "tier": "T1",
       "authority": "vendor-docs",
       "license": { "status": "known", "identifier": "MIT" }
     },
@@ -91,26 +86,16 @@
       "adapter": "document",
       "url": "https://cli.github.com/manual/gh_release_view",
       "trust": "official",
+      "tier": "T1",
       "authority": "vendor-docs",
-      "license": { "status": "known", "identifier": "MIT" },
-      "workflow_signal": {
-        "operational_authority": true,
-        "fingerprint": {
-          "goal": "inspect a GitHub release and return its published metadata",
-          "triggers": ["view a GitHub release", "inspect release metadata"],
-          "inputs": ["repository", "release tag"],
-          "outputs": ["release metadata"],
-          "tools": ["gh release view"],
-          "side_effects": ["network-read"],
-          "platforms": ["GitHub"]
-        }
-      }
+      "license": { "status": "known", "identifier": "MIT" }
     },
     {
       "id": "github-cli-api",
       "adapter": "document",
       "url": "https://cli.github.com/manual/gh_api",
       "trust": "official",
+      "tier": "T1",
       "authority": "vendor-docs",
       "license": { "status": "known", "identifier": "MIT" }
     },
@@ -119,6 +104,7 @@
       "adapter": "document",
       "url": "https://raw.githubusercontent.com/github/docs/main/content/rest/releases/releases.md",
       "trust": "official",
+      "tier": "T1",
       "authority": "vendor-api-docs",
       "license": { "status": "known", "identifier": "CC-BY-4.0" }
     },
@@ -127,6 +113,7 @@
       "adapter": "document",
       "url": "https://raw.githubusercontent.com/github/docs/main/content/rest/repos/repos.md",
       "trust": "official",
+      "tier": "T1",
       "authority": "vendor-api-docs",
       "license": { "status": "known", "identifier": "CC-BY-4.0" }
     },
@@ -135,6 +122,7 @@
       "adapter": "document",
       "url": "https://raw.githubusercontent.com/openai/skills/main/skills/.curated/gh-fix-ci/SKILL.md",
       "trust": "representative",
+      "tier": "T3",
       "authority": "external-skill-comparison",
       "license": { "status": "known", "identifier": "Apache-2.0" }
     },
@@ -143,14 +131,160 @@
       "adapter": "document",
       "url": "https://raw.githubusercontent.com/openai/skills/main/skills/.curated/gh-address-comments/SKILL.md",
       "trust": "representative",
+      "tier": "T3",
       "authority": "external-skill-comparison",
       "license": { "status": "known", "identifier": "Apache-2.0" }
+    },
+    {
+      "id": "pypa-packaging-tutorial",
+      "adapter": "document",
+      "url": "https://raw.githubusercontent.com/pypa/packaging.python.org/main/source/tutorials/packaging-projects.rst",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-operational-guide",
+      "license": { "status": "facts-only", "identifier": null }
+    },
+    {
+      "id": "pypa-publish-github-actions",
+      "adapter": "document",
+      "url": "https://raw.githubusercontent.com/pypa/packaging.python.org/main/source/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows.rst",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-operational-guide",
+      "license": { "status": "facts-only", "identifier": null }
+    },
+    {
+      "id": "pypa-testpypi",
+      "adapter": "document",
+      "url": "https://raw.githubusercontent.com/pypa/packaging.python.org/main/source/guides/using-testpypi.rst",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-operational-guide",
+      "license": { "status": "facts-only", "identifier": null }
+    },
+    {
+      "id": "pypa-single-source-version",
+      "adapter": "document",
+      "url": "https://raw.githubusercontent.com/pypa/packaging.python.org/main/source/discussions/single-source-version.rst",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-operational-guide",
+      "license": { "status": "facts-only", "identifier": null }
+    },
+    {
+      "id": "pypa-source-distribution-spec",
+      "adapter": "document",
+      "url": "https://raw.githubusercontent.com/pypa/packaging.python.org/main/source/specifications/source-distribution-format.rst",
+      "trust": "official",
+      "tier": "T0",
+      "authority": "official-format-specification",
+      "license": { "status": "facts-only", "identifier": null }
+    },
+    {
+      "id": "pypa-wheel-spec",
+      "adapter": "document",
+      "url": "https://raw.githubusercontent.com/pypa/packaging.python.org/main/source/specifications/binary-distribution-format.rst",
+      "trust": "official",
+      "tier": "T0",
+      "authority": "official-format-specification",
+      "license": { "status": "facts-only", "identifier": null }
+    },
+    {
+      "id": "pypa-core-metadata",
+      "adapter": "document",
+      "url": "https://raw.githubusercontent.com/pypa/packaging.python.org/main/source/specifications/core-metadata.rst",
+      "trust": "official",
+      "tier": "T0",
+      "authority": "official-format-specification",
+      "license": { "status": "facts-only", "identifier": null }
+    },
+    {
+      "id": "pypa-build-readme",
+      "adapter": "document",
+      "url": "https://raw.githubusercontent.com/pypa/build/main/README.md",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-tool-documentation",
+      "license": { "status": "known", "identifier": "MIT" }
+    },
+    {
+      "id": "pypa-twine-readme",
+      "adapter": "document",
+      "url": "https://raw.githubusercontent.com/pypa/twine/main/README.rst",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-tool-documentation",
+      "license": { "status": "known", "identifier": "Apache-2.0" }
+    },
+    {
+      "id": "pypa-publish-action-readme",
+      "adapter": "document",
+      "url": "https://raw.githubusercontent.com/pypa/gh-action-pypi-publish/release/v1/README.md",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-tool-documentation",
+      "license": { "status": "known", "identifier": "BSD-3-Clause" }
+    },
+    {
+      "id": "pypi-trusted-publisher-use",
+      "adapter": "document",
+      "url": "https://raw.githubusercontent.com/pypi/warehouse/main/docs/user/trusted-publishers/using-a-publisher.md",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-operational-guide",
+      "license": { "status": "known", "identifier": "Apache-2.0" }
+    },
+    {
+      "id": "pypi-trusted-publisher-security",
+      "adapter": "document",
+      "url": "https://raw.githubusercontent.com/pypi/warehouse/main/docs/user/trusted-publishers/security-model.md",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-security-documentation",
+      "license": { "status": "known", "identifier": "Apache-2.0" }
+    },
+    {
+      "id": "pypi-attestations-produce",
+      "adapter": "document",
+      "url": "https://raw.githubusercontent.com/pypi/warehouse/main/docs/user/attestations/producing-attestations.md",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-operational-guide",
+      "license": { "status": "known", "identifier": "Apache-2.0" }
+    },
+    {
+      "id": "pypi-attestations-consume",
+      "adapter": "document",
+      "url": "https://raw.githubusercontent.com/pypi/warehouse/main/docs/user/attestations/consuming-attestations.md",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-operational-guide",
+      "license": { "status": "known", "identifier": "Apache-2.0" }
+    },
+    {
+      "id": "pypa-sampleproject-readme",
+      "adapter": "document",
+      "url": "https://raw.githubusercontent.com/pypa/sampleproject/main/README.md",
+      "trust": "official",
+      "tier": "T2",
+      "authority": "official-primary-example",
+      "license": { "status": "known", "identifier": "MIT" }
+    },
+    {
+      "id": "github-artifact-attestations",
+      "adapter": "document",
+      "url": "https://raw.githubusercontent.com/github/docs/main/content/actions/concepts/security/artifact-attestations.md",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "vendor-security-documentation",
+      "license": { "status": "known", "identifier": "CC-BY-4.0" }
     },
     {
       "id": "pypi-updates",
       "adapter": "rss",
       "url": "https://pypi.org/rss/updates.xml",
       "trust": "official",
+      "tier": "T4",
       "authority": "official-package-feed",
       "license": { "status": "facts-only", "identifier": null }
     }

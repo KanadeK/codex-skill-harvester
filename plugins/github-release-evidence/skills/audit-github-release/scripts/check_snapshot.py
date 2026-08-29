@@ -33,6 +33,23 @@ def audit(snapshot: dict[str, Any]) -> dict[str, Any]:
     missing = sorted(expected - actual)
     add("expected_assets", "PASS" if not missing else "FAIL", "missing=" + (",".join(missing) or "none"))
 
+    attestations_required = snapshot.get("requirements", {}).get(
+        "asset_attestations", False
+    )
+    attestations = {
+        item["asset_name"]: item
+        for item in snapshot.get("attestations", [])
+        if item.get("verified") is True
+    }
+    unverified_assets = sorted(expected - set(attestations))
+    add(
+        "asset_attestations",
+        "PASS" if not attestations_required or not unverified_assets else "FAIL",
+        "not required"
+        if not attestations_required
+        else "unverified=" + (",".join(unverified_assets) or "none"),
+    )
+
     pull_request = snapshot["pull_request"]
     if pull_request is None:
         add("pull_request_merged", "NOT_CHECKED", "no pull request supplied")

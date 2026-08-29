@@ -32,8 +32,8 @@ def _positive_integer(value: Any, label: str) -> int:
 def validate_scale_policy(value: Any) -> dict[str, Any]:
     if not isinstance(value, dict) or value.get("schema_version") != 1:
         raise ScalePolicyError("scale policy must use schema_version 1")
-    if value.get("backend") not in {"git-json-v1", "sqlite-v2"}:
-        raise ScalePolicyError("scale policy backend must be git-json-v1 or sqlite-v2")
+    if value.get("backend") not in {"git-json-v1", "sqlite-v3"}:
+        raise ScalePolicyError("scale policy backend must be git-json-v1 or sqlite-v3")
     review_batch = value.get("review_batch")
     if not isinstance(review_batch, dict):
         raise ScalePolicyError("scale policy review batch is missing")

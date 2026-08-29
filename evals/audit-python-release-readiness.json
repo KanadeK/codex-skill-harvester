@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "capability_id": "software.python-release-readiness",
+  "method": "codex-semantic-review-plus-deterministic-e2e",
+  "reviewed_by": "codex",
+  "reviewed_at": "2026-08-29T18:25:00Z",
+  "trigger_cases": [
+    {
+      "id": "positive-dist-preflight",
+      "prompt": "Audit these Python sdist and wheel files before I publish them to PyPI.",
+      "expected": "trigger",
+      "observed": "trigger",
+      "rationale": "Requests the exact pre-publication artifact consistency audit owned by this Skill."
+    },
+    {
+      "id": "positive-trusted-publishing",
+      "prompt": "Is this package and GitHub Actions Trusted Publishing workflow ready for a PyPI release?",
+      "expected": "trigger",
+      "observed": "trigger",
+      "rationale": "Combines local distribution inspection with the bounded publishing-workflow preflight."
+    },
+    {
+      "id": "positive-metadata-consistency",
+      "prompt": "Check that pyproject.toml, PKG-INFO, wheel METADATA, and filenames agree on name and version.",
+      "expected": "trigger",
+      "observed": "trigger",
+      "rationale": "Names the identity-consistency gates performed by the deterministic checker."
+    },
+    {
+      "id": "negative-publish-package",
+      "prompt": "Upload this wheel to PyPI and publish version 2.0.0.",
+      "expected": "do-not-trigger",
+      "observed": "do-not-trigger",
+      "rationale": "Publishing is a network-writing task and is explicitly outside this read-only audit."
+    },
+    {
+      "id": "negative-create-package",
+      "prompt": "Create a new Python package and choose its project structure.",
+      "expected": "do-not-trigger",
+      "observed": "do-not-trigger",
+      "rationale": "Package creation is a different user goal with no existing release artifacts to audit."
+    },
+    {
+      "id": "negative-github-release",
+      "prompt": "Verify that this already-published GitHub Release has the right assets and tag.",
+      "expected": "do-not-trigger",
+      "observed": "do-not-trigger",
+      "rationale": "Post-publication GitHub Release evidence belongs to audit-github-release."
+    },
+    {
+      "id": "negative-fix-tests",
+      "prompt": "Fix the failing unit tests in my Python repository.",
+      "expected": "do-not-trigger",
+      "observed": "do-not-trigger",
+      "rationale": "General test remediation changes code and is unrelated to distribution readiness."
+    }
+  ],
+  "end_to_end": {
+    "kind": "python-release-readiness",
+    "script": "plugins/python-package-delivery/skills/audit-python-release-readiness/scripts/inspect_dist.py",
+    "fixture": "evals/fixtures/python-release-ready.json",
+    "expected_exit_code": 0,
+    "expected_result": "ready",
+    "minimum_gates": 14
+  }
+}

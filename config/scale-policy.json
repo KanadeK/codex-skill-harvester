@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "backend": "sqlite-v2",
+  "backend": "sqlite-v3",
   "benchmark_fixture_records": 1000,
   "review_batch": {
     "default": 100,

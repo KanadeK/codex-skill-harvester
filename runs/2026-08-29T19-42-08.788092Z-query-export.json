@@ -1,0 +1,9 @@
+{
+  "batch_id": null,
+  "cycle_id": "content-production-2026-08-29",
+  "exported_queries": 0,
+  "report_type": "query-export",
+  "resumed": false,
+  "schema_version": 1,
+  "status": "no_op"
+}

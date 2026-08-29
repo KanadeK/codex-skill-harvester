@@ -21,10 +21,22 @@ class QueueFetcher:
 
 
 def write_registry(root: Path, sources: list[dict[str, Any]]) -> None:
+    normalized_sources = []
+    for source in sources:
+        value = dict(source)
+        value.setdefault(
+            "tier",
+            "T2"
+            if value.get("trust") == "official"
+            else "T3"
+            if value.get("trust") == "representative"
+            else "T4",
+        )
+        normalized_sources.append(value)
     path = root / "sources" / "registry.json"
     path.parent.mkdir(parents=True)
     path.write_text(
-        json.dumps({"schema_version": 1, "sources": sources}, indent=2) + "\n",
+        json.dumps({"schema_version": 1, "sources": normalized_sources}, indent=2) + "\n",
         encoding="utf-8",
     )
     create_empty_runtime(root)
@@ -50,7 +62,7 @@ def write_runtime_discovery(root: Path, candidate: dict[str, Any], *, queue: str
     value.setdefault("evidence_sha256", "a" * 64)
     observation_id = f"observation-{value['id']}"
     observation = {
-        "schema_version": 2,
+        "schema_version": 3,
         "id": observation_id,
         "source_id": value["source_id"],
         "source_group": value.get("source_group", "fixture-group"),
@@ -61,6 +73,14 @@ def write_runtime_discovery(root: Path, candidate: dict[str, Any], *, queue: str
         "canonical_url": value["canonical_url"],
         "evidence_sha256": value["evidence_sha256"],
         "trust": value["trust"],
+        "tier": value.get(
+            "tier",
+            "T2"
+            if value["trust"] == "official"
+            else "T3"
+            if value["trust"] == "representative"
+            else "T4",
+        ),
         "authority": value.get("authority", "fixture-authority"),
         "license": value["license"],
         "extracted_facts": value.get("extracted_facts", []),
@@ -74,7 +94,8 @@ def write_runtime_discovery(root: Path, candidate: dict[str, Any], *, queue: str
     }
     normalized_candidate = {
         **value,
-        "schema_version": 2,
+        "schema_version": 3,
+        "evidence_pack_id": f"fixture-pack-{value['id']}",
         "observation_id": observation_id,
         "source_group": observation["source_group"],
         "topic_id": observation["topic_id"],
@@ -95,6 +116,24 @@ def write_runtime_discovery(root: Path, candidate: dict[str, Any], *, queue: str
     }
     with open_runtime_store(root) as store, store.connection:
         store.insert_observation(observation)
+        store.insert_evidence_pack(
+            {
+                "schema_version": 1,
+                "id": normalized_candidate["evidence_pack_id"],
+                "batch_id": None,
+                "outcome": "candidate",
+                "reviewed_by": "codex",
+                "reviewed_at": value["observed_at"],
+                "observation_ids": [observation_id],
+                "source_ids": [value["source_id"]],
+                "necessary_facts": ["Fixture evidence."],
+                "non_obvious_decisions": ["Fixture decision."],
+                "license_assessment": "Fixture license.",
+                "risk": {"level": "standard", "domains": []},
+                "adjacent_capabilities": [],
+                "rationale": "Fixture-only reviewed evidence for deterministic tests.",
+            }
+        )
         store.insert_candidate(normalized_candidate)
 
 
@@ -113,12 +152,15 @@ def write_runtime_state(
         )
 
 
-def document_source(source_id: str = "official-doc") -> dict[str, Any]:
+def document_source(
+    source_id: str = "official-doc", *, trust: str = "official", tier: str = "T1"
+) -> dict[str, Any]:
     return {
         "id": source_id,
         "adapter": "document",
         "url": f"https://example.test/{source_id}.md",
-        "trust": "official",
+        "trust": trust,
+        "tier": tier,
         "authority": "vendor-docs",
         "license": {"status": "known", "identifier": "MIT"},
     }
