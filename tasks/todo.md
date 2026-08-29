@@ -138,5 +138,5 @@ The Task 18 candidate-yield interpretation was invalidated by controller review:
 - [x] Verify: controlled tests cover the complete funnel, L2/L3, all queues, no-op, changed PyPI, every required checkpoint, bounded pagination/query plan, migration preservation, and forged metrics.
 - [x] Files: schema-2 runtime store, source/campaign/reporting/validation call paths, policies, workflow, fixtures, and synchronized authority documents.
 - [x] Verify: corrected real campaign, complete local gates, clean verification behavior, and five-axis review are complete.
-- [ ] Submit: exact commit/push to PR #7 and Ubuntu/Windows CI remain; do not merge or release.
+- [x] Submit: exact commits were pushed to PR #7 and Ubuntu/Windows CI passed; PR remains open for total-control merge approval, with no tag or Release.
 - Dependencies: Task 18 review finding and explicit controller authorization. Do not merge or release.

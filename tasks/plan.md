@@ -203,5 +203,5 @@ The earlier Task 17/18 implementation conflated observations with candidates and
 - [x] Run the corrected real canary/ramp and commit only its generated report and authoritative SQLite changes.
 - [x] Run full tests, evals, validator, benchmark, release build/install verification, and diff checks without tracked test pollution.
 - [x] Complete the correctness, readability, architecture, security, and performance review.
-- [ ] Commit exact paths, push the existing PR #7, and wait for Ubuntu/Windows CI.
-- [ ] Stop without merge, tag, Release, or automatic Skill publication.
+- [x] Commit exact paths, push the existing PR #7, and wait for Ubuntu/Windows CI.
+- [x] Stop without merge, tag, Release, or automatic Skill publication.
