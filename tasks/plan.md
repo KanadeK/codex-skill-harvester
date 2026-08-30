@@ -244,7 +244,7 @@ On 2026-08-30, before this work package began, PR #8 had already been squash-mer
 - [x] Make campaign policy the unique objective authority, distinguish slice completion from parent lifecycle, and regenerate the 2026-08-29 production report and authority documents without turning capacity bounds into publication quotas.
 - [x] Add RED regressions for job-scoped OIDC permission and bounded untrusted archive inspection, then minimally fix the Python release-readiness checker without a runtime dependency or archive extraction/execution.
 - [x] Run focused tests, full unittest, both trigger/E2E evals, repository validator, deterministic build/install/invocation, Skill/Plugin validation, and `git diff --check`.
-- [ ] Commit exact paths, push one correction PR stacked on `codex/plan-adoption-audit`, update its description with the superseded completion claim, and wait for Ubuntu/Windows CI without merge, tag, or Release.
+- [x] Commit exact paths, push one correction PR stacked on `codex/plan-adoption-audit`, update its description with the superseded completion claim, and wait for Ubuntu/Windows CI without merge, tag, or Release.
 
 ### Phase 23: continue the full 2026-08-30 campaign
 

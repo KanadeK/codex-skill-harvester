@@ -158,7 +158,7 @@ The Task 20 submission line records the state when it was written. PR #8 was sub
 - [x] Acceptance: only the publishing job's own `permissions.id-token: write` passes, while top-level, env, step, comment/string, other-job, and missing placements fail.
 - [x] Acceptance: sdist/wheel member count, metadata/RECORD reads, archive size, and declared expanded work are bounded; over-limit fixtures fail at named gates without extraction or execution.
 - [x] Verify: focused RED/GREEN regressions, full unittest, evals, validator, deterministic build/install/invocation, official Skill/Plugin validators, and diff checks pass without tracked-state pollution.
-- [ ] Submit: one correction PR is open against `codex/plan-adoption-audit`, its final Ubuntu/Windows CI is green, and PR #7 remains open with no tag or Release.
+- [x] Submit: correction PR #9 is open against `codex/plan-adoption-audit`; its initial correction HEAD passed Ubuntu/Windows CI, PR #7 remains open, and no tag or Release was created. The final documentation-only HEAD is rechecked by CI before Phase 23 starts.
 - Dependencies: PR #8 merge commit `d0cb9ef0d79ea254598fe66ee6f47a4dd0e532c3` and the 2026-08-30 controller review.
 
 ## Task 22: run the full 2026-08-30 content campaign
