@@ -1,0 +1,15 @@
+{
+  "actual_queries": 3,
+  "batch_id": "095cc61c838a1651cf8ec3e5",
+  "cycle_id": "content-production-2026-08-29",
+  "completed_queries": 3,
+  "executed_at": "2026-08-29T19:02:00Z",
+  "failed_queries": 0,
+  "pending_queries": 0,
+  "report_type": "query-results",
+  "result_count": 1,
+  "schema_version": 1,
+  "selected_endpoints": 0,
+  "selected_source_ids": [],
+  "status": "completed"
+}

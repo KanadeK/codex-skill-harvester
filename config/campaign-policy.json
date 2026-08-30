@@ -25,12 +25,30 @@
         "github-cli-release-view",
         "github-cli-api",
         "github-rest-releases",
-        "github-rest-repositories"
+        "github-rest-repositories",
+        "github-artifact-attestations"
       ]
     },
     "python-packaging": {
       "topic_id": "software.publish.python-packaging",
-      "source_ids": ["pypi-updates"]
+      "source_ids": [
+        "pypa-packaging-tutorial",
+        "pypa-publish-github-actions",
+        "pypa-testpypi",
+        "pypa-single-source-version",
+        "pypa-source-distribution-spec",
+        "pypa-wheel-spec",
+        "pypa-core-metadata",
+        "pypa-build-readme",
+        "pypa-twine-readme",
+        "pypa-publish-action-readme",
+        "pypi-trusted-publisher-use",
+        "pypi-trusted-publisher-security",
+        "pypi-attestations-produce",
+        "pypi-attestations-consume",
+        "pypa-sampleproject-readme",
+        "pypi-updates"
+      ]
     }
   },
   "canary_source_ids": [

@@ -26,8 +26,9 @@ class RuntimeStoreTests(unittest.TestCase):
             with open_runtime_store(root) as store, store.connection:
                 for index in range(1200):
                     candidate = {
-                        "schema_version": 2,
+                        "schema_version": 3,
                         "id": f"candidate-{index:04d}",
+                        "evidence_pack_id": f"pack-{index:04d}",
                         "observation_id": f"observation-{index:04d}",
                         "source_id": "official-doc",
                         "source_group": "github-delivery",
@@ -60,10 +61,29 @@ class RuntimeStoreTests(unittest.TestCase):
                             "source_revision": str(index),
                             "observed_at": candidate["observed_at"],
                             "trust": "official",
+                            "tier": "T1",
                             "authority": "vendor-docs",
                             "canonical_url": candidate["canonical_url"],
                             "evidence_sha256": f"{index:064x}",
                             "license": {"status": "known"},
+                        }
+                    )
+                    store.insert_evidence_pack(
+                        {
+                            "schema_version": 1,
+                            "id": candidate["evidence_pack_id"],
+                            "batch_id": None,
+                            "outcome": "candidate",
+                            "reviewed_by": "codex",
+                            "reviewed_at": candidate["observed_at"],
+                            "observation_ids": [candidate["observation_id"]],
+                            "source_ids": [candidate["source_id"]],
+                            "necessary_facts": ["fixture"],
+                            "non_obvious_decisions": ["fixture"],
+                            "license_assessment": "fixture",
+                            "risk": {"level": "standard", "domains": []},
+                            "adjacent_capabilities": [],
+                            "rationale": "fixture reviewed evidence",
                         }
                     )
                     store.insert_candidate(candidate)

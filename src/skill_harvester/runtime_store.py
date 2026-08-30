@@ -11,7 +11,7 @@ from .io import canonical_json_bytes, load_json, sha256_bytes
 
 
 RUNTIME_DB = Path("state") / "harvest.sqlite3"
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 QUEUE_PRIORITY = {
     "urgent-impact": 0,
@@ -21,6 +21,7 @@ QUEUE_PRIORITY = {
     "aged-backlog": 4,
 }
 TRUST_PRIORITY = {"official": 0, "representative": 1, "discovery": 2}
+TIER_PRIORITY = {"T0": 0, "T1": 1, "T2": 2, "T3": 3, "T4": 4}
 
 
 class RuntimeStoreError(ValueError):
@@ -99,6 +100,8 @@ class RuntimeStore:
                     source_id TEXT NOT NULL,
                     source_group TEXT NOT NULL,
                     topic_id TEXT NOT NULL,
+                    tier TEXT NOT NULL,
+                    tier_rank INTEGER NOT NULL,
                     source_revision TEXT NOT NULL,
                     observed_at TEXT NOT NULL,
                     trust TEXT NOT NULL,
@@ -110,10 +113,37 @@ class RuntimeStore:
                 CREATE INDEX observations_source_revision
                     ON observations (source_id, source_revision);
                 CREATE INDEX observations_normalization
-                    ON observations (source_id, observed_at, id);
+                    ON observations (tier_rank, observed_at, id);
+                CREATE TABLE semantic_batches (
+                    id TEXT PRIMARY KEY,
+                    status TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    completed_at TEXT,
+                    record_json TEXT NOT NULL
+                );
+                CREATE INDEX semantic_batches_pending
+                    ON semantic_batches (status, created_at, id);
+                CREATE TABLE evidence_packs (
+                    id TEXT PRIMARY KEY,
+                    batch_id TEXT REFERENCES semantic_batches(id),
+                    outcome TEXT NOT NULL,
+                    reviewed_at TEXT NOT NULL,
+                    record_json TEXT NOT NULL
+                );
+                CREATE TABLE semantic_batch_items (
+                    batch_id TEXT NOT NULL REFERENCES semantic_batches(id),
+                    observation_id TEXT NOT NULL REFERENCES observations(id),
+                    status TEXT NOT NULL,
+                    evidence_pack_id TEXT REFERENCES evidence_packs(id),
+                    PRIMARY KEY (batch_id, observation_id)
+                );
+                CREATE UNIQUE INDEX semantic_reviewed_observation
+                    ON semantic_batch_items (observation_id)
+                    WHERE status = 'reviewed';
                 CREATE TABLE candidates (
                     id TEXT PRIMARY KEY,
-                    observation_id TEXT NOT NULL UNIQUE REFERENCES observations(id),
+                    evidence_pack_id TEXT NOT NULL UNIQUE REFERENCES evidence_packs(id),
+                    observation_id TEXT NOT NULL REFERENCES observations(id),
                     source_id TEXT NOT NULL,
                     source_group TEXT NOT NULL,
                     topic_id TEXT NOT NULL,
@@ -155,6 +185,45 @@ class RuntimeStore:
                     run_id TEXT PRIMARY KEY,
                     status TEXT NOT NULL,
                     report_json TEXT NOT NULL
+                );
+                CREATE TABLE source_utility (
+                    source_id TEXT PRIMARY KEY,
+                    source_requests INTEGER NOT NULL,
+                    successes INTEGER NOT NULL,
+                    failures INTEGER NOT NULL,
+                    downloaded_bytes INTEGER NOT NULL,
+                    observations INTEGER NOT NULL,
+                    candidates INTEGER NOT NULL
+                );
+                CREATE TABLE query_batches (
+                    id TEXT PRIMARY KEY,
+                    cycle_id TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    completed_at TEXT,
+                    record_json TEXT NOT NULL
+                );
+                CREATE INDEX query_batches_pending
+                    ON query_batches (status, created_at, id);
+                CREATE INDEX query_batches_cycle
+                    ON query_batches (cycle_id, status, created_at, id);
+                CREATE TABLE query_batch_items (
+                    batch_id TEXT NOT NULL REFERENCES query_batches(id),
+                    query_id TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    record_json TEXT NOT NULL,
+                    PRIMARY KEY (batch_id, query_id)
+                );
+                CREATE INDEX query_items_status
+                    ON query_batch_items (batch_id, status, query_id);
+                CREATE TABLE query_states (
+                    query_id TEXT PRIMARY KEY,
+                    last_completed_cycle TEXT NOT NULL,
+                    last_completed_at TEXT NOT NULL,
+                    cursor TEXT,
+                    result_count INTEGER NOT NULL,
+                    selected_endpoint_count INTEGER NOT NULL,
+                    record_json TEXT NOT NULL
                 );
                 """
             )
@@ -228,20 +297,413 @@ class RuntimeStore:
             self.connection.execute("SELECT COUNT(*) FROM observations").fetchone()[0]
         )
 
-    def unpromoted_observations(
-        self, source_ids: set[str]
-    ) -> Iterator[dict[str, Any]]:
+    def semantic_batch(self, batch_id: str) -> dict[str, Any]:
         self.validate()
-        placeholders = ",".join("?" for _ in source_ids)
+        row = self.connection.execute(
+            "SELECT record_json FROM semantic_batches WHERE id = ?", (batch_id,)
+        ).fetchone()
+        if row is None:
+            raise RuntimeStoreError(f"unknown semantic batch: {batch_id}")
+        return _json_value(row["record_json"])
+
+    def evidence_pack(self, evidence_pack_id: str) -> dict[str, Any]:
+        self.validate()
+        row = self.connection.execute(
+            "SELECT record_json FROM evidence_packs WHERE id = ?", (evidence_pack_id,)
+        ).fetchone()
+        if row is None:
+            raise RuntimeStoreError(f"unknown evidence pack: {evidence_pack_id}")
+        return _json_value(row["record_json"])
+
+    def evidence_packs(self) -> Iterator[dict[str, Any]]:
+        self.validate()
         rows = self.connection.execute(
-            "SELECT observations.record_json FROM observations "
-            "LEFT JOIN candidates ON candidates.observation_id = observations.id "
-            f"WHERE candidates.id IS NULL AND observations.source_id IN ({placeholders}) "
-            "ORDER BY observations.observed_at, observations.id",
-            tuple(sorted(source_ids)),
+            "SELECT record_json FROM evidence_packs ORDER BY reviewed_at, id"
         )
         for row in rows:
             yield _json_value(row["record_json"])
+
+    def evidence_packs_for_batch(self, batch_id: str) -> list[dict[str, Any]]:
+        self.validate()
+        rows = self.connection.execute(
+            "SELECT record_json FROM evidence_packs "
+            "WHERE batch_id = ? ORDER BY reviewed_at, id",
+            (batch_id,),
+        )
+        return [_json_value(row["record_json"]) for row in rows]
+
+    def semantic_batch_items(self, batch_id: str) -> list[dict[str, Any]]:
+        self.validate()
+        rows = self.connection.execute(
+            "SELECT observation_id, status, evidence_pack_id "
+            "FROM semantic_batch_items WHERE batch_id = ? ORDER BY observation_id",
+            (batch_id,),
+        )
+        return [dict(row) for row in rows]
+
+    def candidates_for_evidence_packs(
+        self, evidence_pack_ids: set[str]
+    ) -> list[dict[str, Any]]:
+        self.validate()
+        if not evidence_pack_ids:
+            return []
+        placeholders = ",".join("?" for _ in evidence_pack_ids)
+        rows = self.connection.execute(
+            "SELECT record_json FROM candidates "
+            f"WHERE evidence_pack_id IN ({placeholders}) ORDER BY id",
+            tuple(sorted(evidence_pack_ids)),
+        )
+        return [_json_value(row["record_json"]) for row in rows]
+
+    def decisions_for_candidates(
+        self, candidate_ids: set[str]
+    ) -> list[dict[str, Any]]:
+        self.validate()
+        if not candidate_ids:
+            return []
+        placeholders = ",".join("?" for _ in candidate_ids)
+        rows = self.connection.execute(
+            "SELECT record_json FROM decisions "
+            f"WHERE candidate_id IN ({placeholders}) ORDER BY candidate_id",
+            tuple(sorted(candidate_ids)),
+        )
+        return [_json_value(row["record_json"]) for row in rows]
+
+    def create_or_resume_semantic_batch(
+        self, *, now: str, limit: int
+    ) -> dict[str, Any]:
+        self.validate()
+        if limit < 1:
+            raise RuntimeStoreError("semantic batch limit must be positive")
+        active = self.connection.execute(
+            "SELECT id FROM semantic_batches WHERE status = 'pending' "
+            "ORDER BY created_at, id LIMIT 1"
+        ).fetchone()
+        if active is not None:
+            batch_id = str(active["id"])
+            records = self.semantic_batch_pending_observations(batch_id, limit=limit)
+            return {
+                "batch_id": batch_id,
+                "created": False,
+                "observations": records,
+            }
+
+        rows = list(
+            self.connection.execute(
+                "SELECT observations.record_json FROM observations "
+                "WHERE tier_rank <= ? "
+                "AND NOT EXISTS ("
+                "SELECT 1 FROM semantic_batch_items "
+                "WHERE semantic_batch_items.observation_id = observations.id"
+                ") "
+                "AND NOT EXISTS ("
+                "SELECT 1 FROM candidates "
+                "WHERE candidates.observation_id = observations.id"
+                ") "
+                "ORDER BY tier_rank, observed_at, id LIMIT ?",
+                (TIER_PRIORITY["T2"], limit),
+            )
+        )
+        observations = [_json_value(row["record_json"]) for row in rows]
+        if not observations:
+            return {"batch_id": None, "created": False, "observations": []}
+        batch_id = sha256_bytes(
+            canonical_json_bytes(
+                {
+                    "kind": "semantic-batch",
+                    "created_at": now,
+                    "observation_ids": [record["id"] for record in observations],
+                }
+            )
+        )[:24]
+        record = {
+            "schema_version": 1,
+            "id": batch_id,
+            "status": "pending",
+            "created_at": now,
+            "completed_at": None,
+            "observation_count": len(observations),
+        }
+        with self.connection:
+            self.connection.execute(
+                "INSERT INTO semantic_batches(id, status, created_at, completed_at, record_json) "
+                "VALUES(?, 'pending', ?, NULL, ?)",
+                (batch_id, now, _json_text(record)),
+            )
+            self.connection.executemany(
+                "INSERT INTO semantic_batch_items(batch_id, observation_id, status, evidence_pack_id) "
+                "VALUES(?, ?, 'pending', NULL)",
+                ((batch_id, observation["id"]) for observation in observations),
+            )
+        return {"batch_id": batch_id, "created": True, "observations": observations}
+
+    def semantic_batch_pending_observations(
+        self, batch_id: str, *, limit: int
+    ) -> list[dict[str, Any]]:
+        self.validate()
+        rows = self.connection.execute(
+            "SELECT observations.record_json FROM semantic_batch_items "
+            "JOIN observations ON observations.id = semantic_batch_items.observation_id "
+            "WHERE semantic_batch_items.batch_id = ? "
+            "AND semantic_batch_items.status = 'pending' "
+            "ORDER BY observations.tier_rank, observations.observed_at, observations.id "
+            "LIMIT ?",
+            (batch_id, limit),
+        )
+        return [_json_value(row["record_json"]) for row in rows]
+
+    def semantic_batch_pending_count(self, batch_id: str) -> int:
+        self.validate()
+        return int(
+            self.connection.execute(
+                "SELECT COUNT(*) FROM semantic_batch_items "
+                "WHERE batch_id = ? AND status = 'pending'",
+                (batch_id,),
+            ).fetchone()[0]
+        )
+
+    def semantic_batch_observation_ids(self, batch_id: str) -> set[str]:
+        self.validate()
+        rows = self.connection.execute(
+            "SELECT observation_id FROM semantic_batch_items WHERE batch_id = ?",
+            (batch_id,),
+        )
+        return {str(row["observation_id"]) for row in rows}
+
+    def create_or_resume_query_batch(
+        self,
+        *,
+        now: str,
+        cycle_id: str,
+        queries: list[dict[str, Any]],
+        limit: int,
+    ) -> dict[str, Any]:
+        self.validate()
+        if limit < 1:
+            raise RuntimeStoreError("query batch limit must be positive")
+        active = self.connection.execute(
+            "SELECT id, cycle_id FROM query_batches WHERE status = 'pending' "
+            "ORDER BY created_at, id LIMIT 1"
+        ).fetchone()
+        if active is not None:
+            if active["cycle_id"] != cycle_id:
+                raise RuntimeStoreError(
+                    "finish the pending query cycle before starting another cycle: "
+                    f"{active['cycle_id']}"
+                )
+            batch_id = str(active["id"])
+            return {
+                "batch_id": batch_id,
+                "cycle_id": cycle_id,
+                "created": False,
+                "queries": self.query_batch_pending_records(batch_id, limit=limit),
+            }
+        completed_ids = {
+            str(row["query_id"])
+            for row in self.connection.execute(
+                "SELECT query_batch_items.query_id FROM query_batch_items "
+                "JOIN query_batches ON query_batches.id = query_batch_items.batch_id "
+                "WHERE query_batches.cycle_id = ? "
+                "AND query_batch_items.status = 'completed'",
+                (cycle_id,),
+            )
+        }
+        selected_base = [query for query in queries if query["id"] not in completed_ids][
+            :limit
+        ]
+        if not selected_base:
+            return {
+                "batch_id": None,
+                "cycle_id": cycle_id,
+                "created": False,
+                "queries": [],
+            }
+        selected_ids = [query["id"] for query in selected_base]
+        placeholders = ",".join("?" for _ in selected_ids)
+        prior_states = {
+            str(row["query_id"]): _json_value(row["record_json"])
+            for row in self.connection.execute(
+                "SELECT query_id, record_json FROM query_states "
+                f"WHERE query_id IN ({placeholders})",
+                tuple(selected_ids),
+            )
+        }
+        selected = [
+            {
+                **query,
+                "continuation_cursor": prior_states.get(query["id"], {}).get(
+                    "cursor"
+                ),
+                "previous_completed_at": prior_states.get(query["id"], {}).get(
+                    "last_completed_at"
+                ),
+            }
+            for query in selected_base
+        ]
+        batch_id = sha256_bytes(
+            canonical_json_bytes(
+                {
+                    "kind": "query-batch",
+                    "cycle_id": cycle_id,
+                    "created_at": now,
+                    "query_ids": [query["id"] for query in selected],
+                }
+            )
+        )[:24]
+        record = {
+            "schema_version": 1,
+            "id": batch_id,
+            "cycle_id": cycle_id,
+            "status": "pending",
+            "created_at": now,
+            "completed_at": None,
+            "query_count": len(selected),
+        }
+        with self.connection:
+            self.connection.execute(
+                "INSERT INTO query_batches("
+                "id, cycle_id, status, created_at, completed_at, record_json"
+                ") VALUES(?, ?, 'pending', ?, NULL, ?)",
+                (batch_id, cycle_id, now, _json_text(record)),
+            )
+            self.connection.executemany(
+                "INSERT INTO query_batch_items(batch_id, query_id, status, record_json) "
+                "VALUES(?, ?, 'pending', ?)",
+                (
+                    (batch_id, query["id"], _json_text(query))
+                    for query in selected
+                ),
+            )
+        return {
+            "batch_id": batch_id,
+            "cycle_id": cycle_id,
+            "created": True,
+            "queries": selected,
+        }
+
+    def query_batch(self, batch_id: str) -> dict[str, Any]:
+        self.validate()
+        row = self.connection.execute(
+            "SELECT record_json FROM query_batches WHERE id = ?", (batch_id,)
+        ).fetchone()
+        if row is None:
+            raise RuntimeStoreError(f"unknown query batch: {batch_id}")
+        return _json_value(row["record_json"])
+
+    def query_batch_items(self, batch_id: str) -> list[dict[str, Any]]:
+        self.validate()
+        rows = self.connection.execute(
+            "SELECT query_id, status, record_json FROM query_batch_items "
+            "WHERE batch_id = ? ORDER BY query_id",
+            (batch_id,),
+        )
+        return [
+            {
+                "query_id": str(row["query_id"]),
+                "status": str(row["status"]),
+                "record": _json_value(row["record_json"]),
+            }
+            for row in rows
+        ]
+
+    def query_batch_pending_records(
+        self, batch_id: str, *, limit: int
+    ) -> list[dict[str, Any]]:
+        self.validate()
+        rows = self.connection.execute(
+            "SELECT record_json FROM query_batch_items "
+            "WHERE batch_id = ? AND status = 'pending' ORDER BY query_id LIMIT ?",
+            (batch_id, limit),
+        )
+        return [_json_value(row["record_json"]) for row in rows]
+
+    def commit_query_results(
+        self,
+        *,
+        batch_id: str,
+        executed_at: str,
+        results: list[dict[str, Any]],
+    ) -> dict[str, int | str]:
+        self.validate()
+        with self.connection:
+            batch = self.connection.execute(
+                "SELECT cycle_id, status, record_json FROM query_batches WHERE id = ?",
+                (batch_id,),
+            ).fetchone()
+            if batch is None or batch["status"] != "pending":
+                raise RuntimeStoreError(f"query batch is not pending: {batch_id}")
+            for result in results:
+                item = self.connection.execute(
+                    "SELECT record_json FROM query_batch_items "
+                    "WHERE batch_id = ? AND query_id = ? AND status = 'pending'",
+                    (batch_id, result["query_id"]),
+                ).fetchone()
+                if item is None:
+                    raise RuntimeStoreError(
+                        f"query is not pending in batch: {result['query_id']}"
+                    )
+                query = _json_value(item["record_json"])
+                query["last_attempt"] = result
+                if result["status"] == "completed":
+                    self.connection.execute(
+                        "UPDATE query_batch_items SET status = 'completed', record_json = ? "
+                        "WHERE batch_id = ? AND query_id = ?",
+                        (_json_text(query), batch_id, result["query_id"]),
+                    )
+                    state = {
+                        "schema_version": 1,
+                        "query_id": result["query_id"],
+                        "topic_id": query["topic_id"],
+                        "last_completed_cycle": batch["cycle_id"],
+                        "last_completed_at": executed_at,
+                        "cursor": result["cursor"],
+                        "result_count": result["result_count"],
+                        "selected_endpoints": result["selected_endpoints"],
+                    }
+                    self.connection.execute(
+                        "INSERT INTO query_states("
+                        "query_id, last_completed_cycle, last_completed_at, cursor, result_count, "
+                        "selected_endpoint_count, record_json"
+                        ") VALUES(?, ?, ?, ?, ?, ?, ?) "
+                        "ON CONFLICT(query_id) DO UPDATE SET "
+                        "last_completed_cycle = excluded.last_completed_cycle, "
+                        "last_completed_at = excluded.last_completed_at, "
+                        "cursor = excluded.cursor, result_count = excluded.result_count, "
+                        "selected_endpoint_count = excluded.selected_endpoint_count, "
+                        "record_json = excluded.record_json",
+                        (
+                            result["query_id"],
+                            batch["cycle_id"],
+                            executed_at,
+                            result["cursor"],
+                            result["result_count"],
+                            len(result["selected_endpoints"]),
+                            _json_text(state),
+                        ),
+                    )
+                else:
+                    self.connection.execute(
+                        "UPDATE query_batch_items SET record_json = ? "
+                        "WHERE batch_id = ? AND query_id = ?",
+                        (_json_text(query), batch_id, result["query_id"]),
+                    )
+            pending = int(
+                self.connection.execute(
+                    "SELECT COUNT(*) FROM query_batch_items "
+                    "WHERE batch_id = ? AND status = 'pending'",
+                    (batch_id,),
+                ).fetchone()[0]
+            )
+            status = "pending" if pending else "completed"
+            record = _json_value(batch["record_json"])
+            record["status"] = status
+            record["completed_at"] = None if pending else executed_at
+            self.connection.execute(
+                "UPDATE query_batches SET status = ?, completed_at = ?, record_json = ? "
+                "WHERE id = ?",
+                (status, record["completed_at"], _json_text(record), batch_id),
+            )
+        return {"status": status, "pending_queries": pending}
 
     def candidate(self, candidate_id: str) -> dict[str, Any]:
         self.validate()
@@ -316,16 +778,22 @@ class RuntimeStore:
         return dict(sorted(counts.items()))
 
     def insert_observation(self, observation: dict[str, Any]) -> bool:
+        tier = str(observation["tier"])
+        if tier not in TIER_PRIORITY:
+            raise RuntimeStoreError("runtime observation has an invalid source tier")
         result = self.connection.execute(
             "INSERT OR IGNORE INTO observations("
-            "id, source_id, source_group, topic_id, source_revision, observed_at, trust, "
+            "id, source_id, source_group, topic_id, tier, tier_rank, "
+            "source_revision, observed_at, trust, "
             "authority, l0_key, l1_evidence_sha256, record_json"
-            ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 observation["id"],
                 observation["source_id"],
                 observation["source_group"],
                 observation["topic_id"],
+                tier,
+                TIER_PRIORITY[tier],
                 observation["source_revision"],
                 observation["observed_at"],
                 observation["trust"],
@@ -347,12 +815,13 @@ class RuntimeStore:
         fingerprint_hash = sha256_bytes(canonical_json_bytes(value["fingerprint"]))
         result = self.connection.execute(
             "INSERT OR IGNORE INTO candidates("
-            "id, observation_id, source_id, source_group, topic_id, observed_at, trust, "
+            "id, evidence_pack_id, observation_id, source_id, source_group, topic_id, observed_at, trust, "
             "review_status, queue_name, queue_rank, trust_rank, l2_fingerprint_sha256, "
             "l3_recall_count, record_json"
-            ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 value["id"],
+                value["evidence_pack_id"],
                 value["observation_id"],
                 value["source_id"],
                 value["source_group"],
@@ -370,18 +839,116 @@ class RuntimeStore:
         )
         return result.rowcount == 1
 
+    def insert_evidence_pack(self, pack: dict[str, Any]) -> bool:
+        result = self.connection.execute(
+            "INSERT OR IGNORE INTO evidence_packs("
+            "id, batch_id, outcome, reviewed_at, record_json"
+            ") VALUES (?, ?, ?, ?, ?)",
+            (
+                pack["id"],
+                pack.get("batch_id"),
+                pack["outcome"],
+                pack["reviewed_at"],
+                _json_text(pack),
+            ),
+        )
+        return result.rowcount == 1
+
+    def commit_semantic_review(
+        self,
+        *,
+        batch_id: str,
+        reviewed_at: str,
+        packs: list[dict[str, Any]],
+        candidates: list[dict[str, Any]],
+    ) -> dict[str, int | str]:
+        self.validate()
+        candidate_by_pack = {
+            candidate["evidence_pack_id"]: candidate for candidate in candidates
+        }
+        if len(candidate_by_pack) != len(candidates):
+            raise RuntimeStoreError("semantic review contains duplicate candidate packs")
+        inserted_candidates = 0
+        inserted_l3_recalls = 0
+        reviewed_observations = 0
+        with self.connection:
+            batch = self.connection.execute(
+                "SELECT status, record_json FROM semantic_batches WHERE id = ?",
+                (batch_id,),
+            ).fetchone()
+            if batch is None or batch["status"] != "pending":
+                raise RuntimeStoreError(f"semantic batch is not pending: {batch_id}")
+            for pack in packs:
+                if pack.get("batch_id") != batch_id:
+                    raise RuntimeStoreError("evidence pack references the wrong batch")
+                observation_ids = pack.get("observation_ids")
+                if not isinstance(observation_ids, list) or not observation_ids:
+                    raise RuntimeStoreError("evidence pack needs observation ids")
+                placeholders = ",".join("?" for _ in observation_ids)
+                rows = self.connection.execute(
+                    "SELECT observation_id FROM semantic_batch_items "
+                    f"WHERE batch_id = ? AND status = 'pending' AND observation_id IN ({placeholders})",
+                    (batch_id, *observation_ids),
+                ).fetchall()
+                if {str(row["observation_id"]) for row in rows} != set(observation_ids):
+                    raise RuntimeStoreError(
+                        "evidence pack observations are not pending in the batch"
+                    )
+                if not self.insert_evidence_pack(pack):
+                    raise RuntimeStoreError(f"duplicate evidence pack: {pack['id']}")
+                self.connection.execute(
+                    "UPDATE semantic_batch_items SET status = 'reviewed', evidence_pack_id = ? "
+                    f"WHERE batch_id = ? AND observation_id IN ({placeholders})",
+                    (pack["id"], batch_id, *observation_ids),
+                )
+                reviewed_observations += len(observation_ids)
+                candidate = candidate_by_pack.get(pack["id"])
+                if pack["outcome"] == "candidate":
+                    if candidate is None:
+                        raise RuntimeStoreError("candidate evidence pack has no candidate")
+                    if not self.insert_candidate(candidate):
+                        raise RuntimeStoreError(
+                            f"duplicate semantic candidate: {candidate['id']}"
+                        )
+                    inserted_candidates += 1
+                    inserted_l3_recalls += len(candidate["l3_recall"])
+                    for source_id in pack["source_ids"]:
+                        self.connection.execute(
+                            "UPDATE source_utility SET candidates = candidates + 1 "
+                            "WHERE source_id = ?",
+                            (source_id,),
+                        )
+                elif candidate is not None:
+                    raise RuntimeStoreError(
+                        "not-promoted evidence pack cannot create a candidate"
+                    )
+            pending = self.semantic_batch_pending_count(batch_id)
+            status = "pending" if pending else "completed"
+            record = _json_value(batch["record_json"])
+            record["status"] = status
+            record["completed_at"] = None if pending else reviewed_at
+            self.connection.execute(
+                "UPDATE semantic_batches SET status = ?, completed_at = ?, record_json = ? "
+                "WHERE id = ?",
+                (status, record["completed_at"], _json_text(record), batch_id),
+            )
+        return {
+            "status": status,
+            "reviewed_observations": reviewed_observations,
+            "pending_observations": pending,
+            "normalized_candidates": inserted_candidates,
+            "l3_recalls": inserted_l3_recalls,
+        }
+
     def commit_scan(
         self,
         *,
         now: str,
         source_states: dict[str, dict[str, Any]],
         observations: list[dict[str, Any]],
-        candidates: list[dict[str, Any]],
     ) -> dict[str, int]:
         self.validate()
         inserted_observations = 0
-        inserted_candidates = 0
-        inserted_l3_recalls = 0
         with self.connection:
             for source_id, state in source_states.items():
                 self.connection.execute(
@@ -392,17 +959,34 @@ class RuntimeStore:
             for observation in observations:
                 if self.insert_observation(observation):
                     inserted_observations += 1
-            for candidate in candidates:
-                if self.insert_candidate(candidate):
-                    inserted_candidates += 1
-                    inserted_l3_recalls += len(candidate["l3_recall"])
+            observations_by_source = Counter(
+                observation["source_id"] for observation in observations
+            )
+            for source_id, state in source_states.items():
+                utility = state.get("last_request_utility", {})
+                self.connection.execute(
+                    "INSERT INTO source_utility("
+                    "source_id, source_requests, successes, failures, downloaded_bytes, "
+                    "observations, candidates"
+                    ") VALUES(?, 1, 1, 0, ?, ?, 0) "
+                    "ON CONFLICT(source_id) DO UPDATE SET "
+                    "source_requests = source_requests + 1, "
+                    "successes = successes + 1, "
+                    "downloaded_bytes = downloaded_bytes + excluded.downloaded_bytes, "
+                    "observations = observations + excluded.observations",
+                    (
+                        source_id,
+                        int(utility.get("downloaded_bytes", 0)),
+                        observations_by_source[source_id],
+                    ),
+                )
             self._set_meta("last_successful_run", now)
         return {
             "observations_inserted": inserted_observations,
             "observation_duplicates": len(observations) - inserted_observations,
-            "normalized_candidates": inserted_candidates,
-            "candidate_duplicates": len(candidates) - inserted_candidates,
-            "l3_recalls": inserted_l3_recalls,
+            "normalized_candidates": 0,
+            "candidate_duplicates": 0,
+            "l3_recalls": 0,
         }
 
     def review_page(
@@ -523,9 +1107,16 @@ class RuntimeStore:
             for discovery in discoveries:
                 observation = {
                     **discovery,
-                    "schema_version": 2,
+                    "schema_version": 3,
                     "source_group": "legacy-import",
                     "topic_id": "legacy.reviewed",
+                    "tier": (
+                        "T2"
+                        if discovery.get("trust") == "official"
+                        else "T3"
+                        if discovery.get("trust") == "representative"
+                        else "T4"
+                    ),
                 }
                 for field in (
                     "review_status",
@@ -543,9 +1134,33 @@ class RuntimeStore:
                     raise RuntimeStoreError(
                         f"legacy decision references an unknown discovery: {candidate_id}"
                     )
+                evidence_pack_id = f"legacy-{candidate_id}"
+                evidence_pack = {
+                    "schema_version": 1,
+                    "id": evidence_pack_id,
+                    "batch_id": None,
+                    "outcome": "candidate",
+                    "reviewed_by": "codex",
+                    "reviewed_at": record.get(
+                        "reviewed_at", discovery["observed_at"]
+                    ),
+                    "observation_ids": [candidate_id],
+                    "source_ids": [discovery["source_id"]],
+                    "necessary_facts": discovery.get("extracted_facts", []),
+                    "non_obvious_decisions": [],
+                    "license_assessment": "Migrated reviewed legacy evidence.",
+                    "risk": {"level": "standard", "domains": []},
+                    "adjacent_capabilities": [],
+                    "rationale": "Migrated from the reviewed v0.1.1 decision history.",
+                }
+                if not self.insert_evidence_pack(evidence_pack):
+                    raise RuntimeStoreError(
+                        f"legacy import contains duplicate evidence pack: {candidate_id}"
+                    )
                 candidate = {
-                    "schema_version": 2,
+                    "schema_version": 3,
                     "id": candidate_id,
+                    "evidence_pack_id": evidence_pack_id,
                     "observation_id": candidate_id,
                     "source_id": discovery["source_id"],
                     "source_group": "legacy-import",
@@ -663,8 +1278,8 @@ def import_legacy_runtime(root: Path) -> dict[str, Any]:
         temporary.unlink(missing_ok=True)
         raise
     return {
-        "schema_version": 2,
-        "backend": "sqlite-v2",
+        "schema_version": 3,
+        "backend": "sqlite-v3",
         "source_states": len(state["sources"]),
         "observations": len(discoveries),
         "candidates": len(decisions),

@@ -5,6 +5,7 @@ import re
 import zipfile
 from pathlib import Path
 
+from .io import load_json
 from .validation import ValidationError, validate_repository
 
 
@@ -60,24 +61,30 @@ def build_release(root: Path, output_directory: Path) -> list[Path]:
     version = _version(root)
     output_directory.mkdir(parents=True, exist_ok=True)
     source_archive = output_directory / f"codex-skill-harvester-v{version}.zip"
-    plugin_archive = output_directory / f"github-release-evidence-v{version}.zip"
 
     repository_entries = [
         (f"codex-skill-harvester-{version}/{path.relative_to(root).as_posix()}", path)
         for path in _files(root, root)
     ]
-    plugin_root = root / "plugins" / "github-release-evidence"
-    plugin_entries = [
-        (f"github-release-evidence/{path.relative_to(plugin_root).as_posix()}", path)
-        for path in _files(root, plugin_root)
-    ]
     _write_zip(source_archive, repository_entries)
-    _write_zip(plugin_archive, plugin_entries)
+
+    marketplace = load_json(root / ".agents" / "plugins" / "marketplace.json")
+    plugin_archives: list[Path] = []
+    for plugin_id in sorted(entry["name"] for entry in marketplace["plugins"]):
+        plugin_root = root / "plugins" / plugin_id
+        plugin_archive = output_directory / f"{plugin_id}-v{version}.zip"
+        plugin_entries = [
+            (f"{plugin_id}/{path.relative_to(plugin_root).as_posix()}", path)
+            for path in _files(root, plugin_root)
+        ]
+        _write_zip(plugin_archive, plugin_entries)
+        plugin_archives.append(plugin_archive)
 
     checksums = output_directory / "SHA256SUMS.txt"
+    archives = [source_archive, *plugin_archives]
     lines = [
         f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}"
-        for path in (source_archive, plugin_archive)
+        for path in archives
     ]
     checksums.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
-    return [source_archive, plugin_archive, checksums]
+    return [*archives, checksums]

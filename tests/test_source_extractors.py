@@ -323,6 +323,26 @@ class SourceExtractorTests(unittest.TestCase):
             with self.assertRaisesRegex(RegistryError, "https"):
                 run_scan(root, QueueFetcher(), now="2026-08-27T05:00:00Z")
 
+    def test_registry_rejects_credentials_embedded_in_https_url(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_registry(
+                root,
+                [
+                    {
+                        "id": "unsafe-credentials",
+                        "adapter": "document",
+                        "url": "https://secret@example.test/source",
+                        "trust": "discovery",
+                        "authority": "signal",
+                        "license": {"status": "unknown", "identifier": None},
+                    }
+                ],
+            )
+
+            with self.assertRaisesRegex(RegistryError, "https"):
+                run_scan(root, QueueFetcher(), now="2026-08-27T05:00:00Z")
+
     def test_registry_rejects_arbitrary_authentication_environment(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

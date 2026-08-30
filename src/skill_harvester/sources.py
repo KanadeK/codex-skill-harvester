@@ -14,12 +14,13 @@ from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
 from .io import (
+    atomic_write_bytes,
     atomic_write_text,
     canonical_json_bytes,
     load_json,
     sha256_bytes,
 )
-from .fingerprints import FingerprintError, normalize_fingerprint, recall_capabilities
+from .fingerprints import FingerprintError, normalize_fingerprint
 from .runtime_store import open_runtime_store
 
 
@@ -29,6 +30,19 @@ class RegistryError(ValueError):
 
 class SourceFetchError(RuntimeError):
     pass
+
+
+MAX_SOURCE_BYTES = 2_000_000
+
+
+def _safe_https_url(value: str) -> bool:
+    parsed = urlparse(value)
+    return (
+        parsed.scheme == "https"
+        and parsed.hostname is not None
+        and parsed.username is None
+        and parsed.password is None
+    )
 
 
 @dataclass(frozen=True)
@@ -47,7 +61,7 @@ class UrllibFetcher:
     def __init__(
         self,
         *,
-        max_bytes: int = 2_000_000,
+        max_bytes: int = MAX_SOURCE_BYTES,
         timeout: float = 20.0,
         github_token: str | None = None,
     ) -> None:
@@ -56,7 +70,7 @@ class UrllibFetcher:
         self.github_token = github_token if github_token is not None else os.environ.get("GITHUB_TOKEN")
 
     def fetch(self, url: str, headers: dict[str, str]) -> FetchResponse:
-        if urlparse(url).scheme != "https":
+        if not _safe_https_url(url):
             raise SourceFetchError("network sources must use https")
         request_headers = {
             "User-Agent": "codex-skill-harvester/0.1 (+https://github.com/KanadeK/codex-skill-harvester)",
@@ -68,7 +82,7 @@ class UrllibFetcher:
         try:
             with urlopen(request, timeout=self.timeout) as response:
                 final_url = response.geturl()
-                if urlparse(final_url).scheme != "https":
+                if not _safe_https_url(final_url):
                     raise SourceFetchError("source redirected outside https")
                 body = response.read(self.max_bytes + 1)
                 if len(body) > self.max_bytes:
@@ -90,7 +104,7 @@ class GitHubCliFetcher:
         *,
         delegate: Fetcher | None = None,
         executable: str = "gh",
-        max_response_bytes: int = 2_000_000,
+        max_response_bytes: int = MAX_SOURCE_BYTES,
         timeout: float = 20.0,
     ) -> None:
         self.delegate = delegate or UrllibFetcher(github_token="")
@@ -102,7 +116,7 @@ class GitHubCliFetcher:
         parsed = urlparse(url)
         if parsed.hostname != "api.github.com":
             return self.delegate.fetch(url, headers)
-        if parsed.scheme != "https":
+        if not _safe_https_url(url):
             raise SourceFetchError("GitHub CLI sources must use https")
         endpoint = parsed.path.lstrip("/")
         if parsed.query:
@@ -147,7 +161,7 @@ def load_registry(root: Path) -> list[dict[str, Any]]:
             raise RegistryError(f"duplicate source id: {source_id}")
         seen_ids.add(source_id)
         url = source.get("url")
-        if not isinstance(url, str) or urlparse(url).scheme != "https":
+        if not isinstance(url, str) or not _safe_https_url(url):
             raise RegistryError(f"source {source_id} must use an https URL")
         if source.get("adapter") not in {"document", "json-list", "atom", "rss"}:
             raise RegistryError(f"source {source_id} has an unsupported adapter")
@@ -158,6 +172,8 @@ def load_registry(root: Path) -> list[dict[str, Any]]:
             raise RegistryError(f"source {source_id} change policy requires the json-list adapter")
         if source.get("trust") not in {"official", "representative", "discovery"}:
             raise RegistryError(f"source {source_id} has an unsupported trust tier")
+        if source.get("tier") not in {"T0", "T1", "T2", "T3", "T4"}:
+            raise RegistryError(f"source {source_id} has an unsupported source tier")
         authentication = source.get("authentication")
         if authentication is not None and (
             authentication
@@ -221,6 +237,7 @@ def _document_observation(
         "canonical_url": response.final_url,
         "evidence_sha256": evidence_hash,
         "trust": source["trust"],
+        "tier": source["tier"],
         "authority": source["authority"],
         "license": source["license"],
         "extracted_facts": [{"kind": "heading", "value": heading} for heading in headings[:20]],
@@ -242,6 +259,7 @@ def _item_observation(
         "canonical_url": item["url"],
         "evidence_sha256": item_hash,
         "trust": source["trust"],
+        "tier": source["tier"],
         "authority": source["authority"],
         "license": source["license"],
         "extracted_facts": [
@@ -290,7 +308,7 @@ def _json_items(source: dict[str, Any], body: bytes) -> list[dict[str, str]]:
             raise SourceFetchError(
                 f"source {source['id']} JSON item is missing field: {error.args[0]}"
             ) from error
-        if urlparse(item["url"]).scheme != "https":
+        if not _safe_https_url(item["url"]):
             raise SourceFetchError(f"source {source['id']} item URL must use https")
         items.append(item)
     return items
@@ -312,7 +330,7 @@ def _atom_items(source: dict[str, Any], body: bytes) -> list[dict[str, str]]:
         url = link.get("href") if link is not None else None
         if not all((identifier, title, revision, url)):
             raise SourceFetchError(f"source {source['id']} Atom entry is missing required fields")
-        if urlparse(url).scheme != "https":
+        if not _safe_https_url(url):
             raise SourceFetchError(f"source {source['id']} Atom entry URL must use https")
         items.append({"id": identifier, "title": title, "url": url, "revision": revision})
     return items
@@ -333,7 +351,7 @@ def _rss_items(source: dict[str, Any], body: bytes) -> list[dict[str, str]]:
         url = entry.findtext("link")
         if not all((identifier, title, revision, url)):
             raise SourceFetchError(f"source {source['id']} RSS item is missing required fields")
-        if urlparse(url).scheme != "https":
+        if not _safe_https_url(url):
             raise SourceFetchError(f"source {source['id']} RSS item URL must use https")
         items.append({"id": identifier, "title": title, "url": url, "revision": revision})
     return items
@@ -378,15 +396,41 @@ def _incremental_items(
 
 
 def _process_source(
-    source: dict[str, Any], previous: dict[str, Any], fetcher: Fetcher, now: str
+    root: Path,
+    source: dict[str, Any],
+    previous: dict[str, Any],
+    fetcher: Fetcher,
+    now: str,
 ) -> tuple[dict[str, Any], list[dict[str, Any]], dict[str, Any]]:
-    conditional_state = previous if previous.get("url") == source["url"] else {}
+    previous_hash = previous.get("content_sha256")
+    previous_cache = (
+        root / ".harvester-cache" / "evidence" / f"{previous_hash}.txt"
+        if isinstance(previous_hash, str)
+        else None
+    )
+    cache_is_valid = (
+        previous_cache is not None
+        and previous_cache.is_file()
+        and previous_cache.stat().st_size <= MAX_SOURCE_BYTES
+        and sha256_bytes(previous_cache.read_bytes()) == previous_hash
+    )
+    conditional_state = (
+        previous
+        if previous.get("url") == source["url"]
+        and cache_is_valid
+        else {}
+    )
     response = fetcher.fetch(source["url"], _request_headers(conditional_state))
     if response.status == 304:
         if not previous:
             raise SourceFetchError(f"source {source['id']} returned 304 without prior state")
         updated = deepcopy(previous)
         updated["last_success_at"] = now
+        updated["last_request_utility"] = {
+            "downloaded_bytes": 0,
+            "raw_observations": 0,
+            "observations_staged": 0,
+        }
         return updated, [], {
             "source_id": source["id"],
             "status": "not_modified",
@@ -396,7 +440,7 @@ def _process_source(
         }
     if response.status != 200:
         raise SourceFetchError(f"source {source['id']} returned HTTP {response.status}")
-    if urlparse(response.final_url).scheme != "https":
+    if not _safe_https_url(response.final_url):
         raise SourceFetchError(f"source {source['id']} redirected outside https")
 
     evidence_hash = sha256_bytes(response.body)
@@ -451,6 +495,12 @@ def _process_source(
                 source, items, previous, now
             )
 
+    cache_relative = Path(".harvester-cache") / "evidence" / f"{evidence_hash}.txt"
+    atomic_write_bytes(root / cache_relative, response.body)
+    if discoveries:
+        for observation in discoveries:
+            observation["cache_path"] = cache_relative.as_posix()
+
     updated = {
         "adapter": source["adapter"],
         "url": source["url"],
@@ -462,6 +512,11 @@ def _process_source(
         "material_items": material_items,
         "window_item_ids": window_item_ids,
         "last_success_at": now,
+        "last_request_utility": {
+            "downloaded_bytes": len(response.body),
+            "raw_observations": observations,
+            "observations_staged": len(discoveries),
+        },
     }
     result_status = "changed" if discoveries else "window_changed" if window_changed else "unchanged_content"
     return updated, discoveries, {
@@ -507,47 +562,6 @@ def _scan_metrics(
         "downloaded_bytes": downloaded_bytes,
         "deep_reviews": {"measured": False},
     }
-
-
-def _candidate_from_observation(
-    source: dict[str, Any],
-    observation: dict[str, Any],
-    catalog: dict[str, Any],
-    store: Any,
-) -> dict[str, Any] | None:
-    signal = source.get("workflow_signal")
-    if signal is None:
-        return None
-    fingerprint = normalize_fingerprint(signal["fingerprint"])
-    candidate_id = sha256_bytes(
-        b"candidate\0"
-        + observation["id"].encode("utf-8")
-        + b"\0"
-        + canonical_json_bytes(fingerprint)
-    )[:24]
-    candidate = {
-        "schema_version": 2,
-        "id": candidate_id,
-        "observation_id": observation["id"],
-        "source_id": observation["source_id"],
-        "source_group": observation["source_group"],
-        "topic_id": observation["topic_id"],
-        "observed_at": observation["observed_at"],
-        "title": observation["title"],
-        "canonical_url": observation["canonical_url"],
-        "evidence_sha256": observation["evidence_sha256"],
-        "trust": observation["trust"],
-        "license": observation["license"],
-        "fingerprint": fingerprint,
-        "l2_matches": store.l2_matches(fingerprint),
-        "l3_recall": recall_capabilities(fingerprint, catalog, limit=30),
-        "review_status": "pending",
-        "operational_authority": signal["operational_authority"],
-    }
-    for flag in ("published_impact", "reactivated", "aged_backlog"):
-        if signal.get(flag):
-            candidate[flag] = True
-    return candidate
 
 
 def _markdown_report(report: dict[str, Any]) -> str:
@@ -612,7 +626,9 @@ def run_scan(
     try:
         for source in sources:
             previous = store.source_state(source["id"])
-            source_state, observations, result = _process_source(source, previous, fetcher, now)
+            source_state, observations, result = _process_source(
+                root, source, previous, fetcher, now
+            )
             staged_state[source["id"]] = source_state
             context = source_context[source["id"]]
             for observation in observations:
@@ -658,46 +674,10 @@ def run_scan(
         store.close()
         raise
 
-    source_by_id = {source["id"]: source for source in sources}
-    signaled_sources = {
-        source_id for source_id, source in source_by_id.items() if "workflow_signal" in source
-    }
-    observations_to_normalize = (
-        {
-            observation["id"]: observation
-            for observation in store.unpromoted_observations(signaled_sources)
-        }
-        if signaled_sources
-        else {}
-    )
-    observations_to_normalize.update(
-        {
-            observation["id"]: observation
-            for observation in staged_observations
-            if observation["source_id"] in signaled_sources
-        }
-    )
-    catalog: dict[str, Any] = (
-        load_json(root / "catalog" / "capabilities.json")
-        if signaled_sources
-        else {"schema_version": 2, "internal": [], "external": []}
-    )
-    staged_candidates = [
-        candidate
-        for observation in observations_to_normalize.values()
-        if observation["source_id"] in signaled_sources
-        for candidate in [
-            _candidate_from_observation(
-                source_by_id[observation["source_id"]], observation, catalog, store
-            )
-        ]
-        if candidate is not None
-    ]
     committed = store.commit_scan(
         now=now,
         source_states=staged_state,
         observations=staged_observations,
-        candidates=staged_candidates,
     )
 
     report = {
@@ -707,7 +687,6 @@ def run_scan(
         "status": (
             "changed"
             if committed["observations_inserted"]
-            or committed["normalized_candidates"]
             else "no_op"
         ),
         "observations": committed["observations_inserted"],

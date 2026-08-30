@@ -11,6 +11,8 @@ from .campaign import (
     load_campaign_policy,
 )
 from .io import load_json
+from .production import ProductionReportError, build_production_report
+from .queries import QueryBatchError, load_topic_bank
 from .scaling import (
     ScalePolicyError,
     evaluate_migration_triggers,
@@ -73,6 +75,118 @@ def _scan_secrets(root: Path) -> list[str]:
 
 def _validate_unmeasured(value: Any, label: str) -> None:
     _require(value == {"measured": False}, f"{label} must be measured=false")
+
+
+def _nonnegative_integer(value: Any, label: str) -> None:
+    _require(
+        isinstance(value, int) and not isinstance(value, bool) and value >= 0,
+        f"{label} must be a non-negative integer",
+    )
+
+
+def _validate_query_report(path: Path, report: dict[str, Any]) -> None:
+    _require(report.get("schema_version") == 1, f"query schema invalid: {path.name}")
+    _require(report.get("report_type") == "query-results", f"query type invalid: {path.name}")
+    _require(
+        isinstance(report.get("cycle_id"), str) and report["cycle_id"],
+        f"query cycle invalid: {path.name}",
+    )
+    _require(report.get("status") in {"pending", "completed"}, f"query status invalid: {path.name}")
+    for field in (
+        "actual_queries",
+        "completed_queries",
+        "failed_queries",
+        "pending_queries",
+        "result_count",
+        "selected_endpoints",
+    ):
+        _nonnegative_integer(report.get(field), f"query {field}: {path.name}")
+    _require(
+        report["actual_queries"]
+        == report["completed_queries"] + report["failed_queries"],
+        f"query stage counts disagree: {path.name}",
+    )
+    selected_source_ids = report.get("selected_source_ids")
+    _require(
+        isinstance(selected_source_ids, list)
+        and all(isinstance(source_id, str) and source_id for source_id in selected_source_ids)
+        and len(selected_source_ids) == len(set(selected_source_ids))
+        and report["selected_endpoints"] == len(selected_source_ids),
+        f"query selected endpoints disagree: {path.name}",
+    )
+    _require(
+        (report["status"] == "pending") == (report["pending_queries"] > 0),
+        f"query checkpoint status disagrees: {path.name}",
+    )
+
+
+def _validate_semantic_report(
+    root: Path,
+    path: Path,
+    report: dict[str, Any],
+    *,
+    validate_latest_checkpoint: bool,
+) -> None:
+    _require(report.get("schema_version") == 1, f"semantic schema invalid: {path.name}")
+    _require(report.get("report_type") == "semantic-review", f"semantic type invalid: {path.name}")
+    _require(
+        isinstance(report.get("batch_id"), str) and report["batch_id"],
+        f"semantic batch id invalid: {path.name}",
+    )
+    _require(
+        isinstance(report.get("reviewed_at"), str) and report["reviewed_at"],
+        f"semantic reviewed_at invalid: {path.name}",
+    )
+    _require(report.get("status") in {"pending", "completed"}, f"semantic status invalid: {path.name}")
+    for field in (
+        "reviewed_observations",
+        "pending_observations",
+        "evidence_packs",
+        "not_promoted",
+        "normalized_candidates",
+        "l2_matches",
+        "l3_recalls",
+    ):
+        _nonnegative_integer(report.get(field), f"semantic {field}: {path.name}")
+    _validate_unmeasured(report.get("deep_reviews"), f"semantic deep_reviews: {path.name}")
+    _validate_unmeasured(report.get("usage_credits"), f"semantic usage_credits: {path.name}")
+    try:
+        with open_runtime_store(root) as store:
+            batch = store.semantic_batch(report["batch_id"])
+            batch_items = store.semantic_batch_items(report["batch_id"])
+            packs = [
+                pack
+                for pack in store.evidence_packs_for_batch(report["batch_id"])
+                if pack["reviewed_at"] == report["reviewed_at"]
+            ]
+            candidates = store.candidates_for_evidence_packs(
+                {pack["id"] for pack in packs}
+            )
+    except RuntimeStoreError as error:
+        raise ValidationError(str(error)) from error
+    expected = {
+        "reviewed_observations": sum(len(pack["observation_ids"]) for pack in packs),
+        "evidence_packs": len(packs),
+        "not_promoted": sum(pack["outcome"] == "not_promoted" for pack in packs),
+        "normalized_candidates": len(candidates),
+        "l2_matches": sum(len(candidate["l2_matches"]) for candidate in candidates),
+        "l3_recalls": sum(len(candidate["l3_recall"]) for candidate in candidates),
+    }
+    for field, value in expected.items():
+        _require(
+            report[field] == value,
+            f"semantic {field} does not match SQLite authority: {path.name}",
+        )
+    if validate_latest_checkpoint:
+        _require(
+            batch["status"] == report["status"],
+            f"semantic batch status does not match SQLite authority: {path.name}",
+        )
+        _require(
+            report["pending_observations"]
+            == sum(item["status"] == "pending" for item in batch_items),
+            f"semantic pending count does not match SQLite authority: {path.name}",
+        )
 
 
 def _validate_campaign_report(
@@ -223,6 +337,7 @@ def validate_repository(root: Path) -> dict[str, Any]:
         "catalog/taxonomy.json",
         "config/scale-policy.json",
         "config/campaign-policy.json",
+        "config/topic-bank.json",
         "state/harvest.sqlite3",
         "docs/architecture.md",
         "docs/roadmap.md",
@@ -292,12 +407,18 @@ def validate_repository(root: Path) -> dict[str, Any]:
     )
     campaign_context = campaign_source_context(campaign_policy)
     try:
+        topic_queries = load_topic_bank(root)
+    except QueryBatchError as error:
+        raise ValidationError(str(error)) from error
+    topic_ids = {query["topic_id"] for query in topic_queries}
+    try:
         with open_runtime_store(root) as store:
             last_successful_run = store.last_successful_run()
             state_sources = dict(store.source_states())
             observations = list(store.observations())
             candidates = list(store.candidates())
             records = list(store.decisions())
+            evidence_packs = list(store.evidence_packs())
     except RuntimeStoreError as error:
         raise ValidationError(str(error)) from error
     _require(isinstance(last_successful_run, str), "runtime store has no successful cursor")
@@ -385,11 +506,83 @@ def validate_repository(root: Path) -> dict[str, Any]:
             isinstance(observation.get("topic_id"), str) and observation["topic_id"],
             f"observation topic invalid: {observation_id}",
         )
+        if observation["source_group"] != "legacy-import":
+            _require(
+                observation.get("tier") == source_by_id[observation["source_id"]]["tier"],
+                f"observation tier drift: {observation_id}",
+            )
+            _require(
+                observation["topic_id"] in topic_ids,
+                f"observation topic is absent from Topic Bank: {observation_id}",
+            )
         _require(
             not ({"raw_body", "body", "content", "instructions"} & set(observation)),
             f"raw source content persisted: {observation_id}",
         )
         observations_by_id[observation_id] = observation
+
+    known_observation_ids = set(observations_by_id)
+    known_source_ids = set(source_by_id)
+    evidence_packs_by_id: dict[str, dict[str, Any]] = {}
+    for pack in evidence_packs:
+        pack_id = pack.get("id")
+        _require(
+            isinstance(pack_id, str) and pack_id not in evidence_packs_by_id,
+            "Evidence Pack id is missing or duplicated",
+        )
+        _require(
+            pack.get("schema_version") == 1
+            and pack.get("outcome") in {"candidate", "not_promoted"}
+            and pack.get("reviewed_by") == "codex",
+            f"Evidence Pack authority invalid: {pack_id}",
+        )
+        observation_ids = pack.get("observation_ids")
+        source_ids = pack.get("source_ids")
+        _require(
+            isinstance(observation_ids, list)
+            and bool(observation_ids)
+            and all(isinstance(observation_id, str) for observation_id in observation_ids)
+            and len(observation_ids) == len(set(observation_ids))
+            and set(observation_ids) <= known_observation_ids,
+            f"Evidence Pack observations invalid: {pack_id}",
+        )
+        _require(
+            isinstance(source_ids, list)
+            and bool(source_ids)
+            and all(isinstance(source_id, str) for source_id in source_ids)
+            and set(source_ids) <= known_source_ids,
+            f"Evidence Pack sources invalid: {pack_id}",
+        )
+        for field in ("necessary_facts", "non_obvious_decisions", "adjacent_capabilities"):
+            value = pack.get(field)
+            _require(
+                isinstance(value, list)
+                and all(isinstance(item, str) and item for item in value),
+                f"Evidence Pack {field} invalid: {pack_id}",
+            )
+        _require(
+            isinstance(pack.get("license_assessment"), str)
+            and bool(pack["license_assessment"])
+            and isinstance(pack.get("rationale"), str)
+            and bool(pack["rationale"]),
+            f"Evidence Pack rationale invalid: {pack_id}",
+        )
+        risk = pack.get("risk")
+        _require(
+            isinstance(risk, dict)
+            and risk.get("level") in {"standard", "high"}
+            and isinstance(risk.get("domains"), list),
+            f"Evidence Pack risk invalid: {pack_id}",
+        )
+        if pack["outcome"] == "not_promoted":
+            conditions = pack.get("reactivation_conditions")
+            _require(
+                isinstance(conditions, list)
+                and bool(conditions)
+                and all(isinstance(condition, str) and condition for condition in conditions),
+                f"Evidence Pack reactivation conditions invalid: {pack_id}",
+            )
+        evidence_packs_by_id[pack_id] = pack
 
     candidate_count = 0
     applied_count = 0
@@ -414,6 +607,19 @@ def validate_repository(root: Path) -> dict[str, Any]:
         _require(
             isinstance(candidate.get("l3_recall"), list),
             f"candidate L3 recall invalid: {candidate_id}",
+        )
+        evidence_pack_id = candidate.get("evidence_pack_id")
+        _require(
+            isinstance(evidence_pack_id, str) and evidence_pack_id,
+            f"candidate Evidence Pack reference invalid: {candidate_id}",
+        )
+        evidence_pack = evidence_packs_by_id.get(evidence_pack_id)
+        _require(
+            evidence_pack is not None
+            and evidence_pack.get("outcome") == "candidate"
+            and candidate.get("observation_id")
+            in evidence_pack.get("observation_ids", []),
+            f"candidate Evidence Pack linkage invalid: {candidate_id}",
         )
         _require(candidate["review_status"] in {"pending", "applied"}, f"candidate status invalid: {candidate_id}")
         _require(not ({"raw_body", "body", "content", "instructions"} & set(candidate)), f"raw source content persisted: {candidate_id}")
@@ -451,6 +657,80 @@ def validate_repository(root: Path) -> dict[str, Any]:
         _require(isinstance(report, dict), f"campaign report invalid: {path.name}")
         _validate_campaign_report(path, report, source_by_id, campaign_context)
 
+    for path in (root / "runs").glob("*-queries.json"):
+        report = load_json(path)
+        _require(isinstance(report, dict), f"query report invalid: {path.name}")
+        _validate_query_report(path, report)
+
+    semantic_reports: list[tuple[Path, dict[str, Any]]] = []
+    latest_semantic_report: dict[str, tuple[str, Path]] = {}
+    for path in sorted((root / "runs").glob("*-semantic.json")):
+        report = load_json(path)
+        _require(isinstance(report, dict), f"semantic report invalid: {path.name}")
+        batch_id = report.get("batch_id")
+        reviewed_at = report.get("reviewed_at")
+        _require(
+            isinstance(batch_id, str) and isinstance(reviewed_at, str),
+            f"semantic checkpoint identity invalid: {path.name}",
+        )
+        previous = latest_semantic_report.get(batch_id)
+        if previous is None or reviewed_at > previous[0]:
+            latest_semantic_report[batch_id] = (reviewed_at, path)
+        semantic_reports.append((path, report))
+    for path, report in semantic_reports:
+        _validate_semantic_report(
+            root,
+            path,
+            report,
+            validate_latest_checkpoint=(
+                latest_semantic_report[report["batch_id"]][1] == path
+            ),
+        )
+
+    for path in (root / "runs").glob("*-production.json"):
+        report = load_json(path)
+        _require(isinstance(report, dict), f"production report invalid: {path.name}")
+        _require(
+            report.get("schema_version") == 1
+            and report.get("report_type") == "content-production",
+            f"production report schema invalid: {path.name}",
+        )
+        try:
+            expected = build_production_report(
+                root,
+                generated_at=report["generated_at"],
+                campaign_report_path=_relative_path(
+                    root, report["inputs"]["campaign_report"]
+                ),
+                query_report_paths=[
+                    _relative_path(root, value)
+                    for value in report["inputs"]["query_reports"]
+                ],
+                semantic_report_paths=[
+                    _relative_path(root, value)
+                    for value in report["inputs"]["semantic_reports"]
+                ],
+                supplemental_scan_paths=[
+                    _relative_path(root, value)
+                    for value in report["inputs"]["supplemental_scans"]
+                ],
+                query_no_op_report_path=_relative_path(
+                    root, report["inputs"]["query_no_op_report"]
+                ),
+                semantic_no_op_report_path=_relative_path(
+                    root, report["inputs"]["semantic_no_op_report"]
+                ),
+                stable_no_op_scan_path=_relative_path(
+                    root, report["inputs"]["stable_no_op_scan"]
+                ),
+            )
+        except (KeyError, ProductionReportError, RuntimeStoreError) as error:
+            raise ValidationError(f"production report cannot be rebuilt: {path.name}: {error}") from error
+        _require(
+            report == expected,
+            f"production report does not match authoritative inputs: {path.name}",
+        )
+
     secret_files = _scan_secrets(root)
     _require(not secret_files, "secret-like material found: " + ", ".join(secret_files))
     return {
@@ -460,6 +740,8 @@ def validate_repository(root: Path) -> dict[str, Any]:
         "candidates": candidate_count,
         "applied_candidates": applied_count,
         "decision_records": len(records),
+        "evidence_packs": len(evidence_packs),
+        "topic_queries": len(topic_queries),
         "plugins": len(marketplace_plugins),
         "skills": skill_count,
         "internal_capabilities": len(internal),

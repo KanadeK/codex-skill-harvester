@@ -12,7 +12,7 @@ This is an observed filesystem traversal and whole-state-rewrite bottleneck, not
 
 ## Decision
 
-Use the standard-library `sqlite3` module and one single-writer database at `state/harvest.sqlite3` as the authority for runtime source cursors, observations, normalized candidates, queue state, decision records, and run checkpoints. Schema 2 uses separate `observations` and `candidates` tables: evidence never enters a review queue merely because its source is official.
+Use the standard-library `sqlite3` module and one single-writer database at `state/harvest.sqlite3` as the authority for runtime source cursors, observations, query/semantic batches, Evidence Packs, normalized candidates, queue state, decision records, source utility, and run checkpoints. Schema 3 keeps these stages separate: evidence never enters a review queue merely because its source is official.
 
 The database schema owns runtime state only. Git continues to own source definitions, taxonomy, capability catalog, original Skill and Plugin files, evaluation definitions/results, release assets, and readable run/migration manifests. SQLite receives no copied raw page bodies and no executable third-party script.
 

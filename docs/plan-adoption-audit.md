@@ -4,16 +4,16 @@
 
 **Baseline:** merged PR #6 at `6a54e7fc2748b02463fb269c7e9036f77812fae3`.
 
-**Current work package:** PR #7 repairs and proves one observation-to-candidate vertical slice. It must not merge, tag, release, perform L4 semantic merges, or publish Skills without a later controller decision.
+**Current work package:** PR #7 remains the open deterministic base. `codex/content-driven-production-campaign` is a stacked content-production slice from PR #7 HEAD `2ea8771cfbc45bb3f52953727eba20244f1f4180`. It may perform supervised L4 and generate review artifacts under the explicit controller authorization, but neither PR may merge and no tag or Release may be created without a later controller decision.
 
 ## What is confirmed now
 
 - PR #6 is the scale-planning foundation; it is not the complete production line.
-- SQLite schema 2 is the sole runtime authority. It has separate `observations` and `candidates` tables plus source cursors, candidate queues, decisions, and run checkpoints. There is no JSON fallback, dual read, or dual write.
-- The schema-2 conversion preserved 319 observations and 110 reviewed candidates/decisions. The former 209 pending `discoveries` were retained as evidence: 200 PyPI package updates and nine later Codex release entries were not candidate queue work. The corrected live campaign then added 100 newer PyPI observations, so the current store has 419 observations, 110 reviewed candidates, and no pending candidate. No `not_promoted` records were fabricated to clear evidence.
-- A candidate exists only after an explicit workflow-signal normalization step produces one user goal, clear inputs and outputs, and the complete seven-field fingerprint: `goal`, `triggers`, `inputs`, `outputs`, `tools`, `side_effects`, and `platforms`.
+- SQLite schema 3 is the sole runtime authority. It has separate observations, query/semantic batches, Evidence Packs, candidates, five queues, decisions, source utility, and run checkpoints. There is no JSON fallback, dual read, or dual write.
+- The current store preserves 462 observations, 117 Evidence Packs, and 113 reviewed candidates/decisions across 30 registered source cursors. PyPI package updates remain observations, not queue work. The current catalog has two internal Skills in two task-domain Plugins, and no candidate or semantic/query batch is pending.
+- A candidate exists only after Codex reads the actual cached evidence as untrusted data and imports an Evidence Pack with one user goal, inputs/outputs, non-obvious decisions, authority/license/risk judgment, adjacent capabilities, and the complete seven-field fingerprint. `workflow_signal` is only an optional non-authoritative hint.
 - Source trust and workflow authority are separate. An official registry or package feed may be authentic while remaining discovery-only. `official-gap` requires explicit operational workflow authority.
-- Topic, source group, fingerprint, L2 matches, and bounded L3 recalls are persisted on the real scan path. L3 is recall only; it cannot merge, update, create, reject, or publish.
+- The 21-query Domain × Intent Topic Bank, query cursors, source group/topic, Evidence Packs, fingerprints, L2 matches, and bounded L3 recalls are persisted on the real path. L3 is recall only; it cannot merge, update, create, reject, or publish.
 - Scheduled and manual production harvest automation runs `campaign --ramp`; it cannot bypass canary, policy, checkpoints, or stop-loss with a bare scan.
 - Review pagination and status counts execute in SQLite. Queue filters, stable ordering, cursor comparison, and `LIMIT` are database operations backed by matching indexes.
 
@@ -32,7 +32,7 @@ The first 5–10% of a complete campaign is its canary, not a separate small cam
 | Registered source identity, trust, authority, license, adapter | `sources/registry.json` |
 | Campaign source groups, topics, canary, queue order, workload/technical stop-loss | `config/campaign-policy.json` |
 | Review page default and maximum | `config/scale-policy.json` |
-| Runtime cursor, observation, candidate, queue, decision, checkpoint | `state/harvest.sqlite3` schema 2 |
+| Runtime cursor, observation, query/semantic batch, Evidence Pack, candidate, queue, decision, checkpoint | `state/harvest.sqlite3` schema 3 |
 | Canonical capability ids, facets, aliases, variants | `catalog/capabilities.json` and `catalog/taxonomy.json` |
 | Published Skill, Plugin, eval, release history | Git-tracked `plugins/`, marketplace, `evals/`, and release reports |
 | Runtime behavior | Tested code under `src/skill_harvester/` |
@@ -44,7 +44,7 @@ Reports summarize these authorities; a report never becomes a second state write
 ### Three layers
 
 1. **Evidence/Discovery.** High-volume source responses become minimal observations containing provenance, revision, trust, license, source group, topic, facts, and L0/L1 identity. Raw bodies are not committed.
-2. **Capability Registry.** Explicit workflow signals may normalize observations into candidates. Candidates own the seven-field fingerprint, L2 structural matches, L3 recall, queue placement, decision history, aliases/variants, and reactivation conditions.
+2. **Capability Registry.** Content-reviewed Evidence Packs may normalize observations into candidates. Candidates own the seven-field fingerprint, L2 structural matches, L3 recall, queue placement, decision history, aliases/variants, and reactivation conditions.
 3. **Published Skills.** Only supervised, original, installable, trigger-safe, E2E-verified artifacts are published. Users install small task-domain Plugins or Collections, not the evidence corpus or a giant universal bundle.
 
 ### Dual-speed funnel
@@ -52,7 +52,7 @@ Reports summarize these authorities; a report never becomes a second state write
 ```text
 cheap bounded acquisition
     -> observation + source cursor
-    -> explicit workflow-signal normalization
+    -> persisted semantic batch + Codex Evidence Pack
     -> candidate + L2/L3 recall + five queues
     -> supervised L4 semantic decision
     -> evidence pack / synthesis / eval / install / E2E / originality
@@ -113,9 +113,11 @@ The campaign also records the 100-credit boundary, but Usage remains `{"measured
 
 Canary failures and ramp failures both produce campaign reports. Earlier successful sources retain their cursor and records because campaign execution checkpoints one source at a time. Pending source ids remain explicit. Unexecuted L4/deep-review stages use `{"measured": false}` rather than a fabricated zero.
 
-### Corrected live calibration result
+### Current content-production result
 
-The code-generated `2026-08-29T13-55-27.992601Z` campaign completed its three-source canary and all 10 currently executable policy endpoints. It made 10 requests with a 100% source success rate, downloaded 363,165 bytes, and inserted 100 observations from the changing PyPI feed. It normalized zero candidates, produced zero L3 recalls, left zero pending candidates, and performed no deep review. Deep review and Usage are both `measured=false`; there were zero source failures. This is a truthful evidence-only yield, not a failed Skill-production target and not the full 180–260 endpoint campaign.
+The validator-rebuildable [production report](../runs/2026-08-29-content-production.json) records the current slice. The executable campaign inventory grew from 10 to 26 endpoints. Twenty-one unique Topic Bank queries completed in 28 attempts: seven initial GitHub code-search attempts hit an actual rate limit, resumed from the same batch, then completed; one non-duplicate official endpoint was selected. Source work made 28 successful requests, downloaded 416,622 bytes, observed 117 source items, and inserted 43 new observations with zero source failures.
+
+Codex reviewed 26 high-trust observations in three resumable batches, produced seven Evidence Packs, normalized three candidates, received nine bounded L3 recalls, and performed three measured L4 adjudications: one create, one update, and one merge. Four Evidence Packs were not promoted before candidate creation. The result is one new original `audit-python-release-readiness` Skill, one artifact-attestation update to `audit-github-release`, and one version-consistency evidence merge. Query rotation, semantic export, and a stable official source all produced real no-op replays; pending query, semantic, and L4 counts are zero. Usage credits and semantic-review tokens remain `measured=false`; no Release was published.
 
 ## Migration decision and deletion condition
 
@@ -143,7 +145,7 @@ PR #7 was not merged when schema 1's conflation was found, so schema 1 receives 
 | Candidate/artifact/capability lifecycle | **adopted** | Observation and candidate are now distinct; artifact and capability remain Git-reviewed lifecycles. |
 | Evidence Pack through install/E2E/originality | **adopted** | These remain mandatory publication gates; they are not bypassed by throughput. |
 | Plugins/Collections by installation intent | **adopted** | Product grouping follows user task domains, never source websites. |
-| Reverse evidence impact | **deferred** | Implement when real campaigns show one evidence change affecting multiple published capabilities. Delete any prototype that cannot trace to exercised lineage. |
+| Reverse evidence impact | **adopted, minimal** | `published_impact` now prioritizes content-reviewed evidence into `urgent-impact`; a multi-capability reverse graph remains deferred until real fan-out appears. |
 | HTTP/RSS/GitHub/OpenAPI/sitemap connector expansion | **modified and incremental** | Add one connector only for a selected source group with fixtures, cursor semantics, stop-loss, and no-op proof. No empty connector framework. |
 | Package registries as early authorities | **rejected** | They remain discovery signals until separate operational workflow evidence exists. |
 | Git-JSON → SQLite → Parquet → semantic index | **adopted as measured evolution** | SQLite is active hot-state authority. Parquet needs measured cold-analysis pressure; a semantic index needs labeled recall evidence and must be rebuildable. |
@@ -167,7 +169,7 @@ PR #7 was not merged when schema 1's conflation was found, so schema 1 receives 
 
 ## 0–30 day mainline
 
-1. Complete PR #7's observation/candidate repair, SQL paging, campaign automation, runtime stop-loss, unified reports, fixtures, real canary/ramp, and dual-platform CI.
+1. Submit the content-driven stacked PR after complete local gates and dual-platform CI; keep PR #7 and the stacked PR unmerged until controller review.
 2. Build a small versioned labeled set before publishing recall, false-merge, or semantic quality rates.
 3. Expand executable inventory toward the campaign capacity range one connector/source slice at a time. Canary remains 5–10% of the same complete inventory.
 4. Run the complete campaign within existing credits and infrastructure. Retain every cursor and unresolved candidate; do not force a Skill count.
@@ -177,7 +179,7 @@ PR #7 was not merged when schema 1's conflation was found, so schema 1 receives 
 
 - **Unknown:** campaign-scoped credit usage is not authoritatively observable. Keep `measured=false`.
 - **Unknown:** labeled L3 recall and false-merge quality. Do not state percentages before adjudicated fixtures exist.
-- **Unknown:** throughput at 180–260 endpoints. The current registered inventory is smaller; do not extrapolate its latency or yield as measured full-campaign behavior.
+- **Unknown:** throughput at 180–260 endpoints. The current executable inventory is 26; do not extrapolate its latency or yield as measured full-campaign behavior.
 - **Parquet entry:** measured cold evidence size or analytical query cost exceeds SQLite/Git expectations.
 - **Semantic-index entry:** labeled recall shows deterministic L3 is insufficient at the measured catalog size.
 - **Multi-worker entry:** measured single-writer backlog or latency prevents the campaign target and recovery semantics are specified.
@@ -185,4 +187,4 @@ PR #7 was not merged when schema 1's conflation was found, so schema 1 receives 
 
 ## Reserved decisions
 
-The controller still decides PR #7 merge, full campaign expansion, semantic quality thresholds, any new storage migration, multi-worker operation, high-risk publication, `v0.2.0`, and Release automation. A green test suite or campaign report is evidence for those decisions, not authorization to take them.
+The controller still decides the merge order for PR #7 and its stacked content-production PR, changes to campaign stop-loss or budget policy, semantic quality thresholds, any new storage migration, multi-worker operation, high-risk publication, `v0.2.0`, and Release automation. An ordinary explicit campaign cycle may continue from durable cursors and expand inside the already-approved stop-loss policy without a separate volume approval. A green test suite or campaign report is evidence for reserved decisions, not authorization to merge or release.

@@ -78,7 +78,7 @@ The same benchmark command measured current in-process full repository validatio
 
 ## 2026-08-29 cutover
 
-ADR-002 supersedes the historical decision above. The original one-time import recorded 13 source states, 110 observations, 110 reviewed candidates, and 110 decisions with legacy digest `ddfc0fa74dfef3ab56644445aba527c00935658a9446150155e9b88ccb883de9`. During PR #7 the live source state reached 14 sources and 209 additional evidence records; schema 2 preserved all 319 observations while keeping only the 110 reviewed records as candidates. Active JSON lifecycle files are removed at cutover; Git history and the migration manifest preserve the audit trail. The active benchmark now measures SQLite reads/writes and retains the JSON benchmark only as a historical baseline.
+ADR-002 supersedes the historical decision above. The original one-time import recorded 13 source states, 110 observations, 110 reviewed candidates, and 110 decisions with legacy digest `ddfc0fa74dfef3ab56644445aba527c00935658a9446150155e9b88ccb883de9`. During PR #7 the live source state reached 14 sources and 209 additional evidence records; the final schema-3 cutover preserved every observation, created Evidence Packs only for reviewed legacy records, and added query/content batches without a second authority. Active JSON lifecycle files are removed at cutover; Git history and the migration manifest preserve the audit trail. The current production slice has 30 source cursors, 462 observations, 117 Evidence Packs, and 113 reviewed candidates/decisions. The active benchmark measures SQLite reads/writes and retains the JSON benchmark only as a historical baseline.
 
 ## Limitations
 

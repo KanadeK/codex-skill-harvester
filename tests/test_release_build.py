@@ -26,6 +26,7 @@ class ReleaseBuildTests(unittest.TestCase):
                 [
                     "codex-skill-harvester-v0.1.1.zip",
                     "github-release-evidence-v0.1.1.zip",
+                    "python-package-delivery-v0.1.1.zip",
                     "SHA256SUMS.txt",
                 ],
             )

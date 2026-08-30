@@ -15,6 +15,8 @@ from .campaign import (
     run_campaign,
 )
 from .io import atomic_write_json
+from .queries import QueryBatchError, export_query_batch, import_query_results
+from .production import ProductionReportError, write_production_report
 from .reporting import (
     ReportingError,
     render_review_queue,
@@ -25,6 +27,7 @@ from .reporting import (
 from .scaling import ScalePolicyError
 from .runtime_store import RuntimeStoreError
 from .runtime_store import import_legacy_runtime
+from .semantic import SemanticReviewError, export_semantic_batch, import_semantic_review
 from .sources import (
     Fetcher,
     GitHubCliFetcher,
@@ -96,6 +99,50 @@ def _parser() -> argparse.ArgumentParser:
         help="authenticate api.github.com with GITHUB_TOKEN or the official gh keyring",
     )
     campaign.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+    query_export = commands.add_parser(
+        "query-export", help="export or resume a bounded discovery-query batch"
+    )
+    query_export.add_argument("--root", type=Path, default=Path.cwd())
+    query_export.add_argument("--cycle", required=True)
+    query_export.add_argument("--limit", type=int, required=True)
+    query_export.add_argument("--output", type=Path, required=True)
+    query_import = commands.add_parser(
+        "query-import", help="import factual results from an executed query batch"
+    )
+    query_import.add_argument("--root", type=Path, default=Path.cwd())
+    query_import.add_argument("--batch", required=True)
+    query_import.add_argument("--results", type=Path, required=True)
+    semantic_export = commands.add_parser(
+        "semantic-export", help="export or resume a bounded observation review batch"
+    )
+    semantic_export.add_argument("--root", type=Path, default=Path.cwd())
+    semantic_export.add_argument("--limit", type=int, required=True)
+    semantic_export.add_argument("--output", type=Path, required=True)
+    semantic_import = commands.add_parser(
+        "semantic-import", help="import Codex-authored Evidence Packs"
+    )
+    semantic_import.add_argument("--root", type=Path, default=Path.cwd())
+    semantic_import.add_argument("--batch", required=True)
+    semantic_import.add_argument("--review", type=Path, required=True)
+    production_report = commands.add_parser(
+        "production-report",
+        help="generate an auditable content-production funnel report",
+    )
+    production_report.add_argument("--root", type=Path, default=Path.cwd())
+    production_report.add_argument("--campaign-report", type=Path, required=True)
+    production_report.add_argument(
+        "--query-report", type=Path, action="append", required=True
+    )
+    production_report.add_argument(
+        "--semantic-report", type=Path, action="append", required=True
+    )
+    production_report.add_argument(
+        "--supplemental-scan", type=Path, action="append", default=[]
+    )
+    production_report.add_argument("--query-no-op-report", type=Path, required=True)
+    production_report.add_argument("--semantic-no-op-report", type=Path, required=True)
+    production_report.add_argument("--stable-no-op-scan", type=Path, required=True)
+    production_report.add_argument("--output", type=Path, required=True)
     return parser
 
 
@@ -108,6 +155,9 @@ def main(
     args = _parser().parse_args(argv)
     try:
         root = args.root.resolve()
+        observed_at = now or datetime.now(timezone.utc).isoformat(
+            timespec="microseconds"
+        ).replace("+00:00", "Z")
         if args.command == "migrate-runtime":
             report = import_legacy_runtime(root)
             atomic_write_json(root / "runs" / "runtime-migration.json", report)
@@ -134,9 +184,58 @@ def main(
             record = apply_decision(root, args.decision.resolve())
             print(f"outcome={record['outcome']} candidate={record['candidate_id']}")
             return 0
-        observed_at = now or datetime.now(timezone.utc).isoformat(timespec="microseconds").replace(
-            "+00:00", "Z"
-        )
+        if args.command == "query-export":
+            report = export_query_batch(
+                root,
+                now=observed_at,
+                cycle_id=args.cycle,
+                limit=args.limit,
+                output_path=args.output.resolve(),
+            )
+            print(json.dumps(report, indent=2, sort_keys=True))
+            return 0
+        if args.command == "query-import":
+            report = import_query_results(
+                root,
+                batch_id=args.batch,
+                results_path=args.results.resolve(),
+            )
+            print(json.dumps(report, indent=2, sort_keys=True))
+            return 0
+        if args.command == "semantic-export":
+            report = export_semantic_batch(
+                root,
+                now=observed_at,
+                limit=args.limit,
+                output_path=args.output.resolve(),
+            )
+            print(json.dumps(report, indent=2, sort_keys=True))
+            return 0
+        if args.command == "semantic-import":
+            report = import_semantic_review(
+                root,
+                batch_id=args.batch,
+                review_path=args.review.resolve(),
+            )
+            print(json.dumps(report, indent=2, sort_keys=True))
+            return 0
+        if args.command == "production-report":
+            report = write_production_report(
+                root,
+                generated_at=observed_at,
+                campaign_report_path=args.campaign_report.resolve(),
+                query_report_paths=[path.resolve() for path in args.query_report],
+                semantic_report_paths=[path.resolve() for path in args.semantic_report],
+                supplemental_scan_paths=[
+                    path.resolve() for path in args.supplemental_scan
+                ],
+                query_no_op_report_path=args.query_no_op_report.resolve(),
+                semantic_no_op_report_path=args.semantic_no_op_report.resolve(),
+                stable_no_op_scan_path=args.stable_no_op_scan.resolve(),
+                output_path=args.output.resolve(),
+            )
+            print(json.dumps(report, indent=2, sort_keys=True))
+            return 0
         selected_fetcher = fetcher or (
             GitHubCliFetcher() if args.github_auth == "gh-cli" else UrllibFetcher()
         )
@@ -196,7 +295,10 @@ def main(
         ReportingError,
         ScalePolicyError,
         CampaignPolicyError,
+        QueryBatchError,
+        ProductionReportError,
         RuntimeStoreError,
+        SemanticReviewError,
         SourceFetchError,
         OSError,
     ) as error:

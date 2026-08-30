@@ -1,0 +1,114 @@
+{
+  "artifacts": {
+    "new_skills": 1,
+    "release_published": false,
+    "updated_skills": 1
+  },
+  "checkpoint": {
+    "continuation": "All referenced work batches are complete.",
+    "pending_l4_candidates": 0,
+    "pending_queries": 0,
+    "pending_semantic_observations": 0
+  },
+  "cost": {
+    "semantic_review_tokens": {
+      "measured": false
+    },
+    "usage_credits": {
+      "measured": false
+    }
+  },
+  "discovery": {
+    "downloaded_bytes": 416622,
+    "endpoints_at_campaign_start": 25,
+    "executable_endpoints_after_selection": 26,
+    "inserted_observations": 43,
+    "raw_observations": 117,
+    "selected_new_endpoints": 1,
+    "source_failures": 0,
+    "source_requests": 28,
+    "source_successes": 28,
+    "supplemental_source_runs": 3
+  },
+  "generated_at": "2026-08-29T19:54:02.337535Z",
+  "inputs": {
+    "campaign_report": "runs/2026-08-29T18-17-51.373491Z-campaign.json",
+    "query_no_op_report": "runs/2026-08-29T19-42-08.788092Z-query-export.json",
+    "query_reports": [
+      "runs/2026-08-29T18-12-00Z-queries.json",
+      "runs/2026-08-29T18-59-00Z-queries.json",
+      "runs/2026-08-29T19-02-00Z-queries.json"
+    ],
+    "semantic_no_op_report": "runs/2026-08-29T19-53-21.086642Z-semantic-export.json",
+    "semantic_reports": [
+      "runs/2026-08-29T18-25-00Z-semantic.json",
+      "runs/2026-08-29T18-54-00Z-semantic.json",
+      "runs/2026-08-29T19-03-00Z-semantic.json"
+    ],
+    "stable_no_op_scan": "runs/2026-08-29T18-56-37.216569Z-scan.json",
+    "supplemental_scans": [
+      "runs/2026-08-29T18-51-12.333437Z-scan.json",
+      "runs/2026-08-29T18-56-37.216569Z-scan.json",
+      "runs/2026-08-29T19-01-39.404341Z-scan.json"
+    ]
+  },
+  "l4": {
+    "create": 1,
+    "deep_reviews": {
+      "count": 3,
+      "measured": true
+    },
+    "merge": 1,
+    "not_promoted": 0,
+    "pending_candidates": 0,
+    "update": 1
+  },
+  "queries": {
+    "actual_queries": 21,
+    "batch_ids": [
+      "095cc61c838a1651cf8ec3e5",
+      "4ab80a0565aa885ebc813478"
+    ],
+    "completed_queries": 21,
+    "cycle_ids": [
+      "content-production-2026-08-29"
+    ],
+    "failed_attempts": 7,
+    "pending_queries": 0,
+    "query_attempts": 28,
+    "result_count": 47,
+    "selected_endpoints": 1,
+    "selected_source_ids": [
+      "pypa-sampleproject-readme"
+    ]
+  },
+  "replay": {
+    "query_rotation": "no_op",
+    "semantic_batches": "no_op",
+    "stable_source": "pypa-single-source-version",
+    "stable_source_result": "no_op"
+  },
+  "report_type": "content-production",
+  "schema_version": 1,
+  "semantic": {
+    "batch_ids": [
+      "43e2e6c7a43fbcf5bb32f03a",
+      "6fdeef55e63a551d64882157",
+      "e5ec72e2e25a056b99d92d7a"
+    ],
+    "batch_observations": 26,
+    "batch_statuses": [
+      "completed",
+      "completed",
+      "completed"
+    ],
+    "evidence_packs": 7,
+    "l2_matches": 0,
+    "l3_recalls": 9,
+    "normalized_candidates": 3,
+    "not_promoted": 4,
+    "pending_observations": 0,
+    "reviewed_observations": 26
+  },
+  "status": "completed"
+}

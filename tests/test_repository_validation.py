@@ -58,11 +58,13 @@ class RepositoryValidationTests(unittest.TestCase):
 
         report = validate_repository(root)
 
-        self.assertEqual(report["plugins"], 1)
-        self.assertEqual(report["skills"], 1)
-        self.assertEqual(report["internal_capabilities"], 1)
+        self.assertEqual(report["plugins"], 2)
+        self.assertEqual(report["skills"], 2)
+        self.assertEqual(report["internal_capabilities"], 2)
         self.assertEqual(report["taxonomy_version"], "1.0.0")
-        self.assertEqual(report["scale_backend"], "sqlite-v2")
+        self.assertEqual(report["scale_backend"], "sqlite-v3")
+        self.assertEqual(report["evidence_packs"], 117)
+        self.assertEqual(report["topic_queries"], 21)
         self.assertEqual(report["migration_triggers"], [])
         self.assertEqual(report["secrets_found"], 0)
 
@@ -87,7 +89,7 @@ class RepositoryValidationTests(unittest.TestCase):
             ).fetchone()[0]
             pending_candidates = store.candidate_status_counts().get("pending", 0)
 
-        self.assertEqual(pypi_observations, 300)
+        self.assertEqual(pypi_observations, 326)
         self.assertEqual(pypi_candidates, 0)
         self.assertEqual(release_observations, 20)
         self.assertEqual(release_candidates, 11)
@@ -237,6 +239,70 @@ class RepositoryValidationTests(unittest.TestCase):
 
             with self.assertRaisesRegex(ValidationError, "source context drift"):
                 validate_repository(root)
+
+    def test_rejects_forged_content_production_counts(self) -> None:
+        source = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            shutil.copytree(
+                source,
+                root,
+                ignore=shutil.ignore_patterns(".git", "dist", "__pycache__", "*.pyc"),
+            )
+            path = next((root / "runs").glob("*-production.json"))
+            report = json.loads(path.read_text(encoding="utf-8"))
+            report["semantic"]["normalized_candidates"] += 1
+            path.write_text(json.dumps(report), encoding="utf-8")
+
+            with self.assertRaisesRegex(ValidationError, "authoritative inputs"):
+                validate_repository(root)
+
+            report["semantic"]["normalized_candidates"] -= 1
+            report["l4"]["deep_reviews"]["count"] += 1
+            path.write_text(json.dumps(report), encoding="utf-8")
+            with self.assertRaisesRegex(ValidationError, "authoritative inputs"):
+                validate_repository(root)
+
+    def test_accepts_historical_partial_semantic_checkpoint_after_batch_completion(self) -> None:
+        source = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            shutil.copytree(
+                source,
+                root,
+                ignore=shutil.ignore_patterns(
+                    ".git", "dist", ".harvester-cache", "__pycache__", "*.pyc"
+                ),
+            )
+            final_report_path = sorted((root / "runs").glob("*-semantic.json"))[0]
+            final_report = json.loads(final_report_path.read_text(encoding="utf-8"))
+            with open_runtime_store(root) as store:
+                pending_at_start = len(
+                    store.semantic_batch_items(final_report["batch_id"])
+                )
+            historical = {
+                "schema_version": 1,
+                "report_type": "semantic-review",
+                "batch_id": final_report["batch_id"],
+                "reviewed_at": "2026-08-29T18:24:00Z",
+                "status": "pending",
+                "reviewed_observations": 0,
+                "pending_observations": pending_at_start,
+                "evidence_packs": 0,
+                "not_promoted": 0,
+                "normalized_candidates": 0,
+                "l2_matches": 0,
+                "l3_recalls": 0,
+                "deep_reviews": {"measured": False},
+                "usage_credits": {"measured": False},
+            }
+            (root / "runs" / "2026-08-29T18-24-00Z-semantic.json").write_text(
+                json.dumps(historical), encoding="utf-8"
+            )
+
+            report = validate_repository(root)
+
+            self.assertEqual(report["evidence_packs"], 117)
 
 
 if __name__ == "__main__":
