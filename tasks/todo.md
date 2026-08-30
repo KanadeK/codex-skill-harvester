@@ -154,10 +154,10 @@ The Task 20 submission line records the state when it was written. PR #8 was sub
 
 ## Task 21: correct campaign completion and Python archive/OIDC gates
 
-- [ ] Acceptance: the parent campaign has one policy-owned objective and reports `active`, `checkpoint`, or `campaign_completed` independently from the current slice status; 26 endpoints/21 queries and no-op replay cannot complete the parent campaign.
-- [ ] Acceptance: only the publishing job's own `permissions.id-token: write` passes, while top-level, env, step, comment/string, other-job, and missing placements fail.
-- [ ] Acceptance: sdist/wheel member count, metadata/RECORD reads, archive size, and declared expanded work are bounded; over-limit fixtures fail at named gates without extraction or execution.
-- [ ] Verify: focused RED/GREEN regressions, full unittest, evals, validator, deterministic build/install/invocation, official Skill/Plugin validators, and diff checks pass without tracked-state pollution.
+- [x] Acceptance: the parent campaign has one policy-owned objective and reports `active`, `checkpoint`, or `campaign_completed` independently from the current slice status; 26 endpoints/21 queries and no-op replay cannot complete the parent campaign.
+- [x] Acceptance: only the publishing job's own `permissions.id-token: write` passes, while top-level, env, step, comment/string, other-job, and missing placements fail.
+- [x] Acceptance: sdist/wheel member count, metadata/RECORD reads, archive size, and declared expanded work are bounded; over-limit fixtures fail at named gates without extraction or execution.
+- [x] Verify: focused RED/GREEN regressions, full unittest, evals, validator, deterministic build/install/invocation, official Skill/Plugin validators, and diff checks pass without tracked-state pollution.
 - [ ] Submit: one correction PR is open against `codex/plan-adoption-audit`, its final Ubuntu/Windows CI is green, and PR #7 remains open with no tag or Release.
 - Dependencies: PR #8 merge commit `d0cb9ef0d79ea254598fe66ee6f47a4dd0e532c3` and the 2026-08-30 controller review.
 
