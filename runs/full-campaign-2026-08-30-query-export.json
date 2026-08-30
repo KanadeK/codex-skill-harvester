@@ -1,9 +1,9 @@
 {
-  "batch_id": "5fc695443b559bed3be2fded",
+  "batch_id": null,
   "cycle_id": "full-campaign-2026-08-30",
-  "exported_queries": 10,
+  "exported_queries": 0,
   "report_type": "query-export",
-  "resumed": true,
+  "resumed": false,
   "schema_version": 1,
-  "status": "changed"
+  "status": "no_op"
 }

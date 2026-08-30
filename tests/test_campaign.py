@@ -121,14 +121,14 @@ class CampaignTests(unittest.TestCase):
 
             self.assertEqual(report["status"], "changed")
             self.assertTrue(report["ramped"])
-            self.assertEqual(report["registered_endpoints"], 26)
+            self.assertEqual(report["registered_endpoints"], 28)
             self.assertEqual(report["canary_endpoints"], 3)
-            self.assertEqual(report["metrics"]["source_requests"], 26)
+            self.assertEqual(report["metrics"]["source_requests"], 28)
             self.assertGreater(report["metrics"]["downloaded_bytes"], 0)
             self.assertEqual(report["metrics"]["normalized_candidates"], 0)
             self.assertEqual(report["metrics"]["deep_reviews"], {"measured": False})
             self.assertEqual(report["metrics"]["usage_credits"], {"measured": False})
-            self.assertEqual(report["metrics"]["observations_inserted"], 26)
+            self.assertEqual(report["metrics"]["observations_inserted"], 28)
             self.assertEqual(report["metrics"]["failures"], 0)
             persisted = json.loads(
                 (root / "runs" / "2026-08-29T05-00-00Z-campaign.json").read_text(
@@ -161,7 +161,7 @@ class CampaignTests(unittest.TestCase):
                 ramp=True,
             )
 
-            self.assertEqual(report["registered_endpoints"], 27)
+            self.assertEqual(report["registered_endpoints"], 29)
             source = next(
                 run["sources"][0]
                 for run in report["runs"]

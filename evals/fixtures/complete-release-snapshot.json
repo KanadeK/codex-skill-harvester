@@ -30,6 +30,7 @@
   "attestations": [
     {
       "asset_name": "codex-skill-harvester-v0.1.0.zip",
+      "release_tag": "v0.1.0",
       "verified": true,
       "verified_owner": "KanadeK",
       "source_url": "https://github.com/KanadeK/codex-skill-harvester/attestations"

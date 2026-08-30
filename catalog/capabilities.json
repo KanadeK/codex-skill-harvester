@@ -2,6 +2,173 @@
   "external": [
     {
       "aliases": [
+        "create or update a Codex Skill",
+        "author an agent skill"
+      ],
+      "artifact_sha256": "a17383bfb1448637ac1f757ad891ddb9676fa30b0eff620200f0e1cbc0cc0d50",
+      "classification": {
+        "facets": {
+          "domain": [
+            "software"
+          ],
+          "inputs": [
+            "code",
+            "report"
+          ],
+          "intent": [
+            "create",
+            "maintain",
+            "validate"
+          ],
+          "maturity": [
+            "verified"
+          ],
+          "outputs": [
+            "code"
+          ],
+          "platforms": [
+            "codex"
+          ],
+          "risk": [
+            "standard"
+          ],
+          "side_effects": [
+            "local-write"
+          ],
+          "tools": [
+            "codex"
+          ],
+          "trust": [
+            "official"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "software.agent-skill-authoring"
+      },
+      "fingerprint": {
+        "goal": "create or update an effective Codex Skill for a reusable workflow",
+        "inputs": [
+          "user task and trigger examples",
+          "workflow requirements",
+          "supporting scripts references or assets"
+        ],
+        "outputs": [
+          "focused SKILL.md",
+          "validated skill resources"
+        ],
+        "platforms": [
+          "Codex"
+        ],
+        "side_effects": [
+          "local skill files written"
+        ],
+        "tools": [
+          "Codex",
+          "skill validation scripts"
+        ],
+        "triggers": [
+          "create a new Codex Skill",
+          "update an existing Codex Skill"
+        ]
+      },
+      "id": "openai:skill-creator",
+      "merged_source_refs": [],
+      "source_ref": "openai-official-skill-creator",
+      "source_revision": "49f948faa9258a0c61caceaf225e179651397431",
+      "source_url": "https://github.com/openai/skills/tree/49f948faa9258a0c61caceaf225e179651397431/skills/.system/skill-creator",
+      "variants": []
+    },
+    {
+      "aliases": [
+        "adopt Next.js Cache Components",
+        "migrate to Cache Components"
+      ],
+      "artifact_sha256": "0c3de4f2b8d383c706a8b86fcdffe061dead9fbd23c94f614ee8cebf28a0cf57",
+      "classification": {
+        "facets": {
+          "domain": [
+            "software"
+          ],
+          "inputs": [
+            "code",
+            "repository"
+          ],
+          "intent": [
+            "transform",
+            "validate"
+          ],
+          "maturity": [
+            "verified"
+          ],
+          "outputs": [
+            "code",
+            "evidence"
+          ],
+          "platforms": [
+            "nodejs",
+            "web"
+          ],
+          "risk": [
+            "standard"
+          ],
+          "side_effects": [
+            "local-write"
+          ],
+          "tools": [
+            "npm"
+          ],
+          "trust": [
+            "official"
+          ],
+          "volatility": [
+            "fast-moving"
+          ]
+        },
+        "primary_family": "software.frontend-migration"
+      },
+      "fingerprint": {
+        "goal": "adopt Next.js Cache Components and resolve blocking routes to a passing build",
+        "inputs": [
+          "Next.js App Router project",
+          "Next.js configuration",
+          "instant navigation validation errors"
+        ],
+        "outputs": [
+          "Cache Components configuration",
+          "resolved blocking routes",
+          "passing build evidence"
+        ],
+        "platforms": [
+          "Next.js",
+          "Node.js"
+        ],
+        "side_effects": [
+          "application code and configuration changes",
+          "local build and codemod execution"
+        ],
+        "tools": [
+          "Next.js CLI",
+          "Next.js codemod"
+        ],
+        "triggers": [
+          "enable or adopt Next.js Cache Components",
+          "resolve Cache Components blocking prerender or instant validation errors"
+        ]
+      },
+      "id": "vercel:next-cache-components-adoption",
+      "merged_source_refs": [
+        "nextjs-cache-components-migration",
+        "nextjs-version-16-upgrade"
+      ],
+      "source_ref": "nextjs-official-cache-components-adoption-skill",
+      "source_revision": "2fe6f962a1982594bdda96a7de16c594677266d2",
+      "source_url": "https://github.com/vercel/next.js/tree/2fe6f962a1982594bdda96a7de16c594677266d2/skills/next-cache-components-adoption",
+      "variants": []
+    },
+    {
+      "aliases": [
         "fix github actions checks"
       ],
       "artifact_sha256": "7b326b4a2f0f5f85122144628ec02077e48841e0e0e82efce88b3415bcfb7c26",
@@ -698,7 +865,7 @@
         "github release audit",
         "release evidence audit"
       ],
-      "artifact_sha256": "6d76bb6631aee1ccd2be3dd40cddaa22bdf112f1175780f5a364662f82c9d561",
+      "artifact_sha256": "e8ca4f3d137fd17dc65dea0f14d601387caf235fd1bd2741bbb8a9ea1b8bae78",
       "classification": {
         "facets": {
           "domain": [
@@ -791,12 +958,13 @@
         "openai-build-plugins"
       ],
       "plugin_id": "github-release-evidence",
-      "revision": 4,
+      "revision": 5,
       "skill_name": "audit-github-release",
       "source_refs": [
         "github-artifact-attestations",
         "github-cli-api",
         "github-cli-pr-checks",
+        "github-cli-release-verify-asset",
         "github-cli-release-view",
         "github-cli-repo-view",
         "github-rest-releases",
@@ -806,7 +974,7 @@
         "openai-gh-address-comments",
         "openai-gh-fix-ci"
       ],
-      "updated_at": "2026-08-29T18:36:00Z",
+      "updated_at": "2026-08-30T19:22:00Z",
       "variants": []
     },
     {

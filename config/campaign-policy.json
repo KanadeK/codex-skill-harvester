@@ -19,6 +19,7 @@
         "openai-build-skills",
         "openai-build-plugins",
         "openai-plugin-catalog",
+        "openai-official-skill-creator",
         "openai-codex-releases"
       ]
     },
@@ -28,6 +29,7 @@
         "github-cli-repo-view",
         "github-cli-pr-checks",
         "github-cli-release-view",
+        "github-cli-release-verify-asset",
         "github-cli-api",
         "github-rest-releases",
         "github-rest-repositories",
@@ -116,7 +118,8 @@
         "kubernetes-update-daemonset",
         "kubernetes-declarative-config",
         "kubernetes-stateless-deployment",
-        "kubernetes-install-kubectl-windows"
+        "kubernetes-install-kubectl-windows",
+        "kubernetes-crd-versioning"
       ]
     },
     "infrastructure-automation": {
@@ -313,7 +316,10 @@
         "nextjs-installation",
         "nextjs-fetching-data",
         "nextjs-building",
-        "nextjs-debugging"
+        "nextjs-debugging",
+        "nextjs-cache-components-migration",
+        "nextjs-version-16-upgrade",
+        "nextjs-official-cache-components-adoption-skill"
       ]
     }
   },

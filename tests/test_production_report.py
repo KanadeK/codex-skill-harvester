@@ -146,6 +146,24 @@ class ProductionReportTests(unittest.TestCase):
         self.assertEqual(report["objective"]["minimum_actual_queries"], 1500)
         self.assertIn("next inventory/query batch", report["checkpoint"]["continuation"])
 
+    def test_cycle_query_report_preserves_recoverable_attempts(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            _copy_production_fixture(root)
+            arguments = _report_arguments(root)
+            for path in arguments["query_report_paths"]:
+                query = json.loads(path.read_text(encoding="utf-8"))
+                query["aggregation"] = "cycle"
+                query["query_attempts"] = query["actual_queries"]
+                query["actual_queries"] = query["completed_queries"]
+                path.write_text(json.dumps(query), encoding="utf-8")
+
+            report = build_production_report(root, **arguments)
+
+        self.assertEqual(report["queries"]["actual_queries"], 21)
+        self.assertEqual(report["queries"]["query_attempts"], 28)
+        self.assertEqual(report["queries"]["failed_attempts"], 7)
+
     def test_objective_completion_is_required_for_campaign_completed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory) / "repository"

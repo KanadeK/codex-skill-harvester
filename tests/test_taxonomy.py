@@ -124,7 +124,7 @@ class TaxonomyTests(unittest.TestCase):
         report = validate_catalog_taxonomy(catalog, taxonomy)
 
         self.assertEqual(report["taxonomy_version"], "1.1.0")
-        self.assertEqual(report["capabilities"], 16)
+        self.assertEqual(report["capabilities"], 18)
 
 
 if __name__ == "__main__":

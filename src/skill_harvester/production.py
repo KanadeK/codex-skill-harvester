@@ -227,7 +227,12 @@ def build_production_report(
             "cycle_ids": query_cycle_ids,
             "batch_ids": sorted(latest_query_reports),
             "actual_queries": actual_queries,
-            "query_attempts": sum(report["actual_queries"] for report in query_reports),
+            "query_attempts": sum(
+                report["query_attempts"]
+                if report.get("aggregation") == "cycle"
+                else report["actual_queries"]
+                for report in query_reports
+            ),
             "completed_queries": sum(
                 report["completed_queries"] for report in query_reports
             ),

@@ -64,7 +64,7 @@ class RepositoryValidationTests(unittest.TestCase):
         self.assertEqual(report["internal_capabilities"], 8)
         self.assertEqual(report["taxonomy_version"], "1.1.0")
         self.assertEqual(report["scale_backend"], "sqlite-v3")
-        self.assertEqual(report["evidence_packs"], 164)
+        self.assertEqual(report["evidence_packs"], 168)
         self.assertEqual(report["topic_queries"], len(load_topic_bank(root)))
         self.assertEqual(report["migration_triggers"], [])
         self.assertEqual(report["secrets_found"], 0)
