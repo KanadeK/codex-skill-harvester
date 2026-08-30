@@ -1,0 +1,4 @@
+interface:
+  display_name: "Validate Ansible Collection"
+  short_description: "Plan and run bounded collection validation"
+  default_prompt: "Use $validate-ansible-collection to validate this Ansible collection locally before review."

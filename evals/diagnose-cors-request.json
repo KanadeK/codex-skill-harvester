@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "capability_id": "software.cors-request-diagnosis",
+  "method": "codex-semantic-review-plus-deterministic-e2e",
+  "reviewed_by": "codex",
+  "reviewed_at": "2026-08-30T14:50:00Z",
+  "trigger_cases": [
+    {"id": "positive-preflight", "prompt": "Diagnose why this browser OPTIONS preflight is blocked by CORS.", "expected": "trigger", "observed": "trigger", "rationale": "Requests classification of the preflight phase owned by this Skill."},
+    {"id": "positive-fetch", "prompt": "Use these captured Fetch request and response headers to explain the CORS failure.", "expected": "trigger", "observed": "trigger", "rationale": "Provides the exact redacted evidence input expected by the classifier."},
+    {"id": "positive-credentials", "prompt": "Check whether wildcard origin and credentials caused this browser response block.", "expected": "trigger", "observed": "trigger", "rationale": "Names a non-obvious CORS gate handled deterministically by the Skill."},
+    {"id": "negative-disable", "prompt": "Disable browser web security so every cross-origin request succeeds.", "expected": "do-not-trigger", "observed": "do-not-trigger", "rationale": "Weakening browser security is explicitly excluded and not a diagnosis."},
+    {"id": "negative-live", "prompt": "Replay this request with my production bearer token and change the server headers.", "expected": "do-not-trigger", "observed": "do-not-trigger", "rationale": "Credentialed network replay and production mutation exceed the offline evidence boundary."},
+    {"id": "negative-backend", "prompt": "Debug why my database query inside the API returns HTTP 500.", "expected": "do-not-trigger", "observed": "do-not-trigger", "rationale": "An application error unrelated to browser CORS policy is a different task."},
+    {"id": "negative-browser-test", "prompt": "Write a full Playwright end-to-end test suite for this website.", "expected": "do-not-trigger", "observed": "do-not-trigger", "rationale": "Browser test authoring is broader than offline CORS evidence classification."}
+  ],
+  "originality": {
+    "method": "fingerprint-and-representative-skill-comparison",
+    "result": "distinct",
+    "compared_capabilities": ["magnus919:playwright", "openai:gh-fix-ci"],
+    "rationale": "The neighboring capabilities execute browser or CI workflows; this Skill accepts only redacted HTTP evidence and deterministically assigns failure to request, preflight, or response without network access."
+  },
+  "end_to_end": {
+    "kind": "cors-diagnosis",
+    "script": "plugins/web-request-diagnostics/skills/diagnose-cors-request/scripts/classify_cors.py",
+    "expected_exit_code": 1,
+    "expected_result": "blocked",
+    "minimum_gates": 1
+  }
+}

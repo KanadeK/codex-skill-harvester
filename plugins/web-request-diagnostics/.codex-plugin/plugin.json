@@ -1,0 +1,33 @@
+{
+  "author": {
+    "name": "KanadeK"
+  },
+  "description": "Offline classification of captured browser Fetch and CORS failures.",
+  "homepage": "https://github.com/KanadeK/codex-skill-harvester",
+  "interface": {
+    "capabilities": [
+      "Read"
+    ],
+    "category": "Developer Tools",
+    "defaultPrompt": [
+      "Diagnose this CORS failure from captured request, preflight, and response evidence."
+    ],
+    "developerName": "KanadeK",
+    "displayName": "Web Request Diagnostics",
+    "longDescription": "Classify CORS and Fetch failures from redacted evidence without replaying requests, weakening browser security, or changing production headers.",
+    "shortDescription": "Diagnose captured CORS failures offline"
+  },
+  "keywords": [
+    "cors",
+    "fetch",
+    "http",
+    "browser",
+    "diagnostics",
+    "codex-skill"
+  ],
+  "license": "MIT",
+  "name": "web-request-diagnostics",
+  "repository": "https://github.com/KanadeK/codex-skill-harvester",
+  "skills": "./skills/",
+  "version": "0.1.0"
+}

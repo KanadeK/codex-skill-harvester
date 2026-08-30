@@ -36,7 +36,15 @@ def write_registry(root: Path, sources: list[dict[str, Any]]) -> None:
     path = root / "sources" / "registry.json"
     path.parent.mkdir(parents=True)
     path.write_text(
-        json.dumps({"schema_version": 1, "sources": normalized_sources}, indent=2) + "\n",
+        json.dumps(
+            {
+                "schema_version": 2,
+                "sources": normalized_sources,
+                "repository_sets": [],
+            },
+            indent=2,
+        )
+        + "\n",
         encoding="utf-8",
     )
     create_empty_runtime(root)

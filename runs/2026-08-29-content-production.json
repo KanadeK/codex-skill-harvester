@@ -85,6 +85,7 @@
     "cycle_ids": [
       "content-production-2026-08-29"
     ],
+    "discovery_hits": 0,
     "failed_attempts": 7,
     "pending_queries": 0,
     "query_attempts": 28,

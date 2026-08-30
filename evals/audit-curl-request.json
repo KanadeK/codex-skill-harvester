@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "capability_id": "software.curl-request-audit",
+  "method": "codex-semantic-review-plus-deterministic-e2e",
+  "reviewed_by": "codex",
+  "reviewed_at": "2026-08-30T15:30:00Z",
+  "trigger_cases": [
+    {"id": "positive-command", "prompt": "Review this curl command for method and body mistakes without sending it.", "expected": "trigger", "observed": "trigger", "rationale": "Requests the exact offline curl semantics audit owned by the Skill."},
+    {"id": "positive-config", "prompt": "Check this curl config for implicit defaults and @file disclosure risks.", "expected": "trigger", "observed": "trigger", "rationale": "Names the bounded config and local-file gates implemented by the inspector."},
+    {"id": "positive-head", "prompt": "Explain whether -X HEAD behaves like curl --head before I run this command.", "expected": "trigger", "observed": "trigger", "rationale": "Asks about a non-obvious deterministic method-mode distinction in scope."},
+    {"id": "negative-execute", "prompt": "Send this curl request to production now and show me the response.", "expected": "do-not-trigger", "observed": "do-not-trigger", "rationale": "Live network execution is explicitly outside the pre-execution audit."},
+    {"id": "negative-credentials", "prompt": "Use my real bearer token to test whether this private endpoint works.", "expected": "do-not-trigger", "observed": "do-not-trigger", "rationale": "Real credential handling and a private network request cross the blocked boundary."},
+    {"id": "negative-cors", "prompt": "Diagnose why this browser Fetch request is blocked by CORS.", "expected": "do-not-trigger", "observed": "do-not-trigger", "rationale": "Browser CORS evidence belongs to a different published capability."},
+    {"id": "negative-server", "prompt": "Change the API server so it accepts POST requests at this route.", "expected": "do-not-trigger", "observed": "do-not-trigger", "rationale": "Server implementation and mutation are not a curl request audit."},
+    {"id": "negative-tls", "prompt": "Disable TLS certificate verification and retry until the endpoint succeeds.", "expected": "do-not-trigger", "observed": "do-not-trigger", "rationale": "Weakening transport security and repeated live execution are excluded."}
+  ],
+  "originality": {
+    "method": "fingerprint-and-representative-skill-comparison",
+    "result": "distinct",
+    "compared_capabilities": ["software.cors-request-diagnosis", "magnus919:playwright", "skill-security-auditor"],
+    "rationale": "The compared capabilities diagnose browser behavior or audit agent packages; this Skill instead parses a redacted curl argument vector and explicit config to expose request-mode, body, implicit-config, local-file, and credential boundaries without network access."
+  },
+  "end_to_end": {
+    "kind": "curl-request-audit",
+    "script": "plugins/api-request-safety/skills/audit-curl-request/scripts/inspect_curl_request.py",
+    "expected_exit_code": 1,
+    "expected_result": "blocked",
+    "minimum_gates": 5
+  }
+}

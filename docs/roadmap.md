@@ -12,18 +12,18 @@ Volume is a capacity trigger, not a publication KPI. Every phase retains the sam
 
 Exit: contracts validate, benchmark is reproducible, CI is green, and no broad scan was run.
 
-## Current work package: content-driven production slice
+## Current work package: full content-production campaign
 
-- Keep PR #7 as the deterministic stacked base and reserve `v0.2.0` without issuing it.
+- Keep the still-unmerged scale stack as the deterministic base and reserve `v0.2.0` without issuing it.
 - Persist content/query work in SQLite schema 3, make source-level workflow hints non-authoritative, and require Codex-reviewed Evidence Packs before candidate creation.
-- Exercise 21 Domain × Intent queries, 26 executable endpoints, resumable failures, three semantic batches, L2/L3, L4, original synthesis, evals, and no-op replay in one real slice.
-- Submit one new Python package-delivery Skill and one GitHub release-evidence update for review. PR #8 was later squash-merged only into the still-open PR #7 branch; nothing reached `main` and no Release was published.
+- Complete 1,622 Domain × Intent queries and a 204-endpoint full-inventory ramp with persisted failures, eight semantic batches, L2/L3, supervised L4, original synthesis, evals, and no-op replay.
+- Submit the seven campaign-created Skills and three reviewed updates as a stacked review unit. Nothing reaches `main`, a tag, or a Release without a later controller decision.
 
-Exit: the slice is reviewable with code-generated metrics, all local/remote gates, and zero pending query, semantic, or candidate work. That makes the slice `complete`, while the parent remains `active` below its policy-owned 180-endpoint/1,500-query lower bound. Observation/candidate/Skill ranges remain capacity direction, not output quotas.
+Exit: the campaign is reviewable with code-generated metrics, all local/remote gates, and zero pending query, semantic, or candidate work. Its 204 endpoints and 1,622 completed queries satisfy the policy-owned lower-bound objective, so the parent is `campaign_completed`. Observation/candidate/Skill ranges remain capacity direction, not output quotas.
 
 ## Phase B: larger SQLite-backed operation
 
-Trigger: the current 26-endpoint/21-query slice remains stable, its stacked change is accepted in the approved merge order, and a new explicit campaign cycle is opened. Ordinary inventory expansion inside the existing stop-loss policy does not require a separate volume approval.
+Trigger: the completed 204-endpoint/1,622-query campaign remains stable, its stacked change is accepted in the approved merge order, and a new explicit campaign cycle is opened. Ordinary inventory expansion inside an approved cycle and stop-loss policy does not require a separate volume approval.
 
 - Expand the existing Topic Bank and persisted query batches from measured source utility; do not replay completed queries inside one cycle, and start each later explicit cycle from its saved continuation cursor.
 - Check all high-trust sources each cycle; rotate discovery topics under explicit source/review budgets.

@@ -27,13 +27,65 @@ def _cycle_id(value: Any) -> str:
 
 def load_topic_bank(root: Path) -> list[dict[str, Any]]:
     value = load_json(root / "config" / "topic-bank.json")
-    if not isinstance(value, dict) or value.get("schema_version") != 1:
-        raise QueryBatchError("topic bank must use schema_version 1")
+    if not isinstance(value, dict) or value.get("schema_version") != 2:
+        raise QueryBatchError("topic bank must use schema_version 2")
     topics = value.get("topics")
-    if not isinstance(topics, list) or not topics:
-        raise QueryBatchError("topic bank must contain topics")
+    matrices = value.get("query_matrices")
+    operations = value.get("operations")
+    if (
+        not isinstance(topics, list)
+        or not isinstance(matrices, list)
+        or not isinstance(operations, list)
+        or not topics and not matrices
+    ):
+        raise QueryBatchError("topic bank must contain topics or query matrices")
     queries: list[dict[str, Any]] = []
     seen_ids: set[str] = set()
+
+    def append_query(query: Any, context: dict[str, str]) -> None:
+        if not isinstance(query, dict):
+            raise QueryBatchError("topic query must be an object")
+        query_id = query.get("id")
+        if (
+            not isinstance(query_id, str)
+            or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", query_id)
+            or query_id in seen_ids
+        ):
+            raise QueryBatchError("topic query ids must be unique kebab-case")
+        if query.get("route") not in {"github-code", "github-repository", "web"}:
+            raise QueryBatchError(f"query route is invalid: {query_id}")
+        if not isinstance(query.get("text"), str) or not query["text"].strip():
+            raise QueryBatchError(f"query text is invalid: {query_id}")
+        tier_constraint = query.get("tier_constraint")
+        if (
+            not isinstance(tier_constraint, list)
+            or not tier_constraint
+            or any(
+                tier not in {"T0", "T1", "T2", "T3", "T4"}
+                for tier in tier_constraint
+            )
+        ):
+            raise QueryBatchError(f"query tier constraint is invalid: {query_id}")
+        seen_ids.add(query_id)
+        queries.append({**query, **context})
+
+    operation_by_id: dict[str, dict[str, str]] = {}
+    for operation in operations:
+        if (
+            not isinstance(operation, dict)
+            or any(
+                not isinstance(operation.get(field), str)
+                or not operation[field].strip()
+                for field in ("id", "intent", "text")
+            )
+            or not re.fullmatch(
+                r"[a-z0-9]+(?:-[a-z0-9]+)*", operation["id"]
+            )
+            or operation["id"] in operation_by_id
+        ):
+            raise QueryBatchError("topic bank operation bank is invalid")
+        operation_by_id[operation["id"]] = operation
+
     for topic in topics:
         if (
             not isinstance(topic, dict)
@@ -45,36 +97,81 @@ def load_topic_bank(root: Path) -> list[dict[str, Any]]:
         ):
             raise QueryBatchError("topic bank contains an invalid topic")
         for query in topic["queries"]:
-            if not isinstance(query, dict):
-                raise QueryBatchError("topic query must be an object")
-            query_id = query.get("id")
-            if (
-                not isinstance(query_id, str)
-                or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", query_id)
-                or query_id in seen_ids
-            ):
-                raise QueryBatchError("topic query ids must be unique kebab-case")
-            if query.get("route") not in {"github-code", "github-repository", "web"}:
-                raise QueryBatchError(f"query route is invalid: {query_id}")
-            if not isinstance(query.get("text"), str) or not query["text"].strip():
-                raise QueryBatchError(f"query text is invalid: {query_id}")
-            tier_constraint = query.get("tier_constraint")
-            if (
-                not isinstance(tier_constraint, list)
-                or not tier_constraint
-                or any(tier not in {"T0", "T1", "T2", "T3", "T4"} for tier in tier_constraint)
-            ):
-                raise QueryBatchError(f"query tier constraint is invalid: {query_id}")
-            seen_ids.add(query_id)
-            queries.append(
+            append_query(
+                query,
                 {
-                    **query,
                     "topic_id": topic["id"],
                     "domain": topic["domain"],
                     "intent": topic["intent"],
                     "source_group": topic["source_group"],
-                }
+                },
             )
+
+    for matrix in matrices:
+        if (
+            not isinstance(matrix, dict)
+            or any(
+                not isinstance(matrix.get(field), str) or not matrix[field]
+                for field in ("id", "domain", "source_group", "route", "scope")
+            )
+            or not re.fullmatch(
+                r"[a-z0-9]+(?:-[a-z0-9]+)*", matrix["id"]
+            )
+            or matrix["route"] not in {"github-code", "github-repository", "web"}
+            or not isinstance(matrix.get("subjects"), list)
+            or not matrix["subjects"]
+            or not isinstance(matrix.get("operation_ids"), list)
+            or not matrix["operation_ids"]
+            or any(
+                not isinstance(operation_id, str)
+                or operation_id not in operation_by_id
+                for operation_id in matrix["operation_ids"]
+            )
+            or len(matrix["operation_ids"]) != len(set(matrix["operation_ids"]))
+        ):
+            raise QueryBatchError("topic bank contains an invalid query matrix")
+        tiers = matrix.get("tier_constraint")
+        if (
+            not isinstance(tiers, list)
+            or not tiers
+            or any(tier not in {"T0", "T1", "T2", "T3", "T4"} for tier in tiers)
+        ):
+            raise QueryBatchError(
+                f"query matrix tier constraint is invalid: {matrix['id']}"
+            )
+        for subject in matrix["subjects"]:
+            if (
+                not isinstance(subject, dict)
+                or not isinstance(subject.get("id"), str)
+                or not re.fullmatch(
+                    r"[a-z0-9]+(?:-[a-z0-9]+)*", subject["id"]
+                )
+                or not isinstance(subject.get("text"), str)
+                or not subject["text"].strip()
+            ):
+                raise QueryBatchError(
+                    f"query matrix subject is invalid: {matrix['id']}"
+                )
+            for operation_id in matrix["operation_ids"]:
+                operation = operation_by_id[operation_id]
+                append_query(
+                    {
+                        "id": f"{matrix['id']}-{subject['id']}-{operation['id']}",
+                        "route": matrix["route"],
+                        "text": " ".join(
+                            (matrix["scope"], subject["text"], operation["text"])
+                        ),
+                        "tier_constraint": tiers,
+                    },
+                    {
+                        "topic_id": (
+                            f"{matrix['domain']}.{operation['intent']}.{matrix['id']}"
+                        ),
+                        "domain": matrix["domain"],
+                        "intent": operation["intent"],
+                        "source_group": matrix["source_group"],
+                    },
+                )
     return queries
 
 
@@ -116,7 +213,7 @@ def export_query_batch(
         "output": str(output_path),
     }
     atomic_write_json(
-        root / "runs" / f"{now.replace(':', '-')}-query-export.json",
+        root / "runs" / f"{cycle_id}-query-export.json",
         {key: value for key, value in report.items() if key != "output"},
     )
     return report
@@ -168,6 +265,37 @@ def _selected_endpoint(value: Any) -> dict[str, Any]:
     return dict(value)
 
 
+def _discovery_hit(value: Any) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        raise QueryBatchError("discovery hits must be objects")
+    if value.get("route") not in {"github-code", "github-repository"}:
+        raise QueryBatchError("discovery hit route is invalid")
+    if not isinstance(value.get("repository"), str) or not re.fullmatch(
+        r"[^/\s]+/[^/\s]+", value["repository"]
+    ):
+        raise QueryBatchError("discovery hit repository is invalid")
+    url = value.get("url")
+    parsed = urlparse(url) if isinstance(url, str) else None
+    if (
+        parsed is None
+        or parsed.scheme != "https"
+        or parsed.hostname != "github.com"
+        or parsed.username is not None
+        or parsed.password is not None
+    ):
+        raise QueryBatchError("discovery hit must use credential-free GitHub https")
+    if value["route"] == "github-code" and (
+        not isinstance(value.get("path"), str) or not value["path"]
+    ):
+        raise QueryBatchError("GitHub code discovery hit needs a path")
+    for field in ("path", "updated_at"):
+        if field in value and (
+            not isinstance(value[field], str) or not value[field]
+        ):
+            raise QueryBatchError(f"discovery hit {field} is invalid")
+    return dict(value)
+
+
 def _query_result(value: Any) -> dict[str, Any]:
     if not isinstance(value, dict) or not isinstance(value.get("query_id"), str):
         raise QueryBatchError("query result needs query_id")
@@ -179,6 +307,7 @@ def _query_result(value: Any) -> dict[str, Any]:
             raise QueryBatchError("failed query result needs an error")
         result.setdefault("cursor", None)
         result.setdefault("result_count", 0)
+        result.setdefault("discovery_hits", [])
         result.setdefault("selected_endpoints", [])
     if (
         result.get("cursor") is not None
@@ -195,6 +324,12 @@ def _query_result(value: Any) -> dict[str, Any]:
     if not isinstance(endpoints, list):
         raise QueryBatchError("selected_endpoints must be a list")
     result["selected_endpoints"] = [_selected_endpoint(endpoint) for endpoint in endpoints]
+    hits = result.get("discovery_hits", [])
+    if not isinstance(hits, list):
+        raise QueryBatchError("discovery_hits must be a list")
+    result["discovery_hits"] = [_discovery_hit(hit) for hit in hits]
+    if len(result["discovery_hits"]) > result["result_count"]:
+        raise QueryBatchError("discovery hits exceed the reported result count")
     return result
 
 
@@ -256,6 +391,7 @@ def import_query_results(
         "failed_queries": sum(result["status"] == "failed" for result in results),
         "pending_queries": committed["pending_queries"],
         "result_count": sum(result["result_count"] for result in results),
+        "discovery_hits": sum(len(result["discovery_hits"]) for result in results),
         "selected_source_ids": sorted(
             {
                 endpoint["source_id"]
@@ -265,7 +401,26 @@ def import_query_results(
         ),
     }
     report["selected_endpoints"] = len(report["selected_source_ids"])
+    cycle_metrics = committed["cycle_metrics"]
+    cycle_summary = {
+        "schema_version": 1,
+        "report_type": "query-results",
+        "aggregation": "cycle",
+        "batch_id": batch_id,
+        "cycle_id": batch["cycle_id"],
+        "executed_at": cycle_metrics["updated_at"],
+        "status": committed["status"],
+        "actual_queries": cycle_metrics["completed_queries"],
+        "query_attempts": cycle_metrics["query_attempts"],
+        "completed_queries": cycle_metrics["completed_queries"],
+        "failed_queries": cycle_metrics["failed_queries"],
+        "pending_queries": cycle_metrics["pending_queries"],
+        "result_count": cycle_metrics["result_count"],
+        "discovery_hits": cycle_metrics["discovery_hits"],
+        "selected_source_ids": cycle_metrics["selected_source_ids"],
+        "selected_endpoints": len(cycle_metrics["selected_source_ids"]),
+    }
     atomic_write_json(
-        root / "runs" / f"{executed_at.replace(':', '-')}-queries.json", report
+        root / "runs" / f"{batch['cycle_id']}-queries.json", cycle_summary
     )
     return report

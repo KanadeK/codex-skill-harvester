@@ -32,7 +32,7 @@
     "platforms": {
       "cardinality": "one-or-more",
       "extensible": true,
-      "values": ["codex", "github", "github-actions", "linux", "macos", "windows"]
+      "values": ["ansible", "cargo", "codex", "curl", "docker", "git", "github", "github-actions", "http", "linux", "macos", "nodejs", "npm", "playwright", "pytest", "rust", "web", "windows"]
     },
     "risk": {
       "cardinality": "one-or-more",
@@ -47,7 +47,7 @@
     "tools": {
       "cardinality": "one-or-more",
       "extensible": true,
-      "values": ["codex", "gh", "python"]
+      "values": ["ansible-test", "cargo", "codex", "curl", "docker", "gh", "git", "npm", "playwright", "pytest", "python"]
     },
     "trust": {
       "cardinality": "one-or-more",
@@ -65,5 +65,5 @@
     "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$"
   },
   "schema_version": 1,
-  "taxonomy_version": "1.0.0"
+  "taxonomy_version": "1.1.0"
 }

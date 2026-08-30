@@ -1,5 +1,57 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "operations": [
+    {
+      "id": "discover",
+      "intent": "discover",
+      "text": "official overview prerequisites supported workflows"
+    },
+    {
+      "id": "research",
+      "intent": "research",
+      "text": "official reference decisions limitations examples"
+    },
+    {
+      "id": "create",
+      "intent": "create",
+      "text": "create configure setup reproducible workflow"
+    },
+    {
+      "id": "transform",
+      "intent": "transform",
+      "text": "migrate convert upgrade existing project or data"
+    },
+    {
+      "id": "analyze",
+      "intent": "analyze",
+      "text": "inspect analyze status output and evidence"
+    },
+    {
+      "id": "diagnose",
+      "intent": "diagnose",
+      "text": "debug troubleshoot common failures safely"
+    },
+    {
+      "id": "operate",
+      "intent": "operate",
+      "text": "install run deploy command workflow"
+    },
+    {
+      "id": "validate",
+      "intent": "validate",
+      "text": "test verify check correctness before changes"
+    },
+    {
+      "id": "publish",
+      "intent": "publish",
+      "text": "package publish release delivery workflow"
+    },
+    {
+      "id": "maintain",
+      "intent": "maintain",
+      "text": "update upgrade cache dependencies maintenance"
+    }
+  ],
   "topics": [
     {
       "id": "software.create.codex-skills",
@@ -24,6 +76,20 @@
           "route": "web",
           "text": "site:developers.openai.com skills progressive disclosure",
           "tier_constraint": ["T0", "T1"]
+        }
+      ]
+    },
+    {
+      "id": "software.diagnose.external-skills",
+      "domain": "software",
+      "intent": "diagnose",
+      "source_group": "external-skill-comparison",
+      "queries": [
+        {
+          "id": "representative-workflow-skills",
+          "route": "github-repository",
+          "text": "agent skills reusable workflow Git Docker Playwright Ansible",
+          "tier_constraint": ["T2", "T3"]
         }
       ]
     },
@@ -174,6 +240,344 @@
           "tier_constraint": ["T2", "T3"]
         }
       ]
+    }
+  ],
+  "query_matrices": [
+    {
+      "id": "git-workflows",
+      "domain": "software",
+      "source_group": "version-control-git",
+      "route": "github-code",
+      "scope": "repo:git/git",
+      "tier_constraint": ["T1", "T2"],
+      "subjects": [
+        {"id": "clone", "text": "git clone repositories"},
+        {"id": "branches", "text": "git branches switch restore"},
+        {"id": "rebase", "text": "git rebase history"},
+        {"id": "bisect", "text": "git bisect regression"},
+        {"id": "worktrees", "text": "git worktree isolation"},
+        {"id": "submodules", "text": "git submodule dependencies"},
+        {"id": "bundles", "text": "git bundle offline transfer"},
+        {"id": "cherry-pick", "text": "git cherry-pick commits"},
+        {"id": "configuration", "text": "git configuration behavior"},
+        {"id": "maintenance", "text": "git repository maintenance"}
+      ],
+      "operation_ids": ["discover", "research", "create", "transform", "analyze", "diagnose", "operate", "validate", "publish", "maintain"]
+    },
+    {
+      "id": "container-workflows",
+      "domain": "software",
+      "source_group": "containers-docker",
+      "route": "github-code",
+      "scope": "repo:docker/docs",
+      "tier_constraint": ["T1", "T2"],
+      "subjects": [
+        {"id": "dockerfiles", "text": "Dockerfile instructions"},
+        {"id": "images", "text": "Docker image build tag"},
+        {"id": "build-cache", "text": "Docker build cache"},
+        {"id": "multi-stage", "text": "Docker multi-stage builds"},
+        {"id": "containers", "text": "Docker container lifecycle"},
+        {"id": "compose", "text": "Docker Compose applications"},
+        {"id": "volumes", "text": "Docker persistent data volumes"},
+        {"id": "ports", "text": "Docker port publishing"},
+        {"id": "files", "text": "Docker bind mounts files"},
+        {"id": "registry", "text": "Docker registry push pull"}
+      ],
+      "operation_ids": ["discover", "research", "create", "transform", "analyze", "diagnose", "operate", "validate", "publish", "maintain"]
+    },
+    {
+      "id": "kubernetes-operations",
+      "domain": "software",
+      "source_group": "orchestration-kubernetes",
+      "route": "github-code",
+      "scope": "repo:kubernetes/website path:content/en/docs/tasks",
+      "tier_constraint": ["T1", "T2"],
+      "subjects": [
+        {"id": "kubectl", "text": "kubectl client"},
+        {"id": "deployments", "text": "Kubernetes deployments"},
+        {"id": "configmaps", "text": "Kubernetes ConfigMaps"},
+        {"id": "probes", "text": "liveness readiness startup probes"},
+        {"id": "pod-debugging", "text": "debug Kubernetes pods"},
+        {"id": "cluster-upgrade", "text": "kubeadm cluster upgrade"},
+        {"id": "port-forward", "text": "kubectl port forwarding"},
+        {"id": "daemonsets", "text": "Kubernetes DaemonSets"},
+        {"id": "cronjobs", "text": "Kubernetes CronJobs"},
+        {"id": "declarative-config", "text": "declarative object configuration"}
+      ],
+      "operation_ids": ["discover", "research", "create", "transform", "analyze", "diagnose", "operate", "validate", "publish", "maintain"]
+    },
+    {
+      "id": "infrastructure-automation",
+      "domain": "software",
+      "source_group": "infrastructure-automation",
+      "route": "github-code",
+      "scope": "repo:ansible/ansible-documentation",
+      "tier_constraint": ["T1", "T2"],
+      "subjects": [
+        {"id": "collections", "text": "Ansible collections"},
+        {"id": "playbooks", "text": "Ansible playbooks"},
+        {"id": "inventory", "text": "Ansible inventory"},
+        {"id": "roles", "text": "Ansible roles"},
+        {"id": "modules", "text": "Ansible modules"},
+        {"id": "integration-tests", "text": "Ansible integration tests"},
+        {"id": "unit-tests", "text": "Ansible unit tests"},
+        {"id": "debugging", "text": "Ansible debugging"},
+        {"id": "release", "text": "Ansible collection release"},
+        {"id": "migration", "text": "Ansible content migration"}
+      ],
+      "operation_ids": ["discover", "research", "create", "transform", "analyze", "diagnose", "operate", "validate", "publish", "maintain"]
+    },
+    {
+      "id": "telemetry-collection",
+      "domain": "software",
+      "source_group": "telemetry-opentelemetry",
+      "route": "github-code",
+      "scope": "repo:open-telemetry/opentelemetry.io path:content/en/docs",
+      "tier_constraint": ["T1", "T2"],
+      "subjects": [
+        {"id": "collector", "text": "OpenTelemetry Collector"},
+        {"id": "configuration", "text": "collector configuration"},
+        {"id": "deployment", "text": "collector deployment"},
+        {"id": "docker", "text": "collector Docker"},
+        {"id": "kubernetes", "text": "collector Kubernetes"},
+        {"id": "troubleshooting", "text": "collector troubleshooting"},
+        {"id": "instrumentation", "text": "application instrumentation"},
+        {"id": "exporters", "text": "telemetry exporters"},
+        {"id": "sampling", "text": "trace sampling"},
+        {"id": "zero-code", "text": "zero-code instrumentation"}
+      ],
+      "operation_ids": ["discover", "research", "create", "transform", "analyze", "diagnose", "operate", "validate", "publish", "maintain"]
+    },
+    {
+      "id": "metrics-observability",
+      "domain": "software",
+      "source_group": "observability-metrics",
+      "route": "github-code",
+      "scope": "repo:prometheus/docs",
+      "tier_constraint": ["T1", "T2"],
+      "subjects": [
+        {"id": "installation", "text": "Prometheus installation"},
+        {"id": "configuration", "text": "Prometheus configuration"},
+        {"id": "scraping", "text": "Prometheus scrape targets"},
+        {"id": "promql", "text": "PromQL queries"},
+        {"id": "alerts", "text": "Prometheus alerting"},
+        {"id": "remote-write", "text": "Prometheus remote write"},
+        {"id": "authentication", "text": "Prometheus authentication"},
+        {"id": "client-libraries", "text": "Prometheus client libraries"},
+        {"id": "security", "text": "Prometheus security"},
+        {"id": "migration", "text": "OpenMetrics migration"}
+      ],
+      "operation_ids": ["discover", "research", "create", "transform", "analyze", "diagnose", "operate", "validate", "publish", "maintain"]
+    },
+    {
+      "id": "database-postgresql",
+      "domain": "data",
+      "source_group": "database-postgresql",
+      "route": "github-code",
+      "scope": "repo:postgres/postgres path:doc/src/sgml",
+      "tier_constraint": ["T0", "T1", "T2"],
+      "subjects": [
+        {"id": "backup", "text": "PostgreSQL backup"},
+        {"id": "restore", "text": "pg_restore recovery"},
+        {"id": "authentication", "text": "PostgreSQL client authentication"},
+        {"id": "monitoring", "text": "PostgreSQL monitoring"},
+        {"id": "maintenance", "text": "PostgreSQL maintenance vacuum"},
+        {"id": "replication", "text": "PostgreSQL logical replication"},
+        {"id": "high-availability", "text": "PostgreSQL high availability"},
+        {"id": "wal", "text": "PostgreSQL write-ahead log"},
+        {"id": "libpq", "text": "PostgreSQL libpq connection"},
+        {"id": "dump", "text": "pg_dump database export"}
+      ],
+      "operation_ids": ["discover", "research", "create", "transform", "analyze", "diagnose", "operate", "validate", "publish", "maintain"]
+    },
+    {
+      "id": "javascript-packaging",
+      "domain": "software",
+      "source_group": "javascript-packaging",
+      "route": "github-code",
+      "scope": "repo:npm/documentation path:content/cli",
+      "tier_constraint": ["T1", "T2"],
+      "subjects": [
+        {"id": "install", "text": "npm install dependencies"},
+        {"id": "ci", "text": "npm ci clean install"},
+        {"id": "audit", "text": "npm audit dependencies"},
+        {"id": "cache", "text": "npm cache"},
+        {"id": "config", "text": "npm configuration"},
+        {"id": "dedupe", "text": "npm dedupe dependencies"},
+        {"id": "doctor", "text": "npm doctor diagnostics"},
+        {"id": "package-json", "text": "package.json metadata"},
+        {"id": "publish", "text": "npm publish package"},
+        {"id": "workspaces", "text": "npm workspaces"}
+      ],
+      "operation_ids": ["discover", "research", "create", "transform", "analyze", "diagnose", "operate", "validate", "publish", "maintain"]
+    },
+    {
+      "id": "systems-packaging",
+      "domain": "software",
+      "source_group": "systems-packaging",
+      "route": "github-code",
+      "scope": "repo:rust-lang/cargo path:doc/book/src",
+      "tier_constraint": ["T1", "T2"],
+      "subjects": [
+        {"id": "build", "text": "Cargo build"},
+        {"id": "test", "text": "Cargo test"},
+        {"id": "install", "text": "Cargo install"},
+        {"id": "package", "text": "Cargo package"},
+        {"id": "publish", "text": "Cargo publish"},
+        {"id": "configuration", "text": "Cargo configuration"},
+        {"id": "profiles", "text": "Cargo build profiles"},
+        {"id": "build-cache", "text": "Cargo build cache"},
+        {"id": "authentication", "text": "Cargo registry authentication"},
+        {"id": "build-scripts", "text": "Cargo build scripts"}
+      ],
+      "operation_ids": ["discover", "research", "create", "transform", "analyze", "diagnose", "operate", "validate", "publish", "maintain"]
+    },
+    {
+      "id": "testing-pytest",
+      "domain": "software",
+      "source_group": "testing-pytest",
+      "route": "github-code",
+      "scope": "repo:pytest-dev/pytest path:doc/en",
+      "tier_constraint": ["T1", "T2"],
+      "subjects": [
+        {"id": "assertions", "text": "pytest assertions"},
+        {"id": "fixtures", "text": "pytest fixtures"},
+        {"id": "parametrize", "text": "pytest parametrization"},
+        {"id": "logging", "text": "pytest logging"},
+        {"id": "capture", "text": "pytest output capture"},
+        {"id": "failures", "text": "pytest failure diagnostics"},
+        {"id": "cache", "text": "pytest cache"},
+        {"id": "plugins", "text": "pytest plugins"},
+        {"id": "warnings", "text": "pytest warnings"},
+        {"id": "usage", "text": "pytest command line usage"}
+      ],
+      "operation_ids": ["discover", "research", "create", "transform", "analyze", "diagnose", "operate", "validate", "publish", "maintain"]
+    },
+    {
+      "id": "testing-playwright",
+      "domain": "software",
+      "source_group": "testing-playwright",
+      "route": "github-code",
+      "scope": "repo:microsoft/playwright path:docs/src",
+      "tier_constraint": ["T1", "T2"],
+      "subjects": [
+        {"id": "assertions", "text": "Playwright assertions"},
+        {"id": "fixtures", "text": "Playwright fixtures"},
+        {"id": "parallelism", "text": "Playwright parallel tests"},
+        {"id": "retries", "text": "Playwright retries"},
+        {"id": "reporters", "text": "Playwright test reporters"},
+        {"id": "configuration", "text": "Playwright test configuration"},
+        {"id": "projects", "text": "Playwright projects"},
+        {"id": "tracing", "text": "Playwright trace viewer"},
+        {"id": "authentication", "text": "Playwright authentication state"},
+        {"id": "ci", "text": "Playwright continuous integration"}
+      ],
+      "operation_ids": ["discover", "research", "create", "transform", "analyze", "diagnose", "operate", "validate", "publish", "maintain"]
+    },
+    {
+      "id": "dataframe-processing",
+      "domain": "data",
+      "source_group": "data-pandas",
+      "route": "github-code",
+      "scope": "repo:pandas-dev/pandas path:doc/source",
+      "tier_constraint": ["T1", "T2"],
+      "subjects": [
+        {"id": "installation", "text": "pandas installation"},
+        {"id": "selection", "text": "pandas select subset data"},
+        {"id": "combine", "text": "pandas combine DataFrames"},
+        {"id": "text", "text": "pandas text data"},
+        {"id": "missing-data", "text": "pandas missing data"},
+        {"id": "reshape", "text": "pandas reshape data"},
+        {"id": "testing", "text": "pandas testing"},
+        {"id": "migration", "text": "pandas migration"},
+        {"id": "io", "text": "pandas data input output"},
+        {"id": "performance", "text": "pandas performance"}
+      ],
+      "operation_ids": ["discover", "research", "create", "transform", "analyze", "diagnose", "operate", "validate", "publish", "maintain"]
+    },
+    {
+      "id": "analytical-sql",
+      "domain": "data",
+      "source_group": "data-duckdb",
+      "route": "github-code",
+      "scope": "repo:duckdb/duckdb-web path:docs/current",
+      "tier_constraint": ["T1", "T2"],
+      "subjects": [
+        {"id": "cli", "text": "DuckDB command line client"},
+        {"id": "configuration", "text": "DuckDB configuration"},
+        {"id": "concurrency", "text": "DuckDB concurrency"},
+        {"id": "csv", "text": "DuckDB CSV ingestion"},
+        {"id": "json", "text": "DuckDB JSON ingestion"},
+        {"id": "parquet", "text": "DuckDB Parquet"},
+        {"id": "python", "text": "DuckDB Python client"},
+        {"id": "java", "text": "DuckDB Java client"},
+        {"id": "profiling", "text": "DuckDB query profiling"},
+        {"id": "secrets", "text": "DuckDB secrets manager"}
+      ],
+      "operation_ids": ["discover", "research", "create", "transform", "analyze", "diagnose", "operate", "validate", "publish", "maintain"]
+    },
+    {
+      "id": "web-platform",
+      "domain": "software",
+      "source_group": "web-platform",
+      "route": "github-code",
+      "scope": "repo:mdn/content path:files/en-us",
+      "tier_constraint": ["T1", "T2"],
+      "subjects": [
+        {"id": "http", "text": "HTTP requests responses"},
+        {"id": "cors", "text": "Cross-Origin Resource Sharing"},
+        {"id": "csp", "text": "Content Security Policy"},
+        {"id": "fetch", "text": "Fetch API"},
+        {"id": "workers", "text": "Web Workers"},
+        {"id": "forms", "text": "HTML forms validation"},
+        {"id": "storage", "text": "Web Storage IndexedDB"},
+        {"id": "performance", "text": "web performance"},
+        {"id": "accessibility", "text": "web accessibility"},
+        {"id": "service-workers", "text": "Service Workers offline"}
+      ],
+      "operation_ids": ["discover", "research", "create", "transform", "analyze", "diagnose", "operate", "validate", "publish", "maintain"]
+    },
+    {
+      "id": "api-contracts",
+      "domain": "software",
+      "source_group": "api-contracts",
+      "route": "github-code",
+      "scope": "repo:OAI/OpenAPI-Specification",
+      "tier_constraint": ["T0", "T1", "T2"],
+      "subjects": [
+        {"id": "documents", "text": "OpenAPI documents"},
+        {"id": "paths", "text": "OpenAPI paths operations"},
+        {"id": "schemas", "text": "OpenAPI schemas"},
+        {"id": "parameters", "text": "OpenAPI parameters"},
+        {"id": "responses", "text": "OpenAPI responses"},
+        {"id": "security", "text": "OpenAPI security schemes"},
+        {"id": "callbacks", "text": "OpenAPI callbacks webhooks"},
+        {"id": "examples", "text": "OpenAPI examples"},
+        {"id": "references", "text": "OpenAPI references"},
+        {"id": "versions", "text": "OpenAPI specification versions"}
+      ],
+      "operation_ids": ["discover", "research", "create", "transform", "analyze", "diagnose", "operate", "validate", "publish", "maintain"]
+    },
+    {
+      "id": "frontend-engineering",
+      "domain": "software",
+      "source_group": "frontend-engineering",
+      "route": "github-code",
+      "scope": "repo:vercel/next.js path:docs/01-app",
+      "tier_constraint": ["T1", "T2"],
+      "subjects": [
+        {"id": "installation", "text": "Next.js installation"},
+        {"id": "components", "text": "server and client components"},
+        {"id": "data-fetching", "text": "Next.js data fetching"},
+        {"id": "mutations", "text": "Next.js data mutations"},
+        {"id": "deployment", "text": "Next.js deployment"},
+        {"id": "authentication", "text": "Next.js authentication"},
+        {"id": "building", "text": "Next.js production builds"},
+        {"id": "caching", "text": "Next.js caching"},
+        {"id": "security", "text": "Next.js content and data security"},
+        {"id": "debugging", "text": "Next.js debugging"}
+      ],
+      "operation_ids": ["discover", "research", "create", "transform", "analyze", "diagnose", "operate", "validate", "publish", "maintain"]
     }
   ]
 }

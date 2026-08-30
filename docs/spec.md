@@ -56,7 +56,7 @@ There is no runtime JSON fallback, SQLite-schema-1 reader, dual write, or compat
 - `plugins/` and `.agents/plugins/marketplace.json`: published installable output
 - `.agents/skills/`: repository-scoped maintainer workflow
 - `evals/`: trigger and E2E cases
-- `runs/`: generated campaign/scan reports and delivery/release evidence
+- `runs/`: compact parent-campaign reports, standalone scan reports, and delivery/release evidence. A campaign embeds its bounded source-run summaries and does not create one tracked report per endpoint.
 - `tests/`: controlled source, funnel, migration, decision, pagination, validation, and release fixtures
 - `tasks/`: durable implementation plan and checklist
 

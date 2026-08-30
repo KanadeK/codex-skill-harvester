@@ -1,0 +1,18 @@
+{
+  "actual_queries": 1622,
+  "aggregation": "cycle",
+  "batch_id": "de76b7c5ba77390482b039e1",
+  "completed_queries": 1622,
+  "cycle_id": "full-campaign-2026-08-30",
+  "discovery_hits": 151,
+  "executed_at": "2026-08-30T19:06:18.234840Z",
+  "failed_queries": 4,
+  "pending_queries": 0,
+  "query_attempts": 1626,
+  "report_type": "query-results",
+  "result_count": 163,
+  "schema_version": 1,
+  "selected_endpoints": 0,
+  "selected_source_ids": [],
+  "status": "completed"
+}

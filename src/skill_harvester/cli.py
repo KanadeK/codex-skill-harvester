@@ -16,6 +16,11 @@ from .campaign import (
 )
 from .io import atomic_write_json
 from .queries import QueryBatchError, export_query_batch, import_query_results
+from .query_execution import (
+    GitHubCliSearch,
+    QueryExecutionError,
+    execute_github_query_batch,
+)
 from .production import ProductionReportError, write_production_report
 from .reporting import (
     ReportingError,
@@ -88,7 +93,7 @@ def _parser() -> argparse.ArgumentParser:
     migrate.add_argument("--json", action="store_true", help="emit machine-readable JSON")
     campaign = commands.add_parser(
         "campaign",
-        help="run the configured three-group canary and optionally ramp within stop-loss",
+        help="run the configured canary and optionally ramp within stop-loss",
     )
     campaign.add_argument("--root", type=Path, default=Path.cwd(), help="harvester repository root")
     campaign.add_argument("--ramp", action="store_true", help="continue to remaining registered campaign sources when the canary is healthy")
@@ -112,6 +117,14 @@ def _parser() -> argparse.ArgumentParser:
     query_import.add_argument("--root", type=Path, default=Path.cwd())
     query_import.add_argument("--batch", required=True)
     query_import.add_argument("--results", type=Path, required=True)
+    query_execute = commands.add_parser(
+        "query-execute-github",
+        help="execute a bounded exported query batch through agent-reach's GitHub CLI route",
+    )
+    query_execute.add_argument("--root", type=Path, default=Path.cwd())
+    query_execute.add_argument("--input", type=Path, required=True)
+    query_execute.add_argument("--output", type=Path, required=True)
+    query_execute.add_argument("--limit", type=int, required=True)
     semantic_export = commands.add_parser(
         "semantic-export", help="export or resume a bounded observation review batch"
     )
@@ -199,6 +212,16 @@ def main(
                 root,
                 batch_id=args.batch,
                 results_path=args.results.resolve(),
+            )
+            print(json.dumps(report, indent=2, sort_keys=True))
+            return 0
+        if args.command == "query-execute-github":
+            report = execute_github_query_batch(
+                input_path=args.input.resolve(),
+                output_path=args.output.resolve(),
+                executed_at=observed_at,
+                executor=GitHubCliSearch(),
+                limit=args.limit,
             )
             print(json.dumps(report, indent=2, sort_keys=True))
             return 0
@@ -296,6 +319,7 @@ def main(
         ScalePolicyError,
         CampaignPolicyError,
         QueryBatchError,
+        QueryExecutionError,
         ProductionReportError,
         RuntimeStoreError,
         SemanticReviewError,

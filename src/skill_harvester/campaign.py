@@ -68,12 +68,8 @@ def load_campaign_policy(root: Path) -> dict[str, Any]:
     ):
         raise CampaignPolicyError("campaign controller end is invalid")
     groups = value.get("source_groups")
-    if not isinstance(groups, dict) or set(groups) != {
-        "openai-format-authority",
-        "github-delivery",
-        "python-packaging",
-    }:
-        raise CampaignPolicyError("campaign policy source groups are incomplete")
+    if not isinstance(groups, dict) or not groups:
+        raise CampaignPolicyError("campaign policy must contain source groups")
     source_ids: set[str] = set()
     for group in groups.values():
         if (
@@ -90,12 +86,13 @@ def load_campaign_policy(root: Path) -> dict[str, Any]:
             raise CampaignPolicyError("campaign source ids must belong to one group")
         source_ids.update(group["source_ids"])
     canary = value.get("canary_source_ids")
-    if not isinstance(canary, list) or set(canary) != {
-        "openai-build-skills",
-        "github-cli-release-view",
-        "pypi-updates",
-    }:
-        raise CampaignPolicyError("campaign canary must cover the three source groups")
+    if (
+        not isinstance(canary, list)
+        or not canary
+        or any(not isinstance(source_id, str) for source_id in canary)
+        or len(canary) != len(set(canary))
+    ):
+        raise CampaignPolicyError("campaign canary source ids are invalid")
     if not set(canary) <= source_ids:
         raise CampaignPolicyError("campaign canary references an unknown source")
     if value.get("queue_order") != [
@@ -128,6 +125,16 @@ def load_campaign_policy(root: Path) -> dict[str, Any]:
         raise CampaignPolicyError("campaign stop-loss is invalid")
     if stop_loss["minimum_source_requests"] > len(canary):
         raise CampaignPolicyError("campaign canary cannot meet its minimum request sample")
+    minimum_canary = max(
+        stop_loss["minimum_source_requests"], (len(source_ids) + 19) // 20
+    )
+    maximum_canary = max(
+        stop_loss["minimum_source_requests"], (len(source_ids) + 9) // 10
+    )
+    if not minimum_canary <= len(canary) <= maximum_canary:
+        raise CampaignPolicyError(
+            "campaign canary must cover 5-10 percent of registered endpoints"
+        )
     return value
 
 
@@ -298,6 +305,7 @@ def run_campaign(
                     now=_run_time(now, len(runs)),
                     source_ids={source_id},
                     source_context={source_id: contexts[source_id]},
+                    persist_report=False,
                 )
             except CampaignStopLoss as error:
                 stop_reasons.append(str(error))

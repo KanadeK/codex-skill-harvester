@@ -1,0 +1,33 @@
+{
+  "author": {
+    "name": "KanadeK"
+  },
+  "description": "Create and verify self-contained Git bundles for offline committed-history transfer.",
+  "homepage": "https://github.com/KanadeK/codex-skill-harvester",
+  "interface": {
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "category": "Developer Tools",
+    "defaultPrompt": [
+      "Create and verify an offline bundle for this clean Git repository."
+    ],
+    "developerName": "KanadeK",
+    "displayName": "Git Offline Transfer",
+    "longDescription": "Create a self-contained Git bundle from a clean repository, verify its structure and advertised refs, and produce a bounded receiver plan without network writes.",
+    "shortDescription": "Transfer committed Git history offline"
+  },
+  "keywords": [
+    "git",
+    "offline",
+    "bundle",
+    "transfer",
+    "codex-skill"
+  ],
+  "license": "MIT",
+  "name": "git-offline-transfer",
+  "repository": "https://github.com/KanadeK/codex-skill-harvester",
+  "skills": "./skills/",
+  "version": "0.1.0"
+}

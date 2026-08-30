@@ -101,11 +101,26 @@ def _validate_query_report(path: Path, report: dict[str, Any]) -> None:
         "selected_endpoints",
     ):
         _nonnegative_integer(report.get(field), f"query {field}: {path.name}")
-    _require(
-        report["actual_queries"]
-        == report["completed_queries"] + report["failed_queries"],
-        f"query stage counts disagree: {path.name}",
-    )
+    if "discovery_hits" in report:
+        _nonnegative_integer(
+            report["discovery_hits"], f"query discovery_hits: {path.name}"
+        )
+    if report.get("aggregation") == "cycle":
+        _nonnegative_integer(
+            report.get("query_attempts"), f"query query_attempts: {path.name}"
+        )
+        _require(
+            report["actual_queries"] == report["completed_queries"]
+            and report["query_attempts"]
+            == report["completed_queries"] + report["failed_queries"],
+            f"query cycle stage counts disagree: {path.name}",
+        )
+    else:
+        _require(
+            report["actual_queries"]
+            == report["completed_queries"] + report["failed_queries"],
+            f"query stage counts disagree: {path.name}",
+        )
     selected_source_ids = report.get("selected_source_ids")
     _require(
         isinstance(selected_source_ids, list)

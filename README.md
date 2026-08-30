@@ -8,9 +8,11 @@ Codex Skill Harvester incrementally turns changed, authoritative public workflow
 
 It is deliberately not a Skill mirror. Deterministic Python owns fetching, change detection, exact deduplication, state, validation, and packaging. Codex owns semantic comparison and the decision to not promote, merge, update, or create.
 
-The current unreleased content-production slice uses one SQLite runtime store with separate observations, Evidence Packs, normalized candidates, query/semantic batches, queues, decisions, and checkpoints. Git continues to hold Skills, manifests, evals, and readable run records. It does not claim that the currently registered source inventory already reaches the long-term capacity envelope.
+The current unreleased production line uses one SQLite runtime store with separate observations, Evidence Packs, normalized candidates, query/semantic batches, queues, decisions, and checkpoints. Git continues to hold Skills, manifests, evals, and compact readable run records.
 
-Its first real content-production slice expanded the executable inventory from 10 to 26 endpoints and ran all 21 Topic Bank queries. It made 28 source requests, read 26 high-trust observations in resumable semantic batches, produced seven Evidence Packs, normalized three candidates, executed nine L3 recalls and three supervised L4 decisions, then created one Python release-readiness Skill, updated one GitHub release Skill, and merged one narrower version-consistency capability. Query, semantic, and stable-source replay all ended in code-generated no-op checkpoints. The slice is complete, but the policy-owned parent campaign remains `active` until its 180-endpoint/1,500-query lower-bound objective is reached, a real stop-loss creates a checkpoint, or the controller explicitly ends it. [The production report](runs/2026-08-29-content-production.json) is rebuilt by the validator from SQLite and its referenced run reports.
+The completed 2026-08-30 campaign has 204 revision-pinned executable endpoints and finished all 1,622 unique Domain × Intent queries in 1,626 attempts, including four recoverable GitHub rate-limit failures and 151 discovery hits. The final 204-endpoint ramp made 204 successful source requests, downloaded 517,498 bytes, inserted 116 changed observations, and had no source failure or stop-loss. The policy-owned 180-endpoint/1,500-query capacity objective is therefore met; this is a measured campaign completion condition, not a Skill publication quota.
+
+Across eight resumable semantic batches, Codex reviewed 217 observations into 58 Evidence Packs, normalized 26 candidates, recorded 263 bounded L3 recalls, and completed 26 supervised L4 decisions: 15 `not_promoted`, one merge, three updates, and seven creates. The sole runtime authority now totals 1,204 observations, 168 Evidence Packs, and 136 applied decisions; the Git catalog contains eight Skills. Query rotation, semantic export, and a stable OpenAI source all replayed as code-generated no-ops with zero pending query, semantic, or L4 work. [The full campaign report](runs/2026-08-30-full-content-production.json) is rebuilt by the validator from SQLite and its referenced run reports. The earlier [first-slice report](runs/2026-08-29-content-production.json) remains historical evidence of the 26-endpoint/21-query checkpoint.
 
 ## What v0.1.1 proves
 
@@ -136,7 +138,7 @@ The current branch marketplace also contains **Python Package Delivery**, but it
 - `config/scale-policy.json` — active backend, review budget, projection targets, and measured migration triggers.
 - `plugins/` and `.agents/plugins/marketplace.json` — installable task-domain Plugin output.
 - `evals/` — Codex-reviewed trigger cases and deterministic end-to-end fixtures.
-- `runs/` — machine-readable and human-readable campaign, scan, migration, delivery, and release reports.
+- `runs/` — compact parent-campaign reports, standalone scan reports, migration, delivery, and release evidence.
 
 ## License
 

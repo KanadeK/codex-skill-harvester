@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "capability_id": "software.ansible-collection-validation",
+  "method": "codex-semantic-review-plus-deterministic-e2e",
+  "reviewed_by": "codex",
+  "reviewed_at": "2026-08-30T14:10:00Z",
+  "trigger_cases": [
+    {
+      "id": "positive-pr-preflight",
+      "prompt": "Plan the local ansible-test checks for this collection pull request before review.",
+      "expected": "trigger",
+      "observed": "trigger",
+      "rationale": "Requests the exact local collection validation preflight owned by this Skill."
+    },
+    {
+      "id": "positive-test-layers",
+      "prompt": "Validate this Ansible collection with the applicable sanity, unit, and integration layers.",
+      "expected": "trigger",
+      "observed": "trigger",
+      "rationale": "Names the collection-specific test layers selected and reported by the workflow."
+    },
+    {
+      "id": "positive-core-matrix",
+      "prompt": "Check this collection against its declared ansible-core versions before release.",
+      "expected": "trigger",
+      "observed": "trigger",
+      "rationale": "A bounded ansible-core compatibility matrix is an explicit output of this Skill."
+    },
+    {
+      "id": "negative-remote-playbook",
+      "prompt": "Run this playbook against every production host and remediate failures.",
+      "expected": "do-not-trigger",
+      "observed": "do-not-trigger",
+      "rationale": "Remote host control is high privilege and outside this local collection preflight."
+    },
+    {
+      "id": "negative-galaxy-publish",
+      "prompt": "Publish this collection to Ansible Galaxy now.",
+      "expected": "do-not-trigger",
+      "observed": "do-not-trigger",
+      "rationale": "Galaxy publication is a network-writing release workflow, not local validation."
+    },
+    {
+      "id": "negative-generic-playbook",
+      "prompt": "Write an Ansible playbook to configure nginx on my servers.",
+      "expected": "do-not-trigger",
+      "observed": "do-not-trigger",
+      "rationale": "Playbook authoring is a separate user goal and does not validate a collection."
+    },
+    {
+      "id": "negative-python-package",
+      "prompt": "Audit these Python wheels before uploading them to PyPI.",
+      "expected": "do-not-trigger",
+      "observed": "do-not-trigger",
+      "rationale": "Python distribution readiness belongs to the separate package-delivery capability."
+    }
+  ],
+  "originality": {
+    "method": "fingerprint-and-representative-skill-comparison",
+    "result": "distinct",
+    "compared_capabilities": [
+      "software.python-release-readiness",
+      "openai:gh-fix-ci"
+    ],
+    "rationale": "The catalog has generic release and CI capabilities but no collection-root layout, ansible-test layer selection, or ansible-core matrix workflow."
+  },
+  "end_to_end": {
+    "kind": "ansible-collection-plan",
+    "script": "plugins/ansible-collection-quality/skills/validate-ansible-collection/scripts/plan_collection_tests.py",
+    "expected_exit_code": 0,
+    "expected_result": "planned",
+    "minimum_gates": 3
+  }
+}

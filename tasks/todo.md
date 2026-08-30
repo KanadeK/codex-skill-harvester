@@ -163,10 +163,12 @@ The Task 20 submission line records the state when it was written. PR #8 was sub
 
 ## Task 22: run the full 2026-08-30 content campaign
 
-- [ ] Acceptance: `codex/full-campaign-2026-08-30` starts from Task 21's verified HEAD and uses a stacked PR rather than expanding the correction PR.
-- [ ] Acceptance: low-risk Domain × Intent coverage reaches at least 180 executable endpoints and 1,500 actual queries, unless a real policy stop-loss or user-action boundary leaves an explicit resumable checkpoint.
-- [ ] Acceptance: every measured observation, Evidence Pack, candidate, L3 recall, L4 outcome, and Skill artifact comes from real source/query/semantic work; high-risk and low-trust signals cannot auto-publish.
-- [ ] Acceptance: tracked campaign evidence stays compact and authoritative, Usage remains `measured=false` without a real meter, and no candidate or Skill count is inflated to meet a capacity direction.
-- [ ] Verify: each vertical batch is validated and committed; the final summary separates coverage, funnel stages, decisions, artifacts, failures/rate limits, Usage, checkpoint, and continuation.
-- [ ] Submit: the final stacked PR has green Ubuntu/Windows CI and remains unmerged with no tag or Release.
+- [x] Acceptance: `codex/full-campaign-2026-08-30` starts from Task 21's verified HEAD and is submitted as stacked PR #10 against `codex/pr8-campaign-corrections` rather than expanding the correction PR.
+- [x] Acceptance: low-risk Domain × Intent coverage reaches 204 executable endpoints and 1,622 actual queries, exceeding the 180/1,500 capacity lower bound without a stop-loss.
+- [x] Acceptance: every measured observation, Evidence Pack, candidate, L3 recall, L4 outcome, and Skill artifact comes from real source/query/semantic work; high-risk and low-trust signals cannot auto-publish.
+- [x] Acceptance: tracked campaign evidence stays compact and authoritative, Usage remains `measured=false` without a real meter, and no candidate or Skill count is inflated to meet a capacity direction.
+- [x] Verify: 128 unittest cases, eight Skill evals, repository validation, SQLite benchmark, deterministic build/install/invocation, and diff checks pass; the final summary separates coverage, funnel stages, decisions, artifacts, failures/rate limits, Usage, checkpoint, and continuation.
+- [x] Submit: PR #10 is open and `CLEAN`; implementation HEAD `59b0734` passed Ubuntu/Windows CI and remains unmerged with no tag or Release. The final documentation-only HEAD is rechecked before handoff.
 - Dependencies: Task 21 complete and explicit 2026-08-30 full-campaign authorization.
+
+Completion checkpoint: the branch starts at verified correction HEAD `7aa8f86`; 204 revision-pinned endpoints and 1,622 unique Domain × Intent queries are now executed capacity. The query cycle completed in 1,626 attempts with four recoverable GitHub rate-limit failures, 151 discovery hits, and zero pending work. The sole SQLite authority records 1,204 observations, 168 Evidence Packs, 136 applied decisions, and eight Skills. Eight campaign semantic batches reviewed 217 observations into 58 Evidence Packs and 26 candidates, producing 263 L3 recalls and 26 L4 outcomes: seven creates, three updates, one merge, and 15 `not_promoted`. The final 204-endpoint ramp succeeded without source failures. All local verification gates pass; PR #10 implementation HEAD `59b0734` is `CLEAN` with green Ubuntu/Windows CI. The final documentation-only HEAD is rechecked before handoff.

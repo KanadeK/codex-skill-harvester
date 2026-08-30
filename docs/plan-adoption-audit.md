@@ -115,9 +115,11 @@ Canary failures and ramp failures both produce campaign reports. Earlier success
 
 ### Current content-production result
 
-The validator-rebuildable [production report](../runs/2026-08-29-content-production.json) records the current slice. The executable campaign inventory grew from 10 to 26 endpoints. Twenty-one unique Topic Bank queries completed in 28 attempts: seven initial GitHub code-search attempts hit an actual rate limit, resumed from the same batch, then completed; one non-duplicate official endpoint was selected. Source work made 28 successful requests, downloaded 416,622 bytes, observed 117 source items, and inserted 43 new observations with zero source failures.
+The validator-rebuildable [full campaign report](../runs/2026-08-30-full-content-production.json) records the current authority. The executable inventory is 204 revision-pinned endpoints. All 1,622 unique Topic Bank queries completed in 1,626 attempts, with four recoverable GitHub rate-limit failures, 151 discovery hits, and no pending query. The final full-inventory ramp made 204 successful source requests, downloaded 517,498 bytes, inserted 116 changed observations, and had zero source failures. The SQLite authority totals 1,204 observations.
 
-Codex reviewed 26 high-trust observations in three resumable batches, produced seven Evidence Packs, normalized three candidates, received nine bounded L3 recalls, and performed three measured L4 adjudications: one create, one update, and one merge. Four Evidence Packs were not promoted before candidate creation. The result is one new original `audit-python-release-readiness` Skill, one artifact-attestation update to `audit-github-release`, and one version-consistency evidence merge. Query rotation, semantic export, and a stable official source all produced real no-op replays; pending query, semantic, and L4 counts are zero, so this slice is `complete`. The parent campaign is still `active`: 26/180 endpoints and 21/1,500 actual queries satisfy neither objective, and no stop-loss was triggered. Usage credits and semantic-review tokens remain `measured=false`; no Release was published.
+Across eight resumable batches, Codex reviewed 217 observations, produced 58 Evidence Packs, normalized 26 candidates, received 263 bounded L3 recalls, and performed 26 measured L4 adjudications: seven creates, three updates, one merge, and 15 `not_promoted`. Thirty-two Evidence Packs were stopped before candidate promotion. The Git catalog now contains eight Skills; the campaign-created set covers Python and npm package readiness, Ansible collection validation, Cargo build performance, CORS diagnosis, curl request auditing, and offline Git transfer. GitHub release evidence received reviewed updates, including release-tag binding for asset attestations. Query rotation, semantic export, and a stable official OpenAI source all produced real no-op replays; pending query, semantic, and L4 counts are zero.
+
+The parent campaign is `campaign_completed` because 204/180 endpoints and 1,622/1,500 actual queries satisfy the explicit policy-owned capacity objective. No Skill count contributed to completion, no stop-loss was triggered, Usage credits and semantic-review tokens remain `measured=false`, and no Release was published. The earlier [first-slice report](../runs/2026-08-29-content-production.json) remains immutable historical evidence rather than current campaign status.
 
 ## Migration decision and deletion condition
 
@@ -169,7 +171,7 @@ PR #7 was not merged when schema 1's conflation was found, so schema 1 receives 
 
 ## 0–30 day mainline
 
-1. Submit the content-driven stacked PR after complete local gates and dual-platform CI; keep PR #7 and the stacked PR unmerged until controller review.
+1. Submit the full-campaign stacked PR after complete local gates and dual-platform CI; keep the existing stack and new PR unmerged until controller review.
 2. Build a small versioned labeled set before publishing recall, false-merge, or semantic quality rates.
 3. Expand executable inventory toward the campaign capacity range one connector/source slice at a time. Canary remains 5–10% of the same complete inventory.
 4. Run the complete campaign within existing credits and infrastructure. Retain every cursor and unresolved candidate; do not force a Skill count.
@@ -179,7 +181,7 @@ PR #7 was not merged when schema 1's conflation was found, so schema 1 receives 
 
 - **Unknown:** campaign-scoped credit usage is not authoritatively observable. Keep `measured=false`.
 - **Unknown:** labeled L3 recall and false-merge quality. Do not state percentages before adjudicated fixtures exist.
-- **Unknown:** throughput at 180–260 endpoints. The current executable inventory is 26; do not extrapolate its latency or yield as measured full-campaign behavior.
+- **Measured once:** one 204-endpoint full-inventory ramp completed with 204 successes and no source failure. Do not extrapolate that single run to every source mix, endpoint count, or future campaign.
 - **Parquet entry:** measured cold evidence size or analytical query cost exceeds SQLite/Git expectations.
 - **Semantic-index entry:** labeled recall shows deterministic L3 is insufficient at the measured catalog size.
 - **Multi-worker entry:** measured single-writer backlog or latency prevents the campaign target and recovery semantics are specified.
