@@ -233,3 +233,24 @@ PR #7 remains the deterministic scale base. This work starts from `2ea8771cfbc45
 - [x] Run full tests, evals, validator, benchmark, build/install, Skill validation, and diff checks without tracked-state pollution.
 - [x] Commit exact paths, push the new branch, open one PR with base `codex/plan-adoption-audit`, and wait for Ubuntu/Windows CI.
 - [x] Stop without merging either PR or creating a tag/Release.
+
+## Post-PR #8 correction and full-campaign continuation
+
+On 2026-08-30, before this work package began, PR #8 had already been squash-merged into the still-open PR #7 branch at `d0cb9ef0d79ea254598fe66ee6f47a4dd0e532c3`. It was not merged to `main`. Because a merged PR cannot receive a reviewable update, Phase 22 uses `codex/pr8-campaign-corrections` as a minimal stacked correction branch against `codex/plan-adoption-audit`; Phase 23 will stack from its verified HEAD. This preserves the intended review boundaries without rewriting the historical Phase 18–21 record.
+
+### Phase 22: correct the first production slice
+
+- [ ] Add RED regressions proving that a no-pending slice below 180 endpoints/1,500 actual queries keeps its parent campaign active, explicit objective completion is required for `campaign_completed`, stop-loss is a resumable checkpoint, and no-op replay is not campaign completion.
+- [ ] Make campaign policy the unique objective authority, distinguish slice completion from parent lifecycle, and regenerate the 2026-08-29 production report and authority documents without turning capacity bounds into publication quotas.
+- [ ] Add RED regressions for job-scoped OIDC permission and bounded untrusted archive inspection, then minimally fix the Python release-readiness checker without a runtime dependency or archive extraction/execution.
+- [ ] Run focused tests, full unittest, both trigger/E2E evals, repository validator, deterministic build/install/invocation, Skill/Plugin validation, and `git diff --check`.
+- [ ] Commit exact paths, push one correction PR stacked on `codex/plan-adoption-audit`, update its description with the superseded completion claim, and wait for Ubuntu/Windows CI without merge, tag, or Release.
+
+### Phase 23: continue the full 2026-08-30 campaign
+
+- [ ] Only after Phase 22 is green, create `codex/full-campaign-2026-08-30` from the correction HEAD and stack its PR on the correction branch.
+- [ ] Expand the Domain × Intent Topic Bank and low-risk T0/T1/T2 source groups using agent-reach background Web/GitHub discovery; retain source identity, license, revision/cursor, utility, and query continuation without committing raw page bodies.
+- [ ] Execute bounded source/query batches and supervised semantic batches continuously from persisted cursors; every Evidence Pack, L2/L3 recall, L4 outcome, reactivation condition, and qualified original Skill must remain reproducible and source-traceable.
+- [ ] Continue until at least 180 executable endpoints and 1,500 actual queries are reached, or a real configured stop-loss/payment/login/high-risk authorization boundary produces a durable checkpoint. Observation, candidate, deep-review, and Skill counts remain measured outcomes rather than quotas.
+- [ ] Keep the runtime authority compact: SQLite plus necessary checkpoint/summary/decision records; remove scalable per-endpoint report noise from the tracked path before expanding it, without introducing a second authority.
+- [ ] Validate and commit every reviewable vertical batch, then open the final stacked PR and wait for Ubuntu/Windows CI without merging any PR or creating a tag/Release.

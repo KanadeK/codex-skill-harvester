@@ -149,3 +149,24 @@ The Task 18 candidate-yield interpretation was invalidated by controller review:
 - [x] Verify: stable repeats process only changed evidence or unfinished batches; reports separate queries, requests, bytes, observations, candidates, recalls, deep reviews, decisions, artifacts, failures, Usage measurement, and checkpoints.
 - [x] Submit: stacked PR #8 is open against `codex/plan-adoption-audit`; Ubuntu/Windows CI passed and both PRs remain open without tag or Release.
 - Dependencies: PR #7 final HEAD `2ea8771cfbc45bb3f52953727eba20244f1f4180` and explicit content-production authorization.
+
+The Task 20 submission line records the state when it was written. PR #8 was subsequently squash-merged into the still-open PR #7 branch on 2026-08-30; `main`, tags, and Releases were unchanged. The correction cannot be appended to the closed PR, so Task 21 is the current stacked repair authority.
+
+## Task 21: correct campaign completion and Python archive/OIDC gates
+
+- [ ] Acceptance: the parent campaign has one policy-owned objective and reports `active`, `checkpoint`, or `campaign_completed` independently from the current slice status; 26 endpoints/21 queries and no-op replay cannot complete the parent campaign.
+- [ ] Acceptance: only the publishing job's own `permissions.id-token: write` passes, while top-level, env, step, comment/string, other-job, and missing placements fail.
+- [ ] Acceptance: sdist/wheel member count, metadata/RECORD reads, archive size, and declared expanded work are bounded; over-limit fixtures fail at named gates without extraction or execution.
+- [ ] Verify: focused RED/GREEN regressions, full unittest, evals, validator, deterministic build/install/invocation, official Skill/Plugin validators, and diff checks pass without tracked-state pollution.
+- [ ] Submit: one correction PR is open against `codex/plan-adoption-audit`, its final Ubuntu/Windows CI is green, and PR #7 remains open with no tag or Release.
+- Dependencies: PR #8 merge commit `d0cb9ef0d79ea254598fe66ee6f47a4dd0e532c3` and the 2026-08-30 controller review.
+
+## Task 22: run the full 2026-08-30 content campaign
+
+- [ ] Acceptance: `codex/full-campaign-2026-08-30` starts from Task 21's verified HEAD and uses a stacked PR rather than expanding the correction PR.
+- [ ] Acceptance: low-risk Domain × Intent coverage reaches at least 180 executable endpoints and 1,500 actual queries, unless a real policy stop-loss or user-action boundary leaves an explicit resumable checkpoint.
+- [ ] Acceptance: every measured observation, Evidence Pack, candidate, L3 recall, L4 outcome, and Skill artifact comes from real source/query/semantic work; high-risk and low-trust signals cannot auto-publish.
+- [ ] Acceptance: tracked campaign evidence stays compact and authoritative, Usage remains `measured=false` without a real meter, and no candidate or Skill count is inflated to meet a capacity direction.
+- [ ] Verify: each vertical batch is validated and committed; the final summary separates coverage, funnel stages, decisions, artifacts, failures/rate limits, Usage, checkpoint, and continuation.
+- [ ] Submit: the final stacked PR has green Ubuntu/Windows CI and remains unmerged with no tag or Release.
+- Dependencies: Task 21 complete and explicit 2026-08-30 full-campaign authorization.
