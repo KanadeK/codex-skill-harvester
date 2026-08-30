@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import importlib.util
 import os
 import subprocess
 import sys
@@ -9,6 +10,7 @@ import tempfile
 import unittest
 import zipfile
 from pathlib import Path
+from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -26,6 +28,25 @@ SCRIPT = (
     / "inspect_dist.py"
 )
 
+SPEC = importlib.util.spec_from_file_location("python_release_inspector", SCRIPT)
+if SPEC is None or SPEC.loader is None:
+    raise RuntimeError("could not load Python release inspector")
+INSPECTOR = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(INSPECTOR)
+
+VALID_WORKFLOW = """name: publish
+jobs:
+  build:
+    steps:
+      - run: python -m build
+  publish:
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: pypa/gh-action-pypi-publish@release/v1
+"""
+
 
 def _tar_bytes(archive: tarfile.TarFile, name: str, data: bytes) -> None:
     member = tarfile.TarInfo(name)
@@ -33,7 +54,12 @@ def _tar_bytes(archive: tarfile.TarFile, name: str, data: bytes) -> None:
     archive.addfile(member, io.BytesIO(data))
 
 
-def create_fixture(root: Path, *, unsafe_wheel: bool = False) -> tuple[Path, Path, Path]:
+def create_fixture(
+    root: Path,
+    *,
+    unsafe_wheel: bool = False,
+    workflow_text: str = VALID_WORKFLOW,
+) -> tuple[Path, Path, Path]:
     project = root / "project"
     dist = project / "dist"
     dist.mkdir(parents=True)
@@ -72,26 +98,21 @@ def create_fixture(root: Path, *, unsafe_wheel: bool = False) -> tuple[Path, Pat
         for name, data in wheel_entries.items():
             archive.writestr(name, data)
     workflow = project / "release.yml"
-    workflow.write_text(
-        """name: publish
-jobs:
-  build:
-    steps:
-      - run: python -m build
-  publish:
-    environment: pypi
-    permissions:
-      id-token: write
-    steps:
-      - uses: pypa/gh-action-pypi-publish@release/v1
-""",
-        encoding="utf-8",
-    )
+    workflow.write_text(workflow_text, encoding="utf-8")
     return pyproject, dist, workflow
 
 
-def run_checker(root: Path, *, unsafe_wheel: bool = False) -> subprocess.CompletedProcess[str]:
-    pyproject, dist, workflow = create_fixture(root, unsafe_wheel=unsafe_wheel)
+def run_checker(
+    root: Path,
+    *,
+    unsafe_wheel: bool = False,
+    workflow_text: str = VALID_WORKFLOW,
+) -> subprocess.CompletedProcess[str]:
+    pyproject, dist, workflow = create_fixture(
+        root,
+        unsafe_wheel=unsafe_wheel,
+        workflow_text=workflow_text,
+    )
     output = root / "report.md"
     environment = dict(os.environ)
     environment["PYTHONDONTWRITEBYTECODE"] = "1"
@@ -128,6 +149,89 @@ class PythonReleaseSkillTests(unittest.TestCase):
             self.assertIn("workflow:job-separation | pass", report)
             self.assertIn("wheel:sample_pkg-1.2.3-py3-none-any.whl:record | pass", report)
 
+    def test_oidc_permission_must_be_on_the_publishing_job(self) -> None:
+        invalid_workflows = {
+            "env": """name: publish
+jobs:
+  build:
+    steps:
+      - run: python -m build
+  publish:
+    environment: pypi
+    env:
+      id-token: write
+    steps:
+      - uses: pypa/gh-action-pypi-publish@release/v1
+""",
+            "top-level": """name: publish
+permissions:
+  id-token: write
+jobs:
+  build:
+    steps:
+      - run: python -m build
+  publish:
+    environment: pypi
+    steps:
+      - uses: pypa/gh-action-pypi-publish@release/v1
+""",
+            "other-job": """name: publish
+jobs:
+  build:
+    permissions:
+      id-token: write
+    steps:
+      - run: python -m build
+  publish:
+    environment: pypi
+    steps:
+      - uses: pypa/gh-action-pypi-publish@release/v1
+""",
+            "step": """name: publish
+jobs:
+  build:
+    steps:
+      - run: python -m build
+  publish:
+    environment: pypi
+    steps:
+      - env:
+          id-token: write
+        uses: pypa/gh-action-pypi-publish@release/v1
+""",
+            "comment-and-string": """name: publish
+jobs:
+  build:
+    steps:
+      - run: python -m build
+  publish:
+    environment: pypi
+    steps:
+      # id-token: write
+      - run: |
+          echo 'id-token: write'
+      - uses: pypa/gh-action-pypi-publish@release/v1
+""",
+            "missing": """name: publish
+jobs:
+  build:
+    steps:
+      - run: python -m build
+  publish:
+    environment: pypi
+    steps:
+      - uses: pypa/gh-action-pypi-publish@release/v1
+""",
+        }
+        for placement, workflow_text in invalid_workflows.items():
+            with self.subTest(placement=placement), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                completed = run_checker(root, workflow_text=workflow_text)
+
+                self.assertEqual(completed.returncode, 1)
+                report = (root / "report.md").read_text(encoding="utf-8")
+                self.assertIn("workflow:oidc-permission | fail", report)
+
     def test_mismatched_unsafe_wheel_fails_without_extracting_or_running_it(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -139,6 +243,43 @@ class PythonReleaseSkillTests(unittest.TestCase):
             self.assertIn("unsafe members", report)
             self.assertIn("Version='9.9.9'", report)
             self.assertFalse((root / "escape.py").exists())
+
+    def test_archive_member_count_is_bounded_with_a_small_fixture(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            pyproject, dist, workflow = create_fixture(root)
+            with mock.patch.object(INSPECTOR, "MAX_ARCHIVE_MEMBERS", 3):
+                checks = INSPECTOR.inspect(pyproject, dist, workflow)
+
+        report = INSPECTOR._render(checks)
+        self.assertIn(
+            "wheel:sample_pkg-1.2.3-py3-none-any.whl:member-count | fail",
+            report,
+        )
+
+    def test_metadata_and_record_reads_are_bounded(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            pyproject, dist, workflow = create_fixture(root)
+            with mock.patch.object(INSPECTOR, "MAX_METADATA_BYTES", 16):
+                metadata_checks = INSPECTOR.inspect(pyproject, dist, workflow)
+            with mock.patch.object(INSPECTOR, "MAX_RECORD_BYTES", 16):
+                record_checks = INSPECTOR.inspect(pyproject, dist, workflow)
+
+        self.assertIn("metadata-size | fail", INSPECTOR._render(metadata_checks))
+        self.assertIn("record-size | fail", INSPECTOR._render(record_checks))
+
+    def test_archive_and_expanded_work_are_bounded(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            pyproject, dist, workflow = create_fixture(root)
+            with mock.patch.object(INSPECTOR, "MAX_ARCHIVE_BYTES", 1):
+                archive_checks = INSPECTOR.inspect(pyproject, dist, workflow)
+            with mock.patch.object(INSPECTOR, "MAX_EXPANDED_BYTES", 1):
+                expanded_checks = INSPECTOR.inspect(pyproject, dist, workflow)
+
+        self.assertIn("archive-size | fail", INSPECTOR._render(archive_checks))
+        self.assertIn("expanded-size | fail", INSPECTOR._render(expanded_checks))
 
     def test_reviewed_triggers_and_e2e_fixture_pass(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

@@ -282,7 +282,7 @@
         "pypi publishing preflight",
         "python distribution audit"
       ],
-      "artifact_sha256": "42b52d7e6da043001035e53975b6d59e2375b1d3a1d25eafcfe91df184fc8a83",
+      "artifact_sha256": "43bda5426bc170b461e719d9f7b43543735ec3dd591b8e027033c691138e26a7",
       "classification": {
         "facets": {
           "domain": [
@@ -377,7 +377,7 @@
         "pypa-single-source-version"
       ],
       "plugin_id": "python-package-delivery",
-      "revision": 1,
+      "revision": 2,
       "skill_name": "audit-python-release-readiness",
       "source_refs": [
         "pypa-build-readme",
@@ -394,7 +394,7 @@
         "pypi-trusted-publisher-security",
         "pypi-trusted-publisher-use"
       ],
-      "updated_at": "2026-08-29T18:56:00Z",
+      "updated_at": "2026-08-30T12:26:02Z",
       "variants": []
     }
   ],

@@ -8,12 +8,13 @@ Use this reference after the deterministic checker. It is an original synthesis 
 - Require project name and version to agree across `pyproject.toml`, archive filenames, `PKG-INFO`, and wheel `METADATA`.
 - A modern sdist should contain one name-version root with `pyproject.toml` and `PKG-INFO`. Inspect member paths without extracting the archive.
 - A wheel should contain one matching `.dist-info` directory with `METADATA`, `WHEEL`, and `RECORD`. Compatibility tags are a support claim; compare them with the release's intended Python, ABI, and platform matrix.
+- Fail closed before expensive archive work: at most 512 MiB compressed bytes, 10,000 members, and 512 MiB declared expanded bytes per archive; read at most 1 MiB from `PKG-INFO`/`METADATA` and 8 MiB from `RECORD`. These are checker resource boundaries, not Python packaging format limits.
 - A structural pass does not prove that the package imports or behaves correctly. Record isolated local-wheel installation and an authorized smoke check separately when required.
 
 ## Publishing workflow gates
 
 - Build artifacts in a job that cannot publish, then pass those exact artifacts to a separate publishing job.
-- Prefer PyPI Trusted Publishing over a long-lived upload token. Scope `id-token: write` to the publishing job and keep that job minimal.
+- Prefer PyPI Trusted Publishing over a long-lived upload token. Only the publishing job's own `permissions.id-token: write` satisfies this audit; top-level permissions and values under `env`, steps, comments, strings, or another job do not. Keep the publishing job minimal.
 - Check that the registered owner, repository, workflow filename, and optional environment match the actual workflow. Review production environment approval and tag protection according to the project's threat model.
 - Reject workflows that expose a PyPI password or long-lived API token when the intended design is Trusted Publishing.
 - The official PyPA publishing action can generate PyPI attestations by default. Record whether that feature is expected, but do not describe it as vulnerability or malware assurance.
