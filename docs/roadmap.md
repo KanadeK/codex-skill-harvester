@@ -17,9 +17,9 @@ Exit: contracts validate, benchmark is reproducible, CI is green, and no broad s
 - Keep PR #7 as the deterministic stacked base and reserve `v0.2.0` without issuing it.
 - Persist content/query work in SQLite schema 3, make source-level workflow hints non-authoritative, and require Codex-reviewed Evidence Packs before candidate creation.
 - Exercise 21 Domain × Intent queries, 26 executable endpoints, resumable failures, three semantic batches, L2/L3, L4, original synthesis, evals, and no-op replay in one real slice.
-- Submit one new Python package-delivery Skill and one GitHub release-evidence update for review without merging either PR or publishing a Release.
+- Submit one new Python package-delivery Skill and one GitHub release-evidence update for review. PR #8 was later squash-merged only into the still-open PR #7 branch; nothing reached `main` and no Release was published.
 
-Exit: the stacked PR is reviewable with code-generated metrics, all local/remote gates, and zero pending query, semantic, or candidate work. Projected campaign ranges remain capacity direction, not completion claims.
+Exit: the slice is reviewable with code-generated metrics, all local/remote gates, and zero pending query, semantic, or candidate work. That makes the slice `complete`, while the parent remains `active` below its policy-owned 180-endpoint/1,500-query lower bound. Observation/candidate/Skill ranges remain capacity direction, not output quotas.
 
 ## Phase B: larger SQLite-backed operation
 

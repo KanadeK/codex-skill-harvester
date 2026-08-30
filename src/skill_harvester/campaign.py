@@ -34,6 +34,39 @@ def load_campaign_policy(root: Path) -> dict[str, Any]:
         raise CampaignPolicyError("campaign policy must use schema_version 1")
     if value.get("campaign_id") != "first-high-throughput":
         raise CampaignPolicyError("campaign policy id is invalid")
+    planned_capacity = value.get("planned_capacity_range")
+    if not isinstance(planned_capacity, dict):
+        raise CampaignPolicyError("campaign planned capacity is missing")
+    for field in ("endpoints", "actual_queries"):
+        capacity_range = planned_capacity.get(field)
+        if (
+            not isinstance(capacity_range, list)
+            or len(capacity_range) != 2
+            or any(
+                not isinstance(item, int) or isinstance(item, bool) or item <= 0
+                for item in capacity_range
+            )
+            or capacity_range[0] > capacity_range[1]
+        ):
+            raise CampaignPolicyError(f"campaign {field} capacity range is invalid")
+    objective = value.get("objective")
+    if (
+        not isinstance(objective, dict)
+        or objective.get("type") != "capacity-lower-bound"
+        or set(objective) != {"type", "controller_end"}
+    ):
+        raise CampaignPolicyError("campaign objective is invalid")
+    controller_end = objective["controller_end"]
+    if controller_end is not None and (
+        not isinstance(controller_end, dict)
+        or set(controller_end) != {"ended_at", "reason"}
+        or any(
+            not isinstance(controller_end.get(field), str)
+            or not controller_end[field].strip()
+            for field in ("ended_at", "reason")
+        )
+    ):
+        raise CampaignPolicyError("campaign controller end is invalid")
     groups = value.get("source_groups")
     if not isinstance(groups, dict) or set(groups) != {
         "openai-format-authority",

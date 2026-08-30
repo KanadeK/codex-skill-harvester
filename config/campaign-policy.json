@@ -8,6 +8,10 @@
     "normalized_candidates": [4000, 12000],
     "deep_reviews": [400, 1000]
   },
+  "objective": {
+    "type": "capacity-lower-bound",
+    "controller_end": null
+  },
   "source_groups": {
     "openai-format-authority": {
       "topic_id": "software.create.codex-skills",

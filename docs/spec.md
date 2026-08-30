@@ -18,7 +18,7 @@ A later “scan again” resumes from SQLite cursors and checkpoints without cha
 - Python 3.12+ and the standard library only.
 - `sources/registry.json` owns source identity, adapter, trust, authority, license, and optional non-authoritative workflow hints.
 - `config/topic-bank.json` owns versioned Domain × Intent discovery queries and their source-tier constraints.
-- `config/campaign-policy.json` owns campaign groups, topics, canary, queue precedence, and stop-loss.
+- `config/campaign-policy.json` owns campaign groups, topics, canary, queue precedence, the parent-campaign objective, and stop-loss.
 - `config/scale-policy.json` owns review page default and maximum.
 - `state/harvest.sqlite3` schema 3 is the only runtime authority for cursors, observations, query/semantic batches, Evidence Packs, candidates, queues, decisions, source utility, and checkpoints.
 - Git owns source/config schemas, taxonomy, capability catalog, published Skills/Plugins, evals, readable reports, and release history.
@@ -131,6 +131,8 @@ If Usage cannot be measured, reports store `{"measured": false}`. Credits are no
 
 A canary failure, ramp failure, or limit creates a `checkpoint` report with completed and pending source ids. It does not mark unprocessed evidence `not_promoted`. A complete unchanged stable-source run is `no_op`; genuinely new PyPI feed items keep the campaign truthfully `changed` even though they remain observations.
 
+The parent campaign and one processed slice have separate lifecycles. A slice is `complete` when its referenced query, semantic, and L4 work has no pending item. The parent remains `active` until the policy-owned capacity lower bound is reached; a technical limit or pending slice is `checkpoint`; only the objective or an explicit non-null controller-end record may produce `campaign_completed`. A source/query/semantic `no_op` proves only that the same handled input did not change. It never completes the parent campaign.
+
 Scheduled/manual GitHub automation must invoke `campaign --ramp`. It may commit SQLite and generated run reports and open a review PR. It never performs L4 decisions, semantic merges, Skill publication, tags, or Releases.
 
 ## Report schema
@@ -147,7 +149,7 @@ Campaign reports use schema 2 and separate measured stages:
 
 Numeric observation/candidate/L3 totals are recomputed from embedded generated scan runs by repository validation. Unexecuted or unobservable stages use `{"measured": false}`; a hand-edited zero is invalid.
 
-Query reports distinguish unique completed queries from attempts and retain failed work in the same batch until it succeeds. Semantic reports are recomputed from Evidence Packs and candidate links. A content-production report references its campaign, query, semantic, and replay reports; validation rebuilds the complete document from those inputs plus SQLite L4 decisions, so fabricated candidate, deep-review, decision, or artifact counts fail.
+Query reports distinguish unique completed queries from attempts and retain failed work in the same batch until it succeeds. Semantic reports are recomputed from Evidence Packs and candidate links. A content-production report references its campaign, query, semantic, and replay reports; it separately records slice status, parent objective progress, stop-loss, continuation, and `active`/`checkpoint`/`campaign_completed` status. Validation rebuilds the complete document from those inputs, policy, and SQLite L4 decisions, so fabricated completion, candidate, deep-review, decision, or artifact counts fail.
 
 ## Migration contract
 

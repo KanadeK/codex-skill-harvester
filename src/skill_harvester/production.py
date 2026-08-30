@@ -4,6 +4,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+from .campaign import load_campaign_policy
 from .io import atomic_write_json, load_json
 from .runtime_store import open_runtime_store
 
@@ -45,7 +46,16 @@ def build_production_report(
     stable_no_op_scan_path: Path,
 ) -> dict[str, Any]:
     root = root.resolve()
+    policy = load_campaign_policy(root)
     campaign = _report(campaign_report_path, "campaign", 2)
+    if (
+        campaign.get("campaign_id") != policy["campaign_id"]
+        or campaign.get("planned_capacity_range")
+        != policy["planned_capacity_range"]
+    ):
+        raise ProductionReportError(
+            "campaign report objective must match the repository campaign policy"
+        )
     if not query_report_paths:
         raise ProductionReportError("at least one query report is required")
     query_reports = [
@@ -118,12 +128,68 @@ def build_production_report(
         candidate["review_status"] == "pending" for candidate in candidates
     )
     pending_semantic = sum(item["status"] == "pending" for item in batch_items)
-    is_checkpoint = bool(pending_queries or pending_semantic or pending_candidates)
+    has_pending_work = bool(pending_queries or pending_semantic or pending_candidates)
+    stop_reasons = campaign.get("stop_reasons")
+    if not isinstance(stop_reasons, list) or any(
+        not isinstance(reason, str) or not reason for reason in stop_reasons
+    ):
+        raise ProductionReportError("campaign stop reasons are invalid")
+    stop_loss_triggered = campaign.get("status") == "checkpoint" or bool(stop_reasons)
+    executable_endpoints = campaign["registered_endpoints"] + len(selected_source_ids)
+    actual_queries = sum(report["completed_queries"] for report in query_reports)
+    minimum_endpoints = policy["planned_capacity_range"]["endpoints"][0]
+    minimum_queries = policy["planned_capacity_range"]["actual_queries"][0]
+    objective_met = (
+        executable_endpoints >= minimum_endpoints
+        and actual_queries >= minimum_queries
+    )
+    controller_end = policy["objective"]["controller_end"]
+    completion_basis = (
+        "objective" if objective_met else "controller" if controller_end else None
+    )
+    slice_checkpoint = has_pending_work or stop_loss_triggered
+    if slice_checkpoint:
+        campaign_status = "checkpoint"
+    elif completion_basis is not None:
+        campaign_status = "campaign_completed"
+    else:
+        campaign_status = "active"
+    if stop_loss_triggered:
+        continuation = (
+            "Resume from the persisted checkpoint after resolving the recorded "
+            "stop-loss; unprocessed work retains its cursor."
+        )
+    elif has_pending_work:
+        continuation = (
+            "Resume the persisted query, semantic, or L4 checkpoint before "
+            "starting another batch."
+        )
+    elif campaign_status == "campaign_completed":
+        continuation = "The explicit parent-campaign completion condition is satisfied."
+    else:
+        continuation = (
+            "The current slice is complete; start the next inventory/query batch "
+            "from persisted cursors."
+        )
     return {
         "schema_version": 1,
         "report_type": "content-production",
         "generated_at": generated_at,
-        "status": "checkpoint" if is_checkpoint else "completed",
+        "status": campaign_status,
+        "objective": {
+            "type": policy["objective"]["type"],
+            "minimum_executable_endpoints": minimum_endpoints,
+            "minimum_actual_queries": minimum_queries,
+            "met": objective_met,
+            "controller_end": controller_end,
+            "completion_basis": completion_basis,
+        },
+        "slice": {
+            "status": "checkpoint" if slice_checkpoint else "complete",
+            "pending_queries": pending_queries,
+            "pending_semantic_observations": pending_semantic,
+            "pending_l4_candidates": pending_candidates,
+        },
         "inputs": {
             "campaign_report": _relative(root, campaign_report_path),
             "query_reports": [
@@ -142,8 +208,7 @@ def build_production_report(
         "discovery": {
             "endpoints_at_campaign_start": campaign["registered_endpoints"],
             "selected_new_endpoints": len(selected_source_ids),
-            "executable_endpoints_after_selection": campaign["registered_endpoints"]
-            + len(selected_source_ids),
+            "executable_endpoints_after_selection": executable_endpoints,
             "supplemental_source_runs": len(supplemental_scans),
             "source_requests": campaign["metrics"]["source_requests"]
             + sum(scan["metrics"]["source_requests"] for scan in supplemental_scans),
@@ -161,9 +226,7 @@ def build_production_report(
         "queries": {
             "cycle_ids": query_cycle_ids,
             "batch_ids": sorted(latest_query_reports),
-            "actual_queries": sum(
-                report["completed_queries"] for report in query_reports
-            ),
+            "actual_queries": actual_queries,
             "query_attempts": sum(report["actual_queries"] for report in query_reports),
             "completed_queries": sum(
                 report["completed_queries"] for report in query_reports
@@ -221,12 +284,11 @@ def build_production_report(
                 item["status"] == "pending" for item in batch_items
             ),
             "pending_l4_candidates": pending_candidates,
-            "continuation": (
-                "Resume the persisted query, semantic, or L4 checkpoint before starting "
-                "another cycle."
-                if is_checkpoint
-                else "All referenced work batches are complete."
-            ),
+            "stop_loss": {
+                "triggered": stop_loss_triggered,
+                "reasons": stop_reasons,
+            },
+            "continuation": continuation,
         },
     }
 

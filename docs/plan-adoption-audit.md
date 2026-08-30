@@ -4,7 +4,7 @@
 
 **Baseline:** merged PR #6 at `6a54e7fc2748b02463fb269c7e9036f77812fae3`.
 
-**Current work package:** PR #7 remains the open deterministic base. `codex/content-driven-production-campaign` is a stacked content-production slice from PR #7 HEAD `2ea8771cfbc45bb3f52953727eba20244f1f4180`. It may perform supervised L4 and generate review artifacts under the explicit controller authorization, but neither PR may merge and no tag or Release may be created without a later controller decision.
+**Current work package:** PR #7 remains the open deterministic base. PR #8 was squash-merged into that branch at `d0cb9ef0d79ea254598fe66ee6f47a4dd0e532c3` before the 2026-08-30 correction began; it was not merged to `main`. `codex/pr8-campaign-corrections` now carries the completion-lifecycle and Python audit-gate corrections as a new stacked review boundary. No PR may merge to `main`, and no tag or Release may be created, without a later controller decision.
 
 ## What is confirmed now
 
@@ -19,7 +19,7 @@
 
 ## Capacity direction, not production KPI
 
-The first complete campaign is planned to exercise **180–260 endpoints, 1,500–3,000 actual queries, 80,000–250,000 observations, 4,000–12,000 normalized candidates, and 400–1,000 deep reviews**. These are capacity and observation ranges. They are not minimum counts, publication promises, or a reason to weaken evidence, originality, trigger, installation, or E2E gates.
+The first complete campaign is planned to exercise **180–260 endpoints, 1,500–3,000 actual queries, 80,000–250,000 observations, 4,000–12,000 normalized candidates, and 400–1,000 deep reviews**. For the explicitly authorized full-capacity exercise, 180 endpoints and 1,500 actual queries are the parent-campaign completion lower bound. Observation, candidate, deep-review, and Skill counts remain measured outcomes, not quotas or publication promises, and none may weaken evidence, originality, trigger, installation, or E2E gates.
 
 There is no artificial output ceiling for qualified Skills. Every independently useful and fully validated Skill may enter a review PR. The earlier 30–90 estimate is neither a cap nor a quota. Zero published Skills can be the correct campaign result.
 
@@ -117,7 +117,7 @@ Canary failures and ramp failures both produce campaign reports. Earlier success
 
 The validator-rebuildable [production report](../runs/2026-08-29-content-production.json) records the current slice. The executable campaign inventory grew from 10 to 26 endpoints. Twenty-one unique Topic Bank queries completed in 28 attempts: seven initial GitHub code-search attempts hit an actual rate limit, resumed from the same batch, then completed; one non-duplicate official endpoint was selected. Source work made 28 successful requests, downloaded 416,622 bytes, observed 117 source items, and inserted 43 new observations with zero source failures.
 
-Codex reviewed 26 high-trust observations in three resumable batches, produced seven Evidence Packs, normalized three candidates, received nine bounded L3 recalls, and performed three measured L4 adjudications: one create, one update, and one merge. Four Evidence Packs were not promoted before candidate creation. The result is one new original `audit-python-release-readiness` Skill, one artifact-attestation update to `audit-github-release`, and one version-consistency evidence merge. Query rotation, semantic export, and a stable official source all produced real no-op replays; pending query, semantic, and L4 counts are zero. Usage credits and semantic-review tokens remain `measured=false`; no Release was published.
+Codex reviewed 26 high-trust observations in three resumable batches, produced seven Evidence Packs, normalized three candidates, received nine bounded L3 recalls, and performed three measured L4 adjudications: one create, one update, and one merge. Four Evidence Packs were not promoted before candidate creation. The result is one new original `audit-python-release-readiness` Skill, one artifact-attestation update to `audit-github-release`, and one version-consistency evidence merge. Query rotation, semantic export, and a stable official source all produced real no-op replays; pending query, semantic, and L4 counts are zero, so this slice is `complete`. The parent campaign is still `active`: 26/180 endpoints and 21/1,500 actual queries satisfy neither objective, and no stop-loss was triggered. Usage credits and semantic-review tokens remain `measured=false`; no Release was published.
 
 ## Migration decision and deletion condition
 
