@@ -45,11 +45,11 @@ def legacy_catalog() -> dict[str, object]:
     }
 
 
-def migration_map() -> dict[str, object]:
+def migration_map(taxonomy_version: str) -> dict[str, object]:
     return {
         "schema_version": 1,
         "target_catalog_schema": 2,
-        "taxonomy_version": "1.0.0",
+        "taxonomy_version": taxonomy_version,
         "capabilities": {
             "demo:audit-release": {
                 "aliases": ["release evidence audit"],
@@ -80,23 +80,25 @@ class TaxonomyTests(unittest.TestCase):
     def test_catalog_v1_migration_is_complete_and_idempotent(self) -> None:
         taxonomy = read_json(ROOT / "catalog" / "taxonomy.json")
         migrated = migrate_catalog_v1_to_v2(
-            legacy_catalog(), migration_map(), taxonomy
+            legacy_catalog(), migration_map(taxonomy["taxonomy_version"]), taxonomy
         )
 
         self.assertEqual(migrated["schema_version"], 2)
-        self.assertEqual(migrated["taxonomy_version"], "1.0.0")
+        self.assertEqual(migrated["taxonomy_version"], taxonomy["taxonomy_version"])
         self.assertEqual(
             migrated["internal"][0]["classification"]["primary_family"],
             "software.release-assurance",
         )
         self.assertEqual(
-            migrate_catalog_v1_to_v2(migrated, migration_map(), taxonomy),
+            migrate_catalog_v1_to_v2(
+                migrated, migration_map(taxonomy["taxonomy_version"]), taxonomy
+            ),
             migrated,
         )
 
     def test_catalog_migration_fails_when_classification_is_missing(self) -> None:
         taxonomy = read_json(ROOT / "catalog" / "taxonomy.json")
-        migration = migration_map()
+        migration = migration_map(taxonomy["taxonomy_version"])
         migration["capabilities"] = {}
 
         with self.assertRaisesRegex(TaxonomyError, "classification mapping"):
@@ -105,7 +107,7 @@ class TaxonomyTests(unittest.TestCase):
     def test_unknown_facet_value_fails_instead_of_becoming_a_category(self) -> None:
         taxonomy = read_json(ROOT / "catalog" / "taxonomy.json")
         catalog = migrate_catalog_v1_to_v2(
-            legacy_catalog(), migration_map(), taxonomy
+            legacy_catalog(), migration_map(taxonomy["taxonomy_version"]), taxonomy
         )
         invalid = deepcopy(catalog)
         invalid["internal"][0]["classification"]["facets"]["domain"] = [
@@ -121,8 +123,8 @@ class TaxonomyTests(unittest.TestCase):
 
         report = validate_catalog_taxonomy(catalog, taxonomy)
 
-        self.assertEqual(report["taxonomy_version"], "1.0.0")
-        self.assertEqual(report["capabilities"], 4)
+        self.assertEqual(report["taxonomy_version"], "1.1.0")
+        self.assertEqual(report["capabilities"], 16)
 
 
 if __name__ == "__main__":

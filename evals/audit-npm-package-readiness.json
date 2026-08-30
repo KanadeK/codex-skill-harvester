@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "capability_id": "software.npm-package-readiness",
+  "method": "codex-semantic-review-plus-deterministic-e2e",
+  "reviewed_by": "codex",
+  "reviewed_at": "2026-08-30T14:50:00Z",
+  "trigger_cases": [
+    {"id": "positive-payload", "prompt": "Show me exactly what npm pack will include before I publish this package.", "expected": "trigger", "observed": "trigger", "rationale": "Requests the exact local package payload audit owned by this Skill."},
+    {"id": "positive-readiness", "prompt": "Is this Node.js package ready to publish to npm without actually publishing it?", "expected": "trigger", "observed": "trigger", "rationale": "Asks for bounded npm publication readiness with a no-publish constraint."},
+    {"id": "positive-lifecycle", "prompt": "Audit package.json and the dry-run tarball for lifecycle and sensitive-file risks.", "expected": "trigger", "observed": "trigger", "rationale": "Names deterministic metadata, payload, and lifecycle gates performed by the checker."},
+    {"id": "positive-types", "prompt": "Check whether this npm package actually ships the TypeScript declarations named by package.json.", "expected": "trigger", "observed": "trigger", "rationale": "Requests the declaration payload gate now owned by the npm release-readiness audit."},
+    {"id": "negative-publish", "prompt": "Publish version 4.0.0 of this package to npm now.", "expected": "do-not-trigger", "observed": "do-not-trigger", "rationale": "Registry publication is an irreversible network write outside this audit."},
+    {"id": "negative-install", "prompt": "Install all npm dependencies and run every package lifecycle script.", "expected": "do-not-trigger", "observed": "do-not-trigger", "rationale": "Dependency installation and lifecycle execution violate the read-only audit boundary."},
+    {"id": "negative-pypi", "prompt": "Inspect these Python wheels before a PyPI release.", "expected": "do-not-trigger", "observed": "do-not-trigger", "rationale": "Python distribution readiness belongs to a different ecosystem capability."},
+    {"id": "negative-post-release", "prompt": "Verify that the GitHub Release I already published has every expected asset.", "expected": "do-not-trigger", "observed": "do-not-trigger", "rationale": "Post-publication release evidence is not an npm package payload audit."}
+  ],
+  "originality": {
+    "method": "fingerprint-and-representative-skill-comparison",
+    "result": "distinct",
+    "compared_capabilities": ["software.python-release-readiness", "skilld-dev:package-documentation"],
+    "rationale": "The Skill owns npm dry-run payload identity, lifecycle suppression, sensitive filenames, Git tracking, and declared TypeScript entry inclusion; Python archives and package-documentation generators have different artifacts and outcomes."
+  },
+  "end_to_end": {
+    "kind": "npm-package-readiness",
+    "script": "plugins/javascript-package-delivery/skills/audit-npm-package-readiness/scripts/inspect_npm_package.py",
+    "expected_exit_code": 0,
+    "expected_result": "ready",
+    "minimum_gates": 4
+  }
+}

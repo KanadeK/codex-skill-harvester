@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import json
+import re
+import shlex
 import subprocess
 from pathlib import Path
 from typing import Any, Protocol
+from urllib.parse import urlparse
 
 from .io import atomic_write_json, load_json
 
@@ -27,27 +30,32 @@ class GitHubCliSearch:
         self.timeout = timeout
 
     def search(self, route: str, text: str) -> list[dict[str, Any]]:
+        query_tokens = shlex.split(text, posix=True)
+        if not query_tokens:
+            raise QueryExecutionError("GitHub query must not be empty")
         if route == "github-code":
             command = [
                 self.executable,
                 "search",
                 "code",
-                text,
                 "--limit",
                 "1",
                 "--json",
                 "path,repository,url",
+                "--",
+                *query_tokens,
             ]
         elif route == "github-repository":
             command = [
                 self.executable,
                 "search",
                 "repos",
-                text,
                 "--limit",
                 "1",
                 "--json",
-                "nameWithOwner,updatedAt,url",
+                "fullName,updatedAt,url",
+                "--",
+                *query_tokens,
             ]
         else:
             raise QueryExecutionError(f"unsupported GitHub query route: {route}")
@@ -75,6 +83,42 @@ class GitHubCliSearch:
         if not isinstance(result, list) or any(not isinstance(item, dict) for item in result):
             raise QueryExecutionError("GitHub query result must be a JSON list")
         return result
+
+
+def _discovery_hit(route: str, match: dict[str, Any]) -> dict[str, str]:
+    url = match.get("url")
+    parsed = urlparse(url) if isinstance(url, str) else None
+    if (
+        parsed is None
+        or parsed.scheme != "https"
+        or parsed.hostname != "github.com"
+        or parsed.username is not None
+        or parsed.password is not None
+    ):
+        raise QueryExecutionError("GitHub query returned an invalid result URL")
+    raw_repository = match.get("repository")
+    if isinstance(raw_repository, dict):
+        repository = raw_repository.get("nameWithOwner") or raw_repository.get(
+            "fullName"
+        )
+    else:
+        repository = raw_repository
+    if route == "github-repository":
+        repository = match.get("fullName") or repository
+    if not isinstance(repository, str) or not re.fullmatch(
+        r"[^/\s]+/[^/\s]+", repository
+    ):
+        raise QueryExecutionError("GitHub query result omitted repository identity")
+    hit = {"route": route, "url": url, "repository": repository}
+    if route == "github-code":
+        path = match.get("path")
+        if not isinstance(path, str) or not path:
+            raise QueryExecutionError("GitHub code result omitted its path")
+        hit["path"] = path
+    updated_at = match.get("updatedAt")
+    if isinstance(updated_at, str) and updated_at:
+        hit["updated_at"] = updated_at
+    return hit
 
 
 def execute_github_query_batch(
@@ -133,6 +177,9 @@ def execute_github_query_batch(
                 "status": "completed",
                 "cursor": None,
                 "result_count": len(matches),
+                "discovery_hits": [
+                    _discovery_hit(query["route"], match) for match in matches
+                ],
                 "selected_endpoints": [],
             }
         )

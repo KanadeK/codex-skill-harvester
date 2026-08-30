@@ -1,0 +1,4 @@
+interface:
+  display_name: "Audit curl Request"
+  short_description: "Check curl semantics without sending a request"
+  default_prompt: "Use $audit-curl-request to inspect this curl request locally without executing it or exposing credentials."

@@ -65,7 +65,13 @@
       "topic_id": "software.diagnose.external-skills",
       "source_ids": [
         "openai-gh-fix-ci",
-        "openai-gh-address-comments"
+        "openai-gh-address-comments",
+        "external-docker-development-skill",
+        "external-playwright-skill",
+        "external-git-workflows-skill",
+        "external-git-safety-net-skill",
+        "external-debugpy-pytest-skill",
+        "external-rust-crates-release-skill"
       ]
     },
     "version-control-git": {
@@ -260,7 +266,9 @@
         "duckdb-concurrency",
         "duckdb-csv-auto-detection",
         "duckdb-json",
-        "duckdb-parquet"
+        "duckdb-parquet",
+        "duckdb-python-build",
+        "duckdb-iceberg-catalogs"
       ]
     },
     "web-platform": {

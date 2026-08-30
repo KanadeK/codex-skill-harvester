@@ -567,7 +567,9 @@
         {"id": "duckdb-concurrency", "path": "docs/current/connect/concurrency.md"},
         {"id": "duckdb-csv-auto-detection", "path": "docs/current/data/csv/auto_detection.md"},
         {"id": "duckdb-json", "path": "docs/current/data/json/overview.md"},
-        {"id": "duckdb-parquet", "path": "docs/current/data/parquet/overview.md"}
+        {"id": "duckdb-parquet", "path": "docs/current/data/parquet/overview.md"},
+        {"id": "duckdb-python-build", "path": "docs/current/dev/building/python.md"},
+        {"id": "duckdb-iceberg-catalogs", "path": "docs/current/core_extensions/iceberg/catalogs.md"}
       ]
     },
     {
@@ -658,6 +660,72 @@
         {"id": "nextjs-fetching-data", "path": "docs/01-app/01-getting-started/06-fetching-data.mdx"},
         {"id": "nextjs-building", "path": "docs/01-app/02-guides/building.mdx"},
         {"id": "nextjs-debugging", "path": "docs/01-app/02-guides/debugging.mdx"}
+      ]
+    },
+    {
+      "repository": "netresearch/docker-development-skill",
+      "revision": "8c87bb70343b4ca55455307c294a9e0417894bd7",
+      "trust": "representative",
+      "tier": "T3",
+      "authority": "external-skill-comparison",
+      "license": {"status": "unknown", "identifier": null},
+      "documents": [
+        {"id": "external-docker-development-skill", "path": "skills/docker-development/SKILL.md"}
+      ]
+    },
+    {
+      "repository": "magnus919/agent-skills",
+      "revision": "46ef33a21dd420401ec69696af2aab403a225fe2",
+      "trust": "representative",
+      "tier": "T3",
+      "authority": "external-skill-comparison",
+      "license": {"status": "known", "identifier": "MIT"},
+      "documents": [
+        {"id": "external-playwright-skill", "path": "playwright/SKILL.md"}
+      ]
+    },
+    {
+      "repository": "albertdobmeyer/openskill-forge",
+      "revision": "7aa51fda64177a6ffa70160d61c79ee97a106c35",
+      "trust": "representative",
+      "tier": "T3",
+      "authority": "external-skill-comparison",
+      "license": {"status": "known", "identifier": "MIT"},
+      "documents": [
+        {"id": "external-git-workflows-skill", "path": "skills/git-workflows/SKILL.md"}
+      ]
+    },
+    {
+      "repository": "daymade/claude-code-skills",
+      "revision": "d42550c1a225613f9be94c6297cd328781fac979",
+      "trust": "representative",
+      "tier": "T3",
+      "authority": "external-skill-comparison",
+      "license": {"status": "known", "identifier": "MIT"},
+      "documents": [
+        {"id": "external-git-safety-net-skill", "path": "git-safety-net/SKILL.md"}
+      ]
+    },
+    {
+      "repository": "microsoft/debugpy",
+      "revision": "e5743d3a00c6dee7d8140275c7df7e719ebb132f",
+      "trust": "representative",
+      "tier": "T3",
+      "authority": "external-skill-comparison",
+      "license": {"status": "unknown", "identifier": null},
+      "documents": [
+        {"id": "external-debugpy-pytest-skill", "path": ".claude/skills/pytest/SKILL.md"}
+      ]
+    },
+    {
+      "repository": "glslang/agent-skills",
+      "revision": "54e8f99096623864905fc470701e72ad1461178c",
+      "trust": "representative",
+      "tier": "T3",
+      "authority": "external-skill-comparison",
+      "license": {"status": "known", "identifier": "MIT"},
+      "documents": [
+        {"id": "external-rust-crates-release-skill", "path": ".claude/skills/release-rust-crates-io/SKILL.md"}
       ]
     }
   ]

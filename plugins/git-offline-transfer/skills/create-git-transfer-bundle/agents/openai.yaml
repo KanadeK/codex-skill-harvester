@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Git Transfer Bundle"
+  short_description: "Create and verify offline Git transfer bundles"
+  default_prompt: "Use $create-git-transfer-bundle to create and verify an offline bundle for this Git repository."

@@ -27,6 +27,78 @@
         "path": "./plugins/python-package-delivery",
         "source": "local"
       }
+    },
+    {
+      "category": "Developer Tools",
+      "name": "git-offline-transfer",
+      "policy": {
+        "authentication": "ON_INSTALL",
+        "installation": "AVAILABLE"
+      },
+      "source": {
+        "path": "./plugins/git-offline-transfer",
+        "source": "local"
+      }
+    },
+    {
+      "category": "Developer Tools",
+      "name": "ansible-collection-quality",
+      "policy": {
+        "authentication": "ON_INSTALL",
+        "installation": "AVAILABLE"
+      },
+      "source": {
+        "path": "./plugins/ansible-collection-quality",
+        "source": "local"
+      }
+    },
+    {
+      "category": "Developer Tools",
+      "name": "javascript-package-delivery",
+      "policy": {
+        "authentication": "ON_INSTALL",
+        "installation": "AVAILABLE"
+      },
+      "source": {
+        "path": "./plugins/javascript-package-delivery",
+        "source": "local"
+      }
+    },
+    {
+      "category": "Developer Tools",
+      "name": "rust-build-performance",
+      "policy": {
+        "authentication": "ON_INSTALL",
+        "installation": "AVAILABLE"
+      },
+      "source": {
+        "path": "./plugins/rust-build-performance",
+        "source": "local"
+      }
+    },
+    {
+      "category": "Developer Tools",
+      "name": "web-request-diagnostics",
+      "policy": {
+        "authentication": "ON_INSTALL",
+        "installation": "AVAILABLE"
+      },
+      "source": {
+        "path": "./plugins/web-request-diagnostics",
+        "source": "local"
+      }
+    },
+    {
+      "category": "Developer Tools",
+      "name": "api-request-safety",
+      "policy": {
+        "authentication": "ON_INSTALL",
+        "installation": "AVAILABLE"
+      },
+      "source": {
+        "path": "./plugins/api-request-safety",
+        "source": "local"
+      }
     }
   ]
 }

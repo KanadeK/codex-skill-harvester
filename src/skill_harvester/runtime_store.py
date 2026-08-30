@@ -590,6 +590,52 @@ class RuntimeStore:
             raise RuntimeStoreError(f"unknown query batch: {batch_id}")
         return _json_value(row["record_json"])
 
+    def query_cycle_metrics(self, cycle_id: str) -> dict[str, Any]:
+        self.validate()
+        key = f"query_cycle_metrics:{cycle_id}"
+        persisted = self.connection.execute(
+            "SELECT value FROM metadata WHERE key = ?", (key,)
+        ).fetchone()
+        if persisted is not None:
+            return _json_value(persisted["value"])
+
+        metrics: dict[str, Any] = {
+            "query_attempts": 0,
+            "completed_queries": 0,
+            "failed_queries": 0,
+            "pending_queries": 0,
+            "result_count": 0,
+            "discovery_hits": 0,
+            "selected_source_ids": [],
+        }
+        selected_source_ids: set[str] = set()
+        rows = self.connection.execute(
+            "SELECT query_batch_items.status, query_batch_items.record_json "
+            "FROM query_batch_items JOIN query_batches "
+            "ON query_batches.id = query_batch_items.batch_id "
+            "WHERE query_batches.cycle_id = ?",
+            (cycle_id,),
+        )
+        for row in rows:
+            if row["status"] == "pending":
+                metrics["pending_queries"] += 1
+            attempt = _json_value(row["record_json"]).get("last_attempt")
+            if not isinstance(attempt, dict):
+                continue
+            metrics["query_attempts"] += 1
+            if attempt.get("status") == "completed":
+                metrics["completed_queries"] += 1
+            elif attempt.get("status") == "failed":
+                metrics["failed_queries"] += 1
+            metrics["result_count"] += int(attempt.get("result_count", 0))
+            metrics["discovery_hits"] += len(attempt.get("discovery_hits", []))
+            selected_source_ids.update(
+                endpoint["source_id"]
+                for endpoint in attempt.get("selected_endpoints", [])
+            )
+        metrics["selected_source_ids"] = sorted(selected_source_ids)
+        return metrics
+
     def query_batch_items(self, batch_id: str) -> list[dict[str, Any]]:
         self.validate()
         rows = self.connection.execute(
@@ -632,6 +678,9 @@ class RuntimeStore:
             ).fetchone()
             if batch is None or batch["status"] != "pending":
                 raise RuntimeStoreError(f"query batch is not pending: {batch_id}")
+            cycle_id = str(batch["cycle_id"])
+            metrics = self.query_cycle_metrics(cycle_id)
+            selected_source_ids = set(metrics["selected_source_ids"])
             for result in results:
                 item = self.connection.execute(
                     "SELECT record_json FROM query_batch_items "
@@ -644,6 +693,19 @@ class RuntimeStore:
                     )
                 query = _json_value(item["record_json"])
                 query["last_attempt"] = result
+                metrics["query_attempts"] += 1
+                if result["status"] == "completed":
+                    metrics["completed_queries"] += 1
+                else:
+                    metrics["failed_queries"] += 1
+                metrics["result_count"] += result["result_count"]
+                metrics["discovery_hits"] += len(
+                    result.get("discovery_hits", [])
+                )
+                selected_source_ids.update(
+                    endpoint["source_id"]
+                    for endpoint in result["selected_endpoints"]
+                )
                 if result["status"] == "completed":
                     self.connection.execute(
                         "UPDATE query_batch_items SET status = 'completed', record_json = ? "
@@ -658,6 +720,7 @@ class RuntimeStore:
                         "last_completed_at": executed_at,
                         "cursor": result["cursor"],
                         "result_count": result["result_count"],
+                        "discovery_hits": result.get("discovery_hits", []),
                         "selected_endpoints": result["selected_endpoints"],
                     }
                     self.connection.execute(
@@ -703,7 +766,17 @@ class RuntimeStore:
                 "WHERE id = ?",
                 (status, record["completed_at"], _json_text(record), batch_id),
             )
-        return {"status": status, "pending_queries": pending}
+            metrics["pending_queries"] = pending
+            metrics["selected_source_ids"] = sorted(selected_source_ids)
+            metrics["updated_at"] = executed_at
+            self._set_meta(
+                f"query_cycle_metrics:{cycle_id}", _json_text(metrics)
+            )
+        return {
+            "status": status,
+            "pending_queries": pending,
+            "cycle_metrics": metrics,
+        }
 
     def candidate(self, candidate_id: str) -> dict[str, Any]:
         self.validate()

@@ -80,6 +80,20 @@
       ]
     },
     {
+      "id": "software.diagnose.external-skills",
+      "domain": "software",
+      "intent": "diagnose",
+      "source_group": "external-skill-comparison",
+      "queries": [
+        {
+          "id": "representative-workflow-skills",
+          "route": "github-repository",
+          "text": "agent skills reusable workflow Git Docker Playwright Ansible",
+          "tier_constraint": ["T2", "T3"]
+        }
+      ]
+    },
+    {
       "id": "software.validate.github-delivery",
       "domain": "software",
       "intent": "validate",

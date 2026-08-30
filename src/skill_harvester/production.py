@@ -236,6 +236,9 @@ def build_production_report(
             ),
             "pending_queries": pending_queries,
             "result_count": sum(report["result_count"] for report in query_reports),
+            "discovery_hits": sum(
+                report.get("discovery_hits", 0) for report in query_reports
+            ),
             "selected_endpoints": len(selected_source_ids),
             "selected_source_ids": selected_source_ids,
         },

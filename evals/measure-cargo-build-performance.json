@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "capability_id": "software.cargo-build-performance",
+  "method": "codex-semantic-review-plus-deterministic-e2e",
+  "reviewed_by": "codex",
+  "reviewed_at": "2026-08-30T14:50:00Z",
+  "trigger_cases": [
+    {"id": "positive-slow-build", "prompt": "Measure why this Cargo workspace builds slowly and give me one reproducible experiment.", "expected": "trigger", "observed": "trigger", "rationale": "Requests the build-time diagnosis and bounded comparison loop owned by this Skill."},
+    {"id": "positive-cache", "prompt": "Compare cold and warm Rust builds without leaving target artifacts in my repository.", "expected": "trigger", "observed": "trigger", "rationale": "Names the isolated cold and warm measurement contract implemented by the script."},
+    {"id": "positive-config", "prompt": "Audit whether a Cargo configuration change improves build time with like-for-like evidence.", "expected": "trigger", "observed": "trigger", "rationale": "Requests a controlled before-and-after build-performance experiment."},
+    {"id": "negative-runtime", "prompt": "Profile this Rust server's runtime CPU and memory usage under production load.", "expected": "do-not-trigger", "observed": "do-not-trigger", "rationale": "Runtime profiling is different from Cargo compilation performance."},
+    {"id": "negative-publish", "prompt": "Release this crate to crates.io and create the GitHub Release.", "expected": "do-not-trigger", "observed": "do-not-trigger", "rationale": "Crate publication is an external release workflow with irreversible side effects."},
+    {"id": "negative-upgrade", "prompt": "Upgrade every Rust dependency to its newest version.", "expected": "do-not-trigger", "observed": "do-not-trigger", "rationale": "Dependency upgrades change source resolution and are outside a controlled measurement."},
+    {"id": "negative-clean", "prompt": "Delete every Cargo target directory on this machine.", "expected": "do-not-trigger", "observed": "do-not-trigger", "rationale": "Destructive cleanup is explicitly excluded from the isolated measurement workflow."}
+  ],
+  "originality": {
+    "method": "fingerprint-and-representative-skill-comparison",
+    "result": "distinct",
+    "compared_capabilities": ["glslang:release-rust-crates-io", "software.python-release-readiness"],
+    "rationale": "The compared capabilities gate publication artifacts; this Skill instead produces isolated cold and warm Cargo timing evidence and a single-factor optimization experiment."
+  },
+  "end_to_end": {
+    "kind": "cargo-build-performance",
+    "script": "plugins/rust-build-performance/skills/measure-cargo-build-performance/scripts/measure_cargo_build.py",
+    "expected_exit_code": 0,
+    "expected_result": "measured",
+    "minimum_gates": 3
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "capability_id": "software.git-offline-transfer",
+  "method": "codex-semantic-review-plus-deterministic-e2e",
+  "reviewed_by": "codex",
+  "reviewed_at": "2026-08-30T14:10:00Z",
+  "trigger_cases": [
+    {
+      "id": "positive-air-gap",
+      "prompt": "Move all committed history in this Git repository to an air-gapped machine with a verified bundle.",
+      "expected": "trigger",
+      "observed": "trigger",
+      "rationale": "Requests the exact offline committed-history transfer lifecycle owned by this Skill."
+    },
+    {
+      "id": "positive-create-verify",
+      "prompt": "Create a self-contained Git bundle, verify it, and tell me how the receiver can clone it.",
+      "expected": "trigger",
+      "observed": "trigger",
+      "rationale": "Names the artifact, verification, and receiver-plan outputs provided by this Skill."
+    },
+    {
+      "id": "positive-existing-bundle",
+      "prompt": "Check whether this Git bundle is valid and list the refs it advertises before I transfer it.",
+      "expected": "trigger",
+      "observed": "trigger",
+      "rationale": "Existing-bundle verification is the read-only half of the same transfer contract."
+    },
+    {
+      "id": "negative-dirty-backup",
+      "prompt": "Back up my uncommitted, ignored, and untracked project files before I wipe the laptop.",
+      "expected": "do-not-trigger",
+      "observed": "do-not-trigger",
+      "rationale": "A Git bundle excludes those files and must not be presented as a working-tree backup."
+    },
+    {
+      "id": "negative-lfs",
+      "prompt": "Package all external Git LFS objects and submodule working trees for offline use.",
+      "expected": "do-not-trigger",
+      "observed": "do-not-trigger",
+      "rationale": "External LFS objects and submodule working trees require a different transfer workflow."
+    },
+    {
+      "id": "negative-push",
+      "prompt": "Push this repository and all branches to a new GitHub remote.",
+      "expected": "do-not-trigger",
+      "observed": "do-not-trigger",
+      "rationale": "Remote network publishing is outside the local offline bundle boundary."
+    },
+    {
+      "id": "negative-bisect",
+      "prompt": "Find the commit that introduced this regression with git bisect.",
+      "expected": "do-not-trigger",
+      "observed": "do-not-trigger",
+      "rationale": "Regression isolation is a different Git goal and produces no transfer artifact."
+    }
+  ],
+  "originality": {
+    "method": "fingerprint-and-representative-skill-comparison",
+    "result": "distinct",
+    "compared_capabilities": [
+      "daymade:git-safety-net",
+      "openskill-forge:git-workflows"
+    ],
+    "rationale": "The neighboring capabilities preserve or recover local state and cover general Git operations; neither owns a verified bundle artifact and receiver-side offline transfer contract."
+  },
+  "end_to_end": {
+    "kind": "git-transfer-bundle",
+    "script": "plugins/git-offline-transfer/skills/create-git-transfer-bundle/scripts/git_transfer_bundle.py",
+    "expected_exit_code": 0,
+    "expected_result": "verified",
+    "minimum_gates": 3
+  }
+}

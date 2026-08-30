@@ -213,7 +213,7 @@ def export_query_batch(
         "output": str(output_path),
     }
     atomic_write_json(
-        root / "runs" / f"{now.replace(':', '-')}-query-export.json",
+        root / "runs" / f"{cycle_id}-query-export.json",
         {key: value for key, value in report.items() if key != "output"},
     )
     return report
@@ -265,6 +265,37 @@ def _selected_endpoint(value: Any) -> dict[str, Any]:
     return dict(value)
 
 
+def _discovery_hit(value: Any) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        raise QueryBatchError("discovery hits must be objects")
+    if value.get("route") not in {"github-code", "github-repository"}:
+        raise QueryBatchError("discovery hit route is invalid")
+    if not isinstance(value.get("repository"), str) or not re.fullmatch(
+        r"[^/\s]+/[^/\s]+", value["repository"]
+    ):
+        raise QueryBatchError("discovery hit repository is invalid")
+    url = value.get("url")
+    parsed = urlparse(url) if isinstance(url, str) else None
+    if (
+        parsed is None
+        or parsed.scheme != "https"
+        or parsed.hostname != "github.com"
+        or parsed.username is not None
+        or parsed.password is not None
+    ):
+        raise QueryBatchError("discovery hit must use credential-free GitHub https")
+    if value["route"] == "github-code" and (
+        not isinstance(value.get("path"), str) or not value["path"]
+    ):
+        raise QueryBatchError("GitHub code discovery hit needs a path")
+    for field in ("path", "updated_at"):
+        if field in value and (
+            not isinstance(value[field], str) or not value[field]
+        ):
+            raise QueryBatchError(f"discovery hit {field} is invalid")
+    return dict(value)
+
+
 def _query_result(value: Any) -> dict[str, Any]:
     if not isinstance(value, dict) or not isinstance(value.get("query_id"), str):
         raise QueryBatchError("query result needs query_id")
@@ -276,6 +307,7 @@ def _query_result(value: Any) -> dict[str, Any]:
             raise QueryBatchError("failed query result needs an error")
         result.setdefault("cursor", None)
         result.setdefault("result_count", 0)
+        result.setdefault("discovery_hits", [])
         result.setdefault("selected_endpoints", [])
     if (
         result.get("cursor") is not None
@@ -292,6 +324,12 @@ def _query_result(value: Any) -> dict[str, Any]:
     if not isinstance(endpoints, list):
         raise QueryBatchError("selected_endpoints must be a list")
     result["selected_endpoints"] = [_selected_endpoint(endpoint) for endpoint in endpoints]
+    hits = result.get("discovery_hits", [])
+    if not isinstance(hits, list):
+        raise QueryBatchError("discovery_hits must be a list")
+    result["discovery_hits"] = [_discovery_hit(hit) for hit in hits]
+    if len(result["discovery_hits"]) > result["result_count"]:
+        raise QueryBatchError("discovery hits exceed the reported result count")
     return result
 
 
@@ -353,6 +391,7 @@ def import_query_results(
         "failed_queries": sum(result["status"] == "failed" for result in results),
         "pending_queries": committed["pending_queries"],
         "result_count": sum(result["result_count"] for result in results),
+        "discovery_hits": sum(len(result["discovery_hits"]) for result in results),
         "selected_source_ids": sorted(
             {
                 endpoint["source_id"]
@@ -362,7 +401,26 @@ def import_query_results(
         ),
     }
     report["selected_endpoints"] = len(report["selected_source_ids"])
+    cycle_metrics = committed["cycle_metrics"]
+    cycle_summary = {
+        "schema_version": 1,
+        "report_type": "query-results",
+        "aggregation": "cycle",
+        "batch_id": batch_id,
+        "cycle_id": batch["cycle_id"],
+        "executed_at": cycle_metrics["updated_at"],
+        "status": committed["status"],
+        "actual_queries": cycle_metrics["completed_queries"],
+        "query_attempts": cycle_metrics["query_attempts"],
+        "completed_queries": cycle_metrics["completed_queries"],
+        "failed_queries": cycle_metrics["failed_queries"],
+        "pending_queries": cycle_metrics["pending_queries"],
+        "result_count": cycle_metrics["result_count"],
+        "discovery_hits": cycle_metrics["discovery_hits"],
+        "selected_source_ids": cycle_metrics["selected_source_ids"],
+        "selected_endpoints": len(cycle_metrics["selected_source_ids"]),
+    }
     atomic_write_json(
-        root / "runs" / f"{executed_at.replace(':', '-')}-queries.json", report
+        root / "runs" / f"{batch['cycle_id']}-queries.json", cycle_summary
     )
     return report
