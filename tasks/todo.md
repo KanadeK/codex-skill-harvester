@@ -170,3 +170,5 @@ The Task 20 submission line records the state when it was written. PR #8 was sub
 - [ ] Verify: each vertical batch is validated and committed; the final summary separates coverage, funnel stages, decisions, artifacts, failures/rate limits, Usage, checkpoint, and continuation.
 - [ ] Submit: the final stacked PR has green Ubuntu/Windows CI and remains unmerged with no tag or Release.
 - Dependencies: Task 21 complete and explicit 2026-08-30 full-campaign authorization.
+
+Progress checkpoint: the branch starts at verified correction HEAD `7aa8f86`; 190 revision-pinned endpoints and 1,621 unique Domain × Intent queries are configured, arbitrary source groups are policy-driven, and campaign scans no longer create per-endpoint tracked report noise. None of these configured counts is reported as executed production work. Real source/query execution, semantic review, artifacts, the stacked PR, and CI remain open.

@@ -248,9 +248,9 @@ On 2026-08-30, before this work package began, PR #8 had already been squash-mer
 
 ### Phase 23: continue the full 2026-08-30 campaign
 
-- [ ] Only after Phase 22 is green, create `codex/full-campaign-2026-08-30` from the correction HEAD and stack its PR on the correction branch.
-- [ ] Expand the Domain × Intent Topic Bank and low-risk T0/T1/T2 source groups using agent-reach background Web/GitHub discovery; retain source identity, license, revision/cursor, utility, and query continuation without committing raw page bodies.
+- [x] After Phase 22 passed locally and in Ubuntu/Windows CI, create `codex/full-campaign-2026-08-30` from correction HEAD `7aa8f86`; opening its stacked PR remains a later submission step.
+- [x] Use agent-reach background Web discovery and official GitHub metadata to expand the Domain × Intent Topic Bank to 1,621 unique queued queries and the low-risk T0/T1/T2 inventory to 190 revision-pinned executable endpoints. These are configured capacity, not executed production counts; no raw page bodies are committed.
 - [ ] Execute bounded source/query batches and supervised semantic batches continuously from persisted cursors; every Evidence Pack, L2/L3 recall, L4 outcome, reactivation condition, and qualified original Skill must remain reproducible and source-traceable.
 - [ ] Continue until at least 180 executable endpoints and 1,500 actual queries are reached, or a real configured stop-loss/payment/login/high-risk authorization boundary produces a durable checkpoint. Observation, candidate, deep-review, and Skill counts remain measured outcomes rather than quotas.
-- [ ] Keep the runtime authority compact: SQLite plus necessary checkpoint/summary/decision records; remove scalable per-endpoint report noise from the tracked path before expanding it, without introducing a second authority.
+- [x] Keep the runtime authority compact: SQLite plus necessary checkpoint/summary/decision records. Campaign scans now embed bounded run summaries in the parent report without creating per-endpoint tracked reports; standalone `scan` retains its explicit report behavior and no second authority was added.
 - [ ] Validate and commit every reviewable vertical batch, then open the final stacked PR and wait for Ubuntu/Windows CI without merging any PR or creating a tag/Release.

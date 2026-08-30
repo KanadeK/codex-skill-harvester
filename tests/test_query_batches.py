@@ -13,6 +13,11 @@ from skill_harvester.queries import (
     QueryBatchError,
     export_query_batch,
     import_query_results,
+    load_topic_bank,
+)
+from skill_harvester.query_execution import (
+    QueryExecutionError,
+    execute_github_query_batch,
 )
 
 from _support import document_source, write_registry
@@ -26,7 +31,7 @@ class QueryBatchTests(unittest.TestCase):
             atomic_write_json(
                 root / "config" / "topic-bank.json",
                 {
-                    "schema_version": 1,
+                    "schema_version": 2,
                     "topics": [
                         {
                             "id": "software.publish.python-packaging",
@@ -49,6 +54,8 @@ class QueryBatchTests(unittest.TestCase):
                             ],
                         }
                     ],
+                    "operations": [],
+                    "query_matrices": [],
                 },
             )
             first_path = root / ".harvester-cache" / "queries.json"
@@ -197,6 +204,137 @@ class QueryBatchTests(unittest.TestCase):
                 next_queries["python-trusted-publishing"]["previous_completed_at"],
                 "2026-08-29T09:03:00Z",
             )
+
+    def test_topic_matrix_expands_domain_intent_queries_deterministically(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "config").mkdir()
+            atomic_write_json(
+                root / "config" / "topic-bank.json",
+                {
+                    "schema_version": 2,
+                    "topics": [],
+                    "operations": [
+                        {
+                            "id": "build",
+                            "intent": "create",
+                            "text": "build reproducibly",
+                        },
+                        {
+                            "id": "debug",
+                            "intent": "diagnose",
+                            "text": "debug failures",
+                        },
+                    ],
+                    "query_matrices": [
+                        {
+                            "id": "container-delivery",
+                            "domain": "software",
+                            "source_group": "containers-docker",
+                            "route": "github-code",
+                            "scope": "repo:docker/docs",
+                            "tier_constraint": ["T0", "T1", "T2"],
+                            "subjects": [
+                                {"id": "images", "text": "Docker images"},
+                                {"id": "compose", "text": "Docker Compose"},
+                            ],
+                            "operation_ids": ["build", "debug"],
+                        }
+                    ],
+                },
+            )
+
+            queries = load_topic_bank(root)
+
+        self.assertEqual(len(queries), 4)
+        self.assertEqual(
+            [query["id"] for query in queries],
+            [
+                "container-delivery-images-build",
+                "container-delivery-images-debug",
+                "container-delivery-compose-build",
+                "container-delivery-compose-debug",
+            ],
+        )
+        self.assertEqual(queries[1]["intent"], "diagnose")
+        self.assertEqual(
+            queries[1]["topic_id"], "software.diagnose.container-delivery"
+        )
+        self.assertEqual(
+            queries[1]["text"],
+            "repo:docker/docs Docker images debug failures",
+        )
+
+    def test_github_query_executor_checkpoints_on_first_failure_without_raw_bodies(
+        self,
+    ) -> None:
+        class FakeSearch:
+            def __init__(self) -> None:
+                self.calls: list[str] = []
+
+            def search(self, route: str, text: str) -> list[dict[str, object]]:
+                self.calls.append(text)
+                if len(self.calls) == 2:
+                    raise QueryExecutionError(
+                        "GitHub code-search rate limit reached"
+                    )
+                return [{"url": "https://github.com/docker/docs/blob/main/example.md"}]
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            input_path = root / "query-batch.json"
+            output_path = root / "query-results.json"
+            atomic_write_json(
+                input_path,
+                {
+                    "schema_version": 1,
+                    "batch_id": "batch-1",
+                    "cycle_id": "full-campaign-2026-08-30",
+                    "queries": [
+                        {
+                            "id": "query-one",
+                            "route": "github-code",
+                            "text": "repo:docker/docs build cache",
+                        },
+                        {
+                            "id": "query-two",
+                            "route": "github-code",
+                            "text": "repo:docker/docs debug build",
+                        },
+                        {
+                            "id": "query-three",
+                            "route": "web",
+                            "text": "site:docs.docker.com deploy containers",
+                        },
+                        {
+                            "id": "query-four",
+                            "route": "github-code",
+                            "text": "repo:docker/docs validate build",
+                        },
+                    ],
+                },
+            )
+
+            report = execute_github_query_batch(
+                input_path=input_path,
+                output_path=output_path,
+                executed_at="2026-08-30T13:00:00Z",
+                executor=FakeSearch(),
+                limit=10,
+            )
+            payload = json.loads(output_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(report["attempted_queries"], 2)
+        self.assertEqual(report["completed_queries"], 1)
+        self.assertEqual(report["failed_queries"], 1)
+        self.assertEqual(report["unsupported_queries"], 1)
+        self.assertEqual(report["remaining_supported_queries"], 1)
+        self.assertTrue(report["checkpointed"])
+        self.assertEqual(payload["executed_by"], "codex-agent-reach")
+        self.assertEqual([item["status"] for item in payload["results"]], ["completed", "failed"])
+        self.assertEqual(payload["results"][0]["result_count"], 1)
+        self.assertEqual(payload["results"][0]["selected_endpoints"], [])
+        self.assertNotIn("body", json.dumps(payload))
 
 
 if __name__ == "__main__":

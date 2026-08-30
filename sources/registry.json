@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "sources": [
     {
       "id": "openai-build-skills",
@@ -287,6 +287,378 @@
       "tier": "T4",
       "authority": "official-package-feed",
       "license": { "status": "facts-only", "identifier": null }
+    }
+  ],
+  "repository_sets": [
+    {
+      "repository": "git/git",
+      "revision": "c73e85354c275c9d409b26445089bc16940fc527",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-command-manual",
+      "license": {"status": "facts-only", "identifier": null},
+      "documents": [
+        {"id": "git-bisect-manual", "path": "Documentation/git-bisect.adoc"},
+        {"id": "git-branch-manual", "path": "Documentation/git-branch.adoc"},
+        {"id": "git-bundle-manual", "path": "Documentation/git-bundle.adoc"},
+        {"id": "git-cherry-pick-manual", "path": "Documentation/git-cherry-pick.adoc"},
+        {"id": "git-clone-manual", "path": "Documentation/git-clone.adoc"},
+        {"id": "git-rebase-manual", "path": "Documentation/git-rebase.adoc"},
+        {"id": "git-restore-manual", "path": "Documentation/git-restore.adoc"},
+        {"id": "git-submodule-manual", "path": "Documentation/git-submodule.adoc"},
+        {"id": "git-switch-manual", "path": "Documentation/git-switch.adoc"},
+        {"id": "git-worktree-manual", "path": "Documentation/git-worktree.adoc"}
+      ]
+    },
+    {
+      "repository": "docker/docs",
+      "revision": "dbad77a00e8352f30e663bec3eeae9fb31a19b4e",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-operational-guide",
+      "license": {"status": "known", "identifier": "Apache-2.0"},
+      "documents": [
+        {"id": "docker-building-images", "path": "content/get-started/docker-concepts/building-images/_index.md"},
+        {"id": "docker-build-tag-publish", "path": "content/get-started/docker-concepts/building-images/build-tag-and-publish-an-image.md"},
+        {"id": "docker-multi-stage-builds", "path": "content/get-started/docker-concepts/building-images/multi-stage-builds.md"},
+        {"id": "docker-image-layers", "path": "content/get-started/docker-concepts/building-images/understanding-image-layers.md"},
+        {"id": "docker-build-cache", "path": "content/get-started/docker-concepts/building-images/using-the-build-cache.md"},
+        {"id": "docker-writing-dockerfile", "path": "content/get-started/docker-concepts/building-images/writing-a-dockerfile.md"},
+        {"id": "docker-running-containers", "path": "content/get-started/docker-concepts/running-containers/_index.md"},
+        {"id": "docker-multi-container-apps", "path": "content/get-started/docker-concepts/running-containers/multi-container-applications.md"},
+        {"id": "docker-persisting-data", "path": "content/get-started/docker-concepts/running-containers/persisting-container-data.md"},
+        {"id": "docker-publishing-ports", "path": "content/get-started/docker-concepts/running-containers/publishing-ports.md"}
+      ]
+    },
+    {
+      "repository": "kubernetes/website",
+      "revision": "f2ee3f386238352ca07a9b1f27edf874bd4a8eea",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-operational-guide",
+      "license": {"status": "known", "identifier": "CC-BY-4.0"},
+      "documents": [
+        {"id": "kubernetes-port-forward", "path": "content/en/docs/tasks/access-application-cluster/port-forward-access-application-cluster.md"},
+        {"id": "kubernetes-kubeadm-upgrade", "path": "content/en/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade.md"},
+        {"id": "kubernetes-container-probes", "path": "content/en/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes.md"},
+        {"id": "kubernetes-configmap", "path": "content/en/docs/tasks/configure-pod-container/configure-pod-configmap.md"},
+        {"id": "kubernetes-debug-pods", "path": "content/en/docs/tasks/debug/debug-application/debug-pods.md"},
+        {"id": "kubernetes-cronjobs", "path": "content/en/docs/tasks/job/automated-tasks-with-cron-jobs.md"},
+        {"id": "kubernetes-update-daemonset", "path": "content/en/docs/tasks/manage-daemon/update-daemon-set.md"},
+        {"id": "kubernetes-declarative-config", "path": "content/en/docs/tasks/manage-kubernetes-objects/declarative-config.md"},
+        {"id": "kubernetes-stateless-deployment", "path": "content/en/docs/tasks/run-application/run-stateless-application-deployment.md"},
+        {"id": "kubernetes-install-kubectl-windows", "path": "content/en/docs/tasks/tools/install-kubectl-windows.md"}
+      ]
+    },
+    {
+      "repository": "hashicorp/terraform",
+      "revision": "d052145462e9b513211f335509bff31b86507127",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-maintainer-guide",
+      "license": {"status": "facts-only", "identifier": null},
+      "documents": [
+        {"id": "terraform-debugging", "path": "docs/debugging.md"},
+        {"id": "terraform-dependency-upgrades", "path": "docs/dependency-upgrades.md"},
+        {"id": "terraform-planning-behaviors", "path": "docs/planning-behaviors.md"}
+      ]
+    },
+    {
+      "repository": "ansible/ansible-documentation",
+      "revision": "c77ebb1b61c1b9f95d4fcc73400013c1ddadaf03",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-operational-guide",
+      "license": {"status": "known", "identifier": "GPL-3.0"},
+      "documents": [
+        {"id": "ansible-install-collections", "path": "docs/docsite/rst/collections_guide/collections_installing.rst"},
+        {"id": "ansible-collection-integration-tests", "path": "docs/docsite/rst/community/collection_contributors/collection_integration_tests.rst"},
+        {"id": "ansible-collection-local-pr-test", "path": "docs/docsite/rst/community/collection_contributors/collection_test_pr_locally.rst"},
+        {"id": "ansible-collection-release-branches", "path": "docs/docsite/rst/community/collection_contributors/collection_release_with_branches.rst"},
+        {"id": "ansible-debugging", "path": "docs/docsite/rst/dev_guide/debugging.rst"},
+        {"id": "ansible-collection-testing", "path": "docs/docsite/rst/dev_guide/developing_collections_testing.rst"},
+        {"id": "ansible-migrating-roles", "path": "docs/docsite/rst/dev_guide/migrating_roles.rst"}
+      ]
+    },
+    {
+      "repository": "open-telemetry/opentelemetry.io",
+      "revision": "12862017e85a7b88fbd194241af00f4dbd4ee75c",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-operational-guide",
+      "license": {"status": "known", "identifier": "CC-BY-4.0"},
+      "documents": [
+        {"id": "otel-collector-exporters", "path": "content/en/docs/collector/components/exporter.md"},
+        {"id": "otel-collector-configuration", "path": "content/en/docs/collector/configuration.md"},
+        {"id": "otel-collector-deploy-choose", "path": "content/en/docs/collector/deploy/choose.md"},
+        {"id": "otel-collector-deploy-agent", "path": "content/en/docs/collector/deploy/agent.md"},
+        {"id": "otel-collector-deploy-gateway", "path": "content/en/docs/collector/deploy/gateway.md"},
+        {"id": "otel-collector-install-docker", "path": "content/en/docs/collector/install/docker.md"},
+        {"id": "otel-collector-install-kubernetes", "path": "content/en/docs/collector/install/kubernetes.md"},
+        {"id": "otel-collector-troubleshooting", "path": "content/en/docs/collector/troubleshooting.md"},
+        {"id": "otel-code-instrumentation", "path": "content/en/docs/concepts/instrumentation/code-based.md"},
+        {"id": "otel-sampling", "path": "content/en/docs/concepts/sampling/index.md"}
+      ]
+    },
+    {
+      "repository": "prometheus/docs",
+      "revision": "9ece2ea6375353799f014055bc577d795214aec0",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-operational-guide",
+      "license": {"status": "known", "identifier": "Apache-2.0"},
+      "documents": [
+        {"id": "prometheus-basic-auth", "path": "docs/guides/basic-auth.md"},
+        {"id": "prometheus-openmetrics-migration", "path": "docs/guides/open_metrics_2_0_migration.md"},
+        {"id": "prometheus-client-libraries", "path": "docs/instrumenting/clientlibs.md"},
+        {"id": "prometheus-writing-client-libraries", "path": "docs/instrumenting/writing_clientlibs.md"},
+        {"id": "prometheus-security", "path": "docs/operating/security.md"}
+      ]
+    },
+    {
+      "repository": "grafana/grafana",
+      "revision": "5e3a02f81d2aadf4bf24fe49ed97d872556f5bf9",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-operational-guide",
+      "license": {"status": "known", "identifier": "AGPL-3.0"},
+      "documents": [
+        {"id": "grafana-cli-administration", "path": "docs/sources/administration/cli.md"},
+        {"id": "grafana-correlation-config", "path": "docs/sources/administration/correlations/correlation-configuration/index.md"},
+        {"id": "grafana-advisor-cli", "path": "docs/sources/administration/grafana-advisor/advisor-cli/_index.md"},
+        {"id": "grafana-migration-guide", "path": "docs/sources/administration/migration-guide/_index.md"},
+        {"id": "grafana-cloud-migration-assistant", "path": "docs/sources/administration/migration-guide/cloud-migration-assistant.md"}
+      ]
+    },
+    {
+      "repository": "postgres/postgres",
+      "revision": "2fb8da5a245661287833b05a1b2e275ddf83bbd7",
+      "trust": "official",
+      "tier": "T0",
+      "authority": "official-reference",
+      "license": {"status": "facts-only", "identifier": null},
+      "documents": [
+        {"id": "postgres-backup", "path": "doc/src/sgml/backup.sgml"},
+        {"id": "postgres-client-auth", "path": "doc/src/sgml/client-auth.sgml"},
+        {"id": "postgres-high-availability", "path": "doc/src/sgml/high-availability.sgml"},
+        {"id": "postgres-libpq", "path": "doc/src/sgml/libpq.sgml"},
+        {"id": "postgres-logical-replication", "path": "doc/src/sgml/logical-replication.sgml"},
+        {"id": "postgres-maintenance", "path": "doc/src/sgml/maintenance.sgml"},
+        {"id": "postgres-monitoring", "path": "doc/src/sgml/monitoring.sgml"},
+        {"id": "postgres-pg-dump", "path": "doc/src/sgml/ref/pg_dump.sgml"},
+        {"id": "postgres-pg-restore", "path": "doc/src/sgml/ref/pg_restore.sgml"},
+        {"id": "postgres-wal", "path": "doc/src/sgml/wal.sgml"}
+      ]
+    },
+    {
+      "repository": "npm/documentation",
+      "revision": "a2195d6d348847f15c3d63d1285d452d0c5bf47e",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-command-manual",
+      "license": {"status": "known", "identifier": "CC-BY-4.0"},
+      "documents": [
+        {"id": "npm-audit", "path": "content/cli/v10/commands/npm-audit.mdx"},
+        {"id": "npm-cache", "path": "content/cli/v10/commands/npm-cache.mdx"},
+        {"id": "npm-ci", "path": "content/cli/v10/commands/npm-ci.mdx"},
+        {"id": "npm-config", "path": "content/cli/v10/commands/npm-config.mdx"},
+        {"id": "npm-dedupe", "path": "content/cli/v10/commands/npm-dedupe.mdx"},
+        {"id": "npm-doctor", "path": "content/cli/v10/commands/npm-doctor.mdx"},
+        {"id": "npm-exec", "path": "content/cli/v10/commands/npm-exec.mdx"},
+        {"id": "npm-install", "path": "content/cli/v10/commands/npm-install.mdx"},
+        {"id": "npm-pack", "path": "content/cli/v10/commands/npm-pack.mdx"},
+        {"id": "npm-publish", "path": "content/cli/v10/commands/npm-publish.mdx"}
+      ]
+    },
+    {
+      "repository": "rust-lang/cargo",
+      "revision": "0c507b7878f3bee83076734d162ece97fc81d814",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-command-manual",
+      "license": {"status": "known", "identifier": "Apache-2.0"},
+      "documents": [
+        {"id": "cargo-build", "path": "doc/book/src/commands/cargo-build.md"},
+        {"id": "cargo-install", "path": "doc/book/src/commands/cargo-install.md"},
+        {"id": "cargo-package", "path": "doc/book/src/commands/cargo-package.md"},
+        {"id": "cargo-publish", "path": "doc/book/src/commands/cargo-publish.md"},
+        {"id": "cargo-test", "path": "doc/book/src/commands/cargo-test.md"},
+        {"id": "cargo-installation", "path": "doc/book/src/getting-started/installation.md"},
+        {"id": "cargo-build-performance", "path": "doc/book/src/guide/build-performance.md"},
+        {"id": "cargo-tests-guide", "path": "doc/book/src/guide/tests.md"},
+        {"id": "cargo-build-cache", "path": "doc/book/src/reference/build-cache.md"},
+        {"id": "cargo-config", "path": "doc/book/src/reference/config.md"}
+      ]
+    },
+    {
+      "repository": "pytest-dev/pytest",
+      "revision": "59e7f3ad5382e35751347e749d62a9dc0c84ece1",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-operational-guide",
+      "license": {"status": "known", "identifier": "MIT"},
+      "documents": [
+        {"id": "pytest-assertions", "path": "doc/en/how-to/assert.rst"},
+        {"id": "pytest-cache", "path": "doc/en/how-to/cache.rst"},
+        {"id": "pytest-capture-output", "path": "doc/en/how-to/capture-stdout-stderr.rst"},
+        {"id": "pytest-failures", "path": "doc/en/how-to/failures.rst"},
+        {"id": "pytest-fixtures", "path": "doc/en/how-to/fixtures.rst"},
+        {"id": "pytest-logging", "path": "doc/en/how-to/logging.rst"},
+        {"id": "pytest-output", "path": "doc/en/how-to/output.rst"},
+        {"id": "pytest-parametrize", "path": "doc/en/how-to/parametrize.rst"},
+        {"id": "pytest-plugins", "path": "doc/en/how-to/plugins.rst"},
+        {"id": "pytest-usage", "path": "doc/en/how-to/usage.rst"}
+      ]
+    },
+    {
+      "repository": "microsoft/playwright",
+      "revision": "de214f440b7e34937fe4886f046b78b757136087",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-operational-guide",
+      "license": {"status": "known", "identifier": "Apache-2.0"},
+      "documents": [
+        {"id": "playwright-accessibility-testing", "path": "docs/src/accessibility-testing-js.md"},
+        {"id": "playwright-api-testing", "path": "docs/src/api-testing-js.md"},
+        {"id": "playwright-authentication", "path": "docs/src/auth.md"},
+        {"id": "playwright-best-practices", "path": "docs/src/best-practices-js.md"},
+        {"id": "playwright-assertions", "path": "docs/src/test-assertions-js.md"},
+        {"id": "playwright-configuration", "path": "docs/src/test-configuration-js.md"},
+        {"id": "playwright-fixtures", "path": "docs/src/test-fixtures-js.md"},
+        {"id": "playwright-parallelism", "path": "docs/src/test-parallel-js.md"},
+        {"id": "playwright-reporters", "path": "docs/src/test-reporters-js.md"},
+        {"id": "playwright-retries", "path": "docs/src/test-retries-js.md"}
+      ]
+    },
+    {
+      "repository": "pandas-dev/pandas",
+      "revision": "b3deac03d262cf2a176c33663fdb9a701c66f103",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-operational-guide",
+      "license": {"status": "known", "identifier": "BSD-3-Clause"},
+      "documents": [
+        {"id": "pandas-install", "path": "doc/source/getting_started/install.rst"},
+        {"id": "pandas-subset-data", "path": "doc/source/getting_started/intro_tutorials/03_subset_data.rst"},
+        {"id": "pandas-combine-dataframes", "path": "doc/source/getting_started/intro_tutorials/08_combine_dataframes.rst"},
+        {"id": "pandas-text-data", "path": "doc/source/getting_started/intro_tutorials/10_text_data.rst"},
+        {"id": "pandas-testing", "path": "doc/source/reference/testing.rst"},
+        {"id": "pandas-performance", "path": "doc/source/user_guide/enhancingperf.rst"},
+        {"id": "pandas-io", "path": "doc/source/user_guide/io.rst"},
+        {"id": "pandas-migration", "path": "doc/source/user_guide/migration.rst"},
+        {"id": "pandas-missing-data", "path": "doc/source/user_guide/missing_data.rst"},
+        {"id": "pandas-reshaping", "path": "doc/source/user_guide/reshaping.rst"}
+      ]
+    },
+    {
+      "repository": "duckdb/duckdb-web",
+      "revision": "164013f37c8c5835b2d7ea6a56648409859486da",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-operational-guide",
+      "license": {"status": "known", "identifier": "MIT"},
+      "documents": [
+        {"id": "duckdb-cli-arguments", "path": "docs/current/clients/cli/arguments.md"},
+        {"id": "duckdb-cli-dot-commands", "path": "docs/current/clients/cli/dot_commands.md"},
+        {"id": "duckdb-cli-safe-mode", "path": "docs/current/clients/cli/safe_mode.md"},
+        {"id": "duckdb-python-ingestion", "path": "docs/current/clients/python/data_ingestion.md"},
+        {"id": "duckdb-configuration", "path": "docs/current/configuration/overview.md"},
+        {"id": "duckdb-secrets-manager", "path": "docs/current/configuration/secrets_manager.md"},
+        {"id": "duckdb-concurrency", "path": "docs/current/connect/concurrency.md"},
+        {"id": "duckdb-csv-auto-detection", "path": "docs/current/data/csv/auto_detection.md"},
+        {"id": "duckdb-json", "path": "docs/current/data/json/overview.md"},
+        {"id": "duckdb-parquet", "path": "docs/current/data/parquet/overview.md"}
+      ]
+    },
+    {
+      "repository": "mdn/content",
+      "revision": "a447d93f8c264d39c49e9f465ad780a81e92ed71",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-web-platform-guide",
+      "license": {"status": "facts-only", "identifier": null},
+      "documents": [
+        {"id": "mdn-cors", "path": "files/en-us/web/http/guides/cors/index.md"},
+        {"id": "mdn-content-security-policy", "path": "files/en-us/web/http/guides/csp/index.md"},
+        {"id": "mdn-using-fetch", "path": "files/en-us/web/api/fetch_api/using_fetch/index.md"},
+        {"id": "mdn-web-workers", "path": "files/en-us/web/api/web_workers_api/using_web_workers/index.md"},
+        {"id": "mdn-service-workers", "path": "files/en-us/web/api/service_worker_api/using_service_workers/index.md"},
+        {"id": "mdn-form-validation", "path": "files/en-us/learn_web_development/extensions/forms/form_validation/index.md"},
+        {"id": "mdn-form-data", "path": "files/en-us/learn_web_development/extensions/forms/sending_and_retrieving_form_data/index.md"},
+        {"id": "mdn-aria-guides", "path": "files/en-us/web/accessibility/aria/guides/index.md"},
+        {"id": "mdn-browser-rendering", "path": "files/en-us/web/performance/guides/how_browsers_work/index.md"},
+        {"id": "mdn-lazy-loading", "path": "files/en-us/web/performance/guides/lazy_loading/index.md"}
+      ]
+    },
+    {
+      "repository": "OAI/OpenAPI-Specification",
+      "revision": "78efccab74c9d5866ef3ab65c946142f37fa7049",
+      "trust": "official",
+      "tier": "T0",
+      "authority": "official-format-specification",
+      "license": {"status": "known", "identifier": "Apache-2.0"},
+      "documents": [
+        {"id": "openapi-spec-303", "path": "versions/3.0.3.md"},
+        {"id": "openapi-spec-304", "path": "versions/3.0.4.md"},
+        {"id": "openapi-spec-311", "path": "versions/3.1.1.md"},
+        {"id": "openapi-spec-312", "path": "versions/3.1.2.md"},
+        {"id": "openapi-spec-320", "path": "versions/3.2.0.md"}
+      ]
+    },
+    {
+      "repository": "curl/curl",
+      "revision": "a00995705779b63ed288ecee67f696809b7b1d56",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-command-manual",
+      "license": {"status": "facts-only", "identifier": null},
+      "documents": [
+        {"id": "curl-config-option", "path": "docs/cmdline-opts/config.md"},
+        {"id": "curl-data-option", "path": "docs/cmdline-opts/data.md"},
+        {"id": "curl-data-urlencode-option", "path": "docs/cmdline-opts/data-urlencode.md"},
+        {"id": "curl-oauth2-bearer-option", "path": "docs/cmdline-opts/oauth2-bearer.md"},
+        {"id": "curl-request-option", "path": "docs/cmdline-opts/request.md"}
+      ]
+    },
+    {
+      "repository": "microsoft/TypeScript-Website",
+      "revision": "d16dc2dc9bb11406f608c5ac1476c32a5bc806d9",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-operational-guide",
+      "license": {"status": "known", "identifier": "CC-BY-4.0"},
+      "documents": [
+        {"id": "typescript-declaration-publishing", "path": "packages/documentation/copy/en/declaration-files/Publishing.md"},
+        {"id": "typescript-library-structures", "path": "packages/documentation/copy/en/declaration-files/Library Structures.md"},
+        {"id": "typescript-declaration-deep-dive", "path": "packages/documentation/copy/en/declaration-files/Deep Dive.md"}
+      ]
+    },
+    {
+      "repository": "reactjs/react.dev",
+      "revision": "7c36f7ac329fe3cf2e11222edce9a535158c2cab",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-operational-guide",
+      "license": {"status": "known", "identifier": "CC-BY-4.0"},
+      "documents": [
+        {"id": "react-installation", "path": "src/content/learn/installation.md"},
+        {"id": "react-build-from-scratch", "path": "src/content/learn/build-a-react-app-from-scratch.md"},
+        {"id": "react-compiler-debugging", "path": "src/content/learn/react-compiler/debugging.md"}
+      ]
+    },
+    {
+      "repository": "vercel/next.js",
+      "revision": "2fe6f962a1982594bdda96a7de16c594677266d2",
+      "trust": "official",
+      "tier": "T1",
+      "authority": "official-operational-guide",
+      "license": {"status": "known", "identifier": "MIT"},
+      "documents": [
+        {"id": "nextjs-installation", "path": "docs/01-app/01-getting-started/01-installation.mdx"},
+        {"id": "nextjs-fetching-data", "path": "docs/01-app/01-getting-started/06-fetching-data.mdx"},
+        {"id": "nextjs-building", "path": "docs/01-app/02-guides/building.mdx"},
+        {"id": "nextjs-debugging", "path": "docs/01-app/02-guides/debugging.mdx"}
+      ]
     }
   ]
 }

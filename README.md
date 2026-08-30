@@ -10,6 +10,8 @@ It is deliberately not a Skill mirror. Deterministic Python owns fetching, chang
 
 The current unreleased content-production slice uses one SQLite runtime store with separate observations, Evidence Packs, normalized candidates, query/semantic batches, queues, decisions, and checkpoints. Git continues to hold Skills, manifests, evals, and readable run records. It does not claim that the currently registered source inventory already reaches the long-term capacity envelope.
 
+The active full-campaign branch currently configures 190 revision-pinned executable endpoints and 1,621 unique Domain × Intent queries. These are inventory and queued-work capacity, not executed-request or observation counts; only imported query results and SQLite-backed campaign runs become measured production metrics. Parent campaign completion still depends on the policy-owned objective or an explicit controller end.
+
 Its first real content-production slice expanded the executable inventory from 10 to 26 endpoints and ran all 21 Topic Bank queries. It made 28 source requests, read 26 high-trust observations in resumable semantic batches, produced seven Evidence Packs, normalized three candidates, executed nine L3 recalls and three supervised L4 decisions, then created one Python release-readiness Skill, updated one GitHub release Skill, and merged one narrower version-consistency capability. Query, semantic, and stable-source replay all ended in code-generated no-op checkpoints. The slice is complete, but the policy-owned parent campaign remains `active` until its 180-endpoint/1,500-query lower-bound objective is reached, a real stop-loss creates a checkpoint, or the controller explicitly ends it. [The production report](runs/2026-08-29-content-production.json) is rebuilt by the validator from SQLite and its referenced run reports.
 
 ## What v0.1.1 proves
@@ -136,7 +138,7 @@ The current branch marketplace also contains **Python Package Delivery**, but it
 - `config/scale-policy.json` — active backend, review budget, projection targets, and measured migration triggers.
 - `plugins/` and `.agents/plugins/marketplace.json` — installable task-domain Plugin output.
 - `evals/` — Codex-reviewed trigger cases and deterministic end-to-end fixtures.
-- `runs/` — machine-readable and human-readable campaign, scan, migration, delivery, and release reports.
+- `runs/` — compact parent-campaign reports, standalone scan reports, migration, delivery, and release evidence.
 
 ## License
 

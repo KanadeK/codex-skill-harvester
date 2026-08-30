@@ -10,6 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from skill_harvester.validation import ValidationError, validate_repository
+from skill_harvester.queries import load_topic_bank
 from skill_harvester.runtime_store import open_runtime_store
 
 
@@ -64,7 +65,7 @@ class RepositoryValidationTests(unittest.TestCase):
         self.assertEqual(report["taxonomy_version"], "1.0.0")
         self.assertEqual(report["scale_backend"], "sqlite-v3")
         self.assertEqual(report["evidence_packs"], 117)
-        self.assertEqual(report["topic_queries"], 21)
+        self.assertEqual(report["topic_queries"], len(load_topic_bank(root)))
         self.assertEqual(report["migration_triggers"], [])
         self.assertEqual(report["secrets_found"], 0)
 

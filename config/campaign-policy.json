@@ -18,6 +18,7 @@
       "source_ids": [
         "openai-build-skills",
         "openai-build-plugins",
+        "openai-plugin-catalog",
         "openai-codex-releases"
       ]
     },
@@ -53,12 +54,274 @@
         "pypa-sampleproject-readme",
         "pypi-updates"
       ]
+    },
+    "discovery-signals": {
+      "topic_id": "software.discover.agent-skills",
+      "source_ids": [
+        "github-agent-skills-search"
+      ]
+    },
+    "external-skill-comparison": {
+      "topic_id": "software.diagnose.external-skills",
+      "source_ids": [
+        "openai-gh-fix-ci",
+        "openai-gh-address-comments"
+      ]
+    },
+    "version-control-git": {
+      "topic_id": "software.maintain.git-workflows",
+      "source_ids": [
+        "git-bisect-manual",
+        "git-branch-manual",
+        "git-bundle-manual",
+        "git-cherry-pick-manual",
+        "git-clone-manual",
+        "git-rebase-manual",
+        "git-restore-manual",
+        "git-submodule-manual",
+        "git-switch-manual",
+        "git-worktree-manual"
+      ]
+    },
+    "containers-docker": {
+      "topic_id": "software.operate.container-workflows",
+      "source_ids": [
+        "docker-building-images",
+        "docker-build-tag-publish",
+        "docker-multi-stage-builds",
+        "docker-image-layers",
+        "docker-build-cache",
+        "docker-writing-dockerfile",
+        "docker-running-containers",
+        "docker-multi-container-apps",
+        "docker-persisting-data",
+        "docker-publishing-ports"
+      ]
+    },
+    "orchestration-kubernetes": {
+      "topic_id": "software.operate.kubernetes-operations",
+      "source_ids": [
+        "kubernetes-port-forward",
+        "kubernetes-kubeadm-upgrade",
+        "kubernetes-container-probes",
+        "kubernetes-configmap",
+        "kubernetes-debug-pods",
+        "kubernetes-cronjobs",
+        "kubernetes-update-daemonset",
+        "kubernetes-declarative-config",
+        "kubernetes-stateless-deployment",
+        "kubernetes-install-kubectl-windows"
+      ]
+    },
+    "infrastructure-automation": {
+      "topic_id": "software.operate.infrastructure-automation",
+      "source_ids": [
+        "terraform-debugging",
+        "terraform-dependency-upgrades",
+        "terraform-planning-behaviors",
+        "ansible-install-collections",
+        "ansible-collection-integration-tests",
+        "ansible-collection-local-pr-test",
+        "ansible-collection-release-branches",
+        "ansible-debugging",
+        "ansible-collection-testing",
+        "ansible-migrating-roles"
+      ]
+    },
+    "telemetry-opentelemetry": {
+      "topic_id": "software.operate.telemetry-collection",
+      "source_ids": [
+        "otel-collector-exporters",
+        "otel-collector-configuration",
+        "otel-collector-deploy-choose",
+        "otel-collector-deploy-agent",
+        "otel-collector-deploy-gateway",
+        "otel-collector-install-docker",
+        "otel-collector-install-kubernetes",
+        "otel-collector-troubleshooting",
+        "otel-code-instrumentation",
+        "otel-sampling"
+      ]
+    },
+    "observability-metrics": {
+      "topic_id": "software.analyze.metrics-observability",
+      "source_ids": [
+        "prometheus-basic-auth",
+        "prometheus-openmetrics-migration",
+        "prometheus-client-libraries",
+        "prometheus-writing-client-libraries",
+        "prometheus-security",
+        "grafana-cli-administration",
+        "grafana-correlation-config",
+        "grafana-advisor-cli",
+        "grafana-migration-guide",
+        "grafana-cloud-migration-assistant"
+      ]
+    },
+    "database-postgresql": {
+      "topic_id": "data.maintain.database-postgresql",
+      "source_ids": [
+        "postgres-backup",
+        "postgres-client-auth",
+        "postgres-high-availability",
+        "postgres-libpq",
+        "postgres-logical-replication",
+        "postgres-maintenance",
+        "postgres-monitoring",
+        "postgres-pg-dump",
+        "postgres-pg-restore",
+        "postgres-wal"
+      ]
+    },
+    "javascript-packaging": {
+      "topic_id": "software.publish.javascript-packaging",
+      "source_ids": [
+        "npm-audit",
+        "npm-cache",
+        "npm-ci",
+        "npm-config",
+        "npm-dedupe",
+        "npm-doctor",
+        "npm-exec",
+        "npm-install",
+        "npm-pack",
+        "npm-publish"
+      ]
+    },
+    "systems-packaging": {
+      "topic_id": "software.publish.systems-packaging",
+      "source_ids": [
+        "cargo-build",
+        "cargo-install",
+        "cargo-package",
+        "cargo-publish",
+        "cargo-test",
+        "cargo-installation",
+        "cargo-build-performance",
+        "cargo-tests-guide",
+        "cargo-build-cache",
+        "cargo-config"
+      ]
+    },
+    "testing-pytest": {
+      "topic_id": "software.validate.testing-pytest",
+      "source_ids": [
+        "pytest-assertions",
+        "pytest-cache",
+        "pytest-capture-output",
+        "pytest-failures",
+        "pytest-fixtures",
+        "pytest-logging",
+        "pytest-output",
+        "pytest-parametrize",
+        "pytest-plugins",
+        "pytest-usage"
+      ]
+    },
+    "testing-playwright": {
+      "topic_id": "software.validate.testing-playwright",
+      "source_ids": [
+        "playwright-accessibility-testing",
+        "playwright-api-testing",
+        "playwright-authentication",
+        "playwright-best-practices",
+        "playwright-assertions",
+        "playwright-configuration",
+        "playwright-fixtures",
+        "playwright-parallelism",
+        "playwright-reporters",
+        "playwright-retries"
+      ]
+    },
+    "data-pandas": {
+      "topic_id": "data.transform.dataframe-processing",
+      "source_ids": [
+        "pandas-install",
+        "pandas-subset-data",
+        "pandas-combine-dataframes",
+        "pandas-text-data",
+        "pandas-testing",
+        "pandas-performance",
+        "pandas-io",
+        "pandas-migration",
+        "pandas-missing-data",
+        "pandas-reshaping"
+      ]
+    },
+    "data-duckdb": {
+      "topic_id": "data.analyze.analytical-sql",
+      "source_ids": [
+        "duckdb-cli-arguments",
+        "duckdb-cli-dot-commands",
+        "duckdb-cli-safe-mode",
+        "duckdb-python-ingestion",
+        "duckdb-configuration",
+        "duckdb-secrets-manager",
+        "duckdb-concurrency",
+        "duckdb-csv-auto-detection",
+        "duckdb-json",
+        "duckdb-parquet"
+      ]
+    },
+    "web-platform": {
+      "topic_id": "software.create.web-platform",
+      "source_ids": [
+        "mdn-cors",
+        "mdn-content-security-policy",
+        "mdn-using-fetch",
+        "mdn-web-workers",
+        "mdn-service-workers",
+        "mdn-form-validation",
+        "mdn-form-data",
+        "mdn-aria-guides",
+        "mdn-browser-rendering",
+        "mdn-lazy-loading"
+      ]
+    },
+    "api-contracts": {
+      "topic_id": "software.validate.api-contracts",
+      "source_ids": [
+        "openapi-spec-303",
+        "openapi-spec-304",
+        "openapi-spec-311",
+        "openapi-spec-312",
+        "openapi-spec-320",
+        "curl-config-option",
+        "curl-data-option",
+        "curl-data-urlencode-option",
+        "curl-oauth2-bearer-option",
+        "curl-request-option"
+      ]
+    },
+    "frontend-engineering": {
+      "topic_id": "software.create.frontend-engineering",
+      "source_ids": [
+        "typescript-declaration-publishing",
+        "typescript-library-structures",
+        "typescript-declaration-deep-dive",
+        "react-installation",
+        "react-build-from-scratch",
+        "react-compiler-debugging",
+        "nextjs-installation",
+        "nextjs-fetching-data",
+        "nextjs-building",
+        "nextjs-debugging"
+      ]
     }
   },
   "canary_source_ids": [
     "openai-build-skills",
     "github-cli-release-view",
-    "pypi-updates"
+    "pypi-updates",
+    "git-clone-manual",
+    "docker-build-cache",
+    "kubernetes-stateless-deployment",
+    "terraform-debugging",
+    "otel-collector-configuration",
+    "prometheus-basic-auth",
+    "postgres-backup",
+    "npm-ci",
+    "playwright-best-practices"
   ],
   "queue_order": [
     "urgent-impact",
