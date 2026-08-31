@@ -256,3 +256,42 @@ On 2026-08-30, before this work package began, PR #8 had already been squash-mer
 - [x] Validate and commit every reviewable vertical batch, then open stacked PR #10 against `codex/pr8-campaign-corrections`; implementation HEAD `59b0734` is `CLEAN` with passing Ubuntu/Windows CI, and no PR, tag, or Release was merged or created.
 
 Completion checkpoint on 2026-08-30: the sole SQLite authority contains 204 registered and scanned endpoints, 1,204 observations, 168 Evidence Packs, 136 applied L4 decisions, and eight Skills. The query cycle completed all 1,622 queries in 1,626 attempts, retaining four recoverable GitHub rate-limit failures and 151 discovery hits. Across the eight campaign semantic batches, 217 observations produced 58 Evidence Packs, 26 candidates, 263 L3 recalls, and 26 L4 outcomes: seven creates, three updates, one merge, and 15 `not_promoted`. The final 204-endpoint ramp completed with 204 successes, 517,498 downloaded bytes, 116 inserted observations, and no source failure. Query, semantic, and stable-source replay are no-op; the capacity objective is met. The 128-test suite, eight Skill evals, validator, benchmark, deterministic build/install/invocation, and diff checks pass locally. PR #10 is open and `CLEAN`; implementation HEAD `59b0734` passed Ubuntu/Windows CI. The final documentation-only HEAD is rechecked by CI before handoff.
+
+## Daily Life Skills pilot
+
+Remote baseline verified on 2026-08-30: `main` remains `6a54e7f`; PR #7 and PR #9 are open; PR #8 is merged only into the PR #7 branch; PR #10 is merged only into the PR #9 branch; and `origin/codex/pr8-campaign-corrections` is `034a1f0`. This work runs on `codex/daily-life-skills-pilot-2026-08-30` and will stack on that correction branch without merging or releasing.
+
+### Phase 24: make Daily Life and discovery-hit review first-class
+
+- [ ] Register `daily-life` as the user-facing top-level domain with the first families `fresh-market-and-grocery-shopping`, `laundry-and-clothing-care`, and `home-cooking-and-meal-preparation`.
+- [ ] Clarify the existing seven-field fingerprint so `platforms` means software platform or real execution environment; add only the taxonomy values needed by exercised life capabilities, with no fingerprint schema fork or dual meaning.
+- [ ] Add RED tests for a single SQLite discovery-hit lifecycle: `pending -> selected_endpoint|duplicate|not_selected`, bounded partial review/resume, duplicate hits, invalid license/source metadata, selection failure, and no-op.
+- [ ] Persist query-to-hit provenance and reviewed metadata in the sole runtime authority; selected endpoints must pass URL, identity, revision, license, duplicate, and registry validation before entering the source registry.
+- [ ] Make query and production reports distinguish raw hits, pending review, selected, duplicate, not selected, and conversion rate. Completed query execution must not imply completed hit review.
+
+Checkpoint: the existing query executor may continue producing untrusted hit metadata, but only a Codex-reviewed discovery decision may register a source. No JSON inbox becomes a second authority.
+
+### Phase 25: build the bilingual Scenario Bank and evidence base
+
+- [ ] Use agent-reach background search/web routes to select Chinese and English T0/T1/T2 sources across consumer/food safety, agriculture extension, textile care, appliance/garment instructions, and cooking education; retain community material only as discovery signal.
+- [ ] Define at least 60 specific scenarios, with at least 20 in each of the three Daily Life families. Every scenario records locality/equipment assumptions, safety boundary, source refs, and a final `create|update|merge|not_promoted` outcome.
+- [ ] Scan selected sources from persisted cursors, review actual cached evidence into Evidence Packs, and carry every independent capability through L2/L3 recall and supervised L4. Unsafe, medical, repair, contradictory, or unsupported scenarios remain evidence with explicit reactivation conditions.
+- [ ] Keep raw pages temporary and commit only compact provenance, the Scenario Bank, SQLite state, decisions, and campaign reports.
+
+Checkpoint: 60+ scenarios have no pending outcome; counts are review coverage, never a Skill quota.
+
+### Phase 26: synthesize human-executed instruction-only Skills
+
+- [ ] Create every qualified original capability under three installation-intent Plugins. Broad concepts such as cooking remain families/collections; each Skill has one discriminating user task and nearby scenarios become variants or references.
+- [ ] Keep instruction-only as the default. Add a script only when deterministic repeated arithmetic or parsing materially improves a real workflow, and run it in an isolated temporary directory.
+- [ ] Make Chinese trigger and anti-trigger cases first-class, preserve English discovery where useful, ask only missing critical conditions, and support plan / one-step-at-a-time / recovery modes without claiming that Codex performed a physical action.
+- [ ] Extend evals minimally for instruction-only life workflows and verify observable decision branches, completion checks, recovery, locality/equipment conditions, and stop/professional-help boundaries rather than fixed wording.
+
+Checkpoint: every generated Skill passes source, originality, non-overlap, trigger, instruction-only E2E, safety, Plugin format, and isolated installation/invocation review.
+
+### Phase 27: execute, validate, and submit the life campaign
+
+- [ ] Run reviewable vertical batches until all 60+ scenarios are resolved and every family forms a useful installable capability set; pending work or three demonstration Skills cannot complete the pilot.
+- [ ] Prove discovery review, semantic processing, and stable-source replay resume or no-op from SQLite; Usage remains `measured=false` without an authoritative meter.
+- [ ] Run 128+ unittest cases, all existing and new evals, repository validator, SQLite benchmark, deterministic build, Plugin packaging, isolated install/invocation, official Skill/Plugin validators when locally available, independent Skill review, and `git diff --check`.
+- [ ] Commit exact paths, push the new branch, open one stacked PR against `codex/pr8-campaign-corrections`, and wait for Ubuntu/Windows CI without merging, tagging, or releasing.

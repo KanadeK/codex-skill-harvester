@@ -172,3 +172,38 @@ The Task 20 submission line records the state when it was written. PR #8 was sub
 - Dependencies: Task 21 complete and explicit 2026-08-30 full-campaign authorization.
 
 Completion checkpoint: the branch starts at verified correction HEAD `7aa8f86`; 204 revision-pinned endpoints and 1,622 unique Domain × Intent queries are now executed capacity. The query cycle completed in 1,626 attempts with four recoverable GitHub rate-limit failures, 151 discovery hits, and zero pending work. The sole SQLite authority records 1,204 observations, 168 Evidence Packs, 136 applied decisions, and eight Skills. Eight campaign semantic batches reviewed 217 observations into 58 Evidence Packs and 26 candidates, producing 263 L3 recalls and 26 L4 outcomes: seven creates, three updates, one merge, and 15 `not_promoted`. The final 204-endpoint ramp succeeded without source failures. All local verification gates pass; PR #10 implementation HEAD `59b0734` is `CLEAN` with green Ubuntu/Windows CI. The final documentation-only HEAD is rechecked before handoff.
+
+## Task 23: add Daily Life and close discovery-hit review
+
+- [ ] Acceptance: Daily Life is a formal product domain and the three approved families are registered without treating physical places as software ecosystems.
+- [ ] Acceptance: the seven-field fingerprint has one documented meaning; reality-facing execution environments use registered taxonomy values without a parallel fingerprint schema.
+- [ ] Acceptance: every query hit has one SQLite lifecycle and one reviewed terminal outcome; query completion reports pending hit review rather than hiding it.
+- [ ] Acceptance: only a Codex-reviewed, known-license, traceable, non-duplicate endpoint enters the source registry; partial review resumes and unchanged reviewed hits are no-op.
+- [ ] Verify: focused RED/GREEN tests cover pending, partial resume, duplicate recurrence, selected source, invalid license/metadata, failed selection, and report conversion metrics.
+- [ ] Files: taxonomy/spec/architecture, runtime/query/report/CLI/validation paths, focused fixtures/tests, and migrated SQLite authority.
+- Dependencies: remote PR #9 HEAD `034a1f01d77e780e60f801f659fc9a8257abba98` and explicit Daily Life authorization.
+
+## Task 24: build and adjudicate the 60-scenario life bank
+
+- [ ] Acceptance: at least 20 fresh-market/grocery, 20 laundry/clothing-care, and 20 home-cooking/meal-preparation scenarios use real Chinese/English sources and end in `create|update|merge|not_promoted`, with zero pending.
+- [ ] Acceptance: every scenario records user goal, critical inputs, locality/equipment constraints, observable completion, recovery, safety stop, source refs, and decision linkage.
+- [ ] Acceptance: selected sources are T0/T1/T2 operational evidence; community demand signals cannot independently support publication.
+- [ ] Verify: real scans, Evidence Packs, candidates, L2/L3 recalls, L4 decisions, reactivation conditions, source distribution, and discovery conversion are reconstructible from committed authority.
+- [ ] Files: source registry/context, Scenario Bank, SQLite state, compact evidence/decision reports, and no raw page bodies.
+- Dependencies: Task 23.
+
+## Task 25: produce and evaluate Daily Life Plugins
+
+- [ ] Acceptance: every qualified independent capability is original and packaged into exactly three small installation-intent Plugins; neighboring scenarios are variants/references rather than cloned Skills.
+- [ ] Acceptance: instruction-only is the default; Skills never claim physical completion, guess missing facts, universalize local practice, cross into medical nutrition or dangerous repair, or require invented scripts.
+- [ ] Acceptance: descriptions include natural Chinese triggers and discriminating exclusions; workflows support planning, live step-by-step operation, and failure recovery.
+- [ ] Verify: each Skill passes Chinese positive/negative triggers, realistic instruction-only E2E, source/originality/non-overlap/safety review, format validation, and isolated Plugin install/invocation.
+- [ ] Files: three Plugins, generated Skills/references only where needed, eval records, catalog/marketplace, and reviewed decisions.
+- Dependencies: Task 24 and skill-creator rules.
+
+## Task 26: validate and submit the Daily Life pilot
+
+- [ ] Acceptance: all 60+ scenarios are resolved, each family has a useful installable combination, pending query-hit/semantic/L4 work is zero or an explicit real stop-loss checkpoint, and Usage remains honest.
+- [ ] Verify: 128+ unittest cases, all life and existing evals, validator, benchmark, deterministic build/install/invocation, official validators when available, independent Skill audit, and diff checks pass without tracked pollution.
+- [ ] Submit: exact commits are pushed to `codex/daily-life-skills-pilot-2026-08-30`; one stacked PR targets `codex/pr8-campaign-corrections`, Ubuntu/Windows CI pass, and no PR, tag, or Release is merged or created.
+- Dependencies: Tasks 23–25 and no payment/login/high-risk authorization blocker.
