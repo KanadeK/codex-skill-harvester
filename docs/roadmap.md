@@ -12,14 +12,14 @@ Volume is a capacity trigger, not a publication KPI. Every phase retains the sam
 
 Exit: contracts validate, benchmark is reproducible, CI is green, and no broad scan was run.
 
-## Current work package: full content-production campaign
+## Current work package: Human Skills v0.2.0 launch
 
-- Keep the still-unmerged scale stack as the deterministic base and reserve `v0.2.0` without issuing it.
-- Persist content/query work in SQLite schema 3, make source-level workflow hints non-authoritative, and require Codex-reviewed Evidence Packs before candidate creation.
+- Reproduce the reviewed campaign tree on current `main`, then launch `v0.2.0` only after the explicitly authorized manual release gates pass.
+- Persist content/query work in the sole SQLite schema 4 authority, make source-level workflow hints non-authoritative, and require Codex-reviewed Evidence Packs before candidate creation.
 - Complete 1,622 Domain × Intent queries and a 204-endpoint full-inventory ramp with persisted failures, eight semantic batches, L2/L3, supervised L4, original synthesis, evals, and no-op replay.
-- Submit the seven campaign-created Skills and three reviewed updates as a stacked review unit. Nothing reaches `main`, a tag, or a Release without a later controller decision.
+- Publish 17 verified Skills as 11 small Plugins under the bilingual 会过日子 · Human Skills product identity, while retaining codex-skill-harvester as the stable repository and package identifier.
 
-Exit: the campaign is reviewable with code-generated metrics, all local/remote gates, and zero pending query, semantic, or candidate work. Its 204 endpoints and 1,622 completed queries satisfy the policy-owned lower-bound objective, so the parent is `campaign_completed`. Observation/candidate/Skill ranges remain capacity direction, not output quotas.
+Exit: the release PR is merged with green Ubuntu/Windows CI; an annotated `v0.2.0` tag points at verified `main`; the bilingual non-prerelease Release contains deterministic source and 11 Plugin archives plus checksums; remote download/install/invocation, repository metadata, and contributors are read back successfully. Observation/candidate/Skill ranges remain capacity direction, not output quotas.
 
 ## Phase B: larger SQLite-backed operation
 

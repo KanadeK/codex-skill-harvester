@@ -1,147 +1,80 @@
-# Codex Skill Harvester
+# 会过日子 · Human Skills
+
+[English](README.en.md)
 
 [![CI](https://github.com/KanadeK/codex-skill-harvester/actions/workflows/ci.yml/badge.svg)](https://github.com/KanadeK/codex-skill-harvester/actions/workflows/ci.yml)
 
-[v0.1.1](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.1.1) is published as an immutable GitHub Release with verified source, Plugin, and checksum assets. The [final attestation](runs/2026-08-27T14-31-10Z-v0.1.1-attestation.md) records the PR, CI, tag, assets, isolated install, live Skill call, settings, and contributors.
+> AI 没长手，但可以教你把日子过明白。
 
-Codex Skill Harvester incrementally turns changed, authoritative public workflow evidence into reviewed, original Codex Skills grouped by user task domain. It persists source cursors, evidence hashes, capability fingerprints, semantic decisions, generated artifacts, and run reports in the repository, so a later scan resumes without chat memory.
+这是一套给 Codex 用的中英双语 Skills：把“我该怎么做”变成有边界、可追问、能执行的步骤。它既能陪你买菜、洗衣、做饭，也能检查软件发布、排查网页请求和准备离线 Git 交付。
 
-It is deliberately not a Skill mirror. Deterministic Python owns fetching, change detection, exact deduplication, state, validation, and packaging. Codex owns semantic comparison and the decision to not promote, merge, update, or create.
+仓库背后的 Skill Harvester 会从公开且可追溯的资料中增量发现工作流，经证据整理、能力去重、人工监督的语义判断、触发测试和端到端验证后，才把合格能力发布成小而清楚的 Plugin。它不是海量 Skill 搬运站，也不会把网页标题直接包装成 Skill。
 
-The current unreleased production line uses one SQLite runtime store with separate observations, Evidence Packs, normalized candidates, query/semantic batches, queues, decisions, and checkpoints. Git continues to hold Skills, manifests, evals, and compact readable run records.
+## 你可以直接这样问
 
-The completed 2026-08-30 campaign has 204 revision-pinned executable endpoints and finished all 1,622 unique Domain × Intent queries in 1,626 attempts, including four recoverable GitHub rate-limit failures and 151 discovery hits. The final 204-endpoint ramp made 204 successful source requests, downloaded 517,498 bytes, inserted 116 changed observations, and had no source failure or stop-loss. The policy-owned 180-endpoint/1,500-query capacity objective is therefore met; this is a measured campaign completion condition, not a Skill publication quota.
+- “两个人吃三天，冰箱还剩鸡蛋和半颗白菜，帮我买三天菜，控制在 150 元左右。”
+- “我有白 T 恤、深色牛仔裤和一件羊毛衫，这桶衣服怎么洗？哪些要分开？”
+- “家里有鸡腿、土豆、青椒和一口炒锅，用现有食材安排晚饭，告诉我先做什么。”
+- “这个 Python wheel 和 GitHub Actions 发布流程，真的已经可以发 PyPI 了吗？”
+- “浏览器说 CORS blocked，我抓到预检请求和响应头了，问题在哪一层？”
 
-Across eight resumable semantic batches, Codex reviewed 217 observations into 58 Evidence Packs, normalized 26 candidates, recorded 263 bounded L3 recalls, and completed 26 supervised L4 decisions: 15 `not_promoted`, one merge, three updates, and seven creates. At that checkpoint the sole runtime authority held 1,204 observations, 168 Evidence Packs, 136 applied decisions, and eight Skills. Query rotation, semantic export, and a stable OpenAI source all replayed as code-generated no-ops. [The full campaign report](runs/2026-08-30-full-content-production.json) remains validator-rebuildable historical evidence; the earlier [first-slice report](runs/2026-08-29-content-production.json) records the 26-endpoint/21-query checkpoint.
+Skill 会先补齐真正影响结果的信息，再给出步骤、停止条件和需要你确认的地方。它不会替你完成物理动作，也不会假装已经看见标签、闻到食物、按过洗衣机按钮或发布过软件。
 
-The current unreleased Daily Life pilot makes software only one capability domain. Twenty scoped bilingual queries produced 18 unique reviewed hits: 13 became reproducibly scanned sources and five authoritative but HTTP-403 endpoints remained `not_selected`. Thirteen observations became 12 Evidence Packs, nine candidates, 156 L3 recalls, three evidence-level safety non-promotions, and nine L4 creates. The three new task-domain Plugins contain nine instruction-only Skills for market/grocery planning, perishable selection, food storage, laundry sorting, washer settings, wool care, meal planning, function-based substitutions, and doneness/leftovers. The [Daily Life pilot report](runs/2026-08-31-daily-life-pilot.json) rebuilds 63 resolved scenarios—21 per family—with zero pending work and no Release.
+## 当前收录
 
-## What v0.1.1 proves
+v0.2.0 候选目录包含 17 个 Skills，按 11 个安装意图明确的 Plugins 分发。
 
-- 13 registered and live-scanned sources across official OpenAI format authority, vendor documentation, GitHub search/API, Release/Atom, and representative external Skills.
-- A real incremental maintenance scan resumed from the committed cursors, completed all 13 sources through transactional subsets, and discovered 15 genuinely unseen items without recreating previously seen candidates.
-- JSON-list sources separate material item identity from a moving result window. Revision-only changes and reordering are observable but do not create duplicate candidates; genuinely unseen repository identities still do.
-- Controlled tests distinguish exact duplicates, semantic/capability duplicates, updates, and genuinely new capabilities.
-- All 110 reviewed v0.1.1 candidates have explicit decisions: 103 were not promoted to independent Skills, 4 merged, 2 updated existing capability evidence, and 1 created a Skill. The current store also retains later feed evidence as observations without pretending it is candidate work; legacy `discard` records remain intact and are reported as `not_promoted` rather than deleted.
-- The generated `github-release-evidence` Plugin contains one original `audit-github-release` Skill with source provenance, positive/negative trigger reviews, and a deterministic nine-gate end-to-end checker including optional immutable Release proof.
-- Read-only `status` and `review-queue` commands expose durable handoff state without opening JSON files.
-- A weekly/manual GitHub Actions workflow performs only deterministic scanning and opens a changed-only review PR. It never applies a semantic decision or publishes a Skill.
-- Repository validation covers structure, state/catalog/decision consistency, generated artifact hashes, source references, and secret-like material. Release ZIPs are deterministic and are installed and invoked from an isolated temporary directory.
-- The published v0.1.1 source archive installs and invokes successfully from a fresh download, and the released Plugin's own Skill returns `complete` against the live PR, CI, annotated tag, immutable Release, assets, installation, and contributor evidence.
+| 生活 Plugin | 能做什么 |
+| --- | --- |
+| 买菜与食品采购 · Grocery Shopping | 按人数、预算、库存规划采购；用可观察线索挑选易腐食材；回家后安排冷藏、冷冻和先吃顺序 |
+| 洗衣与衣物护理 · Laundry Care | 读洗护标签、分桶、按准确机型选择程序和用量、护理羊毛针织物 |
+| 家庭做饭与备餐 · Home Cooking | 安排一顿饭的备菜时间线、按功能替代缺少的食材、检查熟度与剩菜处理 |
 
-GitHub API sources support either `GITHUB_TOKEN` from the current process or the official `gh` keyring via `--github-auth gh-cli`. Environment tokens are sent only to `api.github.com`, are not forwarded across redirects, and are never persisted or printed. The `gh-cli` path invokes `gh api` without exporting or placing a credential on the command line. The discovery search intentionally follows a moving `sort=updated` window, so an immediate repeat can truthfully discover new repository identities while revision-only churn is suppressed.
+| 软件 Plugin | 能做什么 |
+| --- | --- |
+| GitHub Release Evidence | 审计一个已经发布的 GitHub Release 是否真的完整 |
+| Python Package Delivery | 发布前检查 sdist、wheel、元数据和 PyPI Trusted Publishing 工作流 |
+| JavaScript Package Delivery | 检查 npm pack 内容、声明文件、生命周期脚本边界和发布配置 |
+| Git Offline Transfer | 创建并验证用于离线传递已提交历史的 Git bundle |
+| Ansible Collection Quality | 为 collection 选择并规划正确的 ansible-test 验证层 |
+| Rust Build Performance | 用隔离 target 目录复现并比较 Cargo 冷、热构建 |
+| Web Request Diagnostics | 从浏览器请求、响应和预检证据定位 CORS/Fetch 失败 |
+| API Request Safety | 在发送前审计 curl 方法、请求体、本地文件和凭据风险 |
 
-## Product boundary
+逐个 Skill 的触发方式、示例问题、发布状态与安全边界见 [Skill 目录](SKILLS.md)。
 
-- [RepoPilot Skillforge](https://github.com/KanadeK/repopilot-skillforge) scans one supplied codebase and writes repository-level guidance. This project watches public evidence over time and maintains a cross-source Skill catalog.
-- Subscription mirrors and large Skill corpora distribute or retrieve existing bodies. This project does not republish upstream Skills; representative Skills are fingerprinted only for deduplication.
-- Community directories and discussion are discovery signals, never authority for operational instructions.
+## 安装
 
-The complete boundary and acceptance criteria are in [docs/spec.md](docs/spec.md); research and authority sources are in [docs/research.md](docs/research.md).
+v0.2.0 正式发布后，可从仓库 Marketplace 安装：
 
-## Scale architecture
+    codex plugin marketplace add KanadeK/codex-skill-harvester --ref v0.2.0
 
-The long-term model has three layers:
+然后在 Codex 或 Work mode 的 Plugins Directory 中，按任务选择一个 Plugin 安装。无需一次安装全部 11 个。
 
-- Evidence/Discovery retains high-volume source metadata, versions, license/trust facts, summaries, and fingerprints while raw bodies remain temporary.
-- Capability Registry owns stable canonical capability IDs, one primary family, versioned facets, aliases, variants, merged evidence, decision history, and reactivation conditions.
-- Published Skills contains only capabilities that pass the quality gates, packaged into small user-task Plugins or Collections rather than one enormous installation.
+发布前，请以 [GitHub Releases](https://github.com/KanadeK/codex-skill-harvester/releases) 中实际存在的版本为准；当前公开稳定版仍是 [v0.1.1](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.1.1)。
 
-The active runtime backend is `sqlite-v4`, selected after the measured JSON lifecycle bottleneck and extended with content review, query state, and one reviewed discovery-hit lifecycle while retaining one authority. See [architecture](docs/architecture.md), [taxonomy](docs/taxonomy.md), [schema migrations](docs/schema-migrations.md), [scale audit](docs/scale-audit.md), [roadmap](docs/roadmap.md), and [ADR-002](docs/decisions/0002-adopt-sqlite-runtime-store.md).
+## 安全边界
 
-## Quick start
+- 生活类 Skills 只提供交互式指导，由人读取标签、操作器具并确认结果。
+- 食品安全不会仅凭气味或外观宣称“可以吃”；过敏、婴幼儿食品、罐藏与发酵等高风险场景会停止或转交权威建议。
+- 洗衣不会猜模糊标签、机型按钮或鼓励危险化学品混用，也不承担电器维修。
+- 软件类脚本默认只检查本地、明确提供的材料；不会执行下载来的第三方脚本，不会替用户发布、推送或绕过安全控制。
+- 医疗、法律、金融、凭据密集和现实控制能力目前只积累证据，不自动发布。
 
-Python 3.12 or newer is required. Runtime and tests use only the standard library.
+## 为什么不是“又一堆提示词”
 
-```powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\python -m pip install --no-build-isolation -e .
-.\.venv\Scripts\skill-harvester --help
-```
+- 每个能力都有稳定 ID、七字段能力指纹、来源 revision、Evidence Pack 和可审计决策。
+- 精确散列只去掉复制品；真正的近重复以用户目标、输入输出、工具、副作用和平台边界判断。
+- 新建或更新 Skill 必须通过格式、正向触发、负向误触发、端到端任务、隔离安装/调用、原创性与许可检查。
+- 运行态 observation、candidate、queue、decision 和 cursor 由一个 SQLite 权威存储管理；Git 保存可审查的 Skills、清单、评测与发布历史。
+- 相同输入重跑只处理新增、变化或未完成批次；无变化会如实 no-op。
 
-Run the policy canary and automatically ramp while stop-loss stays healthy:
+## 维护者入口
 
-```powershell
-.\.venv\Scripts\skill-harvester campaign --root . --ramp
-```
+公开产品页有意保持简洁。架构、真实 campaign 数字、迁移记录、验证命令与历史证据见 [工程状态](docs/engineering-status.md)；贡献方式见 [CONTRIBUTING.md](CONTRIBUTING.md)，安全问题见 [SECURITY.md](SECURITY.md)。
 
-Run one explicitly scoped source outside campaign policy:
-
-```powershell
-.\.venv\Scripts\skill-harvester scan --root . --source SOURCE_ID --source-group GROUP --topic TOPIC_ID
-```
-
-Or reuse an existing official GitHub CLI login without exporting its keyring credential:
-
-```powershell
-.\.venv\Scripts\skill-harvester campaign --root . --ramp --github-auth gh-cli
-```
-
-Inspect the durable handoff state and pending review queue:
-
-```powershell
-.\.venv\Scripts\skill-harvester status --root .
-.\.venv\Scripts\skill-harvester review-queue --root .
-.\.venv\Scripts\skill-harvester review-queue --root . --after CANDIDATE_ID
-```
-
-The review page size defaults to `review_batch.default` in `config/scale-policy.json`. An explicit `--limit <count>` must not exceed the policy's `review_batch.maximum`.
-
-Export or resume deterministic discovery and content-review work batches; Codex executes the untrusted semantic work and imports factual/query or Evidence Pack results:
-
-```powershell
-.\.venv\Scripts\skill-harvester query-export --root . --cycle content-production-YYYY-MM-DD --limit 100 --output .harvester-cache/query-batch.json
-.\.venv\Scripts\skill-harvester query-import --root . --batch BATCH_ID --results .harvester-cache/query-results.json
-.\.venv\Scripts\skill-harvester semantic-export --root . --limit 100 --output .harvester-cache/semantic-batch.json
-.\.venv\Scripts\skill-harvester semantic-import --root . --batch BATCH_ID --review .harvester-cache/review.json
-```
-
-A campaign stores only source metadata, necessary extracted facts, evidence hashes, and explicitly normalized candidate metadata. It does not store raw pages or execute fetched code. Review a candidate by creating the explicit decision contract documented in [.agents/skills/maintain-skill-harvester](.agents/skills/maintain-skill-harvester/SKILL.md), then apply it:
-
-```powershell
-.\.venv\Scripts\skill-harvester apply --root . --decision .harvester-cache/CANDIDATE_ID.json
-```
-
-## Validate and package
-
-```powershell
-py -3.12 -m unittest discover -s tests -v
-py -3.12 scripts/run_evals.py
-py -3.12 scripts/validate_repo.py
-py -3.12 scripts/benchmark_storage.py --root . --records 100
-py -3.12 scripts/build_release.py
-py -3.12 scripts/verify_release_archive.py
-```
-
-CI runs the same gates on current Ubuntu and Windows runners. A separate weekly/manual workflow runs the bounded campaign from persisted cursors and opens a review PR for changed observations/candidates or a stop-loss checkpoint. The build creates:
-
-- `codex-skill-harvester-v0.1.1.zip`
-- `github-release-evidence-v0.1.1.zip`
-- `python-package-delivery-v0.1.1.zip` (unreleased branch build only)
-- `SHA256SUMS.txt`
-
-## Install the generated Plugin
-
-Add this repository as a Codex marketplace source, pinned to the release tag:
-
-```text
-codex plugin marketplace add KanadeK/codex-skill-harvester --ref v0.1.1
-```
-
-Restart the ChatGPT desktop app, open the Plugins Directory in Codex or Work mode, choose **Codex Skill Harvester**, and install **GitHub Release Evidence**. This follows the [official repo-marketplace flow](https://developers.openai.com/plugins/build/plugins#add-a-marketplace-from-the-cli).
-
-The current branch marketplace also contains **Python Package Delivery**, but it is not part of published v0.1.1 and must not be described as released before controller approval, merge, tag, and Release.
-
-## Repository map
-
-- `sources/registry.json` — fixed source, trust, license, adapter, and optional authentication metadata.
-- `state/harvest.sqlite3` — authoritative runtime cursor, observation, query batch, Evidence Pack, normalized candidate, queue, decision, and checkpoint state.
-- `catalog/capabilities.json` and `catalog/taxonomy.json` — canonical capabilities, representative external fingerprints, and versioned classification.
-- `config/scale-policy.json` — active backend, review budget, projection targets, and measured migration triggers.
-- `plugins/` and `.agents/plugins/marketplace.json` — installable task-domain Plugin output.
-- `evals/` — Codex-reviewed trigger cases and deterministic end-to-end fixtures.
-- `runs/` — compact parent-campaign reports, standalone scan reports, migration, delivery, and release evidence.
+项目规范只依赖 OpenAI 官方的 [Skills 文档](https://developers.openai.com/codex/skills) 与 [Plugins 文档](https://developers.openai.com/plugins/build/plugins)。外部内容一律作为不可信证据处理。
 
 ## License
 
-MIT. Source facts retain their declared authority and license metadata; generated Skill prose and scripts are original synthesis.
+[MIT](LICENSE)

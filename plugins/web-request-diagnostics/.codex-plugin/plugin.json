@@ -29,5 +29,5 @@
   "name": "web-request-diagnostics",
   "repository": "https://github.com/KanadeK/codex-skill-harvester",
   "skills": "./skills/",
-  "version": "0.1.0"
+  "version": "0.2.0"
 }

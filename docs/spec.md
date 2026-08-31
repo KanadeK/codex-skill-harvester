@@ -189,4 +189,4 @@ Future migrations follow the same one-write/validate/swap pattern and state the 
 
 ## Release boundary
 
-Published `v0.1.1` remains unchanged. `v0.2.0` is reserved and must not be created by this PR. It requires the completed vertical slice, one real calibrated campaign, every applicable gate, and a new controller approval. Automatic Release remains deferred until at least three stable campaigns and another explicit decision.
+Published `v0.1.1` remains immutable. The vertical slice, calibrated campaign, explicit capacity objective, and controller review required for `v0.2.0` have now completed, and the user has explicitly authorized one manual `v0.2.0` release after every local and remote gate passes. This authority does not permit an unattended semantic merge, a future automatic Release, or publication of a blocked high-risk capability. Automatic Release remains deferred until at least three stable campaigns and another explicit decision.

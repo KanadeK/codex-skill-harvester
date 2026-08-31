@@ -2,7 +2,7 @@
   "author": {
     "name": "KanadeK"
   },
-  "description": "Interpret care labels, plan loads, choose washer settings, and protect special garments.",
+  "description": "读懂洗护标签、分桶、选程序并护理特殊衣物 · Plan safer laundry and clothing care.",
   "homepage": "https://github.com/KanadeK/codex-skill-harvester",
   "interface": {
     "capabilities": [
@@ -15,9 +15,9 @@
       "这件羊毛衫怎么洗和晾才不容易变形？"
     ],
     "developerName": "KanadeK",
-    "displayName": "Laundry and Clothing Care",
-    "longDescription": "Instruction-only household guidance for reading care labels, separating compatible loads, choosing model-specific washer settings, checking the result, and caring for wool without dangerous chemical mixing.",
-    "shortDescription": "Plan safer laundry and clothing care"
+    "displayName": "洗衣与衣物护理 · Laundry Care",
+    "longDescription": "读懂洗护标签，按颜色面料分桶，根据准确机型选择设置，检查洗后结果并安全护理羊毛衣物。Instruction-only guidance with no dangerous chemical mixing or appliance repair.",
+    "shortDescription": "洗护标签、分桶、机型设置与羊毛护理"
   },
   "keywords": [
     "laundry",
@@ -30,5 +30,5 @@
   "name": "laundry-and-clothing-care",
   "repository": "https://github.com/KanadeK/codex-skill-harvester",
   "skills": "./skills/",
-  "version": "0.1.0"
+  "version": "0.2.0"
 }

@@ -217,16 +217,16 @@ Completion checkpoint: the branch starts at verified correction HEAD `7aa8f86`; 
 
 ## Task 28: create the bilingual Human Skills storefront
 
-- [ ] Acceptance: Chinese-first `README.md`, complete `README.en.md`, and bilingual `SKILLS.md` present the approved brand, three real examples, installation, 17 Skills/11 Plugins, physical-action boundary, sources/safety/dedupe, and reciprocal language navigation.
-- [ ] Acceptance: engineering evidence moves to a linked maintainer document; no report/history is deleted, and no pre-release copy falsely claims v0.2.0 is already published.
-- [ ] Acceptance: three life Plugin manifests and marketplace public copy are Chinese-first bilingual while all internal identifiers remain stable.
-- [ ] Verify: automated documentation/catalog/manifest/link consistency checks pass.
+- [x] Acceptance: Chinese-first `README.md`, complete `README.en.md`, and bilingual `SKILLS.md` present the approved brand, three real examples, installation, 17 Skills/11 Plugins, physical-action boundary, sources/safety/dedupe, and reciprocal language navigation.
+- [x] Acceptance: engineering evidence moves to a linked maintainer document; no report/history is deleted, and no pre-release copy falsely claims v0.2.0 is already published.
+- [x] Acceptance: three life Plugin manifests and marketplace public copy are Chinese-first bilingual while all internal identifiers remain stable.
+- [x] Verify: automated documentation/catalog/manifest/link consistency checks pass.
 - Dependencies: Task 27.
 
 ## Task 29: prepare and validate v0.2.0
 
-- [ ] Acceptance: one v0.2.0 source of truth drives package, 11 Plugin manifests, archive names, fixtures, checksums, docs, and release notes; v0.1.1 remains untouched and no consumer migration is required.
-- [ ] Acceptance: `CHANGELOG.md` records Added/Changed/Fixed/Security for the 9 life Skills, 6 later software Skills, Python/GitHub updates, discovery review, SQLite v4, campaign correction, and bilingual brand.
+- [x] Acceptance: one v0.2.0 source of truth drives package, 11 Plugin manifests, archive names, fixtures, checksums, docs, and release notes; v0.1.1 remains untouched and no consumer migration is required.
+- [x] Acceptance: `CHANGELOG.md` records Added/Changed/Fixed/Security for the 9 life Skills, 6 later software Skills, Python/GitHub updates, discovery review, SQLite v4, campaign correction, and bilingual brand.
 - [ ] Verify: official quick validator passes all 17 Skills and official Plugin validator passes all 11 Plugins in an isolated dependency environment.
 - [ ] Verify: full tests/evals/validator/benchmark/no-op/security, two identical builds, 12 archives + checksums, isolated installs and all Plugin E2E pass; five-axis review has no Required/Critical findings.
 - Dependencies: Task 28.

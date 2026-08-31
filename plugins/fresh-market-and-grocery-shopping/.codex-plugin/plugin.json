@@ -2,7 +2,7 @@
   "author": {
     "name": "KanadeK"
   },
-  "description": "Plan, inspect, transport, and put away household food shopping.",
+  "description": "买菜规划、新鲜度判断与食材收纳 · Plan and handle household food shopping.",
   "homepage": "https://github.com/KanadeK/codex-skill-harvester",
   "interface": {
     "capabilities": [
@@ -15,9 +15,9 @@
       "帮我把刚买回来的食材分类收好并排出先吃顺序。"
     ],
     "developerName": "KanadeK",
-    "displayName": "Fresh Market and Grocery Shopping",
-    "longDescription": "Interactive household guidance for planning a market trip, screening perishable food with observable clues, protecting the cold chain, and putting groceries away without claiming physical completion.",
-    "shortDescription": "Plan and handle household food shopping"
+    "displayName": "买菜与食品采购 · Grocery Shopping",
+    "longDescription": "按人数、预算、库存和冷链条件规划采购，判断可观察的新鲜度线索，并指导回家后的分类收纳。Plan, inspect, transport, and put away household food without claiming physical completion.",
+    "shortDescription": "买菜规划、新鲜度判断与回家收纳"
   },
   "keywords": [
     "grocery",
@@ -30,5 +30,5 @@
   "name": "fresh-market-and-grocery-shopping",
   "repository": "https://github.com/KanadeK/codex-skill-harvester",
   "skills": "./skills/",
-  "version": "0.1.0"
+  "version": "0.2.0"
 }

@@ -167,7 +167,7 @@ PR #7 was not merged when schema 1's conflation was found, so schema 1 receives 
 - Sol is reserved for difficult/high-impact adjudication and final audit.
 - Medical, legal, financial, real-world control, credential-heavy, and other high-risk domains may accumulate evidence in phase one but automatic publication is blocked. Publication requires explicit user and controller approval.
 - The first three campaigns may open PRs; the controller decides every merge and release. Semantic merge is not unattended.
-- `v0.2.0` is reserved but not released. It requires this vertical slice, a real calibrated campaign, all gates, and a fresh controller approval. This PR does not meet that release authority by itself.
+- `v0.2.0` is the current manual release candidate. The required vertical slice and calibrated campaign are complete, and the user has explicitly approved release after all local and remote gates pass. This is one bounded authorization, not approval for future automatic Releases.
 
 ## 0–30 day mainline
 
@@ -189,4 +189,4 @@ PR #7 was not merged when schema 1's conflation was found, so schema 1 receives 
 
 ## Reserved decisions
 
-The controller still decides the merge order for PR #7 and its stacked content-production PR, changes to campaign stop-loss or budget policy, semantic quality thresholds, any new storage migration, multi-worker operation, high-risk publication, `v0.2.0`, and Release automation. An ordinary explicit campaign cycle may continue from durable cursors and expand inside the already-approved stop-loss policy without a separate volume approval. A green test suite or campaign report is evidence for reserved decisions, not authorization to merge or release.
+PR #7 has merged. The user has authorized a current-main integration of the reviewed content-production tree and one manual `v0.2.0` release after all gates pass; the superseded stacked PR is not merged independently. The controller still decides future campaign stop-loss or budget policy, semantic quality thresholds, any new storage migration, multi-worker operation, high-risk publication, and Release automation. A green test suite or campaign report remains evidence rather than authority outside this explicitly approved release.

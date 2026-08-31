@@ -314,17 +314,17 @@ Remote baseline verified before this package: PR #7 is squash-merged to `main` a
 
 ### Phase 29: launch the bilingual public brand
 
-- [ ] Rewrite `README.md` as the Simplified-Chinese-first “会过日子 · Human Skills” homepage and preserve a full English `README.en.md`, with reciprocal language links and user-first examples/install flow.
-- [ ] Move engineering metrics and campaign history to `docs/engineering-status.md` without deleting evidence or historical reports.
-- [ ] Add bilingual `SKILLS.md` covering all 17 stable capabilities, user tasks, examples, safety boundaries, Plugin grouping, and release state without copying Skill bodies.
-- [ ] Update the three life Plugin UI manifests and repo marketplace display copy to Chinese-first bilingual metadata while keeping plugin IDs, Skill folders, and canonical capability IDs stable.
-- [ ] Add `CHANGELOG.md`, v0.2.0 release notes, and GitHub-facing description/topic metadata; keep copy in “upcoming release” state until remote publication succeeds.
+- [x] Rewrite `README.md` as the Simplified-Chinese-first “会过日子 · Human Skills” homepage and preserve a full English `README.en.md`, with reciprocal language links and user-first examples/install flow.
+- [x] Move engineering metrics and campaign history to `docs/engineering-status.md` without deleting evidence or historical reports.
+- [x] Add bilingual `SKILLS.md` covering all 17 stable capabilities, user tasks, examples, safety boundaries, Plugin grouping, and release state without copying Skill bodies.
+- [x] Update the three life Plugin UI manifests and repo marketplace display copy to Chinese-first bilingual metadata while keeping plugin IDs, Skill folders, and canonical capability IDs stable.
+- [x] Add `CHANGELOG.md`, v0.2.0 release notes, and GitHub-facing description/topic metadata; keep copy in “upcoming release” state until remote publication succeeds.
 
 ### Phase 30: version and close all launch gates
 
-- [ ] Make v0.2.0 the single release version across pyproject, builders, 11 Plugin manifests, marketplace, fixtures, archives, docs, and validation; preserve historical v0.1.1 tag/Release.
+- [x] Make v0.2.0 the single release version across pyproject, builders, 11 Plugin manifests, marketplace, fixtures, archives, docs, and validation; preserve historical v0.1.1 tag/Release.
 - [ ] Create an isolated validator environment, install validator-only dependencies, and run official Skill validation for all 17 Skills plus official Plugin validation for all 11 Plugins. Missing validator/dependency access is a release blocker.
-- [ ] Add RED/GREEN checks for bilingual README/catalog/marketplace/version consistency and release asset inventory.
+- [x] Add RED/GREEN checks for bilingual README/catalog/marketplace/version consistency and release asset inventory.
 - [ ] Run 146+ tests, 17 evals, repository validator, SQLite benchmark, migration/status/no-op, secrets/license/source checks, two deterministic builds, archive/checksum verification, isolated source install/CLI call, and all 11 Plugin installs/E2E.
 - [ ] Complete five-axis independent review and resolve every Required/Critical finding before submission.
 

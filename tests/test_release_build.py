@@ -30,9 +30,9 @@ class ReleaseBuildTests(unittest.TestCase):
             self.assertEqual(
                 [path.name for path in first_files],
                 [
-                    "codex-skill-harvester-v0.1.1.zip",
+                    "codex-skill-harvester-v0.2.0.zip",
                     *[
-                        f"{plugin['name']}-v0.1.1.zip"
+                        f"{plugin['name']}-v0.2.0.zip"
                         for plugin in sorted(
                             marketplace["plugins"], key=lambda value: value["name"]
                         )
