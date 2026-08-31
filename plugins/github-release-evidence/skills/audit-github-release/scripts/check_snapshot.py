@@ -40,6 +40,7 @@ def audit(snapshot: dict[str, Any]) -> dict[str, Any]:
         item["asset_name"]: item
         for item in snapshot.get("attestations", [])
         if item.get("verified") is True
+        and item.get("release_tag") == release["tag_name"]
     }
     unverified_assets = sorted(expected - set(attestations))
     add(

@@ -1,0 +1,32 @@
+{
+  "author": {
+    "name": "KanadeK"
+  },
+  "description": "Reproducible cold and warm Cargo build measurements with isolated artifacts.",
+  "homepage": "https://github.com/KanadeK/codex-skill-harvester",
+  "interface": {
+    "capabilities": [
+      "Read"
+    ],
+    "category": "Developer Tools",
+    "defaultPrompt": [
+      "Measure this Cargo build and identify the next bounded performance experiment."
+    ],
+    "developerName": "KanadeK",
+    "displayName": "Rust Build Performance",
+    "longDescription": "Measure cold and warm offline Cargo builds in a temporary target directory and separate measured facts from optimization hypotheses.",
+    "shortDescription": "Measure Cargo build performance safely"
+  },
+  "keywords": [
+    "rust",
+    "cargo",
+    "build",
+    "performance",
+    "codex-skill"
+  ],
+  "license": "MIT",
+  "name": "rust-build-performance",
+  "repository": "https://github.com/KanadeK/codex-skill-harvester",
+  "skills": "./skills/",
+  "version": "0.2.0"
+}

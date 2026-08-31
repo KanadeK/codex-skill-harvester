@@ -1,0 +1,20 @@
+{
+  "batch_id": "f8ccc0aa4b3e387ba4362628",
+  "deep_reviews": {
+    "measured": false
+  },
+  "evidence_packs": 11,
+  "l2_matches": 0,
+  "l3_recalls": 138,
+  "normalized_candidates": 8,
+  "not_promoted": 3,
+  "pending_observations": 0,
+  "report_type": "semantic-review",
+  "reviewed_at": "2026-08-31T04:30:00Z",
+  "reviewed_observations": 12,
+  "schema_version": 1,
+  "status": "completed",
+  "usage_credits": {
+    "measured": false
+  }
+}

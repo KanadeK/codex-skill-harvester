@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "codex-skill-harvester"
-version = "0.1.1"
-description = "Incrementally turn authoritative public workflow evidence into reviewed Codex skills"
+version = "0.2.0"
+description = "会过日子 · Human Skills — Evidence-reviewed bilingual Codex Skills for everyday life and software"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [{ name = "KanadeK" }]

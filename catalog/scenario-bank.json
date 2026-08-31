@@ -1,0 +1,2404 @@
+{
+  "families": [
+    {
+      "id": "fresh-market-and-grocery-shopping",
+      "plugin_id": "fresh-market-and-grocery-shopping"
+    },
+    {
+      "id": "laundry-and-clothing-care",
+      "plugin_id": "laundry-and-clothing-care"
+    },
+    {
+      "id": "home-cooking-and-meal-preparation",
+      "plugin_id": "home-cooking-and-meal-preparation"
+    }
+  ],
+  "scenarios": [
+    {
+      "capability_id": "daily-life.fresh-market-shopping-plan",
+      "critical_inputs": [
+        "人数餐数与预算",
+        "已有食材与储存空间",
+        "忌口过敏与交通时间"
+      ],
+      "equipment_conditions": [
+        "冰袋冷藏袋和家中冷藏冷冻空间"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-plan-household-budget",
+      "locality_conditions": [
+        "价格季节单位与市场动线按当地事实确认"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "清单对应餐次且不重复库存",
+        "总量符合预算运输和储存"
+      ],
+      "outcome": "create",
+      "rationale": "This scenario establishes the first representative create boundary for daily-life.fresh-market-shopping-plan and is validated through its dedicated Skill.",
+      "recovery": [
+        "缺货涨价时按餐中功能和保存期替代"
+      ],
+      "safety_stop": [
+        "医疗饮食或过敏反应转专业帮助",
+        "来源和冷链不明的高风险食物不购买"
+      ],
+      "source_refs": [
+        "hk-cfs-food-purchase-zh",
+        "hk-cfs-food-waste-storage"
+      ],
+      "user_request": {
+        "en": "Plan groceries for four people, two dinners, and a fixed budget.",
+        "zh": "按四个人两天晚饭和300元预算列买菜清单"
+      }
+    },
+    {
+      "capability_id": "daily-life.choose-fresh-perishables",
+      "critical_inputs": [
+        "食物种类和可观察状态",
+        "包装储存与计划食用日期",
+        "运输时长和保冷条件"
+      ],
+      "equipment_conditions": [
+        "可观察商品和可选冷藏袋"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-choose-seafood-live",
+      "locality_conditions": [
+        "当地许可标签和冷藏规则优先"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "给出购买拒绝或询问决定",
+        "说明观察线索不能保证安全"
+      ],
+      "outcome": "create",
+      "rationale": "This scenario establishes the first representative create boundary for daily-life.choose-fresh-perishables and is validated through its dedicated Skill.",
+      "recovery": [
+        "信息矛盾或冷链可疑时不买并更换来源"
+      ],
+      "safety_stop": [
+        "异味泄漏破损过期或储存温度明显不当时拒绝",
+        "疾病症状不作诊断"
+      ],
+      "source_refs": [
+        "fda-select-store-seafood",
+        "hk-cfs-food-purchase-zh"
+      ],
+      "user_request": {
+        "en": "I am at a fish stall; help me decide whether to buy this fish.",
+        "zh": "我正在鱼摊，这条鱼看起来能买吗"
+      }
+    },
+    {
+      "capability_id": "daily-life.put-away-groceries",
+      "critical_inputs": [
+        "食材包装开封和日期",
+        "离店时间与计划餐次",
+        "冰箱冷冻和干货空间"
+      ],
+      "equipment_conditions": [
+        "冰箱冷冻柜密封容器和标签"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-put-away-first-use",
+      "locality_conditions": [
+        "食用日期和储存标签按当地定义解释"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "每项食物有储存位置和先吃顺序",
+        "生食不会滴漏污染即食食物"
+      ],
+      "outcome": "create",
+      "rationale": "This scenario establishes the first representative create boundary for daily-life.put-away-groceries and is validated through its dedicated Skill.",
+      "recovery": [
+        "空间不足或买多时分装冷冻调整菜单或安全丢弃"
+      ],
+      "safety_stop": [
+        "时间温度来源不明不凭气味判安全"
+      ],
+      "source_refs": [
+        "hk-cfs-food-waste-storage"
+      ],
+      "user_request": {
+        "en": "I just got home; tell me where each item goes and what to use first.",
+        "zh": "刚买菜回家，告诉我每样放哪和先吃什么"
+      }
+    },
+    {
+      "capability_id": "daily-life.fresh-market-shopping-plan",
+      "critical_inputs": [
+        "人数餐数与预算",
+        "已有食材与储存空间",
+        "忌口过敏与交通时间"
+      ],
+      "equipment_conditions": [
+        "冰袋冷藏袋和家中冷藏冷冻空间"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-plan-multiple-meals",
+      "locality_conditions": [
+        "价格季节单位与市场动线按当地事实确认"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "清单对应餐次且不重复库存",
+        "总量符合预算运输和储存"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.fresh-market-shopping-plan; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "缺货涨价时按餐中功能和保存期替代"
+      ],
+      "safety_stop": [
+        "医疗饮食或过敏反应转专业帮助",
+        "来源和冷链不明的高风险食物不购买"
+      ],
+      "source_refs": [
+        "hk-cfs-food-purchase-zh",
+        "hk-cfs-food-waste-storage"
+      ],
+      "user_request": {
+        "en": "Plan one shop for three meals without overbuying.",
+        "zh": "用一次采购安排三顿饭但别买多"
+      }
+    },
+    {
+      "capability_id": "daily-life.fresh-market-shopping-plan",
+      "critical_inputs": [
+        "人数餐数与预算",
+        "已有食材与储存空间",
+        "忌口过敏与交通时间"
+      ],
+      "equipment_conditions": [
+        "冰袋冷藏袋和家中冷藏冷冻空间"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-plan-small-fridge",
+      "locality_conditions": [
+        "价格季节单位与市场动线按当地事实确认"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "清单对应餐次且不重复库存",
+        "总量符合预算运输和储存"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.fresh-market-shopping-plan; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "缺货涨价时按餐中功能和保存期替代"
+      ],
+      "safety_stop": [
+        "医疗饮食或过敏反应转专业帮助",
+        "来源和冷链不明的高风险食物不购买"
+      ],
+      "source_refs": [
+        "hk-cfs-food-purchase-zh",
+        "hk-cfs-food-waste-storage"
+      ],
+      "user_request": {
+        "en": "Limit perishables because my refrigerator is small.",
+        "zh": "冰箱很小，帮我控制易腐食材数量"
+      }
+    },
+    {
+      "capability_id": "daily-life.fresh-market-shopping-plan",
+      "critical_inputs": [
+        "人数餐数与预算",
+        "已有食材与储存空间",
+        "忌口过敏与交通时间"
+      ],
+      "equipment_conditions": [
+        "冰袋冷藏袋和家中冷藏冷冻空间"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-plan-stall-route",
+      "locality_conditions": [
+        "价格季节单位与市场动线按当地事实确认"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "清单对应餐次且不重复库存",
+        "总量符合预算运输和储存"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.fresh-market-shopping-plan; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "缺货涨价时按餐中功能和保存期替代"
+      ],
+      "safety_stop": [
+        "医疗饮食或过敏反应转专业帮助",
+        "来源和冷链不明的高风险食物不购买"
+      ],
+      "source_refs": [
+        "hk-cfs-food-purchase-zh",
+        "hk-cfs-food-waste-storage"
+      ],
+      "user_request": {
+        "en": "Reorder my list for this market's actual stall route.",
+        "zh": "按这个菜市场摊位顺序重排清单"
+      }
+    },
+    {
+      "capability_id": "daily-life.fresh-market-shopping-plan",
+      "critical_inputs": [
+        "人数餐数与预算",
+        "已有食材与储存空间",
+        "忌口过敏与交通时间"
+      ],
+      "equipment_conditions": [
+        "冰袋冷藏袋和家中冷藏冷冻空间"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-plan-price-change",
+      "locality_conditions": [
+        "价格季节单位与市场动线按当地事实确认"
+      ],
+      "mode": "recovery",
+      "observable_completion": [
+        "清单对应餐次且不重复库存",
+        "总量符合预算运输和储存"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.fresh-market-shopping-plan; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "缺货涨价时按餐中功能和保存期替代"
+      ],
+      "safety_stop": [
+        "医疗饮食或过敏反应转专业帮助",
+        "来源和冷链不明的高风险食物不购买"
+      ],
+      "source_refs": [
+        "hk-cfs-food-purchase-zh",
+        "hk-cfs-food-waste-storage"
+      ],
+      "user_request": {
+        "en": "Produce is over budget; adjust the plan now.",
+        "zh": "青菜比预算贵很多，现在怎么换"
+      }
+    },
+    {
+      "capability_id": "daily-life.fresh-market-shopping-plan",
+      "critical_inputs": [
+        "人数餐数与预算",
+        "已有食材与储存空间",
+        "忌口过敏与交通时间"
+      ],
+      "equipment_conditions": [
+        "冰袋冷藏袋和家中冷藏冷冻空间"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-plan-out-of-stock",
+      "locality_conditions": [
+        "价格季节单位与市场动线按当地事实确认"
+      ],
+      "mode": "recovery",
+      "observable_completion": [
+        "清单对应餐次且不重复库存",
+        "总量符合预算运输和储存"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.fresh-market-shopping-plan; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "缺货涨价时按餐中功能和保存期替代"
+      ],
+      "safety_stop": [
+        "医疗饮食或过敏反应转专业帮助",
+        "来源和冷链不明的高风险食物不购买"
+      ],
+      "source_refs": [
+        "hk-cfs-food-purchase-zh",
+        "hk-cfs-food-waste-storage"
+      ],
+      "user_request": {
+        "en": "The planned main ingredient is unavailable; replace it by function.",
+        "zh": "计划的主菜缺货，按作用替换采购"
+      }
+    },
+    {
+      "capability_id": "daily-life.choose-fresh-perishables",
+      "critical_inputs": [
+        "食物种类和可观察状态",
+        "包装储存与计划食用日期",
+        "运输时长和保冷条件"
+      ],
+      "equipment_conditions": [
+        "可观察商品和可选冷藏袋"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-choose-produce",
+      "locality_conditions": [
+        "当地许可标签和冷藏规则优先"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "给出购买拒绝或询问决定",
+        "说明观察线索不能保证安全"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.choose-fresh-perishables; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "信息矛盾或冷链可疑时不买并更换来源"
+      ],
+      "safety_stop": [
+        "异味泄漏破损过期或储存温度明显不当时拒绝",
+        "疾病症状不作诊断"
+      ],
+      "source_refs": [
+        "fda-select-store-seafood",
+        "hk-cfs-food-purchase-zh"
+      ],
+      "user_request": {
+        "en": "Which visible produce damage is a reason not to buy?",
+        "zh": "这堆蔬菜哪些损伤算不该买"
+      }
+    },
+    {
+      "capability_id": "daily-life.choose-fresh-perishables",
+      "critical_inputs": [
+        "食物种类和可观察状态",
+        "包装储存与计划食用日期",
+        "运输时长和保冷条件"
+      ],
+      "equipment_conditions": [
+        "可观察商品和可选冷藏袋"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-choose-eggs",
+      "locality_conditions": [
+        "当地许可标签和冷藏规则优先"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "给出购买拒绝或询问决定",
+        "说明观察线索不能保证安全"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.choose-fresh-perishables; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "信息矛盾或冷链可疑时不买并更换来源"
+      ],
+      "safety_stop": [
+        "异味泄漏破损过期或储存温度明显不当时拒绝",
+        "疾病症状不作诊断"
+      ],
+      "source_refs": [
+        "fda-select-store-seafood",
+        "hk-cfs-food-purchase-zh"
+      ],
+      "user_request": {
+        "en": "Some eggs are cracked or leaking; should I buy them?",
+        "zh": "鸡蛋盒里有裂纹和蛋液还能买吗"
+      }
+    },
+    {
+      "capability_id": "daily-life.choose-fresh-perishables",
+      "critical_inputs": [
+        "食物种类和可观察状态",
+        "包装储存与计划食用日期",
+        "运输时长和保冷条件"
+      ],
+      "equipment_conditions": [
+        "可观察商品和可选冷藏袋"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-choose-packaged-meat",
+      "locality_conditions": [
+        "当地许可标签和冷藏规则优先"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "给出购买拒绝或询问决定",
+        "说明观察线索不能保证安全"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.choose-fresh-perishables; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "信息矛盾或冷链可疑时不买并更换来源"
+      ],
+      "safety_stop": [
+        "异味泄漏破损过期或储存温度明显不当时拒绝",
+        "疾病症状不作诊断"
+      ],
+      "source_refs": [
+        "fda-select-store-seafood",
+        "hk-cfs-food-purchase-zh"
+      ],
+      "user_request": {
+        "en": "This chilled meat package is swollen and warm; what should I do?",
+        "zh": "这盒冷藏肉包装鼓起还温温的怎么办"
+      }
+    },
+    {
+      "capability_id": "daily-life.choose-fresh-perishables",
+      "critical_inputs": [
+        "食物种类和可观察状态",
+        "包装储存与计划食用日期",
+        "运输时长和保冷条件"
+      ],
+      "equipment_conditions": [
+        "可观察商品和可选冷藏袋"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-transport-long-trip",
+      "locality_conditions": [
+        "当地许可标签和冷藏规则优先"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "给出购买拒绝或询问决定",
+        "说明观察线索不能保证安全"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.choose-fresh-perishables; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "信息矛盾或冷链可疑时不买并更换来源"
+      ],
+      "safety_stop": [
+        "异味泄漏破损过期或储存温度明显不当时拒绝",
+        "疾病症状不作诊断"
+      ],
+      "source_refs": [
+        "fda-select-store-seafood",
+        "hk-cfs-food-purchase-zh"
+      ],
+      "user_request": {
+        "en": "Plan transport when seafood will take an hour to get home.",
+        "zh": "买完海鲜还要一小时回家怎么带"
+      }
+    },
+    {
+      "capability_id": "daily-life.choose-fresh-perishables",
+      "critical_inputs": [
+        "食物种类和可观察状态",
+        "包装储存与计划食用日期",
+        "运输时长和保冷条件"
+      ],
+      "equipment_conditions": [
+        "可观察商品和可选冷藏袋"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-questionable-cold-chain",
+      "locality_conditions": [
+        "当地许可标签和冷藏规则优先"
+      ],
+      "mode": "recovery",
+      "observable_completion": [
+        "给出购买拒绝或询问决定",
+        "说明观察线索不能保证安全"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.choose-fresh-perishables; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "信息矛盾或冷链可疑时不买并更换来源"
+      ],
+      "safety_stop": [
+        "异味泄漏破损过期或储存温度明显不当时拒绝",
+        "疾病症状不作诊断"
+      ],
+      "source_refs": [
+        "fda-select-store-seafood",
+        "hk-cfs-food-purchase-zh"
+      ],
+      "user_request": {
+        "en": "Frozen food softened in transit; can it go back in the freezer?",
+        "zh": "冷冻食品路上变软了还能放回冷冻吗"
+      }
+    },
+    {
+      "capability_id": "daily-life.put-away-groceries",
+      "critical_inputs": [
+        "食材包装开封和日期",
+        "离店时间与计划餐次",
+        "冰箱冷冻和干货空间"
+      ],
+      "equipment_conditions": [
+        "冰箱冷冻柜密封容器和标签"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-store-raw-below-ready",
+      "locality_conditions": [
+        "食用日期和储存标签按当地定义解释"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "每项食物有储存位置和先吃顺序",
+        "生食不会滴漏污染即食食物"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.put-away-groceries; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "空间不足或买多时分装冷冻调整菜单或安全丢弃"
+      ],
+      "safety_stop": [
+        "时间温度来源不明不凭气味判安全"
+      ],
+      "source_refs": [
+        "hk-cfs-food-waste-storage"
+      ],
+      "user_request": {
+        "en": "Arrange raw and ready-to-eat food to prevent drips.",
+        "zh": "冰箱里生肉熟食怎么摆避免滴漏"
+      }
+    },
+    {
+      "capability_id": "daily-life.put-away-groceries",
+      "critical_inputs": [
+        "食材包装开封和日期",
+        "离店时间与计划餐次",
+        "冰箱冷冻和干货空间"
+      ],
+      "equipment_conditions": [
+        "冰箱冷冻柜密封容器和标签"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-freeze-or-refrigerate",
+      "locality_conditions": [
+        "食用日期和储存标签按当地定义解释"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "每项食物有储存位置和先吃顺序",
+        "生食不会滴漏污染即食食物"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.put-away-groceries; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "空间不足或买多时分装冷冻调整菜单或安全丢弃"
+      ],
+      "safety_stop": [
+        "时间温度来源不明不凭气味判安全"
+      ],
+      "source_refs": [
+        "hk-cfs-food-waste-storage"
+      ],
+      "user_request": {
+        "en": "Decide whether meat for two days later should be chilled or frozen.",
+        "zh": "这些肉两天后吃应该冷藏还是冷冻"
+      }
+    },
+    {
+      "capability_id": "daily-life.put-away-groceries",
+      "critical_inputs": [
+        "食材包装开封和日期",
+        "离店时间与计划餐次",
+        "冰箱冷冻和干货空间"
+      ],
+      "equipment_conditions": [
+        "冰箱冷冻柜密封容器和标签"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-use-by-best-before",
+      "locality_conditions": [
+        "食用日期和储存标签按当地定义解释"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "每项食物有储存位置和先吃顺序",
+        "生食不会滴漏污染即食食物"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.put-away-groceries; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "空间不足或买多时分装冷冻调整菜单或安全丢弃"
+      ],
+      "safety_stop": [
+        "时间温度来源不明不凭气味判安全"
+      ],
+      "source_refs": [
+        "hk-cfs-food-waste-storage"
+      ],
+      "user_request": {
+        "en": "Explain use-by versus best-before when prioritizing food.",
+        "zh": "食用限期和最佳食用日期先看哪个"
+      }
+    },
+    {
+      "capability_id": "daily-life.put-away-groceries",
+      "critical_inputs": [
+        "食材包装开封和日期",
+        "离店时间与计划餐次",
+        "冰箱冷冻和干货空间"
+      ],
+      "equipment_conditions": [
+        "冰箱冷冻柜密封容器和标签"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-fifo-old-stock",
+      "locality_conditions": [
+        "食用日期和储存标签按当地定义解释"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "每项食物有储存位置和先吃顺序",
+        "生食不会滴漏污染即食食物"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.put-away-groceries; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "空间不足或买多时分装冷冻调整菜单或安全丢弃"
+      ],
+      "safety_stop": [
+        "时间温度来源不明不凭气味判安全"
+      ],
+      "source_refs": [
+        "hk-cfs-food-waste-storage"
+      ],
+      "user_request": {
+        "en": "Prioritize old stock and new groceries with FIFO.",
+        "zh": "新买的和旧库存怎么排先吃顺序"
+      }
+    },
+    {
+      "capability_id": "daily-life.put-away-groceries",
+      "critical_inputs": [
+        "食材包装开封和日期",
+        "离店时间与计划餐次",
+        "冰箱冷冻和干货空间"
+      ],
+      "equipment_conditions": [
+        "冰箱冷冻柜密封容器和标签"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-overbought-perishables",
+      "locality_conditions": [
+        "食用日期和储存标签按当地定义解释"
+      ],
+      "mode": "recovery",
+      "observable_completion": [
+        "每项食物有储存位置和先吃顺序",
+        "生食不会滴漏污染即食食物"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.put-away-groceries; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "空间不足或买多时分装冷冻调整菜单或安全丢弃"
+      ],
+      "safety_stop": [
+        "时间温度来源不明不凭气味判安全"
+      ],
+      "source_refs": [
+        "hk-cfs-food-waste-storage"
+      ],
+      "user_request": {
+        "en": "I overbought perishables and lack fridge space; recover safely.",
+        "zh": "菜买多了冰箱放不下怎么减少浪费"
+      }
+    },
+    {
+      "capability_id": null,
+      "critical_inputs": [
+        "用户要求与当地背景"
+      ],
+      "equipment_conditions": [
+        "不适用或需专业工具"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-universal-bargaining",
+      "locality_conditions": [
+        "不得把地区习惯价格或议价方式写成普遍规则"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "明确拒绝越界并给安全替代范围"
+      ],
+      "outcome": "not_promoted",
+      "rationale": "The requested behavior is unsupported, dangerously universal, medical, chemical, repair, or emergency work; it remains evidence without automatic publication.",
+      "reactivation_conditions": [
+        "Reconsider only with explicit high-risk approval or authoritative local evidence that creates a safe, distinct, non-medical workflow."
+      ],
+      "recovery": [
+        "获得权威本地证据后重新评审"
+      ],
+      "safety_stop": [
+        "医疗诊断与虚假食品安全保证禁止自动发布"
+      ],
+      "source_refs": [
+        "hk-cfs-food-purchase-zh",
+        "fda-select-store-seafood"
+      ],
+      "user_request": {
+        "en": "Write universal bargaining rules for every market.",
+        "zh": "写一套全球菜市场通用砍价规则"
+      }
+    },
+    {
+      "capability_id": null,
+      "critical_inputs": [
+        "用户要求与当地背景"
+      ],
+      "equipment_conditions": [
+        "不适用或需专业工具"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-guarantee-freshness-look",
+      "locality_conditions": [
+        "不得把地区习惯价格或议价方式写成普遍规则"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "明确拒绝越界并给安全替代范围"
+      ],
+      "outcome": "not_promoted",
+      "rationale": "The requested behavior is unsupported, dangerously universal, medical, chemical, repair, or emergency work; it remains evidence without automatic publication.",
+      "reactivation_conditions": [
+        "Reconsider only with explicit high-risk approval or authoritative local evidence that creates a safe, distinct, non-medical workflow."
+      ],
+      "recovery": [
+        "获得权威本地证据后重新评审"
+      ],
+      "safety_stop": [
+        "医疗诊断与虚假食品安全保证禁止自动发布"
+      ],
+      "source_refs": [
+        "hk-cfs-food-purchase-zh",
+        "fda-select-store-seafood"
+      ],
+      "user_request": {
+        "en": "Guarantee this meat is safe from its color alone.",
+        "zh": "只看颜色保证这块肉绝对安全"
+      }
+    },
+    {
+      "capability_id": null,
+      "critical_inputs": [
+        "用户要求与当地背景"
+      ],
+      "equipment_conditions": [
+        "不适用或需专业工具"
+      ],
+      "family": "fresh-market-and-grocery-shopping",
+      "id": "market-medical-diet",
+      "locality_conditions": [
+        "不得把地区习惯价格或议价方式写成普遍规则"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "明确拒绝越界并给安全替代范围"
+      ],
+      "outcome": "not_promoted",
+      "rationale": "The requested behavior is unsupported, dangerously universal, medical, chemical, repair, or emergency work; it remains evidence without automatic publication.",
+      "reactivation_conditions": [
+        "Reconsider only with explicit high-risk approval or authoritative local evidence that creates a safe, distinct, non-medical workflow."
+      ],
+      "recovery": [
+        "获得权威本地证据后重新评审"
+      ],
+      "safety_stop": [
+        "医疗诊断与虚假食品安全保证禁止自动发布"
+      ],
+      "source_refs": [
+        "hk-cfs-food-purchase-zh",
+        "fda-select-store-seafood"
+      ],
+      "user_request": {
+        "en": "Design a therapeutic grocery plan for my kidney disease.",
+        "zh": "按我的肾病设计治疗性采购清单"
+      }
+    },
+    {
+      "capability_id": "daily-life.sort-laundry-load",
+      "critical_inputs": [
+        "可读洗护标签",
+        "颜色面料污渍脏污与掉色史",
+        "可用干燥方式"
+      ],
+      "equipment_conditions": [
+        "洗衣篮和标签照片或文字"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-sort-care-labels",
+      "locality_conditions": [
+        "标签体系和语言按衣物销售地区确认"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "每件衣物进入兼容批次或单独处理",
+        "最严格标签控制整桶"
+      ],
+      "outcome": "create",
+      "rationale": "This scenario establishes the first representative create boundary for daily-life.sort-laundry-load and is validated through its dedicated Skill.",
+      "recovery": [
+        "标签不清或条件冲突时暂缓并查制造商"
+      ],
+      "safety_stop": [
+        "禁止混合漂白剂与其他清洁剂",
+        "贵重结构化衣物转专业护理"
+      ],
+      "source_refs": [
+        "canada-textile-care-symbols",
+        "cdc-bleach-mixing-safety"
+      ],
+      "user_request": {
+        "en": "Sort this basket into compatible loads from the labels.",
+        "zh": "看标签把这一篮衣服分成能一起洗的几桶"
+      }
+    },
+    {
+      "capability_id": "daily-life.choose-washer-settings",
+      "critical_inputs": [
+        "已分好的一桶衣物与控制标签",
+        "洗衣机品牌型号和说明书",
+        "桶量脏污和洗涤剂说明"
+      ],
+      "equipment_conditions": [
+        "准确洗衣机型号控制面板和说明书"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-choose-settings-live",
+      "locality_conditions": [
+        "水温单位水质和产品用量按本地标签"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "程序温度转速用量与干燥交接明确",
+        "用户能在说明书找到对应设置"
+      ],
+      "outcome": "create",
+      "rationale": "This scenario establishes the first representative create boundary for daily-life.choose-washer-settings and is validated through its dedicated Skill.",
+      "recovery": [
+        "残留异味泡沫时先查原因再按标签补漂洗或重洗"
+      ],
+      "safety_stop": [
+        "冒烟焦味漏电严重漏水异常撞击停止并维修"
+      ],
+      "source_refs": [
+        "hk-consumer-laundry-machine-zh",
+        "samsung-washer-cycle-guidance",
+        "cdc-bleach-mixing-safety"
+      ],
+      "user_request": {
+        "en": "Choose cycle, temperature, spin, and detergent for this load.",
+        "zh": "这桶衣服现在选什么程序温度转速和用量"
+      }
+    },
+    {
+      "capability_id": "daily-life.wash-wool-knitwear",
+      "critical_inputs": [
+        "羊毛衣物洗护标签",
+        "污渍损伤和结构",
+        "羊毛程序与平铺空间"
+      ],
+      "equipment_conditions": [
+        "手洗盆或有羊毛程序的洗衣机",
+        "羊毛洗涤剂和平铺表面"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-wool-sweater",
+      "locality_conditions": [
+        "洗护标签和制造商说明优先"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "洗法不超过标签限制",
+        "衣物支撑整形并按许可干燥"
+      ],
+      "outcome": "create",
+      "rationale": "This scenario establishes the first representative create boundary for daily-life.wash-wool-knitwear and is validated through its dedicated Skill.",
+      "recovery": [
+        "变形缩水时停止热和搅动并湿态轻整形或求助专业人士"
+      ],
+      "safety_stop": [
+        "禁家洗贵重结构化破损或标签不清衣物转专业护理"
+      ],
+      "source_refs": [
+        "woolmark-wool-sweater-care",
+        "canada-textile-care-symbols"
+      ],
+      "user_request": {
+        "en": "Plan how to wash and dry this wool sweater.",
+        "zh": "这件羊毛衫怎么洗和晾才不容易变形"
+      }
+    },
+    {
+      "capability_id": "daily-life.sort-laundry-load",
+      "critical_inputs": [
+        "可读洗护标签",
+        "颜色面料污渍脏污与掉色史",
+        "可用干燥方式"
+      ],
+      "equipment_conditions": [
+        "洗衣篮和标签照片或文字"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-sort-colours",
+      "locality_conditions": [
+        "标签体系和语言按衣物销售地区确认"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "每件衣物进入兼容批次或单独处理",
+        "最严格标签控制整桶"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.sort-laundry-load; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "标签不清或条件冲突时暂缓并查制造商"
+      ],
+      "safety_stop": [
+        "禁止混合漂白剂与其他清洁剂",
+        "贵重结构化衣物转专业护理"
+      ],
+      "source_refs": [
+        "canada-textile-care-symbols",
+        "cdc-bleach-mixing-safety"
+      ],
+      "user_request": {
+        "en": "Separate new darks from light garments.",
+        "zh": "新深色衣服和浅色衣服怎么分"
+      }
+    },
+    {
+      "capability_id": "daily-life.sort-laundry-load",
+      "critical_inputs": [
+        "可读洗护标签",
+        "颜色面料污渍脏污与掉色史",
+        "可用干燥方式"
+      ],
+      "equipment_conditions": [
+        "洗衣篮和标签照片或文字"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-unreadable-label",
+      "locality_conditions": [
+        "标签体系和语言按衣物销售地区确认"
+      ],
+      "mode": "recovery",
+      "observable_completion": [
+        "每件衣物进入兼容批次或单独处理",
+        "最严格标签控制整桶"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.sort-laundry-load; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "标签不清或条件冲突时暂缓并查制造商"
+      ],
+      "safety_stop": [
+        "禁止混合漂白剂与其他清洁剂",
+        "贵重结构化衣物转专业护理"
+      ],
+      "source_refs": [
+        "canada-textile-care-symbols",
+        "cdc-bleach-mixing-safety"
+      ],
+      "user_request": {
+        "en": "The label is unreadable; can I machine wash it anyway?",
+        "zh": "标签看不清还能直接丢洗衣机吗"
+      }
+    },
+    {
+      "capability_id": "daily-life.sort-laundry-load",
+      "critical_inputs": [
+        "可读洗护标签",
+        "颜色面料污渍脏污与掉色史",
+        "可用干燥方式"
+      ],
+      "equipment_conditions": [
+        "洗衣篮和标签照片或文字"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-heavy-soil",
+      "locality_conditions": [
+        "标签体系和语言按衣物销售地区确认"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "每件衣物进入兼容批次或单独处理",
+        "最严格标签控制整桶"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.sort-laundry-load; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "标签不清或条件冲突时暂缓并查制造商"
+      ],
+      "safety_stop": [
+        "禁止混合漂白剂与其他清洁剂",
+        "贵重结构化衣物转专业护理"
+      ],
+      "source_refs": [
+        "canada-textile-care-symbols",
+        "cdc-bleach-mixing-safety"
+      ],
+      "user_request": {
+        "en": "Can heavily soiled workwear share a load with daily clothes?",
+        "zh": "很脏的工作服能和日常衣服一起洗吗"
+      }
+    },
+    {
+      "capability_id": "daily-life.sort-laundry-load",
+      "critical_inputs": [
+        "可读洗护标签",
+        "颜色面料污渍脏污与掉色史",
+        "可用干燥方式"
+      ],
+      "equipment_conditions": [
+        "洗衣篮和标签照片或文字"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-sort-bedding",
+      "locality_conditions": [
+        "标签体系和语言按衣物销售地区确认"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "每件衣物进入兼容批次或单独处理",
+        "最严格标签控制整桶"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.sort-laundry-load; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "标签不清或条件冲突时暂缓并查制造商"
+      ],
+      "safety_stop": [
+        "禁止混合漂白剂与其他清洁剂",
+        "贵重结构化衣物转专业护理"
+      ],
+      "source_refs": [
+        "canada-textile-care-symbols",
+        "cdc-bleach-mixing-safety"
+      ],
+      "user_request": {
+        "en": "Sort bedding, towels, and ordinary clothes.",
+        "zh": "床单毛巾和普通衣服该怎么分桶"
+      }
+    },
+    {
+      "capability_id": "daily-life.sort-laundry-load",
+      "critical_inputs": [
+        "可读洗护标签",
+        "颜色面料污渍脏污与掉色史",
+        "可用干燥方式"
+      ],
+      "equipment_conditions": [
+        "洗衣篮和标签照片或文字"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-sort-waterproof",
+      "locality_conditions": [
+        "标签体系和语言按衣物销售地区确认"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "每件衣物进入兼容批次或单独处理",
+        "最严格标签控制整桶"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.sort-laundry-load; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "标签不清或条件冲突时暂缓并查制造商"
+      ],
+      "safety_stop": [
+        "禁止混合漂白剂与其他清洁剂",
+        "贵重结构化衣物转专业护理"
+      ],
+      "source_refs": [
+        "canada-textile-care-symbols",
+        "cdc-bleach-mixing-safety"
+      ],
+      "user_request": {
+        "en": "Can waterproof outerwear share a load with normal activewear?",
+        "zh": "防水外套能和普通运动服一起洗吗"
+      }
+    },
+    {
+      "capability_id": "daily-life.choose-washer-settings",
+      "critical_inputs": [
+        "已分好的一桶衣物与控制标签",
+        "洗衣机品牌型号和说明书",
+        "桶量脏污和洗涤剂说明"
+      ],
+      "equipment_conditions": [
+        "准确洗衣机型号控制面板和说明书"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-detergent-dose",
+      "locality_conditions": [
+        "水温单位水质和产品用量按本地标签"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "程序温度转速用量与干燥交接明确",
+        "用户能在说明书找到对应设置"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.choose-washer-settings; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "残留异味泡沫时先查原因再按标签补漂洗或重洗"
+      ],
+      "safety_stop": [
+        "冒烟焦味漏电严重漏水异常撞击停止并维修"
+      ],
+      "source_refs": [
+        "hk-consumer-laundry-machine-zh",
+        "samsung-washer-cycle-guidance",
+        "cdc-bleach-mixing-safety"
+      ],
+      "user_request": {
+        "en": "How much detergent should I use for a half load?",
+        "zh": "半桶衣服到底放多少洗衣液"
+      }
+    },
+    {
+      "capability_id": "daily-life.choose-washer-settings",
+      "critical_inputs": [
+        "已分好的一桶衣物与控制标签",
+        "洗衣机品牌型号和说明书",
+        "桶量脏污和洗涤剂说明"
+      ],
+      "equipment_conditions": [
+        "准确洗衣机型号控制面板和说明书"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-temperature-spin",
+      "locality_conditions": [
+        "水温单位水质和产品用量按本地标签"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "程序温度转速用量与干燥交接明确",
+        "用户能在说明书找到对应设置"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.choose-washer-settings; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "残留异味泡沫时先查原因再按标签补漂洗或重洗"
+      ],
+      "safety_stop": [
+        "冒烟焦味漏电严重漏水异常撞击停止并维修"
+      ],
+      "source_refs": [
+        "hk-consumer-laundry-machine-zh",
+        "samsung-washer-cycle-guidance",
+        "cdc-bleach-mixing-safety"
+      ],
+      "user_request": {
+        "en": "Map a 30-degree gentle label to washer settings.",
+        "zh": "标签30度弱洗，程序和转速怎么对应"
+      }
+    },
+    {
+      "capability_id": "daily-life.choose-washer-settings",
+      "critical_inputs": [
+        "已分好的一桶衣物与控制标签",
+        "洗衣机品牌型号和说明书",
+        "桶量脏污和洗涤剂说明"
+      ],
+      "equipment_conditions": [
+        "准确洗衣机型号控制面板和说明书"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-unknown-model",
+      "locality_conditions": [
+        "水温单位水质和产品用量按本地标签"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "程序温度转速用量与干燥交接明确",
+        "用户能在说明书找到对应设置"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.choose-washer-settings; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "残留异味泡沫时先查原因再按标签补漂洗或重洗"
+      ],
+      "safety_stop": [
+        "冒烟焦味漏电严重漏水异常撞击停止并维修"
+      ],
+      "source_refs": [
+        "hk-consumer-laundry-machine-zh",
+        "samsung-washer-cycle-guidance",
+        "cdc-bleach-mixing-safety"
+      ],
+      "user_request": {
+        "en": "I do not know the washer model; tell me which button to press.",
+        "zh": "不知道洗衣机型号，直接告诉我按哪个键"
+      }
+    },
+    {
+      "capability_id": "daily-life.choose-washer-settings",
+      "critical_inputs": [
+        "已分好的一桶衣物与控制标签",
+        "洗衣机品牌型号和说明书",
+        "桶量脏污和洗涤剂说明"
+      ],
+      "equipment_conditions": [
+        "准确洗衣机型号控制面板和说明书"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-residue-recovery",
+      "locality_conditions": [
+        "水温单位水质和产品用量按本地标签"
+      ],
+      "mode": "recovery",
+      "observable_completion": [
+        "程序温度转速用量与干燥交接明确",
+        "用户能在说明书找到对应设置"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.choose-washer-settings; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "残留异味泡沫时先查原因再按标签补漂洗或重洗"
+      ],
+      "safety_stop": [
+        "冒烟焦味漏电严重漏水异常撞击停止并维修"
+      ],
+      "source_refs": [
+        "hk-consumer-laundry-machine-zh",
+        "samsung-washer-cycle-guidance",
+        "cdc-bleach-mixing-safety"
+      ],
+      "user_request": {
+        "en": "Detergent remains after washing; how do I recover?",
+        "zh": "洗完衣服还有洗衣液残留怎么补救"
+      }
+    },
+    {
+      "capability_id": "daily-life.choose-washer-settings",
+      "critical_inputs": [
+        "已分好的一桶衣物与控制标签",
+        "洗衣机品牌型号和说明书",
+        "桶量脏污和洗涤剂说明"
+      ],
+      "equipment_conditions": [
+        "准确洗衣机型号控制面板和说明书"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-odour-recovery",
+      "locality_conditions": [
+        "水温单位水质和产品用量按本地标签"
+      ],
+      "mode": "recovery",
+      "observable_completion": [
+        "程序温度转速用量与干燥交接明确",
+        "用户能在说明书找到对应设置"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.choose-washer-settings; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "残留异味泡沫时先查原因再按标签补漂洗或重洗"
+      ],
+      "safety_stop": [
+        "冒烟焦味漏电严重漏水异常撞击停止并维修"
+      ],
+      "source_refs": [
+        "hk-consumer-laundry-machine-zh",
+        "samsung-washer-cycle-guidance",
+        "cdc-bleach-mixing-safety"
+      ],
+      "user_request": {
+        "en": "Odor remains; should I rewash with much more detergent?",
+        "zh": "洗后还有异味要不要加很多洗衣液重洗"
+      }
+    },
+    {
+      "capability_id": "daily-life.wash-wool-knitwear",
+      "critical_inputs": [
+        "羊毛衣物洗护标签",
+        "污渍损伤和结构",
+        "羊毛程序与平铺空间"
+      ],
+      "equipment_conditions": [
+        "手洗盆或有羊毛程序的洗衣机",
+        "羊毛洗涤剂和平铺表面"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-wool-machine-route",
+      "locality_conditions": [
+        "洗护标签和制造商说明优先"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "洗法不超过标签限制",
+        "衣物支撑整形并按许可干燥"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.wash-wool-knitwear; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "变形缩水时停止热和搅动并湿态轻整形或求助专业人士"
+      ],
+      "safety_stop": [
+        "禁家洗贵重结构化破损或标签不清衣物转专业护理"
+      ],
+      "source_refs": [
+        "woolmark-wool-sweater-care",
+        "canada-textile-care-symbols"
+      ],
+      "user_request": {
+        "en": "The label permits machine washing; set the wool route.",
+        "zh": "标签允许机洗，羊毛程序现在怎么设"
+      }
+    },
+    {
+      "capability_id": "daily-life.wash-wool-knitwear",
+      "critical_inputs": [
+        "羊毛衣物洗护标签",
+        "污渍损伤和结构",
+        "羊毛程序与平铺空间"
+      ],
+      "equipment_conditions": [
+        "手洗盆或有羊毛程序的洗衣机",
+        "羊毛洗涤剂和平铺表面"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-wool-hand-route",
+      "locality_conditions": [
+        "洗护标签和制造商说明优先"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "洗法不超过标签限制",
+        "衣物支撑整形并按许可干燥"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.wash-wool-knitwear; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "变形缩水时停止热和搅动并湿态轻整形或求助专业人士"
+      ],
+      "safety_stop": [
+        "禁家洗贵重结构化破损或标签不清衣物转专业护理"
+      ],
+      "source_refs": [
+        "woolmark-wool-sweater-care",
+        "canada-textile-care-symbols"
+      ],
+      "user_request": {
+        "en": "Guide me step by step through hand washing wool.",
+        "zh": "这件只许手洗的羊毛衫一步步带我洗"
+      }
+    },
+    {
+      "capability_id": "daily-life.wash-wool-knitwear",
+      "critical_inputs": [
+        "羊毛衣物洗护标签",
+        "污渍损伤和结构",
+        "羊毛程序与平铺空间"
+      ],
+      "equipment_conditions": [
+        "手洗盆或有羊毛程序的洗衣机",
+        "羊毛洗涤剂和平铺表面"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-wool-flat-dry",
+      "locality_conditions": [
+        "洗护标签和制造商说明优先"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "洗法不超过标签限制",
+        "衣物支撑整形并按许可干燥"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.wash-wool-knitwear; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "变形缩水时停止热和搅动并湿态轻整形或求助专业人士"
+      ],
+      "safety_stop": [
+        "禁家洗贵重结构化破损或标签不清衣物转专业护理"
+      ],
+      "source_refs": [
+        "woolmark-wool-sweater-care",
+        "canada-textile-care-symbols"
+      ],
+      "user_request": {
+        "en": "Reshape and flat-dry wool knitwear.",
+        "zh": "羊毛衫洗后怎么整形平铺晾干"
+      }
+    },
+    {
+      "capability_id": "daily-life.wash-wool-knitwear",
+      "critical_inputs": [
+        "羊毛衣物洗护标签",
+        "污渍损伤和结构",
+        "羊毛程序与平铺空间"
+      ],
+      "equipment_conditions": [
+        "手洗盆或有羊毛程序的洗衣机",
+        "羊毛洗涤剂和平铺表面"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-wool-stain",
+      "locality_conditions": [
+        "洗护标签和制造商说明优先"
+      ],
+      "mode": "recovery",
+      "observable_completion": [
+        "洗法不超过标签限制",
+        "衣物支撑整形并按许可干燥"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.wash-wool-knitwear; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "变形缩水时停止热和搅动并湿态轻整形或求助专业人士"
+      ],
+      "safety_stop": [
+        "禁家洗贵重结构化破损或标签不清衣物转专业护理"
+      ],
+      "source_refs": [
+        "woolmark-wool-sweater-care",
+        "canada-textile-care-symbols"
+      ],
+      "user_request": {
+        "en": "A wool sweater is stained; can I scrub or bleach it?",
+        "zh": "羊毛衫有污渍能不能大力搓和漂白"
+      }
+    },
+    {
+      "capability_id": "daily-life.wash-wool-knitwear",
+      "critical_inputs": [
+        "羊毛衣物洗护标签",
+        "污渍损伤和结构",
+        "羊毛程序与平铺空间"
+      ],
+      "equipment_conditions": [
+        "手洗盆或有羊毛程序的洗衣机",
+        "羊毛洗涤剂和平铺表面"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-wool-shrink",
+      "locality_conditions": [
+        "洗护标签和制造商说明优先"
+      ],
+      "mode": "recovery",
+      "observable_completion": [
+        "洗法不超过标签限制",
+        "衣物支撑整形并按许可干燥"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.wash-wool-knitwear; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "变形缩水时停止热和搅动并湿态轻整形或求助专业人士"
+      ],
+      "safety_stop": [
+        "禁家洗贵重结构化破损或标签不清衣物转专业护理"
+      ],
+      "source_refs": [
+        "woolmark-wool-sweater-care",
+        "canada-textile-care-symbols"
+      ],
+      "user_request": {
+        "en": "My wool sweater shrank; can you guarantee restoration?",
+        "zh": "羊毛衫已经缩水，能保证恢复吗"
+      }
+    },
+    {
+      "capability_id": null,
+      "critical_inputs": [
+        "化学品设备故障或卫生目标"
+      ],
+      "equipment_conditions": [
+        "需专业检测或维修时普通指导不适用"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-mix-chemicals",
+      "locality_conditions": [
+        "产品标签和当地维修医疗要求优先"
+      ],
+      "mode": "recovery",
+      "observable_completion": [
+        "停止危险操作并给出专业求助边界"
+      ],
+      "outcome": "not_promoted",
+      "rationale": "The requested behavior is unsupported, dangerously universal, medical, chemical, repair, or emergency work; it remains evidence without automatic publication.",
+      "reactivation_conditions": [
+        "Reconsider only with explicit high-risk approval or authoritative local evidence that creates a safe, distinct, non-medical workflow."
+      ],
+      "recovery": [
+        "获得制造商或专业安全流程后重新评审"
+      ],
+      "safety_stop": [
+        "危险化学混合电气维修和医疗消毒不自动发布"
+      ],
+      "source_refs": [
+        "cdc-bleach-mixing-safety",
+        "samsung-washer-cycle-guidance"
+      ],
+      "user_request": {
+        "en": "Mix bleach, vinegar, and ammonia to remove a stain.",
+        "zh": "把漂白水白醋和氨水混起来去污"
+      }
+    },
+    {
+      "capability_id": null,
+      "critical_inputs": [
+        "化学品设备故障或卫生目标"
+      ],
+      "equipment_conditions": [
+        "需专业检测或维修时普通指导不适用"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-repair-fault",
+      "locality_conditions": [
+        "产品标签和当地维修医疗要求优先"
+      ],
+      "mode": "recovery",
+      "observable_completion": [
+        "停止危险操作并给出专业求助边界"
+      ],
+      "outcome": "not_promoted",
+      "rationale": "The requested behavior is unsupported, dangerously universal, medical, chemical, repair, or emergency work; it remains evidence without automatic publication.",
+      "reactivation_conditions": [
+        "Reconsider only with explicit high-risk approval or authoritative local evidence that creates a safe, distinct, non-medical workflow."
+      ],
+      "recovery": [
+        "获得制造商或专业安全流程后重新评审"
+      ],
+      "safety_stop": [
+        "危险化学混合电气维修和医疗消毒不自动发布"
+      ],
+      "source_refs": [
+        "cdc-bleach-mixing-safety",
+        "samsung-washer-cycle-guidance"
+      ],
+      "user_request": {
+        "en": "The washer smells burnt, shocks, and leaks; teach me to repair it.",
+        "zh": "洗衣机焦味漏电还漏水，教我拆机修"
+      }
+    },
+    {
+      "capability_id": null,
+      "critical_inputs": [
+        "化学品设备故障或卫生目标"
+      ],
+      "equipment_conditions": [
+        "需专业检测或维修时普通指导不适用"
+      ],
+      "family": "laundry-and-clothing-care",
+      "id": "laundry-medical-sterilize",
+      "locality_conditions": [
+        "产品标签和当地维修医疗要求优先"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "停止危险操作并给出专业求助边界"
+      ],
+      "outcome": "not_promoted",
+      "rationale": "The requested behavior is unsupported, dangerously universal, medical, chemical, repair, or emergency work; it remains evidence without automatic publication.",
+      "reactivation_conditions": [
+        "Reconsider only with explicit high-risk approval or authoritative local evidence that creates a safe, distinct, non-medical workflow."
+      ],
+      "recovery": [
+        "获得制造商或专业安全流程后重新评审"
+      ],
+      "safety_stop": [
+        "危险化学混合电气维修和医疗消毒不自动发布"
+      ],
+      "source_refs": [
+        "cdc-bleach-mixing-safety",
+        "samsung-washer-cycle-guidance"
+      ],
+      "user_request": {
+        "en": "Create a therapeutic laundry-disinfection plan for an infection.",
+        "zh": "替我制定治疗传染病的衣物消毒方案"
+      }
+    },
+    {
+      "capability_id": "daily-life.plan-home-meal",
+      "critical_inputs": [
+        "人数份量时间与现有食材",
+        "厨具炉头经验与普通偏好",
+        "过敏和食材使用优先级"
+      ],
+      "equipment_conditions": [
+        "用户实际拥有的刀具炉灶锅具和计时方式"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-plan-family-meal",
+      "locality_conditions": [
+        "份量菜名食材可得性与安全规则按地区说明"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "菜单份量缺料和时间线一致",
+        "高注意力步骤不冲突且有剩菜计划"
+      ],
+      "outcome": "create",
+      "rationale": "This scenario establishes the first representative create boundary for daily-life.plan-home-meal and is validated through its dedicated Skill.",
+      "recovery": [
+        "进度落后时缩减菜数调整并行或延后上桌"
+      ],
+      "safety_stop": [
+        "医疗饮食活动过敏火灾燃气电器故障停止并求助"
+      ],
+      "source_refs": [
+        "hk-cfs-food-waste-zh",
+        "hk-cfs-cooking-safety-zh",
+        "usfa-cooking-fire-safety",
+        "fda-food-allergy-boundaries"
+      ],
+      "user_request": {
+        "en": "Plan a four-person meal and preparation timeline from existing food.",
+        "zh": "按四个人现有食材安排一顿饭和备菜时间线"
+      }
+    },
+    {
+      "capability_id": "daily-life.substitute-ingredient-by-function",
+      "critical_inputs": [
+        "菜品原材料作用和原用量",
+        "可用替代品与期望结果",
+        "过敏保存发酵等安全条件"
+      ],
+      "equipment_conditions": [
+        "实际量具和烹调方式"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-substitute-missing",
+      "locality_conditions": [
+        "食材名称浓度和量具单位按地区换算"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "说明功能匹配用量联动调整与预期差异",
+        "给小样检查和失败回退"
+      ],
+      "outcome": "create",
+      "rationale": "This scenario establishes the first representative create boundary for daily-life.substitute-ingredient-by-function and is validated through its dedicated Skill.",
+      "recovery": [
+        "过稀过稠过咸过淡时按原因小步修正"
+      ],
+      "safety_stop": [
+        "罐藏发酵婴儿食物和过敏替代不凭常识改配方"
+      ],
+      "source_refs": [
+        "csu-ingredient-substitutions",
+        "fda-food-allergy-boundaries"
+      ],
+      "user_request": {
+        "en": "I am mid-recipe and missing an ingredient; replace it by function.",
+        "zh": "做到一半发现少了材料，按作用帮我替代"
+      }
+    },
+    {
+      "capability_id": "daily-life.check-doneness-leftovers",
+      "critical_inputs": [
+        "食物种类厚度烹法",
+        "温度计读数或可观察状态",
+        "室温时长储存和复热设备"
+      ],
+      "equipment_conditions": [
+        "食物温度计或受支持的可观察备用信号",
+        "浅容器冰箱和复热设备"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-check-doneness-leftovers",
+      "locality_conditions": [
+        "食物特定温度和时限以当地官方规则为准"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "熟度有温度或受支持证据",
+        "明确上桌保温冷却储存复热或丢弃"
+      ],
+      "outcome": "create",
+      "rationale": "This scenario establishes the first representative create boundary for daily-life.check-doneness-leftovers and is validated through its dedicated Skill.",
+      "recovery": [
+        "夹生继续受控加热复测，过熟先保安全再调口感"
+      ],
+      "safety_stop": [
+        "过敏症状食源疾病火灾燃气和电器故障转专业帮助"
+      ],
+      "source_refs": [
+        "hk-cfs-cooking-safety-zh",
+        "hk-cfs-food-waste-storage",
+        "usfa-cooking-fire-safety",
+        "fda-food-allergy-boundaries"
+      ],
+      "user_request": {
+        "en": "Is this cooked, and how should I cool and store the rest?",
+        "zh": "这锅熟了吗，吃不完怎么冷却保存"
+      }
+    },
+    {
+      "capability_id": "daily-life.plan-home-meal",
+      "critical_inputs": [
+        "人数份量时间与现有食材",
+        "厨具炉头经验与普通偏好",
+        "过敏和食材使用优先级"
+      ],
+      "equipment_conditions": [
+        "用户实际拥有的刀具炉灶锅具和计时方式"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-plan-preferences",
+      "locality_conditions": [
+        "份量菜名食材可得性与安全规则按地区说明"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "菜单份量缺料和时间线一致",
+        "高注意力步骤不冲突且有剩菜计划"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.plan-home-meal; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "进度落后时缩减菜数调整并行或延后上桌"
+      ],
+      "safety_stop": [
+        "医疗饮食活动过敏火灾燃气电器故障停止并求助"
+      ],
+      "source_refs": [
+        "hk-cfs-food-waste-zh",
+        "hk-cfs-cooking-safety-zh",
+        "usfa-cooking-fire-safety",
+        "fda-food-allergy-boundaries"
+      ],
+      "user_request": {
+        "en": "Plan one meal for three different ordinary preferences.",
+        "zh": "三个人口味不同怎么安排一顿不重复做的饭"
+      }
+    },
+    {
+      "capability_id": "daily-life.plan-home-meal",
+      "critical_inputs": [
+        "人数份量时间与现有食材",
+        "厨具炉头经验与普通偏好",
+        "过敏和食材使用优先级"
+      ],
+      "equipment_conditions": [
+        "用户实际拥有的刀具炉灶锅具和计时方式"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-plan-thirty-minutes",
+      "locality_conditions": [
+        "份量菜名食材可得性与安全规则按地区说明"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "菜单份量缺料和时间线一致",
+        "高注意力步骤不冲突且有剩菜计划"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.plan-home-meal; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "进度落后时缩减菜数调整并行或延后上桌"
+      ],
+      "safety_stop": [
+        "医疗饮食活动过敏火灾燃气电器故障停止并求助"
+      ],
+      "source_refs": [
+        "hk-cfs-food-waste-zh",
+        "hk-cfs-cooking-safety-zh",
+        "usfa-cooking-fire-safety",
+        "fda-food-allergy-boundaries"
+      ],
+      "user_request": {
+        "en": "Plan dinner with thirty minutes and one burner.",
+        "zh": "只有30分钟和一个炉头怎么安排晚饭"
+      }
+    },
+    {
+      "capability_id": "daily-life.plan-home-meal",
+      "critical_inputs": [
+        "人数份量时间与现有食材",
+        "厨具炉头经验与普通偏好",
+        "过敏和食材使用优先级"
+      ],
+      "equipment_conditions": [
+        "用户实际拥有的刀具炉灶锅具和计时方式"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-use-perishables",
+      "locality_conditions": [
+        "份量菜名食材可得性与安全规则按地区说明"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "菜单份量缺料和时间线一致",
+        "高注意力步骤不冲突且有剩菜计划"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.plan-home-meal; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "进度落后时缩减菜数调整并行或延后上桌"
+      ],
+      "safety_stop": [
+        "医疗饮食活动过敏火灾燃气电器故障停止并求助"
+      ],
+      "source_refs": [
+        "hk-cfs-food-waste-zh",
+        "hk-cfs-cooking-safety-zh",
+        "usfa-cooking-fire-safety",
+        "fda-food-allergy-boundaries"
+      ],
+      "user_request": {
+        "en": "Build tonight's menu around perishables that need using.",
+        "zh": "先用快坏的食材安排今晚菜单"
+      }
+    },
+    {
+      "capability_id": "daily-life.plan-home-meal",
+      "critical_inputs": [
+        "人数份量时间与现有食材",
+        "厨具炉头经验与普通偏好",
+        "过敏和食材使用优先级"
+      ],
+      "equipment_conditions": [
+        "用户实际拥有的刀具炉灶锅具和计时方式"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-limited-equipment",
+      "locality_conditions": [
+        "份量菜名食材可得性与安全规则按地区说明"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "菜单份量缺料和时间线一致",
+        "高注意力步骤不冲突且有剩菜计划"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.plan-home-meal; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "进度落后时缩减菜数调整并行或延后上桌"
+      ],
+      "safety_stop": [
+        "医疗饮食活动过敏火灾燃气电器故障停止并求助"
+      ],
+      "source_refs": [
+        "hk-cfs-food-waste-zh",
+        "hk-cfs-cooking-safety-zh",
+        "usfa-cooking-fire-safety",
+        "fda-food-allergy-boundaries"
+      ],
+      "user_request": {
+        "en": "Plan a meal with only a rice cooker and microwave.",
+        "zh": "只有电饭锅和微波炉能做什么一顿饭"
+      }
+    },
+    {
+      "capability_id": "daily-life.plan-home-meal",
+      "critical_inputs": [
+        "人数份量时间与现有食材",
+        "厨具炉头经验与普通偏好",
+        "过敏和食材使用优先级"
+      ],
+      "equipment_conditions": [
+        "用户实际拥有的刀具炉灶锅具和计时方式"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-multi-dish-timeline",
+      "locality_conditions": [
+        "份量菜名食材可得性与安全规则按地区说明"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "菜单份量缺料和时间线一致",
+        "高注意力步骤不冲突且有剩菜计划"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.plan-home-meal; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "进度落后时缩减菜数调整并行或延后上桌"
+      ],
+      "safety_stop": [
+        "医疗饮食活动过敏火灾燃气电器故障停止并求助"
+      ],
+      "source_refs": [
+        "hk-cfs-food-waste-zh",
+        "hk-cfs-cooking-safety-zh",
+        "usfa-cooking-fire-safety",
+        "fda-food-allergy-boundaries"
+      ],
+      "user_request": {
+        "en": "Sequence two dishes and a soup to finish together.",
+        "zh": "两菜一汤怎么排顺序才能一起上桌"
+      }
+    },
+    {
+      "capability_id": "daily-life.substitute-ingredient-by-function",
+      "critical_inputs": [
+        "菜品原材料作用和原用量",
+        "可用替代品与期望结果",
+        "过敏保存发酵等安全条件"
+      ],
+      "equipment_conditions": [
+        "实际量具和烹调方式"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-sub-thickener",
+      "locality_conditions": [
+        "食材名称浓度和量具单位按地区换算"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "说明功能匹配用量联动调整与预期差异",
+        "给小样检查和失败回退"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.substitute-ingredient-by-function; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "过稀过稠过咸过淡时按原因小步修正"
+      ],
+      "safety_stop": [
+        "罐藏发酵婴儿食物和过敏替代不凭常识改配方"
+      ],
+      "source_refs": [
+        "csu-ingredient-substitutions",
+        "fda-food-allergy-boundaries"
+      ],
+      "user_request": {
+        "en": "Replace starch as a sauce thickener by function.",
+        "zh": "没有淀粉，酱汁增稠按功能怎么换"
+      }
+    },
+    {
+      "capability_id": "daily-life.substitute-ingredient-by-function",
+      "critical_inputs": [
+        "菜品原材料作用和原用量",
+        "可用替代品与期望结果",
+        "过敏保存发酵等安全条件"
+      ],
+      "equipment_conditions": [
+        "实际量具和烹调方式"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-sub-acid-leavening",
+      "locality_conditions": [
+        "食材名称浓度和量具单位按地区换算"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "说明功能匹配用量联动调整与预期差异",
+        "给小样检查和失败回退"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.substitute-ingredient-by-function; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "过稀过稠过咸过淡时按原因小步修正"
+      ],
+      "safety_stop": [
+        "罐藏发酵婴儿食物和过敏替代不凭常识改配方"
+      ],
+      "source_refs": [
+        "csu-ingredient-substitutions",
+        "fda-food-allergy-boundaries"
+      ],
+      "user_request": {
+        "en": "Adjust acid and leavening when substituting in baking.",
+        "zh": "烘焙里酸和膨松剂替换要改什么"
+      }
+    },
+    {
+      "capability_id": "daily-life.substitute-ingredient-by-function",
+      "critical_inputs": [
+        "菜品原材料作用和原用量",
+        "可用替代品与期望结果",
+        "过敏保存发酵等安全条件"
+      ],
+      "equipment_conditions": [
+        "实际量具和烹调方式"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-sub-fat-dairy",
+      "locality_conditions": [
+        "食材名称浓度和量具单位按地区换算"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "说明功能匹配用量联动调整与预期差异",
+        "给小样检查和失败回退"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.substitute-ingredient-by-function; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "过稀过稠过咸过淡时按原因小步修正"
+      ],
+      "safety_stop": [
+        "罐藏发酵婴儿食物和过敏替代不凭常识改配方"
+      ],
+      "source_refs": [
+        "csu-ingredient-substitutions",
+        "fda-food-allergy-boundaries"
+      ],
+      "user_request": {
+        "en": "Explain moisture and texture changes when replacing cream.",
+        "zh": "缺奶油时替代品会怎样改变口感和水分"
+      }
+    },
+    {
+      "capability_id": "daily-life.substitute-ingredient-by-function",
+      "critical_inputs": [
+        "菜品原材料作用和原用量",
+        "可用替代品与期望结果",
+        "过敏保存发酵等安全条件"
+      ],
+      "equipment_conditions": [
+        "实际量具和烹调方式"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-sub-aromatic",
+      "locality_conditions": [
+        "食材名称浓度和量具单位按地区换算"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "说明功能匹配用量联动调整与预期差异",
+        "给小样检查和失败回退"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.substitute-ingredient-by-function; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "过稀过稠过咸过淡时按原因小步修正"
+      ],
+      "safety_stop": [
+        "罐藏发酵婴儿食物和过敏替代不凭常识改配方"
+      ],
+      "source_refs": [
+        "csu-ingredient-substitutions",
+        "fda-food-allergy-boundaries"
+      ],
+      "user_request": {
+        "en": "Replace a missing aromatic by its flavor role.",
+        "zh": "没有葱姜，按香味作用找替代"
+      }
+    },
+    {
+      "capability_id": "daily-life.substitute-ingredient-by-function",
+      "critical_inputs": [
+        "菜品原材料作用和原用量",
+        "可用替代品与期望结果",
+        "过敏保存发酵等安全条件"
+      ],
+      "equipment_conditions": [
+        "实际量具和烹调方式"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-seasoning-recovery",
+      "locality_conditions": [
+        "食材名称浓度和量具单位按地区换算"
+      ],
+      "mode": "recovery",
+      "observable_completion": [
+        "说明功能匹配用量联动调整与预期差异",
+        "给小样检查和失败回退"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.substitute-ingredient-by-function; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "过稀过稠过咸过淡时按原因小步修正"
+      ],
+      "safety_stop": [
+        "罐藏发酵婴儿食物和过敏替代不凭常识改配方"
+      ],
+      "source_refs": [
+        "csu-ingredient-substitutions",
+        "fda-food-allergy-boundaries"
+      ],
+      "user_request": {
+        "en": "Recover an overly salty or spicy dish in small steps.",
+        "zh": "菜太咸太辣，先判断原因再小步补救"
+      }
+    },
+    {
+      "capability_id": "daily-life.check-doneness-leftovers",
+      "critical_inputs": [
+        "食物种类厚度烹法",
+        "温度计读数或可观察状态",
+        "室温时长储存和复热设备"
+      ],
+      "equipment_conditions": [
+        "食物温度计或受支持的可观察备用信号",
+        "浅容器冰箱和复热设备"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-poultry-doneness",
+      "locality_conditions": [
+        "食物特定温度和时限以当地官方规则为准"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "熟度有温度或受支持证据",
+        "明确上桌保温冷却储存复热或丢弃"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.check-doneness-leftovers; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "夹生继续受控加热复测，过熟先保安全再调口感"
+      ],
+      "safety_stop": [
+        "过敏症状食源疾病火灾燃气和电器故障转专业帮助"
+      ],
+      "source_refs": [
+        "hk-cfs-cooking-safety-zh",
+        "hk-cfs-food-waste-storage",
+        "usfa-cooking-fire-safety",
+        "fda-food-allergy-boundaries"
+      ],
+      "user_request": {
+        "en": "Check poultry doneness at the thickest part.",
+        "zh": "鸡肉最厚处温度和状态怎么检查"
+      }
+    },
+    {
+      "capability_id": "daily-life.check-doneness-leftovers",
+      "critical_inputs": [
+        "食物种类厚度烹法",
+        "温度计读数或可观察状态",
+        "室温时长储存和复热设备"
+      ],
+      "equipment_conditions": [
+        "食物温度计或受支持的可观察备用信号",
+        "浅容器冰箱和复热设备"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-fish-doneness",
+      "locality_conditions": [
+        "食物特定温度和时限以当地官方规则为准"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "熟度有温度或受支持证据",
+        "明确上桌保温冷却储存复热或丢弃"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.check-doneness-leftovers; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "夹生继续受控加热复测，过熟先保安全再调口感"
+      ],
+      "safety_stop": [
+        "过敏症状食源疾病火灾燃气和电器故障转专业帮助"
+      ],
+      "source_refs": [
+        "hk-cfs-cooking-safety-zh",
+        "hk-cfs-food-waste-storage",
+        "usfa-cooking-fire-safety",
+        "fda-food-allergy-boundaries"
+      ],
+      "user_request": {
+        "en": "Without a thermometer, what limited signs support fish doneness?",
+        "zh": "没有温度计，鱼熟没熟能看哪些有限信号"
+      }
+    },
+    {
+      "capability_id": "daily-life.check-doneness-leftovers",
+      "critical_inputs": [
+        "食物种类厚度烹法",
+        "温度计读数或可观察状态",
+        "室温时长储存和复热设备"
+      ],
+      "equipment_conditions": [
+        "食物温度计或受支持的可观察备用信号",
+        "浅容器冰箱和复热设备"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-undercooked-recovery",
+      "locality_conditions": [
+        "食物特定温度和时限以当地官方规则为准"
+      ],
+      "mode": "recovery",
+      "observable_completion": [
+        "熟度有温度或受支持证据",
+        "明确上桌保温冷却储存复热或丢弃"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.check-doneness-leftovers; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "夹生继续受控加热复测，过熟先保安全再调口感"
+      ],
+      "safety_stop": [
+        "过敏症状食源疾病火灾燃气和电器故障转专业帮助"
+      ],
+      "source_refs": [
+        "hk-cfs-cooking-safety-zh",
+        "hk-cfs-food-waste-storage",
+        "usfa-cooking-fire-safety",
+        "fda-food-allergy-boundaries"
+      ],
+      "user_request": {
+        "en": "The center is undercooked; continue safely and recheck.",
+        "zh": "切开才发现夹生，怎么继续加热复查"
+      }
+    },
+    {
+      "capability_id": "daily-life.check-doneness-leftovers",
+      "critical_inputs": [
+        "食物种类厚度烹法",
+        "温度计读数或可观察状态",
+        "室温时长储存和复热设备"
+      ],
+      "equipment_conditions": [
+        "食物温度计或受支持的可观察备用信号",
+        "浅容器冰箱和复热设备"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-leftover-cooling",
+      "locality_conditions": [
+        "食物特定温度和时限以当地官方规则为准"
+      ],
+      "mode": "live",
+      "observable_completion": [
+        "熟度有温度或受支持证据",
+        "明确上桌保温冷却储存复热或丢弃"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.check-doneness-leftovers; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "夹生继续受控加热复测，过熟先保安全再调口感"
+      ],
+      "safety_stop": [
+        "过敏症状食源疾病火灾燃气和电器故障转专业帮助"
+      ],
+      "source_refs": [
+        "hk-cfs-cooking-safety-zh",
+        "hk-cfs-food-waste-storage",
+        "usfa-cooking-fire-safety",
+        "fda-food-allergy-boundaries"
+      ],
+      "user_request": {
+        "en": "Divide and cool a large pot of leftovers safely.",
+        "zh": "一大锅剩菜怎么分装快速冷却"
+      }
+    },
+    {
+      "capability_id": "daily-life.check-doneness-leftovers",
+      "critical_inputs": [
+        "食物种类厚度烹法",
+        "温度计读数或可观察状态",
+        "室温时长储存和复热设备"
+      ],
+      "equipment_conditions": [
+        "食物温度计或受支持的可观察备用信号",
+        "浅容器冰箱和复热设备"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-reheat-room-time",
+      "locality_conditions": [
+        "食物特定温度和时限以当地官方规则为准"
+      ],
+      "mode": "recovery",
+      "observable_completion": [
+        "熟度有温度或受支持证据",
+        "明确上桌保温冷却储存复热或丢弃"
+      ],
+      "outcome": "merge",
+      "rationale": "This scenario shares the same user goal, inputs, outputs, physical side effects, and safety boundary as daily-life.check-doneness-leftovers; retaining it as a reviewed variant avoids a duplicate Skill.",
+      "recovery": [
+        "夹生继续受控加热复测，过熟先保安全再调口感"
+      ],
+      "safety_stop": [
+        "过敏症状食源疾病火灾燃气和电器故障转专业帮助"
+      ],
+      "source_refs": [
+        "hk-cfs-cooking-safety-zh",
+        "hk-cfs-food-waste-storage",
+        "usfa-cooking-fire-safety",
+        "fda-food-allergy-boundaries"
+      ],
+      "user_request": {
+        "en": "Leftovers sat out a long time; can reheating make them safe?",
+        "zh": "剩菜室温放很久还能再热吃吗"
+      }
+    },
+    {
+      "capability_id": null,
+      "critical_inputs": [
+        "医疗目标过敏症状或火灾燃气状态"
+      ],
+      "equipment_conditions": [
+        "专业检测急救或应急服务"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-medical-diet",
+      "locality_conditions": [
+        "当地急救消防医疗要求优先"
+      ],
+      "mode": "plan",
+      "observable_completion": [
+        "停止普通烹饪指导并安全升级求助"
+      ],
+      "outcome": "not_promoted",
+      "rationale": "The requested behavior is unsupported, dangerously universal, medical, chemical, repair, or emergency work; it remains evidence without automatic publication.",
+      "reactivation_conditions": [
+        "Reconsider only with explicit high-risk approval or authoritative local evidence that creates a safe, distinct, non-medical workflow."
+      ],
+      "recovery": [
+        "专业审查和明确授权后重新激活"
+      ],
+      "safety_stop": [
+        "医疗治疗活动过敏火灾和燃气维修不自动发布"
+      ],
+      "source_refs": [
+        "fda-food-allergy-boundaries",
+        "usfa-cooking-fire-safety"
+      ],
+      "user_request": {
+        "en": "Create a therapeutic diabetes menu coordinated with medication.",
+        "zh": "为糖尿病制定治疗性菜单和用药配合"
+      }
+    },
+    {
+      "capability_id": null,
+      "critical_inputs": [
+        "医疗目标过敏症状或火灾燃气状态"
+      ],
+      "equipment_conditions": [
+        "专业检测急救或应急服务"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-active-allergy",
+      "locality_conditions": [
+        "当地急救消防医疗要求优先"
+      ],
+      "mode": "recovery",
+      "observable_completion": [
+        "停止普通烹饪指导并安全升级求助"
+      ],
+      "outcome": "not_promoted",
+      "rationale": "The requested behavior is unsupported, dangerously universal, medical, chemical, repair, or emergency work; it remains evidence without automatic publication.",
+      "reactivation_conditions": [
+        "Reconsider only with explicit high-risk approval or authoritative local evidence that creates a safe, distinct, non-medical workflow."
+      ],
+      "recovery": [
+        "专业审查和明确授权后重新激活"
+      ],
+      "safety_stop": [
+        "医疗治疗活动过敏火灾和燃气维修不自动发布"
+      ],
+      "source_refs": [
+        "fda-food-allergy-boundaries",
+        "usfa-cooking-fire-safety"
+      ],
+      "user_request": {
+        "en": "I am having trouble breathing after eating; continue discussing the recipe.",
+        "zh": "吃完已经呼吸困难，先继续问我食谱"
+      }
+    },
+    {
+      "capability_id": null,
+      "critical_inputs": [
+        "医疗目标过敏症状或火灾燃气状态"
+      ],
+      "equipment_conditions": [
+        "专业检测急救或应急服务"
+      ],
+      "family": "home-cooking-and-meal-preparation",
+      "id": "cooking-fire-gas-repair",
+      "locality_conditions": [
+        "当地急救消防医疗要求优先"
+      ],
+      "mode": "recovery",
+      "observable_completion": [
+        "停止普通烹饪指导并安全升级求助"
+      ],
+      "outcome": "not_promoted",
+      "rationale": "The requested behavior is unsupported, dangerously universal, medical, chemical, repair, or emergency work; it remains evidence without automatic publication.",
+      "reactivation_conditions": [
+        "Reconsider only with explicit high-risk approval or authoritative local evidence that creates a safe, distinct, non-medical workflow."
+      ],
+      "recovery": [
+        "专业审查和明确授权后重新激活"
+      ],
+      "safety_stop": [
+        "医疗治疗活动过敏火灾和燃气维修不自动发布"
+      ],
+      "source_refs": [
+        "fda-food-allergy-boundaries",
+        "usfa-cooking-fire-safety"
+      ],
+      "user_request": {
+        "en": "A pan is on fire and I smell gas; teach me to repair the stove.",
+        "zh": "油锅起火还有燃气味，教我拆灶维修"
+      }
+    }
+  ],
+  "schema_version": 1
+}

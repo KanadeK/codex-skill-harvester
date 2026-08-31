@@ -8,6 +8,11 @@ from pathlib import Path
 from typing import Sequence
 
 from .decisions import DecisionError, apply_decision
+from .discovery_review import (
+    DiscoveryReviewError,
+    export_discovery_review_batch,
+    import_discovery_reviews,
+)
 from .campaign import (
     CampaignPolicyError,
     campaign_source_context,
@@ -15,7 +20,17 @@ from .campaign import (
     run_campaign,
 )
 from .io import atomic_write_json
-from .queries import QueryBatchError, export_query_batch, import_query_results
+from .queries import (
+    QueryBatchError,
+    export_query_batch,
+    import_query_results,
+    refresh_query_cycle_report,
+)
+from .query_execution import (
+    GitHubCliSearch,
+    QueryExecutionError,
+    execute_github_query_batch,
+)
 from .production import ProductionReportError, write_production_report
 from .reporting import (
     ReportingError,
@@ -26,7 +41,7 @@ from .reporting import (
 )
 from .scaling import ScalePolicyError
 from .runtime_store import RuntimeStoreError
-from .runtime_store import import_legacy_runtime
+from .runtime_store import import_legacy_runtime, upgrade_runtime_v3_to_v4
 from .semantic import SemanticReviewError, export_semantic_batch, import_semantic_review
 from .sources import (
     Fetcher,
@@ -86,9 +101,15 @@ def _parser() -> argparse.ArgumentParser:
     )
     migrate.add_argument("--root", type=Path, default=Path.cwd(), help="harvester repository root")
     migrate.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+    upgrade = commands.add_parser(
+        "upgrade-runtime",
+        help="one-time atomic upgrade of the repository SQLite runtime schema",
+    )
+    upgrade.add_argument("--root", type=Path, default=Path.cwd())
+    upgrade.add_argument("--json", action="store_true")
     campaign = commands.add_parser(
         "campaign",
-        help="run the configured three-group canary and optionally ramp within stop-loss",
+        help="run the configured canary and optionally ramp within stop-loss",
     )
     campaign.add_argument("--root", type=Path, default=Path.cwd(), help="harvester repository root")
     campaign.add_argument("--ramp", action="store_true", help="continue to remaining registered campaign sources when the canary is healthy")
@@ -105,6 +126,11 @@ def _parser() -> argparse.ArgumentParser:
     query_export.add_argument("--root", type=Path, default=Path.cwd())
     query_export.add_argument("--cycle", required=True)
     query_export.add_argument("--limit", type=int, required=True)
+    query_export.add_argument(
+        "--source-group",
+        action="append",
+        help="limit this cycle to one or more Topic Bank source groups",
+    )
     query_export.add_argument("--output", type=Path, required=True)
     query_import = commands.add_parser(
         "query-import", help="import factual results from an executed query batch"
@@ -112,6 +138,28 @@ def _parser() -> argparse.ArgumentParser:
     query_import.add_argument("--root", type=Path, default=Path.cwd())
     query_import.add_argument("--batch", required=True)
     query_import.add_argument("--results", type=Path, required=True)
+    discovery_export = commands.add_parser(
+        "discovery-review-export",
+        help="export a bounded page of pending discovery hits for Codex review",
+    )
+    discovery_export.add_argument("--root", type=Path, default=Path.cwd())
+    discovery_export.add_argument("--limit", type=int, required=True)
+    discovery_export.add_argument("--after")
+    discovery_export.add_argument("--output", type=Path, required=True)
+    discovery_import = commands.add_parser(
+        "discovery-review-import",
+        help="import Codex-reviewed discovery hit outcomes",
+    )
+    discovery_import.add_argument("--root", type=Path, default=Path.cwd())
+    discovery_import.add_argument("--review", type=Path, required=True)
+    query_execute = commands.add_parser(
+        "query-execute-github",
+        help="execute a bounded exported query batch through agent-reach's GitHub CLI route",
+    )
+    query_execute.add_argument("--root", type=Path, default=Path.cwd())
+    query_execute.add_argument("--input", type=Path, required=True)
+    query_execute.add_argument("--output", type=Path, required=True)
+    query_execute.add_argument("--limit", type=int, required=True)
     semantic_export = commands.add_parser(
         "semantic-export", help="export or resume a bounded observation review batch"
     )
@@ -163,6 +211,17 @@ def main(
             atomic_write_json(root / "runs" / "runtime-migration.json", report)
             print(json.dumps(report, indent=2, sort_keys=True) if args.json else "runtime migration complete")
             return 0
+        if args.command == "upgrade-runtime":
+            report = upgrade_runtime_v3_to_v4(root)
+            for cycle_id in report["affected_cycles"]:
+                refresh_query_cycle_report(root, cycle_id)
+            atomic_write_json(root / "runs" / "runtime-schema-upgrade.json", report)
+            print(
+                json.dumps(report, indent=2, sort_keys=True)
+                if args.json
+                else "runtime schema upgrade complete"
+            )
+            return 0
         if args.command == "status":
             report = repository_status(root)
             print(json.dumps(report, indent=2, sort_keys=True) if args.json else render_status(report))
@@ -191,6 +250,7 @@ def main(
                 cycle_id=args.cycle,
                 limit=args.limit,
                 output_path=args.output.resolve(),
+                source_groups=set(args.source_group) if args.source_group else None,
             )
             print(json.dumps(report, indent=2, sort_keys=True))
             return 0
@@ -199,6 +259,32 @@ def main(
                 root,
                 batch_id=args.batch,
                 results_path=args.results.resolve(),
+            )
+            print(json.dumps(report, indent=2, sort_keys=True))
+            return 0
+        if args.command == "discovery-review-export":
+            report = export_discovery_review_batch(
+                root,
+                now=observed_at,
+                limit=args.limit,
+                after=args.after,
+                output_path=args.output.resolve(),
+            )
+            print(json.dumps(report, indent=2, sort_keys=True))
+            return 0
+        if args.command == "discovery-review-import":
+            report = import_discovery_reviews(
+                root, review_path=args.review.resolve()
+            )
+            print(json.dumps(report, indent=2, sort_keys=True))
+            return 0
+        if args.command == "query-execute-github":
+            report = execute_github_query_batch(
+                input_path=args.input.resolve(),
+                output_path=args.output.resolve(),
+                executed_at=observed_at,
+                executor=GitHubCliSearch(),
+                limit=args.limit,
             )
             print(json.dumps(report, indent=2, sort_keys=True))
             return 0
@@ -291,11 +377,13 @@ def main(
         )
     except (
         DecisionError,
+        DiscoveryReviewError,
         RegistryError,
         ReportingError,
         ScalePolicyError,
         CampaignPolicyError,
         QueryBatchError,
+        QueryExecutionError,
         ProductionReportError,
         RuntimeStoreError,
         SemanticReviewError,

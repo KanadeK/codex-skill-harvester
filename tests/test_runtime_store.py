@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+import sqlite3
 import sys
 import tempfile
 import unittest
@@ -13,12 +15,79 @@ from skill_harvester.runtime_store import (
     create_empty_runtime,
     import_legacy_runtime,
     open_runtime_store,
+    upgrade_runtime_v3_to_v4,
 )
 
 from _support import document_source, write_registry
 
 
 class RuntimeStoreTests(unittest.TestCase):
+    def test_v3_upgrade_atomically_promotes_embedded_query_hits_to_pending_review(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_empty_runtime(root)
+            database = root / "state" / "harvest.sqlite3"
+            connection = sqlite3.connect(database)
+            query = {
+                "id": "market-guide",
+                "topic_id": "daily-life.research.fresh-market",
+                "source_group": "daily-life-market",
+                "tier_constraint": ["T0", "T1", "T2"],
+            }
+            state = {
+                "schema_version": 1,
+                "query_id": "market-guide",
+                "topic_id": query["topic_id"],
+                "last_completed_cycle": "full-campaign-2026-08-30",
+                "last_completed_at": "2026-08-30T19:00:00Z",
+                "cursor": None,
+                "result_count": 1,
+                "discovery_hits": [
+                    {
+                        "route": "github-code",
+                        "url": "https://github.com/example/guides/blob/main/market.md",
+                        "repository": "example/guides",
+                        "path": "market.md",
+                    }
+                ],
+                "selected_endpoints": [],
+            }
+            connection.execute(
+                "INSERT INTO query_batches(id, cycle_id, status, created_at, completed_at, record_json) "
+                "VALUES('batch-1', 'full-campaign-2026-08-30', 'completed', ?, ?, ?)",
+                (state["last_completed_at"], state["last_completed_at"], json.dumps({"id": "batch-1"})),
+            )
+            connection.execute(
+                "INSERT INTO query_batch_items(batch_id, query_id, status, record_json) "
+                "VALUES('batch-1', 'market-guide', 'completed', ?)",
+                (json.dumps(query),),
+            )
+            connection.execute(
+                "INSERT INTO query_states(query_id, last_completed_cycle, last_completed_at, "
+                "cursor, result_count, selected_endpoint_count, record_json) "
+                "VALUES('market-guide', 'full-campaign-2026-08-30', ?, NULL, 1, 0, ?)",
+                (state["last_completed_at"], json.dumps(state)),
+            )
+            connection.execute("DROP TABLE discovery_hit_occurrences")
+            connection.execute("DROP TABLE discovery_hits")
+            connection.execute(
+                "UPDATE metadata SET value = '3' WHERE key = 'schema_version'"
+            )
+            connection.commit()
+            connection.close()
+
+            report = upgrade_runtime_v3_to_v4(root)
+
+            with open_runtime_store(root) as store:
+                metrics = store.discovery_review_metrics()
+                page = store.discovery_review_page(limit=10, after=None)
+
+        self.assertEqual(report["from_schema"], 3)
+        self.assertEqual(report["to_schema"], 4)
+        self.assertEqual(report["migrated_hits"], 1)
+        self.assertEqual(metrics["pending"], 1)
+        self.assertEqual(page["records"][0]["contexts"][0]["query_id"], "market-guide")
+
     def test_review_page_is_sql_bounded_and_stable(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

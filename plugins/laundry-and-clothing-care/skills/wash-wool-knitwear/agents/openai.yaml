@@ -1,0 +1,4 @@
+interface:
+  display_name: "Wash Wool Knitwear"
+  short_description: "Follow the label and protect wool shape"
+  default_prompt: "Use $wash-wool-knitwear to guide me through washing this wool garment."

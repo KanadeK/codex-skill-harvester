@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {"source_id": "hk-cfs-food-purchase-zh", "family": "fresh-market-and-grocery-shopping", "region": "Hong Kong", "language": "zh-Hant"},
+    {"source_id": "fda-select-store-seafood", "family": "fresh-market-and-grocery-shopping", "region": "United States", "language": "en"},
+    {"source_id": "hk-cfs-food-waste-storage", "family": "fresh-market-and-grocery-shopping", "region": "Hong Kong", "language": "en"},
+    {"source_id": "canada-textile-care-symbols", "family": "laundry-and-clothing-care", "region": "Canada", "language": "en"},
+    {"source_id": "hk-consumer-laundry-machine-zh", "family": "laundry-and-clothing-care", "region": "Hong Kong", "language": "zh-Hant"},
+    {"source_id": "cdc-bleach-mixing-safety", "family": "laundry-and-clothing-care", "region": "United States", "language": "en"},
+    {"source_id": "woolmark-wool-sweater-care", "family": "laundry-and-clothing-care", "region": "Global", "language": "en"},
+    {"source_id": "samsung-washer-cycle-guidance", "family": "laundry-and-clothing-care", "region": "United States", "language": "en"},
+    {"source_id": "hk-cfs-cooking-safety-zh", "family": "home-cooking-and-meal-preparation", "region": "Hong Kong", "language": "zh-Hant"},
+    {"source_id": "csu-ingredient-substitutions", "family": "home-cooking-and-meal-preparation", "region": "United States", "language": "en"},
+    {"source_id": "fda-food-allergy-boundaries", "family": "home-cooking-and-meal-preparation", "region": "United States", "language": "en"},
+    {"source_id": "usfa-cooking-fire-safety", "family": "home-cooking-and-meal-preparation", "region": "United States", "language": "en"},
+    {"source_id": "hk-cfs-food-waste-zh", "family": "home-cooking-and-meal-preparation", "region": "Hong Kong", "language": "zh-Hant"}
+  ]
+}

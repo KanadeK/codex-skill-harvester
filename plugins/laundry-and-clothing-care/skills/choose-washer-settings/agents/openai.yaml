@@ -1,0 +1,4 @@
+interface:
+  display_name: "Choose Washer Settings"
+  short_description: "Match a sorted load to the exact washer"
+  default_prompt: "Use $choose-washer-settings to choose settings for this laundry load."

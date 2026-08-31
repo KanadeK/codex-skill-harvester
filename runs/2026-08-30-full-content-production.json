@@ -1,0 +1,152 @@
+{
+  "artifacts": {
+    "new_skills": 7,
+    "release_published": false,
+    "updated_skills": 3
+  },
+  "checkpoint": {
+    "continuation": "The explicit parent-campaign completion condition is satisfied.",
+    "pending_discovery_hits": 0,
+    "pending_l4_candidates": 0,
+    "pending_queries": 0,
+    "pending_semantic_observations": 0,
+    "stop_loss": {
+      "reasons": [],
+      "triggered": false
+    }
+  },
+  "cost": {
+    "semantic_review_tokens": {
+      "measured": false
+    },
+    "usage_credits": {
+      "measured": false
+    }
+  },
+  "discovery": {
+    "downloaded_bytes": 517498,
+    "endpoints_at_campaign_start": 204,
+    "executable_endpoints_after_selection": 204,
+    "inserted_observations": 116,
+    "raw_observations": 116,
+    "selected_new_endpoints": 0,
+    "source_failures": 0,
+    "source_requests": 204,
+    "source_successes": 204,
+    "supplemental_source_runs": 0
+  },
+  "generated_at": "2026-08-30T19:27:14.883379Z",
+  "inputs": {
+    "campaign_report": "runs/2026-08-30T19-06-58.140800Z-campaign.json",
+    "query_no_op_report": "runs/full-campaign-2026-08-30-query-export.json",
+    "query_reports": [
+      "runs/full-campaign-2026-08-30-queries.json"
+    ],
+    "semantic_no_op_report": "runs/2026-08-30T19-20-55.831425Z-semantic-export.json",
+    "semantic_reports": [
+      "runs/2026-08-29T18-25-00Z-semantic.json",
+      "runs/2026-08-29T18-54-00Z-semantic.json",
+      "runs/2026-08-29T19-03-00Z-semantic.json",
+      "runs/2026-08-30T13-35-58.277464Z-semantic.json",
+      "runs/2026-08-30T14-25-00Z-semantic.json",
+      "runs/2026-08-30T15-10-00Z-semantic.json",
+      "runs/2026-08-30T16-02-34Z-semantic.json",
+      "runs/2026-08-30T19-15-00Z-semantic.json"
+    ],
+    "stable_no_op_scan": "runs/2026-08-30T19-22-15.090187Z-scan.json",
+    "supplemental_scans": []
+  },
+  "l4": {
+    "create": 7,
+    "deep_reviews": {
+      "count": 26,
+      "measured": true
+    },
+    "merge": 1,
+    "not_promoted": 15,
+    "pending_candidates": 0,
+    "update": 3
+  },
+  "objective": {
+    "completion_basis": "objective",
+    "controller_end": null,
+    "met": true,
+    "minimum_actual_queries": 1500,
+    "minimum_executable_endpoints": 180,
+    "type": "capacity-lower-bound"
+  },
+  "queries": {
+    "actual_queries": 1622,
+    "batch_ids": [
+      "de76b7c5ba77390482b039e1"
+    ],
+    "completed_queries": 1622,
+    "cycle_ids": [
+      "full-campaign-2026-08-30"
+    ],
+    "discovery_hits": 151,
+    "discovery_review": {
+      "conversion_rate": 0.0,
+      "duplicate": 6,
+      "not_selected": 43,
+      "pending": 0,
+      "raw_hits": 151,
+      "reviewed": 49,
+      "selected_endpoint": 0,
+      "selected_source_ids": [],
+      "unique_hits": 49
+    },
+    "failed_attempts": 4,
+    "pending_queries": 0,
+    "query_attempts": 1626,
+    "result_count": 163,
+    "selected_endpoints": 0,
+    "selected_source_ids": []
+  },
+  "replay": {
+    "query_rotation": "no_op",
+    "semantic_batches": "no_op",
+    "stable_source": "openai-build-skills",
+    "stable_source_result": "no_op"
+  },
+  "report_type": "content-production",
+  "schema_version": 1,
+  "semantic": {
+    "batch_ids": [
+      "43e2e6c7a43fbcf5bb32f03a",
+      "6fdeef55e63a551d64882157",
+      "e5ec72e2e25a056b99d92d7a",
+      "fb2a9205409e1da39bbba23e",
+      "0b071c426c947760011e81a5",
+      "d6267dbda64138ab4787f3b1",
+      "043eee430931e58e83203886",
+      "1b72ee8c0aef7dc835e5fb8a"
+    ],
+    "batch_observations": 217,
+    "batch_statuses": [
+      "completed",
+      "completed",
+      "completed",
+      "completed",
+      "completed",
+      "completed",
+      "completed",
+      "completed"
+    ],
+    "evidence_packs": 58,
+    "l2_matches": 7,
+    "l3_recalls": 263,
+    "normalized_candidates": 26,
+    "not_promoted": 32,
+    "pending_observations": 0,
+    "reviewed_observations": 217
+  },
+  "slice": {
+    "pending_discovery_hits": 0,
+    "pending_l4_candidates": 0,
+    "pending_queries": 0,
+    "pending_semantic_observations": 0,
+    "status": "complete"
+  },
+  "status": "campaign_completed"
+}

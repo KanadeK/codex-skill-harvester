@@ -182,7 +182,7 @@ None for the first vertical slice.
 
 ## PR #7 required repair: restore the dual-speed funnel
 
-The earlier Task 17/18 implementation conflated observations with candidates and its reported candidate yield is superseded. Preserve its acquired evidence; PR #7's repaired schema-2 separation is historical base work, while Phase 18–20 schema-3 content reports are the current production authority.
+The earlier Task 17/18 implementation conflated observations with candidates and its reported candidate yield is superseded. Preserve its acquired evidence; PR #7's repaired schema-2 separation and Phase 18–20 schema-3 reports are historical inputs, while the schema-4 SQLite store is the current runtime authority.
 
 ### Phase 15: separate evidence from candidate work
 
@@ -233,3 +233,108 @@ PR #7 remains the deterministic scale base. This work starts from `2ea8771cfbc45
 - [x] Run full tests, evals, validator, benchmark, build/install, Skill validation, and diff checks without tracked-state pollution.
 - [x] Commit exact paths, push the new branch, open one PR with base `codex/plan-adoption-audit`, and wait for Ubuntu/Windows CI.
 - [x] Stop without merging either PR or creating a tag/Release.
+
+## Post-PR #8 correction and full-campaign continuation
+
+On 2026-08-30, before this work package began, PR #8 had already been squash-merged into the still-open PR #7 branch at `d0cb9ef0d79ea254598fe66ee6f47a4dd0e532c3`. It was not merged to `main`. Because a merged PR cannot receive a reviewable update, Phase 22 uses `codex/pr8-campaign-corrections` as a minimal stacked correction branch against `codex/plan-adoption-audit`; Phase 23 will stack from its verified HEAD. This preserves the intended review boundaries without rewriting the historical Phase 18–21 record.
+
+### Phase 22: correct the first production slice
+
+- [x] Add RED regressions proving that a no-pending slice below 180 endpoints/1,500 actual queries keeps its parent campaign active, explicit objective completion is required for `campaign_completed`, stop-loss is a resumable checkpoint, and no-op replay is not campaign completion.
+- [x] Make campaign policy the unique objective authority, distinguish slice completion from parent lifecycle, and regenerate the 2026-08-29 production report and authority documents without turning capacity bounds into publication quotas.
+- [x] Add RED regressions for job-scoped OIDC permission and bounded untrusted archive inspection, then minimally fix the Python release-readiness checker without a runtime dependency or archive extraction/execution.
+- [x] Run focused tests, full unittest, both trigger/E2E evals, repository validator, deterministic build/install/invocation, Skill/Plugin validation, and `git diff --check`.
+- [x] Commit exact paths, push one correction PR stacked on `codex/plan-adoption-audit`, update its description with the superseded completion claim, and wait for Ubuntu/Windows CI without merge, tag, or Release.
+
+### Phase 23: continue the full 2026-08-30 campaign
+
+- [x] After Phase 22 passed locally and in Ubuntu/Windows CI, create `codex/full-campaign-2026-08-30` from correction HEAD `7aa8f86`; opening its stacked PR remains a later submission step.
+- [x] Use agent-reach background Web discovery and official GitHub metadata to expand the Domain × Intent Topic Bank to 1,622 unique queries and the inventory to 204 revision-pinned executable endpoints, including comparison-only T3 Skills used only for semantic deduplication. No raw page bodies are committed.
+- [x] Execute bounded source/query batches and supervised semantic batches continuously from persisted cursors; every Evidence Pack, L2/L3 recall, L4 outcome, reactivation condition, and qualified original Skill remains reproducible and source-traceable.
+- [x] Reach 204 executable endpoints and 1,622 actual queries without a stop-loss. Observation, candidate, deep-review, and Skill counts remain measured outcomes rather than quotas.
+- [x] Keep the runtime authority compact: SQLite plus necessary checkpoint/summary/decision records. Campaign scans now embed bounded run summaries in the parent report without creating per-endpoint tracked reports; standalone `scan` retains its explicit report behavior and no second authority was added.
+- [x] Validate and commit every reviewable vertical batch, then open stacked PR #10 against `codex/pr8-campaign-corrections`; implementation HEAD `59b0734` is `CLEAN` with passing Ubuntu/Windows CI, and no PR, tag, or Release was merged or created.
+
+Completion checkpoint on 2026-08-30: the sole SQLite authority contains 204 registered and scanned endpoints, 1,204 observations, 168 Evidence Packs, 136 applied L4 decisions, and eight Skills. The query cycle completed all 1,622 queries in 1,626 attempts, retaining four recoverable GitHub rate-limit failures and 151 discovery hits. Across the eight campaign semantic batches, 217 observations produced 58 Evidence Packs, 26 candidates, 263 L3 recalls, and 26 L4 outcomes: seven creates, three updates, one merge, and 15 `not_promoted`. The final 204-endpoint ramp completed with 204 successes, 517,498 downloaded bytes, 116 inserted observations, and no source failure. Query, semantic, and stable-source replay are no-op; the capacity objective is met. The 128-test suite, eight Skill evals, validator, benchmark, deterministic build/install/invocation, and diff checks pass locally. PR #10 is open and `CLEAN`; implementation HEAD `59b0734` passed Ubuntu/Windows CI. The final documentation-only HEAD is rechecked by CI before handoff.
+
+## Daily Life Skills pilot
+
+Remote baseline verified on 2026-08-30: `main` remains `6a54e7f`; PR #7 and PR #9 are open; PR #8 is merged only into the PR #7 branch; PR #10 is merged only into the PR #9 branch; and `origin/codex/pr8-campaign-corrections` is `034a1f0`. This work runs on `codex/daily-life-skills-pilot-2026-08-30` and will stack on that correction branch without merging or releasing.
+
+### Phase 24: make Daily Life and discovery-hit review first-class
+
+- [x] Register `daily-life` as the user-facing top-level domain with the first families `fresh-market-and-grocery-shopping`, `laundry-and-clothing-care`, and `home-cooking-and-meal-preparation`.
+- [x] Clarify the existing seven-field fingerprint so `platforms` means software platform or real execution environment; add only the taxonomy values needed by exercised life capabilities, with no fingerprint schema fork or dual meaning.
+- [x] Add RED tests for a single SQLite discovery-hit lifecycle: `pending -> selected_endpoint|duplicate|not_selected`, bounded partial review/resume, duplicate hits, invalid license/source metadata, selection failure/reopen, web hits, and no-op.
+- [x] Persist query-to-hit provenance and reviewed metadata in the sole runtime authority; selected endpoints pass URL, identity, revision/cursor, license, duplicate, registry, and reproducible-scan validation before remaining selected.
+- [x] Make query and production reports distinguish raw hits, pending review, selected, duplicate, not selected, and conversion rate. Completed query execution no longer implies completed hit review.
+
+Checkpoint: the existing query executor may continue producing untrusted hit metadata, but only a Codex-reviewed discovery decision may register a source. No JSON inbox becomes a second authority.
+
+### Phase 25: build the bilingual Scenario Bank and evidence base
+
+- [x] Use agent-reach background search/web routes to select Chinese and English T0/T1/T2 sources across consumer/food safety, textile care, appliance/garment instructions, and cooking education; retain community material only as discovery signal.
+- [x] Define 63 specific scenarios, 21 in each Daily Life family. Every scenario records locality/equipment assumptions, safety boundary, source refs, and a final `create|merge|not_promoted` outcome.
+- [x] Scan 13 selected sources from persisted cursors, review 13 observations into 12 Evidence Packs, and carry nine independent capabilities through 156 L3 recalls and supervised L4. Three unsafe evidence packs and nine high-risk/unsupported scenarios remain not promoted.
+- [x] Keep raw pages temporary and commit only compact provenance, the Scenario Bank, SQLite state, decisions, and campaign reports.
+
+Checkpoint: 60+ scenarios have no pending outcome; counts are review coverage, never a Skill quota.
+
+### Phase 26: synthesize human-executed instruction-only Skills
+
+- [x] Create nine qualified original capabilities under exactly three installation-intent Plugins. Broad concepts remain families; nearby scenarios merge into the same canonical capability.
+- [x] Keep all nine Skills instruction-only; no script was invented for appearance, and physical action remains the user's responsibility.
+- [x] Make Chinese trigger and anti-trigger cases first-class, preserve English discovery, ask only missing critical conditions, and support plan / one-step-at-a-time / recovery modes without claiming physical completion.
+- [x] Extend evals minimally for instruction-only workflows: nine files cover 36 trigger decisions and 27 realistic plan/live/recovery responses with 243 behavioral gates.
+
+Checkpoint: every generated Skill passes source, originality, non-overlap, trigger, instruction-only E2E, safety, Plugin format, and isolated installation/invocation review.
+
+### Phase 27: execute, validate, and submit the life campaign
+
+- [x] Run reviewable vertical batches until all 63 scenarios are resolved and every family has three installable Skills; this is a complete pilot rather than three demonstrations.
+- [x] Prove discovery review, query rotation, semantic processing, and a stable Chinese source replay resume or no-op from SQLite; Usage remains `measured=false` without an authoritative meter.
+- [x] Run 146 unittest cases, 17 evals, repository validator, SQLite-v4 benchmark, deterministic build of 11 Plugins, isolated install/invocation, independent five-axis Skill review, and diff checks. Official standalone Skill/Plugin validators were attempted but unavailable because their local environment lacks PyYAML; the repository validator covers the committed format.
+- [x] Commit exact paths, push `codex/daily-life-skills-pilot-2026-08-30`, open stacked PR #11 against `codex/pr8-campaign-corrections`, and verify implementation HEAD `e290fdf` is `CLEAN` with passing Ubuntu/Windows CI; no PR, tag, or Release was merged or created.
+
+Local content checkpoint: 20 scoped queries completed without query failure and produced 18 unique hits. Thirteen remained selected after reproducible scans; five authoritative pages that returned HTTP 403 were reopened and retained as `not_selected`. The 13 scanned sources span Hong Kong (5), United States (6), Canada (1), and a global textile authority (1), with four Chinese and nine English endpoints. Thirteen observations produced 12 Evidence Packs, nine candidates, 156 L3 recalls, three evidence-level safety non-promotions, and nine L4 creates. The Scenario Bank holds 63 final outcomes (9 create, 45 merge, 9 not promoted), and all query/semantic/stable-source replay is no-op with zero pending.
+
+Local verification checkpoint: 146 tests, 17 eval files, the code-rebuildable Daily Life report, repository validator, SQLite benchmark, deterministic source/11-Plugin build, isolated archive installation, CLI invocation, and Plugin E2E pass. Independent review corrected the wet/electrical washer-fault boundary before the final run. Work remains only to commit/push, open the stacked PR, and wait for dual-platform CI.
+
+Remote checkpoint: PR #11 is open and `CLEAN`; implementation HEAD `e290fdf` passed Ubuntu in 23 seconds and Windows in 1 minute 51 seconds. PR #7 and PR #9 remain open, `main` and v0.1.1 remain unchanged, and the final documentation-only HEAD is rechecked before handoff.
+
+## v0.2.0 · 会过日子 Human Skills launch
+
+Remote baseline verified before this package: PR #7 is squash-merged to `main` at `2167dcb`; PR #11 is merged into PR #9; PR #9 remains open/dirty at `8d271f6` with green Ubuntu/Windows CI; v0.1.1 remains published. Branch `codex/v0.2.0-human-skills-release` starts from current main.
+
+### Phase 28: prove a clean integration baseline
+
+- [x] Fetch explicit remote refs and map the squash-induced PR #9 ancestry conflict.
+- [x] Apply only the net tree delta from main to PR #9 as integration commit `3c9e6ab`, excluding duplicate PR #7 history.
+- [x] Prove `HEAD^{tree}` and PR #9 head tree are both `764fe2f074b36a6c318b3d1655620699d5abc653`, with zero tree diff and a passing repository validator.
+
+### Phase 29: launch the bilingual public brand
+
+- [x] Rewrite `README.md` as the Simplified-Chinese-first “会过日子 · Human Skills” homepage and preserve a full English `README.en.md`, with reciprocal language links and user-first examples/install flow.
+- [x] Move engineering metrics and campaign history to `docs/engineering-status.md` without deleting evidence or historical reports.
+- [x] Add bilingual `SKILLS.md` covering all 17 stable capabilities, user tasks, examples, safety boundaries, Plugin grouping, and release state without copying Skill bodies.
+- [x] Update the three life Plugin UI manifests and repo marketplace display copy to Chinese-first bilingual metadata while keeping plugin IDs, Skill folders, and canonical capability IDs stable.
+- [x] Add `CHANGELOG.md`, v0.2.0 release notes, and GitHub-facing description/topic metadata; keep copy in “upcoming release” state until remote publication succeeds.
+
+### Phase 30: version and close all launch gates
+
+- [x] Make v0.2.0 the single release version across pyproject, builders, 11 Plugin manifests, marketplace, fixtures, archives, docs, and validation; preserve historical v0.1.1 tag/Release.
+- [x] Create an isolated validator environment, install validator-only dependencies, and run official Skill validation for all 17 Skills plus official Plugin validation for all 11 Plugins. Missing validator/dependency access is a release blocker.
+- [x] Add RED/GREEN checks for bilingual README/catalog/marketplace/version consistency and release asset inventory.
+- [x] Run 146+ tests, 17 evals, repository validator, SQLite benchmark, migration/status/no-op, secrets/license/source checks, two deterministic builds, archive/checksum verification, isolated source install/CLI call, and all 11 Plugin installs/E2E.
+- [x] Complete five-axis independent review and resolve every Required/Critical finding before submission.
+
+Final local checkpoint on 2026-08-31: 152 tests, 17 evals, 17/17 official Skill validations, 11/11 official Plugin validations, repository validator, 1,000-record SQLite benchmark, five public-document link checks, and `git diff --check` pass. Two reviewed builds each contain 12 ZIP archives plus `SHA256SUMS.txt`; names and hashes are identical, all 12 checksum entries pass, the source installs and invokes from isolation, and all 11 Plugin archives install and pass E2E. Review fixed the schema-authority/path documentation and added aggregate distribution-file/byte limits before reporting no Required/Critical findings. Historical query/semantic/stable-source no-op evidence remains validator-rebuildable; the current semantic export is no-op, while reusing the old full-campaign cycle truthfully exposes one newly eligible query after the Daily Life Topic Bank expansion and is not claimed as no-op.
+
+### Phase 31: PR, merge, publish, and remote verification
+
+- [ ] Open one main-based PR titled `release: launch 会过日子 Human Skills v0.2.0`, documenting PR #9 supersession, tree-equivalence proof, validation, rollback, 17 Skills/11 Plugins/63 scenarios, and release plan.
+- [ ] Wait for final Ubuntu/Windows CI, merge only when every local/remote gate is green, then read back main merge SHA and close PR #9 as superseded without deleting history.
+- [ ] Update repository description/topics, create annotated `v0.2.0`, publish bilingual non-draft/non-prerelease Release, upload source + 11 Plugin archives + `SHA256SUMS`, and enable immutable Release only through the verified existing workflow.
+- [ ] Re-download every published asset, verify checksums/targets/contributors/main CI/v0.1.1 preservation, install source and all Plugins from Release assets, and execute CLI plus critical Skill/E2E calls.
+
+Rollback: stop promotion and use a reviewed revert/fix PR for serious post-release issues. Never rewrite or delete the published tag/Release to conceal a defect.

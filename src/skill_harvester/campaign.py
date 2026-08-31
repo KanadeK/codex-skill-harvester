@@ -34,13 +34,42 @@ def load_campaign_policy(root: Path) -> dict[str, Any]:
         raise CampaignPolicyError("campaign policy must use schema_version 1")
     if value.get("campaign_id") != "first-high-throughput":
         raise CampaignPolicyError("campaign policy id is invalid")
+    planned_capacity = value.get("planned_capacity_range")
+    if not isinstance(planned_capacity, dict):
+        raise CampaignPolicyError("campaign planned capacity is missing")
+    for field in ("endpoints", "actual_queries"):
+        capacity_range = planned_capacity.get(field)
+        if (
+            not isinstance(capacity_range, list)
+            or len(capacity_range) != 2
+            or any(
+                not isinstance(item, int) or isinstance(item, bool) or item <= 0
+                for item in capacity_range
+            )
+            or capacity_range[0] > capacity_range[1]
+        ):
+            raise CampaignPolicyError(f"campaign {field} capacity range is invalid")
+    objective = value.get("objective")
+    if (
+        not isinstance(objective, dict)
+        or objective.get("type") != "capacity-lower-bound"
+        or set(objective) != {"type", "controller_end"}
+    ):
+        raise CampaignPolicyError("campaign objective is invalid")
+    controller_end = objective["controller_end"]
+    if controller_end is not None and (
+        not isinstance(controller_end, dict)
+        or set(controller_end) != {"ended_at", "reason"}
+        or any(
+            not isinstance(controller_end.get(field), str)
+            or not controller_end[field].strip()
+            for field in ("ended_at", "reason")
+        )
+    ):
+        raise CampaignPolicyError("campaign controller end is invalid")
     groups = value.get("source_groups")
-    if not isinstance(groups, dict) or set(groups) != {
-        "openai-format-authority",
-        "github-delivery",
-        "python-packaging",
-    }:
-        raise CampaignPolicyError("campaign policy source groups are incomplete")
+    if not isinstance(groups, dict) or not groups:
+        raise CampaignPolicyError("campaign policy must contain source groups")
     source_ids: set[str] = set()
     for group in groups.values():
         if (
@@ -57,12 +86,13 @@ def load_campaign_policy(root: Path) -> dict[str, Any]:
             raise CampaignPolicyError("campaign source ids must belong to one group")
         source_ids.update(group["source_ids"])
     canary = value.get("canary_source_ids")
-    if not isinstance(canary, list) or set(canary) != {
-        "openai-build-skills",
-        "github-cli-release-view",
-        "pypi-updates",
-    }:
-        raise CampaignPolicyError("campaign canary must cover the three source groups")
+    if (
+        not isinstance(canary, list)
+        or not canary
+        or any(not isinstance(source_id, str) for source_id in canary)
+        or len(canary) != len(set(canary))
+    ):
+        raise CampaignPolicyError("campaign canary source ids are invalid")
     if not set(canary) <= source_ids:
         raise CampaignPolicyError("campaign canary references an unknown source")
     if value.get("queue_order") != [
@@ -95,6 +125,16 @@ def load_campaign_policy(root: Path) -> dict[str, Any]:
         raise CampaignPolicyError("campaign stop-loss is invalid")
     if stop_loss["minimum_source_requests"] > len(canary):
         raise CampaignPolicyError("campaign canary cannot meet its minimum request sample")
+    minimum_canary = max(
+        stop_loss["minimum_source_requests"], (len(source_ids) + 19) // 20
+    )
+    maximum_canary = max(
+        stop_loss["minimum_source_requests"], (len(source_ids) + 9) // 10
+    )
+    if not minimum_canary <= len(canary) <= maximum_canary:
+        raise CampaignPolicyError(
+            "campaign canary must cover 5-10 percent of registered endpoints"
+        )
     return value
 
 
@@ -265,6 +305,7 @@ def run_campaign(
                     now=_run_time(now, len(runs)),
                     source_ids={source_id},
                     source_context={source_id: contexts[source_id]},
+                    persist_report=False,
                 )
             except CampaignStopLoss as error:
                 stop_reasons.append(str(error))

@@ -12,18 +12,18 @@ Volume is a capacity trigger, not a publication KPI. Every phase retains the sam
 
 Exit: contracts validate, benchmark is reproducible, CI is green, and no broad scan was run.
 
-## Current work package: content-driven production slice
+## Current work package: Human Skills v0.2.0 launch
 
-- Keep PR #7 as the deterministic stacked base and reserve `v0.2.0` without issuing it.
-- Persist content/query work in SQLite schema 3, make source-level workflow hints non-authoritative, and require Codex-reviewed Evidence Packs before candidate creation.
-- Exercise 21 Domain × Intent queries, 26 executable endpoints, resumable failures, three semantic batches, L2/L3, L4, original synthesis, evals, and no-op replay in one real slice.
-- Submit one new Python package-delivery Skill and one GitHub release-evidence update for review without merging either PR or publishing a Release.
+- Reproduce the reviewed campaign tree on current `main`, then launch `v0.2.0` only after the explicitly authorized manual release gates pass.
+- Persist content/query work in the sole SQLite schema 4 authority, make source-level workflow hints non-authoritative, and require Codex-reviewed Evidence Packs before candidate creation.
+- Complete 1,622 Domain × Intent queries and a 204-endpoint full-inventory ramp with persisted failures, eight semantic batches, L2/L3, supervised L4, original synthesis, evals, and no-op replay.
+- Publish 17 verified Skills as 11 small Plugins under the bilingual 会过日子 · Human Skills product identity, while retaining codex-skill-harvester as the stable repository and package identifier.
 
-Exit: the stacked PR is reviewable with code-generated metrics, all local/remote gates, and zero pending query, semantic, or candidate work. Projected campaign ranges remain capacity direction, not completion claims.
+Exit: the release PR is merged with green Ubuntu/Windows CI; an annotated `v0.2.0` tag points at verified `main`; the bilingual non-prerelease Release contains deterministic source and 11 Plugin archives plus checksums; remote download/install/invocation, repository metadata, and contributors are read back successfully. Observation/candidate/Skill ranges remain capacity direction, not output quotas.
 
 ## Phase B: larger SQLite-backed operation
 
-Trigger: the current 26-endpoint/21-query slice remains stable, its stacked change is accepted in the approved merge order, and a new explicit campaign cycle is opened. Ordinary inventory expansion inside the existing stop-loss policy does not require a separate volume approval.
+Trigger: the completed 204-endpoint/1,622-query campaign remains stable, its stacked change is accepted in the approved merge order, and a new explicit campaign cycle is opened. Ordinary inventory expansion inside an approved cycle and stop-loss policy does not require a separate volume approval.
 
 - Expand the existing Topic Bank and persisted query batches from measured source utility; do not replay completed queries inside one cycle, and start each later explicit cycle from its saved continuation cursor.
 - Check all high-trust sources each cycle; rotate discovery topics under explicit source/review budgets.

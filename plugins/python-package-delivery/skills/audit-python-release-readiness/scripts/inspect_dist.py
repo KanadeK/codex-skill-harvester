@@ -12,6 +12,15 @@ from email.policy import default
 from pathlib import Path, PurePosixPath
 
 
+MAX_ARCHIVE_BYTES = 512 * 1024 * 1024
+MAX_ARCHIVE_MEMBERS = 10_000
+MAX_EXPANDED_BYTES = 512 * 1024 * 1024
+MAX_DISTRIBUTION_FILES = 128
+MAX_TOTAL_ARCHIVE_BYTES = 1024 * 1024 * 1024
+MAX_METADATA_BYTES = 1024 * 1024
+MAX_RECORD_BYTES = 8 * 1024 * 1024
+
+
 def _archive_name(value: str) -> str:
     return re.sub(r"[-_.]+", "_", value).lower()
 
@@ -36,6 +45,30 @@ def _metadata_identity(data: bytes) -> tuple[str | None, str | None]:
     return message.get("Name"), message.get("Version")
 
 
+def _archive_size_allowed(
+    path: Path, code: str, checks: list[dict[str, str]]
+) -> bool:
+    size = path.stat().st_size
+    allowed = size <= MAX_ARCHIVE_BYTES
+    _check(
+        checks,
+        f"{code}:archive-size",
+        "pass" if allowed else "fail",
+        f"bytes={size} limit={MAX_ARCHIVE_BYTES}",
+    )
+    return allowed
+
+
+def _bounded_zip_read(
+    archive: zipfile.ZipFile, info: zipfile.ZipInfo, limit: int
+) -> bytes | None:
+    if info.file_size > limit:
+        return None
+    with archive.open(info) as extracted:
+        data = extracted.read(limit + 1)
+    return data if len(data) <= limit else None
+
+
 def _inspect_sdist(
     path: Path,
     *,
@@ -52,8 +85,42 @@ def _inspect_sdist(
         f"expected {expected_filename}",
     )
     try:
+        if not _archive_size_allowed(path, code, checks):
+            return
         with tarfile.open(path, mode="r:gz") as archive:
-            members = archive.getmembers()
+            members: list[tarfile.TarInfo] = []
+            expanded_bytes = 0
+            for member in archive:
+                if len(members) >= MAX_ARCHIVE_MEMBERS:
+                    _check(
+                        checks,
+                        f"{code}:member-count",
+                        "fail",
+                        f"members exceed limit={MAX_ARCHIVE_MEMBERS}",
+                    )
+                    return
+                expanded_bytes += member.size
+                if expanded_bytes > MAX_EXPANDED_BYTES:
+                    _check(
+                        checks,
+                        f"{code}:expanded-size",
+                        "fail",
+                        f"declared bytes exceed limit={MAX_EXPANDED_BYTES}",
+                    )
+                    return
+                members.append(member)
+            _check(
+                checks,
+                f"{code}:member-count",
+                "pass",
+                f"members={len(members)} limit={MAX_ARCHIVE_MEMBERS}",
+            )
+            _check(
+                checks,
+                f"{code}:expanded-size",
+                "pass",
+                f"declared_bytes={expanded_bytes} limit={MAX_EXPANDED_BYTES}",
+            )
             unsafe = [member.name for member in members if not _safe_member(member.name)]
             _check(
                 checks,
@@ -86,21 +153,45 @@ def _inspect_sdist(
                 else f"missing {', '.join(missing)}",
             )
             if pkg_info_name in by_name:
-                extracted = archive.extractfile(by_name[pkg_info_name])
-                if extracted is None:
-                    _check(checks, f"{code}:metadata", "fail", "PKG-INFO is unreadable")
-                else:
-                    name, version = _metadata_identity(extracted.read())
-                    matches = (
-                        _archive_name(name or "") == expected_name
-                        and version == expected_version
-                    )
+                metadata_member = by_name[pkg_info_name]
+                if metadata_member.size > MAX_METADATA_BYTES:
                     _check(
                         checks,
-                        f"{code}:metadata",
-                        "pass" if matches else "fail",
-                        f"Name={name!r} Version={version!r}",
+                        f"{code}:metadata-size",
+                        "fail",
+                        f"bytes={metadata_member.size} limit={MAX_METADATA_BYTES}",
                     )
+                else:
+                    _check(
+                        checks,
+                        f"{code}:metadata-size",
+                        "pass",
+                        f"bytes={metadata_member.size} limit={MAX_METADATA_BYTES}",
+                    )
+                    extracted = archive.extractfile(metadata_member)
+                    if extracted is None:
+                        _check(checks, f"{code}:metadata", "fail", "PKG-INFO is unreadable")
+                    else:
+                        data = extracted.read(MAX_METADATA_BYTES + 1)
+                        if len(data) > MAX_METADATA_BYTES:
+                            _check(
+                                checks,
+                                f"{code}:metadata-size",
+                                "fail",
+                                f"read exceeds limit={MAX_METADATA_BYTES}",
+                            )
+                        else:
+                            name, version = _metadata_identity(data)
+                            matches = (
+                                _archive_name(name or "") == expected_name
+                                and version == expected_version
+                            )
+                            _check(
+                                checks,
+                                f"{code}:metadata",
+                                "pass" if matches else "fail",
+                                f"Name={name!r} Version={version!r}",
+                            )
     except (OSError, tarfile.TarError) as error:
         _check(checks, f"{code}:archive", "fail", f"unreadable sdist: {error}")
 
@@ -121,8 +212,41 @@ def _inspect_wheel(
         f"expected prefix {expected_prefix}",
     )
     try:
+        if not _archive_size_allowed(path, code, checks):
+            return
         with zipfile.ZipFile(path) as archive:
-            names = archive.namelist()
+            infos = archive.infolist()
+            if len(infos) > MAX_ARCHIVE_MEMBERS:
+                _check(
+                    checks,
+                    f"{code}:member-count",
+                    "fail",
+                    f"members={len(infos)} limit={MAX_ARCHIVE_MEMBERS}",
+                )
+                return
+            _check(
+                checks,
+                f"{code}:member-count",
+                "pass",
+                f"members={len(infos)} limit={MAX_ARCHIVE_MEMBERS}",
+            )
+            expanded_bytes = sum(info.file_size for info in infos)
+            if expanded_bytes > MAX_EXPANDED_BYTES:
+                _check(
+                    checks,
+                    f"{code}:expanded-size",
+                    "fail",
+                    f"declared_bytes={expanded_bytes} limit={MAX_EXPANDED_BYTES}",
+                )
+                return
+            _check(
+                checks,
+                f"{code}:expanded-size",
+                "pass",
+                f"declared_bytes={expanded_bytes} limit={MAX_EXPANDED_BYTES}",
+            )
+            names = [info.filename for info in infos]
+            by_name = {info.filename: info for info in infos}
             unsafe = [name for name in names if not _safe_member(name)]
             _check(
                 checks,
@@ -148,34 +272,54 @@ def _inspect_wheel(
                 else f"missing {', '.join(missing)}",
             )
             if metadata_path in names:
-                name, version = _metadata_identity(archive.read(metadata_path))
-                matches = (
-                    _archive_name(name or "") == expected_name
-                    and version == expected_version
+                metadata = _bounded_zip_read(
+                    archive, by_name[metadata_path], MAX_METADATA_BYTES
                 )
                 _check(
                     checks,
-                    f"{code}:metadata",
-                    "pass" if matches else "fail",
-                    f"Name={name!r} Version={version!r}",
+                    f"{code}:metadata-size",
+                    "pass" if metadata is not None else "fail",
+                    f"bytes={by_name[metadata_path].file_size} limit={MAX_METADATA_BYTES}",
                 )
+                if metadata is not None:
+                    name, version = _metadata_identity(metadata)
+                    matches = (
+                        _archive_name(name or "") == expected_name
+                        and version == expected_version
+                    )
+                    _check(
+                        checks,
+                        f"{code}:metadata",
+                        "pass" if matches else "fail",
+                        f"Name={name!r} Version={version!r}",
+                    )
             if record_path in names:
-                rows = csv.reader(io.StringIO(archive.read(record_path).decode("utf-8")))
-                recorded = {row[0] for row in rows if row}
-                unrecorded = [
-                    name
-                    for name in names
-                    if name not in recorded
-                    and not name.endswith(("RECORD.jws", "RECORD.p7s"))
-                ]
+                record = _bounded_zip_read(
+                    archive, by_name[record_path], MAX_RECORD_BYTES
+                )
                 _check(
                     checks,
-                    f"{code}:record",
-                    "pass" if not unrecorded else "fail",
-                    "all wheel members appear in RECORD"
-                    if not unrecorded
-                    else f"unrecorded members: {', '.join(unrecorded[:5])}",
+                    f"{code}:record-size",
+                    "pass" if record is not None else "fail",
+                    f"bytes={by_name[record_path].file_size} limit={MAX_RECORD_BYTES}",
                 )
+                if record is not None:
+                    rows = csv.reader(io.StringIO(record.decode("utf-8")))
+                    recorded = {row[0] for row in rows if row}
+                    unrecorded = [
+                        name
+                        for name in names
+                        if name not in recorded
+                        and not name.endswith(("RECORD.jws", "RECORD.p7s"))
+                    ]
+                    _check(
+                        checks,
+                        f"{code}:record",
+                        "pass" if not unrecorded else "fail",
+                        "all wheel members appear in RECORD"
+                        if not unrecorded
+                        else f"unrecorded members: {', '.join(unrecorded[:5])}",
+                    )
     except (OSError, UnicodeDecodeError, zipfile.BadZipFile) as error:
         _check(checks, f"{code}:archive", "fail", f"unreadable wheel: {error}")
 
@@ -188,6 +332,26 @@ def _workflow_jobs(text: str) -> dict[str, str]:
         else text[match.start() :]
         for index, match in enumerate(matches)
     }
+
+
+def _job_has_oidc_write(block: str) -> bool:
+    lines = block.splitlines()
+    for index, line in enumerate(lines):
+        if not re.fullmatch(r" {4}permissions:\s*(?:#.*)?", line):
+            continue
+        for nested in lines[index + 1 :]:
+            if not nested.strip() or nested.lstrip().startswith("#"):
+                continue
+            indentation = len(nested) - len(nested.lstrip(" "))
+            if indentation <= 4:
+                break
+            if re.fullmatch(
+                r''' {6}(?:id-token|'id-token'|"id-token"):\s*'''
+                r'''(?:write|'write'|"write")\s*(?:#.*)?''',
+                nested,
+            ):
+                return True
+    return False
 
 
 def _inspect_workflow(path: Path, checks: list[dict[str, str]]) -> None:
@@ -211,7 +375,7 @@ def _inspect_workflow(path: Path, checks: list[dict[str, str]]) -> None:
     _check(
         checks,
         "workflow:oidc-permission",
-        "pass" if re.search(r"(?m)^\s+id-token:\s*write\s*$", publish_blocks) else "fail",
+        "pass" if any(_job_has_oidc_write(jobs[name]) for name in publish_jobs) else "fail",
         "id-token: write is scoped inside a publishing job",
     )
     secret_pattern = re.compile(r"PYPI_API_TOKEN|password\s*:", re.IGNORECASE)
@@ -270,6 +434,30 @@ def inspect(pyproject: Path, dist: Path, workflow: Path | None) -> list[dict[str
     wheels = sorted(dist.glob("*.whl"))
     _check(checks, "artifacts:sdist-present", "pass" if sdists else "fail", f"sdists={len(sdists)}")
     _check(checks, "artifacts:wheel-present", "pass" if wheels else "fail", f"wheels={len(wheels)}")
+    artifacts = [*sdists, *wheels]
+    file_count_allowed = len(artifacts) <= MAX_DISTRIBUTION_FILES
+    _check(
+        checks,
+        "artifacts:file-count",
+        "pass" if file_count_allowed else "fail",
+        f"files={len(artifacts)} limit={MAX_DISTRIBUTION_FILES}",
+    )
+    if not file_count_allowed:
+        return checks
+    try:
+        total_archive_bytes = sum(path.stat().st_size for path in artifacts)
+    except OSError as error:
+        _check(checks, "artifacts:total-bytes", "fail", f"unreadable artifact: {error}")
+        return checks
+    total_bytes_allowed = total_archive_bytes <= MAX_TOTAL_ARCHIVE_BYTES
+    _check(
+        checks,
+        "artifacts:total-bytes",
+        "pass" if total_bytes_allowed else "fail",
+        f"bytes={total_archive_bytes} limit={MAX_TOTAL_ARCHIVE_BYTES}",
+    )
+    if not total_bytes_allowed:
+        return checks
     for path in sdists:
         _inspect_sdist(path, expected_name=normalized_name, expected_version=version, checks=checks)
     for path in wheels:

@@ -1,0 +1,14 @@
+{
+  "batch_id": null,
+  "cycle_id": "daily-life-pilot-2026-08-30",
+  "exported_queries": 0,
+  "report_type": "query-export",
+  "resumed": false,
+  "schema_version": 1,
+  "source_groups": [
+    "daily-life-cooking",
+    "daily-life-laundry",
+    "daily-life-market"
+  ],
+  "status": "no_op"
+}

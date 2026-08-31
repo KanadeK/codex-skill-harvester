@@ -1,0 +1,4 @@
+interface:
+  display_name: "Audit npm Package Readiness"
+  short_description: "Inspect npm package payloads before release"
+  default_prompt: "Use $audit-npm-package-readiness to inspect this npm package payload before publication."

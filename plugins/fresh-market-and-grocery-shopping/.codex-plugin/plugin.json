@@ -1,0 +1,34 @@
+{
+  "author": {
+    "name": "KanadeK"
+  },
+  "description": "买菜规划、新鲜度判断与食材收纳 · Plan and handle household food shopping.",
+  "homepage": "https://github.com/KanadeK/codex-skill-harvester",
+  "interface": {
+    "capabilities": [
+      "Read"
+    ],
+    "category": "Lifestyle",
+    "defaultPrompt": [
+      "按人数、预算和家中库存帮我安排这次买菜。",
+      "陪我在菜市场判断这些食材是否值得买。",
+      "帮我把刚买回来的食材分类收好并排出先吃顺序。"
+    ],
+    "developerName": "KanadeK",
+    "displayName": "买菜与食品采购 · Grocery Shopping",
+    "longDescription": "按人数、预算、库存和冷链条件规划采购，判断可观察的新鲜度线索，并指导回家后的分类收纳。Plan, inspect, transport, and put away household food without claiming physical completion.",
+    "shortDescription": "买菜规划、新鲜度判断与回家收纳"
+  },
+  "keywords": [
+    "grocery",
+    "fresh-market",
+    "shopping",
+    "food-storage",
+    "daily-life"
+  ],
+  "license": "MIT",
+  "name": "fresh-market-and-grocery-shopping",
+  "repository": "https://github.com/KanadeK/codex-skill-harvester",
+  "skills": "./skills/",
+  "version": "0.2.0"
+}

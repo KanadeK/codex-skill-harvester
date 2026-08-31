@@ -4,12 +4,12 @@
 
 **Baseline:** merged PR #6 at `6a54e7fc2748b02463fb269c7e9036f77812fae3`.
 
-**Current work package:** PR #7 remains the open deterministic base. `codex/content-driven-production-campaign` is a stacked content-production slice from PR #7 HEAD `2ea8771cfbc45bb3f52953727eba20244f1f4180`. It may perform supervised L4 and generate review artifacts under the explicit controller authorization, but neither PR may merge and no tag or Release may be created without a later controller decision.
+**Current work package:** PR #7 remains the open deterministic base. PR #8 was squash-merged into that branch at `d0cb9ef0d79ea254598fe66ee6f47a4dd0e532c3` before the 2026-08-30 correction began; it was not merged to `main`. `codex/pr8-campaign-corrections` now carries the completion-lifecycle and Python audit-gate corrections as a new stacked review boundary. No PR may merge to `main`, and no tag or Release may be created, without a later controller decision.
 
 ## What is confirmed now
 
 - PR #6 is the scale-planning foundation; it is not the complete production line.
-- SQLite schema 3 is the sole runtime authority. It has separate observations, query/semantic batches, Evidence Packs, candidates, five queues, decisions, source utility, and run checkpoints. There is no JSON fallback, dual read, or dual write.
+- SQLite schema 4 is the sole runtime authority. It has separate observations, discovery hits, query/semantic batches, Evidence Packs, candidates, five queues, decisions, source utility, and run checkpoints. There is no JSON fallback, dual read, or dual write.
 - The current store preserves 462 observations, 117 Evidence Packs, and 113 reviewed candidates/decisions across 30 registered source cursors. PyPI package updates remain observations, not queue work. The current catalog has two internal Skills in two task-domain Plugins, and no candidate or semantic/query batch is pending.
 - A candidate exists only after Codex reads the actual cached evidence as untrusted data and imports an Evidence Pack with one user goal, inputs/outputs, non-obvious decisions, authority/license/risk judgment, adjacent capabilities, and the complete seven-field fingerprint. `workflow_signal` is only an optional non-authoritative hint.
 - Source trust and workflow authority are separate. An official registry or package feed may be authentic while remaining discovery-only. `official-gap` requires explicit operational workflow authority.
@@ -19,7 +19,7 @@
 
 ## Capacity direction, not production KPI
 
-The first complete campaign is planned to exercise **180–260 endpoints, 1,500–3,000 actual queries, 80,000–250,000 observations, 4,000–12,000 normalized candidates, and 400–1,000 deep reviews**. These are capacity and observation ranges. They are not minimum counts, publication promises, or a reason to weaken evidence, originality, trigger, installation, or E2E gates.
+The first complete campaign is planned to exercise **180–260 endpoints, 1,500–3,000 actual queries, 80,000–250,000 observations, 4,000–12,000 normalized candidates, and 400–1,000 deep reviews**. For the explicitly authorized full-capacity exercise, 180 endpoints and 1,500 actual queries are the parent-campaign completion lower bound. Observation, candidate, deep-review, and Skill counts remain measured outcomes, not quotas or publication promises, and none may weaken evidence, originality, trigger, installation, or E2E gates.
 
 There is no artificial output ceiling for qualified Skills. Every independently useful and fully validated Skill may enter a review PR. The earlier 30–90 estimate is neither a cap nor a quota. Zero published Skills can be the correct campaign result.
 
@@ -115,9 +115,11 @@ Canary failures and ramp failures both produce campaign reports. Earlier success
 
 ### Current content-production result
 
-The validator-rebuildable [production report](../runs/2026-08-29-content-production.json) records the current slice. The executable campaign inventory grew from 10 to 26 endpoints. Twenty-one unique Topic Bank queries completed in 28 attempts: seven initial GitHub code-search attempts hit an actual rate limit, resumed from the same batch, then completed; one non-duplicate official endpoint was selected. Source work made 28 successful requests, downloaded 416,622 bytes, observed 117 source items, and inserted 43 new observations with zero source failures.
+The validator-rebuildable [full campaign report](../runs/2026-08-30-full-content-production.json) records the current authority. The executable inventory is 204 revision-pinned endpoints. All 1,622 unique Topic Bank queries completed in 1,626 attempts, with four recoverable GitHub rate-limit failures, 151 discovery hits, and no pending query. The final full-inventory ramp made 204 successful source requests, downloaded 517,498 bytes, inserted 116 changed observations, and had zero source failures. The SQLite authority totals 1,204 observations.
 
-Codex reviewed 26 high-trust observations in three resumable batches, produced seven Evidence Packs, normalized three candidates, received nine bounded L3 recalls, and performed three measured L4 adjudications: one create, one update, and one merge. Four Evidence Packs were not promoted before candidate creation. The result is one new original `audit-python-release-readiness` Skill, one artifact-attestation update to `audit-github-release`, and one version-consistency evidence merge. Query rotation, semantic export, and a stable official source all produced real no-op replays; pending query, semantic, and L4 counts are zero. Usage credits and semantic-review tokens remain `measured=false`; no Release was published.
+Across eight resumable batches, Codex reviewed 217 observations, produced 58 Evidence Packs, normalized 26 candidates, received 263 bounded L3 recalls, and performed 26 measured L4 adjudications: seven creates, three updates, one merge, and 15 `not_promoted`. Thirty-two Evidence Packs were stopped before candidate promotion. The Git catalog now contains eight Skills; the campaign-created set covers Python and npm package readiness, Ansible collection validation, Cargo build performance, CORS diagnosis, curl request auditing, and offline Git transfer. GitHub release evidence received reviewed updates, including release-tag binding for asset attestations. Query rotation, semantic export, and a stable official OpenAI source all produced real no-op replays; pending query, semantic, and L4 counts are zero.
+
+The parent campaign is `campaign_completed` because 204/180 endpoints and 1,622/1,500 actual queries satisfy the explicit policy-owned capacity objective. No Skill count contributed to completion, no stop-loss was triggered, Usage credits and semantic-review tokens remain `measured=false`, and no Release was published. The earlier [first-slice report](../runs/2026-08-29-content-production.json) remains immutable historical evidence rather than current campaign status.
 
 ## Migration decision and deletion condition
 
@@ -165,11 +167,11 @@ PR #7 was not merged when schema 1's conflation was found, so schema 1 receives 
 - Sol is reserved for difficult/high-impact adjudication and final audit.
 - Medical, legal, financial, real-world control, credential-heavy, and other high-risk domains may accumulate evidence in phase one but automatic publication is blocked. Publication requires explicit user and controller approval.
 - The first three campaigns may open PRs; the controller decides every merge and release. Semantic merge is not unattended.
-- `v0.2.0` is reserved but not released. It requires this vertical slice, a real calibrated campaign, all gates, and a fresh controller approval. This PR does not meet that release authority by itself.
+- `v0.2.0` is the current manual release candidate. The required vertical slice and calibrated campaign are complete, and the user has explicitly approved release after all local and remote gates pass. This is one bounded authorization, not approval for future automatic Releases.
 
 ## 0–30 day mainline
 
-1. Submit the content-driven stacked PR after complete local gates and dual-platform CI; keep PR #7 and the stacked PR unmerged until controller review.
+1. Submit the full-campaign stacked PR after complete local gates and dual-platform CI; keep the existing stack and new PR unmerged until controller review.
 2. Build a small versioned labeled set before publishing recall, false-merge, or semantic quality rates.
 3. Expand executable inventory toward the campaign capacity range one connector/source slice at a time. Canary remains 5–10% of the same complete inventory.
 4. Run the complete campaign within existing credits and infrastructure. Retain every cursor and unresolved candidate; do not force a Skill count.
@@ -179,7 +181,7 @@ PR #7 was not merged when schema 1's conflation was found, so schema 1 receives 
 
 - **Unknown:** campaign-scoped credit usage is not authoritatively observable. Keep `measured=false`.
 - **Unknown:** labeled L3 recall and false-merge quality. Do not state percentages before adjudicated fixtures exist.
-- **Unknown:** throughput at 180–260 endpoints. The current executable inventory is 26; do not extrapolate its latency or yield as measured full-campaign behavior.
+- **Measured once:** one 204-endpoint full-inventory ramp completed with 204 successes and no source failure. Do not extrapolate that single run to every source mix, endpoint count, or future campaign.
 - **Parquet entry:** measured cold evidence size or analytical query cost exceeds SQLite/Git expectations.
 - **Semantic-index entry:** labeled recall shows deterministic L3 is insufficient at the measured catalog size.
 - **Multi-worker entry:** measured single-writer backlog or latency prevents the campaign target and recovery semantics are specified.
@@ -187,4 +189,4 @@ PR #7 was not merged when schema 1's conflation was found, so schema 1 receives 
 
 ## Reserved decisions
 
-The controller still decides the merge order for PR #7 and its stacked content-production PR, changes to campaign stop-loss or budget policy, semantic quality thresholds, any new storage migration, multi-worker operation, high-risk publication, `v0.2.0`, and Release automation. An ordinary explicit campaign cycle may continue from durable cursors and expand inside the already-approved stop-loss policy without a separate volume approval. A green test suite or campaign report is evidence for reserved decisions, not authorization to merge or release.
+PR #7 has merged. The user has authorized a current-main integration of the reviewed content-production tree and one manual `v0.2.0` release after all gates pass; the superseded stacked PR is not merged independently. The controller still decides future campaign stop-loss or budget policy, semantic quality thresholds, any new storage migration, multi-worker operation, high-risk publication, and Release automation. A green test suite or campaign report remains evidence rather than authority outside this explicitly approved release.

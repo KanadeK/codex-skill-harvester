@@ -1,0 +1,4 @@
+interface:
+  display_name: "Check Doneness and Leftovers"
+  short_description: "Verify cooking and handle leftovers safely"
+  default_prompt: "Use $check-doneness-and-leftovers to check this food and plan storage."

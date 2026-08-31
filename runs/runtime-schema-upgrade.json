@@ -1,0 +1,8 @@
+{
+  "from_schema": 3,
+  "migrated_hits": 49,
+  "pending_hits": 49,
+  "report_type": "runtime-schema-upgrade",
+  "schema_version": 1,
+  "to_schema": 4
+}

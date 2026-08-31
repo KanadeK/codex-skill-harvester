@@ -73,6 +73,25 @@ Representative external comparisons will include official `gh-fix-ci` and `gh-ad
 
 The first content-driven production batch used the exact registered PyPA, PyPI, and GitHub sources recorded on `software.python-release-readiness`. The synthesis combines official distribution-format/core-metadata specifications, the PyPA build and publishing guides, TestPyPI guidance, PyPI Trusted Publishing/security and attestation documentation, and the official PyPA publishing action. The generated Skill text and checker are original; raw source bodies remain ignored cache data.
 
+## 2026-08-30 final campaign adjudication
+
+- The official GitHub CLI `gh release verify-asset` manual adds a concrete same-capability update: an accepted asset attestation must bind both the digest and the audited release tag. The existing GitHub Release audit Skill and checker now enforce that relationship.
+- OpenAI's official Skill Creator normalized cleanly but received an exact external-capability recall, so it was retained as `not_promoted` rather than copied into this catalog.
+- Next.js migration guidance and Vercel's official `next-cache-components-adoption` Skill jointly established the Cache Components workflow. The official Skill already owns the same goal and boundary, so the local proposal was removed and the candidate retained as `not_promoted` with reactivation conditions.
+- Kubernetes CRD version migration contains a real multi-step workflow, but it changes live API storage, serving, and conversion behavior. It remains an evidence-only high-risk outcome pending explicit publication approval and isolated rollback validation.
+
+## 2026-08-31 Daily Life pilot sources
+
+The first Daily Life campaign used bilingual government, statutory-consumer, manufacturer, textile-authority, and university-extension evidence. Community posts and recipe prose were not used as operational authority.
+
+- Market and storage: Hong Kong CFS purchase and food-waste guidance, plus FDA seafood selection/storage.
+- Laundry: Government of Canada care symbols, Hong Kong Consumer Council washing-machine guidance, CDC bleach-mixing safety, Samsung model/cycle guidance, and Woolmark wool care.
+- Cooking: Hong Kong CFS cooking and Chinese food-waste guidance, Colorado State University Extension ingredient-function evidence, FDA allergen boundaries, and U.S. Fire Administration stop conditions.
+
+Five otherwise authoritative pages—USDA MyPlate, FoodSafety.gov, USDA SNAP-Ed, USDA FSIS, and Utah State University Extension—were readable through background search but returned HTTP 403 to the deterministic source fetcher. Their initial selections were reopened before any source state existed, their review history was retained, and their final outcome is `not_selected` with executable reactivation conditions. They are not counted among the 13 scanned sources.
+
+The campaign does not copy recipes, care-symbol artwork, or proprietary instructions. It retains factual provenance and original workflow synthesis. Medical diets, active allergic reactions, chemical mixing, appliance repair, gas/electrical repair, and fire-response publication remain blocked.
+
 The official single-source-version guide was initially a redirect-only endpoint. After the registry URL was corrected, its live content was reviewed and merged into the Python release-readiness capability rather than split into another Skill. A query-selected PyPA sampleproject README was retained as evidence but not promoted because it explicitly is not a complete development or release workflow. GitHub artifact-attestation guidance updated the existing GitHub Release audit as one optional provenance gate; provenance is not treated as safety proof.
 
 ## Maintenance automation authority

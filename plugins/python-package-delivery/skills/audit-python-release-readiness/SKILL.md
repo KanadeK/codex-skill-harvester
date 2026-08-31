@@ -17,7 +17,7 @@ Run the bundled checker from an isolated temporary working directory:
 
 `python scripts/inspect_dist.py --pyproject PATH/pyproject.toml --dist PATH/dist [--workflow PATH/.github/workflows/release.yml] --output REPORT.md`
 
-The checker reads archives without extracting them. It compares project, filename, and embedded metadata identity; checks required sdist and wheel structures and unsafe member paths; and records publishing-workflow markers. A nonzero exit means at least one readiness gate failed.
+The checker reads archives without extracting them. It compares project, filename, and embedded metadata identity; checks required sdist and wheel structures and unsafe member paths; bounds distribution-file count, aggregate and per-archive bytes, declared expanded bytes, member count, metadata, and RECORD reads; and records publishing-workflow markers. Only `permissions.id-token: write` on the publishing job passes the OIDC gate. A nonzero exit means at least one readiness gate failed.
 
 ## Review decisions the checker cannot prove
 

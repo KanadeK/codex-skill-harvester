@@ -1,0 +1,33 @@
+{
+  "author": {
+    "name": "KanadeK"
+  },
+  "description": "Read-only npm package payload and publication-readiness audits.",
+  "homepage": "https://github.com/KanadeK/codex-skill-harvester",
+  "interface": {
+    "capabilities": [
+      "Read"
+    ],
+    "category": "Developer Tools",
+    "defaultPrompt": [
+      "Audit this npm package payload before publication."
+    ],
+    "developerName": "KanadeK",
+    "displayName": "JavaScript Package Delivery",
+    "longDescription": "Inspect the exact npm dry-run payload, metadata, lifecycle boundaries, and Git tracking without running package scripts or contacting a registry.",
+    "shortDescription": "Audit npm package payloads before release"
+  },
+  "keywords": [
+    "npm",
+    "nodejs",
+    "package",
+    "release",
+    "audit",
+    "codex-skill"
+  ],
+  "license": "MIT",
+  "name": "javascript-package-delivery",
+  "repository": "https://github.com/KanadeK/codex-skill-harvester",
+  "skills": "./skills/",
+  "version": "0.2.0"
+}

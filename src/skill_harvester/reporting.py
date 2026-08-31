@@ -36,6 +36,7 @@ def repository_status(root: Path) -> dict[str, Any]:
         last_successful_run = store.last_successful_run()
         pending_by_source = store.pending_by_source()
         decision_outcomes = store.decision_outcome_counts()
+        discovery_hits = store.discovery_review_metrics()
 
     return {
         "schema_version": 1,
@@ -52,6 +53,7 @@ def repository_status(root: Path) -> dict[str, Any]:
         },
         "pending_by_source": pending_by_source,
         "decision_outcomes": decision_outcomes,
+        "discovery_hits": discovery_hits,
         "catalog": {
             "plugins": len(marketplace["plugins"]),
             "skills": len(catalog["internal"]),
@@ -134,6 +136,7 @@ def render_status(report: dict[str, Any]) -> str:
             f"sources={report['sources']['registered']} "
             f"state_sources={report['sources']['with_state']} "
             f"pending={report['candidates']['pending']} "
+            f"pending_discovery={report['discovery_hits']['pending']} "
             f"applied={report['candidates']['applied']} "
             f"plugins={report['catalog']['plugins']} "
             f"skills={report['catalog']['skills']}"

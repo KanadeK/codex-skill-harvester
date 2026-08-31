@@ -1,0 +1,33 @@
+{
+  "author": {
+    "name": "KanadeK"
+  },
+  "description": "Offline audits of curl request semantics, config ambiguity, file references, and credential boundaries.",
+  "homepage": "https://github.com/KanadeK/codex-skill-harvester",
+  "interface": {
+    "capabilities": [
+      "Read"
+    ],
+    "category": "Developer Tools",
+    "defaultPrompt": [
+      "Audit this curl request without sending it or exposing credential values."
+    ],
+    "developerName": "KanadeK",
+    "displayName": "API Request Safety",
+    "longDescription": "Normalize and inspect curl arguments and an explicit config for method, body, default-config, local-file, and credential risks without executing curl or reading referenced payload files.",
+    "shortDescription": "Audit curl requests without sending them"
+  },
+  "keywords": [
+    "curl",
+    "http",
+    "api",
+    "request",
+    "security",
+    "codex-skill"
+  ],
+  "license": "MIT",
+  "name": "api-request-safety",
+  "repository": "https://github.com/KanadeK/codex-skill-harvester",
+  "skills": "./skills/",
+  "version": "0.2.0"
+}

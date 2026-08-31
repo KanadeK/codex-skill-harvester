@@ -1,0 +1,32 @@
+{
+  "author": {
+    "name": "KanadeK"
+  },
+  "description": "Plan bounded local validation for Ansible collection changes before review or release.",
+  "homepage": "https://github.com/KanadeK/codex-skill-harvester",
+  "interface": {
+    "capabilities": [
+      "Read"
+    ],
+    "category": "Developer Tools",
+    "defaultPrompt": [
+      "Plan local validation for this Ansible collection before review."
+    ],
+    "developerName": "KanadeK",
+    "displayName": "Ansible Collection Quality",
+    "longDescription": "Validate collection layout and plan sanity, unit, integration, and ansible-core matrix checks without running remote playbooks or publishing to Galaxy.",
+    "shortDescription": "Plan bounded collection validation"
+  },
+  "keywords": [
+    "ansible",
+    "collection",
+    "ansible-test",
+    "validation",
+    "codex-skill"
+  ],
+  "license": "MIT",
+  "name": "ansible-collection-quality",
+  "repository": "https://github.com/KanadeK/codex-skill-harvester",
+  "skills": "./skills/",
+  "version": "0.2.0"
+}

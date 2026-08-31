@@ -1,0 +1,34 @@
+{
+  "author": {
+    "name": "KanadeK"
+  },
+  "description": "安排一顿饭、按功能替代食材、检查熟度与剩菜 · Plan and check a home meal.",
+  "homepage": "https://github.com/KanadeK/codex-skill-harvester",
+  "interface": {
+    "capabilities": [
+      "Read"
+    ],
+    "category": "Lifestyle",
+    "defaultPrompt": [
+      "按人数、时间、现有食材和厨具帮我安排这顿饭。",
+      "这个材料缺了，按作用帮我找替代并调整用量。",
+      "帮我判断食物是否熟了，剩菜怎么冷却保存和复热。"
+    ],
+    "developerName": "KanadeK",
+    "displayName": "家庭做饭与备餐 · Home Cooking",
+    "longDescription": "按人数、时间、现有食材和厨具安排一顿饭，按作用替代缺料，并检查熟度、冷却、保存与复热。Interactive guidance with clear allergen, knife, heat, and fire stop boundaries.",
+    "shortDescription": "备餐时间线、食材替代、熟度与剩菜"
+  },
+  "keywords": [
+    "cooking",
+    "meal-planning",
+    "ingredient-substitution",
+    "leftovers",
+    "daily-life"
+  ],
+  "license": "MIT",
+  "name": "home-cooking-and-meal-preparation",
+  "repository": "https://github.com/KanadeK/codex-skill-harvester",
+  "skills": "./skills/",
+  "version": "0.2.0"
+}

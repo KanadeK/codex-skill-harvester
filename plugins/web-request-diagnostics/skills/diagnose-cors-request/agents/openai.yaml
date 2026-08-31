@@ -1,0 +1,4 @@
+interface:
+  display_name: "Diagnose CORS Request"
+  short_description: "Classify browser CORS and Fetch failures"
+  default_prompt: "Use $diagnose-cors-request to diagnose this browser request from captured request and response evidence."
