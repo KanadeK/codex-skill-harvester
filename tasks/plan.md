@@ -323,10 +323,12 @@ Remote baseline verified before this package: PR #7 is squash-merged to `main` a
 ### Phase 30: version and close all launch gates
 
 - [x] Make v0.2.0 the single release version across pyproject, builders, 11 Plugin manifests, marketplace, fixtures, archives, docs, and validation; preserve historical v0.1.1 tag/Release.
-- [ ] Create an isolated validator environment, install validator-only dependencies, and run official Skill validation for all 17 Skills plus official Plugin validation for all 11 Plugins. Missing validator/dependency access is a release blocker.
+- [x] Create an isolated validator environment, install validator-only dependencies, and run official Skill validation for all 17 Skills plus official Plugin validation for all 11 Plugins. Missing validator/dependency access is a release blocker.
 - [x] Add RED/GREEN checks for bilingual README/catalog/marketplace/version consistency and release asset inventory.
-- [ ] Run 146+ tests, 17 evals, repository validator, SQLite benchmark, migration/status/no-op, secrets/license/source checks, two deterministic builds, archive/checksum verification, isolated source install/CLI call, and all 11 Plugin installs/E2E.
-- [ ] Complete five-axis independent review and resolve every Required/Critical finding before submission.
+- [x] Run 146+ tests, 17 evals, repository validator, SQLite benchmark, migration/status/no-op, secrets/license/source checks, two deterministic builds, archive/checksum verification, isolated source install/CLI call, and all 11 Plugin installs/E2E.
+- [x] Complete five-axis independent review and resolve every Required/Critical finding before submission.
+
+Final local checkpoint on 2026-08-31: 152 tests, 17 evals, 17/17 official Skill validations, 11/11 official Plugin validations, repository validator, 1,000-record SQLite benchmark, five public-document link checks, and `git diff --check` pass. Two reviewed builds each contain 12 ZIP archives plus `SHA256SUMS.txt`; names and hashes are identical, all 12 checksum entries pass, the source installs and invokes from isolation, and all 11 Plugin archives install and pass E2E. Review fixed the schema-authority/path documentation and added aggregate distribution-file/byte limits before reporting no Required/Critical findings. Historical query/semantic/stable-source no-op evidence remains validator-rebuildable; the current semantic export is no-op, while reusing the old full-campaign cycle truthfully exposes one newly eligible query after the Daily Life Topic Bank expansion and is not claimed as no-op.
 
 ### Phase 31: PR, merge, publish, and remote verification
 

@@ -227,8 +227,8 @@ Completion checkpoint: the branch starts at verified correction HEAD `7aa8f86`; 
 
 - [x] Acceptance: one v0.2.0 source of truth drives package, 11 Plugin manifests, archive names, fixtures, checksums, docs, and release notes; v0.1.1 remains untouched and no consumer migration is required.
 - [x] Acceptance: `CHANGELOG.md` records Added/Changed/Fixed/Security for the 9 life Skills, 7 later software Skills, the GitHub update, discovery review, SQLite v4, campaign correction, and bilingual brand.
-- [ ] Verify: official quick validator passes all 17 Skills and official Plugin validator passes all 11 Plugins in an isolated dependency environment.
-- [ ] Verify: full tests/evals/validator/benchmark/no-op/security, two identical builds, 12 archives + checksums, isolated installs and all Plugin E2E pass; five-axis review has no Required/Critical findings.
+- [x] Verify: official quick validator passes all 17 Skills and official Plugin validator passes all 11 Plugins in an isolated dependency environment.
+- [x] Verify: 152 tests, 17 evals, validator, benchmark, code-rebuilt historical no-op evidence, current semantic no-op, security checks, two identical builds, 12 archives + checksums, isolated installs and all Plugin E2E pass; five-axis review has no Required/Critical findings. The old full-campaign cycle now truthfully exposes one newly eligible query after Topic Bank expansion rather than being mislabeled no-op.
 - Dependencies: Task 28.
 
 ## Task 30: merge and publish v0.2.0
