@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import sys
 import tempfile
 import unittest
@@ -20,13 +21,22 @@ class ReleaseBuildTests(unittest.TestCase):
 
             first_files = build_release(root, first)
             second_files = build_release(root, second)
+            marketplace = json.loads(
+                (root / ".agents" / "plugins" / "marketplace.json").read_text(
+                    encoding="utf-8"
+                )
+            )
 
             self.assertEqual(
                 [path.name for path in first_files],
                 [
                     "codex-skill-harvester-v0.1.1.zip",
-                    "github-release-evidence-v0.1.1.zip",
-                    "python-package-delivery-v0.1.1.zip",
+                    *[
+                        f"{plugin['name']}-v0.1.1.zip"
+                        for plugin in sorted(
+                            marketplace["plugins"], key=lambda value: value["name"]
+                        )
+                    ],
                     "SHA256SUMS.txt",
                 ],
             )

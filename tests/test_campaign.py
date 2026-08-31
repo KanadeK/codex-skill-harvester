@@ -75,6 +75,22 @@ def write_campaign_fixture(root: Path, *, mutate: object | None = None) -> None:
     policy = json.loads(
         (ROOT / "config" / "campaign-policy.json").read_text(encoding="utf-8")
     )
+    policy["source_groups"] = {
+        name: policy["source_groups"][name]
+        for name in (
+            "openai-format-authority",
+            "github-delivery",
+            "python-packaging",
+        )
+    }
+    policy["source_groups"]["openai-format-authority"]["source_ids"].remove(
+        "openai-plugin-catalog"
+    )
+    policy["canary_source_ids"] = [
+        "openai-build-skills",
+        "github-cli-release-view",
+        "pypi-updates",
+    ]
     if mutate is not None:
         mutate(policy)
     write_registry(root, registry["sources"])
@@ -105,14 +121,14 @@ class CampaignTests(unittest.TestCase):
 
             self.assertEqual(report["status"], "changed")
             self.assertTrue(report["ramped"])
-            self.assertEqual(report["registered_endpoints"], 26)
+            self.assertEqual(report["registered_endpoints"], 28)
             self.assertEqual(report["canary_endpoints"], 3)
-            self.assertEqual(report["metrics"]["source_requests"], 26)
+            self.assertEqual(report["metrics"]["source_requests"], 28)
             self.assertGreater(report["metrics"]["downloaded_bytes"], 0)
             self.assertEqual(report["metrics"]["normalized_candidates"], 0)
             self.assertEqual(report["metrics"]["deep_reviews"], {"measured": False})
             self.assertEqual(report["metrics"]["usage_credits"], {"measured": False})
-            self.assertEqual(report["metrics"]["observations_inserted"], 26)
+            self.assertEqual(report["metrics"]["observations_inserted"], 28)
             self.assertEqual(report["metrics"]["failures"], 0)
             persisted = json.loads(
                 (root / "runs" / "2026-08-29T05-00-00Z-campaign.json").read_text(
@@ -120,6 +136,41 @@ class CampaignTests(unittest.TestCase):
                 )
             )
             self.assertEqual(persisted, report)
+            self.assertEqual(list((root / "runs").glob("*-scan.json")), [])
+            self.assertEqual(list((root / "runs").glob("*-scan.md")), [])
+
+    def test_campaign_accepts_additional_source_groups_without_a_code_change(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_campaign_fixture(
+                root,
+                mutate=lambda policy: policy["source_groups"].update(
+                    {
+                        "plugin-examples": {
+                            "topic_id": "software.discover.plugin-examples",
+                            "source_ids": ["openai-plugin-catalog"],
+                        }
+                    }
+                ),
+            )
+
+            report = run_campaign(
+                root,
+                MappingFetcher(),
+                now="2026-08-29T05:30:00Z",
+                ramp=True,
+            )
+
+            self.assertEqual(report["registered_endpoints"], 29)
+            source = next(
+                run["sources"][0]
+                for run in report["runs"]
+                if run["sources"][0]["source_id"] == "openai-plugin-catalog"
+            )
+            self.assertEqual(source["source_group"], "plugin-examples")
+            self.assertEqual(
+                source["topic_id"], "software.discover.plugin-examples"
+            )
 
     def test_failed_ramp_keeps_a_checkpoint_report(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -145,6 +196,9 @@ class CampaignTests(unittest.TestCase):
             self.assertEqual(report["failure"]["phase"], "ramp")
             self.assertTrue(report["checkpoint"]["completed_source_ids"])
             self.assertTrue((root / "runs" / "2026-08-29T06-00-00Z-campaign.json").is_file())
+            self.assertEqual(
+                list((root / "runs").glob("*-scan-failed.json")), []
+            )
 
     def test_canary_failure_also_writes_a_checkpoint(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

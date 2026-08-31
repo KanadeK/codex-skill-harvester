@@ -38,6 +38,52 @@ def write_scale_policy(root: Path, *, default: int = 100, maximum: int = 1000) -
 
 
 class ScanCliTests(unittest.TestCase):
+    def test_discovery_review_export_command_is_bounded_and_machine_readable(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_registry(root, [document_source("official-doc")])
+            with open_runtime_store(root) as store, store.connection:
+                store.record_discovery_hits(
+                    cycle_id="daily-life-pilot",
+                    query={
+                        "id": "market-guide",
+                        "source_group": "daily-life-market",
+                        "topic_id": "daily-life.research.fresh-market",
+                    },
+                    observed_at="2026-08-30T20:00:00Z",
+                    hits=[
+                        {
+                            "route": "github-code",
+                            "url": "https://github.com/example/guides/blob/main/market.md",
+                            "repository": "example/guides",
+                            "path": "market.md",
+                        }
+                    ],
+                )
+            export_path = root / ".harvester-cache" / "discovery.json"
+            output = io.StringIO()
+
+            with contextlib.redirect_stdout(output):
+                exit_code = main(
+                    [
+                        "discovery-review-export",
+                        "--root",
+                        str(root),
+                        "--limit",
+                        "1",
+                        "--output",
+                        str(export_path),
+                    ],
+                    now="2026-08-30T20:01:00Z",
+                )
+
+            report = json.loads(output.getvalue())
+            payload = json.loads(export_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(report["exported_hits"], 1)
+        self.assertEqual(payload["status"], "changed")
+
     def test_status_command_reports_durable_repository_counts_as_json(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -95,6 +141,7 @@ class ScanCliTests(unittest.TestCase):
             self.assertEqual(report["candidates"], {"total": 2, "pending": 1, "applied": 1})
             self.assertEqual(report["pending_by_source"], {"official-doc": 1})
             self.assertEqual(report["decision_outcomes"], {"not_promoted": 1})
+            self.assertEqual(report["discovery_hits"]["pending"], 0)
             self.assertEqual(report["catalog"]["plugins"], 1)
             self.assertEqual(report["catalog"]["skills"], 1)
 

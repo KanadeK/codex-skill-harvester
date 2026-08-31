@@ -8,7 +8,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from skill_harvester.sources import FetchResponse, RegistryError, run_scan as _run_scan
+from skill_harvester.sources import (
+    FetchResponse,
+    RegistryError,
+    load_registry,
+    run_scan as _run_scan,
+)
 
 from _support import QueueFetcher, runtime_source_state, scan_context, write_registry
 
@@ -32,6 +37,54 @@ def run_scan(
 
 
 class SourceExtractorTests(unittest.TestCase):
+    def test_pinned_repository_set_expands_to_traceable_document_sources(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "sources" / "registry.json"
+            path.parent.mkdir(parents=True)
+            path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "sources": [],
+                        "repository_sets": [
+                            {
+                                "repository": "docker/docs",
+                                "revision": "a" * 40,
+                                "trust": "official",
+                                "tier": "T1",
+                                "authority": "official-operational-guide",
+                                "license": {
+                                    "status": "known",
+                                    "identifier": "Apache-2.0",
+                                },
+                                "documents": [
+                                    {
+                                        "id": "docker-build-cache",
+                                        "path": "content/guides/build cache.md",
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            sources = load_registry(root)
+
+        self.assertEqual(len(sources), 1)
+        self.assertEqual(sources[0]["id"], "docker-build-cache")
+        self.assertEqual(sources[0]["repository"], "docker/docs")
+        self.assertEqual(sources[0]["revision"], "a" * 40)
+        self.assertEqual(sources[0]["path"], "content/guides/build cache.md")
+        self.assertEqual(
+            sources[0]["url"],
+            "https://raw.githubusercontent.com/docker/docs/"
+            + "a" * 40
+            + "/content/guides/build%20cache.md",
+        )
+
     def test_material_policy_separates_window_churn_from_real_item_changes(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

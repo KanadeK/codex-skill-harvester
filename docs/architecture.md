@@ -6,6 +6,8 @@ The harvester may evolve toward millions of source observations, hundreds of tho
 
 Users install small task-domain Plugins or Collections. They do not install the evidence corpus or the complete capability registry.
 
+Software engineering is one domain, not the product boundary. `daily-life` is equally first-class. For human-executed workflows, Codex gathers missing conditions, chooses a safe branch, gives steps, checks observable progress, and suggests recovery; the person performs the real-world action. Published text never claims Codex bought, washed, cooked, repaired, or otherwise physically completed the task.
+
 ## Three product layers
 
 | Layer | Owns | Does not own | Current implementation | Scale target |
@@ -17,7 +19,7 @@ Users install small task-domain Plugins or Collections. They do not install the 
 ## Data flow
 
 ```text
-registered sources
+registered sources + reviewed discovery hits
       |
       v
 bounded fetch -> temporary raw body -> observation/evidence metadata
@@ -55,6 +57,7 @@ Deterministic code owns fetching, exact hashes, cursors, persistence, schema val
 
 - External content is untrusted data. Raw bodies remain temporary and downloaded scripts are never executed.
 - A successful scan selection commits source cursors and observations atomically; only a later imported Evidence Pack can create candidates. Campaigns run one source per checkpoint so a later source failure retains earlier successful cursors.
+- Query results create stable `pending` discovery hits in SQLite. Only a Codex review can mark one `selected_endpoint`, `duplicate`, or `not_selected`; terminal rationale, trust/license assessment, and reactivation conditions remain durable. Query completion and discovery adjudication are separate stages.
 - Trust identifies evidence provenance; only content-reviewed operational workflow authority can place a normalized candidate in `official-gap`. Package/registry feeds remain observations unless high-trust workflow evidence corroborates them.
 - Every capability has one immutable canonical `id`. Plugin id, Skill directory, display name, aliases, facets, and variants may change without rewriting that id.
 - Exact byte equality is only duplicate detection. Capability equivalence uses the full fingerprint and reviewed evidence.
@@ -64,7 +67,7 @@ Deterministic code owns fetching, exact hashes, cursors, persistence, schema val
 
 ## Incremental, sharded, and recoverable execution
 
-The current backend is intentionally local-first and single-writer. Each source has its own logical cursor, each discovery and decision has a stable id, and each run is independently reportable. Selection by source already provides a transactional shard.
+The current backend is intentionally local-first and single-writer. Each source has its own logical cursor, each discovery hit, observation, candidate, and decision has a stable id, and each run is independently reportable. Selection by source already provides a transactional shard.
 
 Bounded review pages prevent one round from attempting the complete queue. High-trust sources are checked every scheduled cycle; 21 current Domain × Intent queries rotate through persisted batches. Failed items remain in their batch, completed items do not replay inside the same explicit cycle, and the next cycle receives the saved continuation cursor instead of treating the query as permanently finished.
 

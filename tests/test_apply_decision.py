@@ -52,7 +52,7 @@ def create_decision(root: Path, *, reviewed_by: str = "codex") -> Path:
     write_json(
         root / "sources" / "registry.json",
         {
-            "schema_version": 1,
+            "schema_version": 2,
             "sources": [
                 {
                     "id": "github-cli-release-view",
@@ -73,6 +73,7 @@ def create_decision(root: Path, *, reviewed_by: str = "codex") -> Path:
                     "license": {"status": "facts-only", "identifier": "CC-BY-4.0"},
                 },
             ],
+            "repository_sets": [],
         },
     )
     create_empty_runtime(root)

@@ -7,10 +7,10 @@ import subprocess
 import xml.etree.ElementTree as ElementTree
 from copy import deepcopy
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any, Protocol
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlparse
+from urllib.parse import quote, urlparse
 from urllib.request import Request, urlopen
 
 from .io import (
@@ -145,10 +145,71 @@ class GitHubCliFetcher:
 
 def load_registry(root: Path) -> list[dict[str, Any]]:
     registry = load_json(root / "sources" / "registry.json")
-    if not isinstance(registry, dict) or registry.get("schema_version") != 1:
-        raise RegistryError("source registry must use schema_version 1")
-    sources = registry.get("sources")
-    if not isinstance(sources, list) or not sources:
+    if not isinstance(registry, dict) or registry.get("schema_version") != 2:
+        raise RegistryError("source registry must use schema_version 2")
+    explicit_sources = registry.get("sources")
+    repository_sets = registry.get("repository_sets")
+    if not isinstance(explicit_sources, list) or not isinstance(repository_sets, list):
+        raise RegistryError("source registry lists are invalid")
+    sources = list(explicit_sources)
+    for repository_set in repository_sets:
+        if (
+            not isinstance(repository_set, dict)
+            or not isinstance(repository_set.get("repository"), str)
+            or not re.fullmatch(
+                r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+",
+                repository_set["repository"],
+            )
+            or not isinstance(repository_set.get("revision"), str)
+            or not re.fullmatch(r"[0-9a-f]{40}", repository_set["revision"])
+            or repository_set.get("trust")
+            not in {"official", "representative", "discovery"}
+            or repository_set.get("tier") not in {"T0", "T1", "T2", "T3", "T4"}
+            or not isinstance(repository_set.get("authority"), str)
+            or not repository_set["authority"]
+            or not isinstance(repository_set.get("documents"), list)
+            or not repository_set["documents"]
+        ):
+            raise RegistryError("source repository set is invalid")
+        license_value = repository_set.get("license")
+        if not isinstance(license_value, dict) or license_value.get("status") not in {
+            "known",
+            "facts-only",
+            "unknown",
+        }:
+            raise RegistryError("source repository set must declare license status")
+        for document in repository_set["documents"]:
+            if (
+                not isinstance(document, dict)
+                or set(document) != {"id", "path"}
+                or not isinstance(document.get("id"), str)
+                or not isinstance(document.get("path"), str)
+                or not document["path"]
+            ):
+                raise RegistryError("source repository document is invalid")
+            path = PurePosixPath(document["path"])
+            if path.is_absolute() or ".." in path.parts:
+                raise RegistryError("source repository document path is unsafe")
+            repository = repository_set["repository"]
+            revision = repository_set["revision"]
+            sources.append(
+                {
+                    "id": document["id"],
+                    "adapter": "document",
+                    "url": (
+                        f"https://raw.githubusercontent.com/{repository}/{revision}/"
+                        f"{quote(document['path'], safe='/')}"
+                    ),
+                    "trust": repository_set["trust"],
+                    "tier": repository_set["tier"],
+                    "authority": repository_set["authority"],
+                    "license": license_value,
+                    "repository": repository,
+                    "revision": revision,
+                    "path": document["path"],
+                }
+            )
+    if not sources:
         raise RegistryError("source registry must contain at least one source")
     seen_ids: set[str] = set()
     for source in sources:
@@ -595,6 +656,7 @@ def run_scan(
     now: str,
     source_ids: set[str] | None = None,
     source_context: dict[str, dict[str, str]],
+    persist_report: bool = True,
 ) -> dict[str, Any]:
     sources = load_registry(root)
     if source_ids is not None:
@@ -664,10 +726,12 @@ def run_scan(
             "error": f"{type(error).__name__}: {error}",
         }
         store.record_failed_run(failed_report)
-        atomic_write_text(
-            root / "runs" / f"{run_id}-scan-failed.json",
-            json.dumps(failed_report, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        )
+        if persist_report:
+            atomic_write_text(
+                root / "runs" / f"{run_id}-scan-failed.json",
+                json.dumps(failed_report, ensure_ascii=False, indent=2, sort_keys=True)
+                + "\n",
+            )
         store.close()
         raise
     except BaseException:
@@ -711,9 +775,10 @@ def run_scan(
     }
     store.record_run(report)
     store.close()
-    atomic_write_text(
-        root / "runs" / f"{run_id}-scan.json",
-        json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-    )
-    atomic_write_text(root / "runs" / f"{run_id}-scan.md", _markdown_report(report))
+    if persist_report:
+        atomic_write_text(
+            root / "runs" / f"{run_id}-scan.json",
+            json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        )
+        atomic_write_text(root / "runs" / f"{run_id}-scan.md", _markdown_report(report))
     return report

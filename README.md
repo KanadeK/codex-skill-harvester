@@ -8,9 +8,13 @@ Codex Skill Harvester incrementally turns changed, authoritative public workflow
 
 It is deliberately not a Skill mirror. Deterministic Python owns fetching, change detection, exact deduplication, state, validation, and packaging. Codex owns semantic comparison and the decision to not promote, merge, update, or create.
 
-The current unreleased content-production slice uses one SQLite runtime store with separate observations, Evidence Packs, normalized candidates, query/semantic batches, queues, decisions, and checkpoints. Git continues to hold Skills, manifests, evals, and readable run records. It does not claim that the currently registered source inventory already reaches the long-term capacity envelope.
+The current unreleased production line uses one SQLite runtime store with separate observations, Evidence Packs, normalized candidates, query/semantic batches, queues, decisions, and checkpoints. Git continues to hold Skills, manifests, evals, and compact readable run records.
 
-Its first real content campaign expanded the executable inventory from 10 to 26 endpoints and ran all 21 Topic Bank queries. It made 28 source requests, read 26 high-trust observations in resumable semantic batches, produced seven Evidence Packs, normalized three candidates, executed nine L3 recalls and three supervised L4 decisions, then created one Python release-readiness Skill, updated one GitHub release Skill, and merged one narrower version-consistency capability. Query, semantic, and stable-source replay all ended in code-generated no-op checkpoints. [The production report](runs/2026-08-29-content-production.json) is rebuilt by the validator from SQLite and its referenced run reports.
+The completed 2026-08-30 campaign has 204 revision-pinned executable endpoints and finished all 1,622 unique Domain × Intent queries in 1,626 attempts, including four recoverable GitHub rate-limit failures and 151 discovery hits. The final 204-endpoint ramp made 204 successful source requests, downloaded 517,498 bytes, inserted 116 changed observations, and had no source failure or stop-loss. The policy-owned 180-endpoint/1,500-query capacity objective is therefore met; this is a measured campaign completion condition, not a Skill publication quota.
+
+Across eight resumable semantic batches, Codex reviewed 217 observations into 58 Evidence Packs, normalized 26 candidates, recorded 263 bounded L3 recalls, and completed 26 supervised L4 decisions: 15 `not_promoted`, one merge, three updates, and seven creates. At that checkpoint the sole runtime authority held 1,204 observations, 168 Evidence Packs, 136 applied decisions, and eight Skills. Query rotation, semantic export, and a stable OpenAI source all replayed as code-generated no-ops. [The full campaign report](runs/2026-08-30-full-content-production.json) remains validator-rebuildable historical evidence; the earlier [first-slice report](runs/2026-08-29-content-production.json) records the 26-endpoint/21-query checkpoint.
+
+The current unreleased Daily Life pilot makes software only one capability domain. Twenty scoped bilingual queries produced 18 unique reviewed hits: 13 became reproducibly scanned sources and five authoritative but HTTP-403 endpoints remained `not_selected`. Thirteen observations became 12 Evidence Packs, nine candidates, 156 L3 recalls, three evidence-level safety non-promotions, and nine L4 creates. The three new task-domain Plugins contain nine instruction-only Skills for market/grocery planning, perishable selection, food storage, laundry sorting, washer settings, wool care, meal planning, function-based substitutions, and doneness/leftovers. The [Daily Life pilot report](runs/2026-08-31-daily-life-pilot.json) rebuilds 63 resolved scenarios—21 per family—with zero pending work and no Release.
 
 ## What v0.1.1 proves
 
@@ -43,7 +47,7 @@ The long-term model has three layers:
 - Capability Registry owns stable canonical capability IDs, one primary family, versioned facets, aliases, variants, merged evidence, decision history, and reactivation conditions.
 - Published Skills contains only capabilities that pass the quality gates, packaged into small user-task Plugins or Collections rather than one enormous installation.
 
-The active runtime backend is `sqlite-v3`, selected after the measured JSON lifecycle bottleneck and extended with content-review and query state while retaining one authority. See [architecture](docs/architecture.md), [taxonomy](docs/taxonomy.md), [schema migrations](docs/schema-migrations.md), [scale audit](docs/scale-audit.md), [roadmap](docs/roadmap.md), and [ADR-002](docs/decisions/0002-adopt-sqlite-runtime-store.md).
+The active runtime backend is `sqlite-v4`, selected after the measured JSON lifecycle bottleneck and extended with content review, query state, and one reviewed discovery-hit lifecycle while retaining one authority. See [architecture](docs/architecture.md), [taxonomy](docs/taxonomy.md), [schema migrations](docs/schema-migrations.md), [scale audit](docs/scale-audit.md), [roadmap](docs/roadmap.md), and [ADR-002](docs/decisions/0002-adopt-sqlite-runtime-store.md).
 
 ## Quick start
 
@@ -136,7 +140,7 @@ The current branch marketplace also contains **Python Package Delivery**, but it
 - `config/scale-policy.json` — active backend, review budget, projection targets, and measured migration triggers.
 - `plugins/` and `.agents/plugins/marketplace.json` — installable task-domain Plugin output.
 - `evals/` — Codex-reviewed trigger cases and deterministic end-to-end fixtures.
-- `runs/` — machine-readable and human-readable campaign, scan, migration, delivery, and release reports.
+- `runs/` — compact parent-campaign reports, standalone scan reports, migration, delivery, and release evidence.
 
 ## License
 

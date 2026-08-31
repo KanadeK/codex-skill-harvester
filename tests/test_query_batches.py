@@ -5,6 +5,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -13,12 +14,113 @@ from skill_harvester.queries import (
     QueryBatchError,
     export_query_batch,
     import_query_results,
+    load_topic_bank,
 )
+from skill_harvester.query_execution import (
+    GitHubCliSearch,
+    QueryExecutionError,
+    execute_github_query_batch,
+)
+from skill_harvester.runtime_store import create_empty_runtime, open_runtime_store
 
 from _support import document_source, write_registry
 
 
 class QueryBatchTests(unittest.TestCase):
+    def test_query_export_can_scope_a_cycle_to_selected_source_groups(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "config").mkdir()
+            atomic_write_json(
+                root / "config" / "topic-bank.json",
+                {
+                    "schema_version": 2,
+                    "topics": [
+                        {
+                            "id": "software.validate.delivery",
+                            "domain": "software",
+                            "intent": "validate",
+                            "source_group": "github-delivery",
+                            "queries": [
+                                {
+                                    "id": "software-query",
+                                    "route": "github-code",
+                                    "text": "repo:example/project release",
+                                    "tier_constraint": ["T1"],
+                                }
+                            ],
+                        },
+                        {
+                            "id": "daily-life.research.market",
+                            "domain": "daily-life",
+                            "intent": "research",
+                            "source_group": "daily-life-market",
+                            "queries": [
+                                {
+                                    "id": "daily-life-query",
+                                    "route": "web",
+                                    "text": "official grocery shopping food safety",
+                                    "tier_constraint": ["T0", "T1", "T2"],
+                                }
+                            ],
+                        },
+                    ],
+                    "operations": [],
+                    "query_matrices": [],
+                },
+            )
+            create_empty_runtime(root)
+            output_path = root / ".harvester-cache" / "daily-life.json"
+
+            report = export_query_batch(
+                root,
+                now="2026-08-30T20:00:00Z",
+                cycle_id="daily-life-pilot",
+                limit=10,
+                output_path=output_path,
+                source_groups={"daily-life-market"},
+            )
+            payload = json.loads(output_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(report["exported_queries"], 1)
+        self.assertEqual([query["id"] for query in payload["queries"]], ["daily-life-query"])
+
+    def test_github_repository_search_uses_supported_json_fields(self) -> None:
+        with patch("skill_harvester.query_execution.subprocess.run") as run:
+            run.return_value.returncode = 0
+            run.return_value.stdout = "[]"
+            run.return_value.stderr = ""
+
+            GitHubCliSearch().search("github-repository", "agent skills")
+
+        command = run.call_args.args[0]
+        self.assertIn("fullName,updatedAt,url", command)
+        self.assertNotIn("nameWithOwner", command)
+
+    def test_github_search_preserves_qualifier_token_boundaries(self) -> None:
+        with patch("skill_harvester.query_execution.subprocess.run") as run:
+            run.return_value.returncode = 0
+            run.return_value.stdout = "[]"
+            run.return_value.stderr = ""
+
+            GitHubCliSearch().search(
+                "github-code",
+                "repo:duckdb/duckdb-web path:docs/current DuckDB concurrency inspect",
+            )
+
+        command = run.call_args.args[0]
+        separator = command.index("--")
+        self.assertEqual(
+            command[separator + 1 :],
+            [
+                "repo:duckdb/duckdb-web",
+                "path:docs/current",
+                "DuckDB",
+                "concurrency",
+                "inspect",
+            ],
+        )
+
     def test_partial_query_batch_resumes_and_completed_rotation_is_no_op(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -26,7 +128,7 @@ class QueryBatchTests(unittest.TestCase):
             atomic_write_json(
                 root / "config" / "topic-bank.json",
                 {
-                    "schema_version": 1,
+                    "schema_version": 2,
                     "topics": [
                         {
                             "id": "software.publish.python-packaging",
@@ -49,6 +151,8 @@ class QueryBatchTests(unittest.TestCase):
                             ],
                         }
                     ],
+                    "operations": [],
+                    "query_matrices": [],
                 },
             )
             first_path = root / ".harvester-cache" / "queries.json"
@@ -76,48 +180,38 @@ class QueryBatchTests(unittest.TestCase):
                             "status": "completed",
                             "cursor": None,
                             "result_count": 4,
-                            "selected_endpoints": [
+                            "discovery_hits": [
                                 {
-                                    "source_id": "pypa-publishing-guide",
-                                    "url": "https://raw.githubusercontent.com/pypa/packaging.python.org/main/source/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows.rst",
-                                    "adapter": "document",
-                                    "tier": "T1",
-                                    "trust": "official",
-                                    "authority": "official-operational-guide",
-                                    "license": {"status": "facts-only", "identifier": None},
+                                    "route": "github-code",
+                                    "url": "https://github.com/pypa/packaging.python.org/blob/main/source/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows.rst",
+                                    "repository": "pypa/packaging.python.org",
+                                    "path": "source/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows.rst",
                                 }
                             ],
+                            "selected_endpoints": [],
                         }
                     ],
                 },
             )
-            incompatible = json.loads(result_path.read_text(encoding="utf-8"))
-            incompatible["results"][0]["selected_endpoints"][0]["tier"] = "T4"
-            atomic_write_json(result_path, incompatible)
-            with self.assertRaisesRegex(QueryBatchError, "tier constraint"):
-                import_query_results(
-                    root, batch_id=first["batch_id"], results_path=result_path
-                )
-            incompatible["results"][0]["selected_endpoints"][0]["tier"] = "T1"
-            incompatible["results"][0]["selected_endpoints"][0][
-                "url"
-            ] = "https://secret@example.test/guide"
-            atomic_write_json(result_path, incompatible)
-            with self.assertRaisesRegex(QueryBatchError, "credential-free https"):
-                import_query_results(
-                    root, batch_id=first["batch_id"], results_path=result_path
-                )
-            incompatible["results"][0]["selected_endpoints"][0][
-                "url"
-            ] = "https://example.test/guide"
-            atomic_write_json(result_path, incompatible)
             partial = import_query_results(
                 root, batch_id=first["batch_id"], results_path=result_path
             )
             self.assertEqual(partial["status"], "pending")
             self.assertEqual(partial["pending_queries"], 1)
             self.assertEqual(
-                partial["selected_source_ids"], ["pypa-publishing-guide"]
+                partial["selected_source_ids"], []
+            )
+            self.assertEqual(partial["discovery_hits"], 1)
+            with open_runtime_store(root) as store:
+                state = json.loads(
+                    store.connection.execute(
+                        "SELECT record_json FROM query_states WHERE query_id = ?",
+                        ("python-build-guide",),
+                    ).fetchone()[0]
+                )
+            self.assertEqual(
+                state["discovery_hits"][0]["repository"],
+                "pypa/packaging.python.org",
             )
 
             resumed_path = root / ".harvester-cache" / "resumed.json"
@@ -134,6 +228,31 @@ class QueryBatchTests(unittest.TestCase):
                 [query["id"] for query in payload["queries"]],
                 ["python-trusted-publishing"],
             )
+
+            atomic_write_json(
+                result_path,
+                {
+                    "schema_version": 1,
+                    "batch_id": first["batch_id"],
+                    "executed_by": "codex-agent-reach",
+                    "executed_at": "2026-08-29T09:02:30Z",
+                    "results": [
+                        {
+                            "query_id": "python-trusted-publishing",
+                            "status": "failed",
+                            "error": "GitHub code-search rate limit reached",
+                            "cursor": None,
+                            "result_count": 0,
+                            "selected_endpoints": [],
+                        }
+                    ],
+                },
+            )
+            checkpoint = import_query_results(
+                root, batch_id=first["batch_id"], results_path=result_path
+            )
+            self.assertEqual(checkpoint["status"], "pending")
+            self.assertEqual(checkpoint["failed_queries"], 1)
 
             atomic_write_json(
                 result_path,
@@ -158,6 +277,18 @@ class QueryBatchTests(unittest.TestCase):
             )
             self.assertEqual(completed["status"], "completed")
             self.assertEqual(completed["actual_queries"], 1)
+            summary_path = (
+                root / "runs" / "content-production-2026-08-29-queries.json"
+            )
+            summary = json.loads(summary_path.read_text(encoding="utf-8"))
+            self.assertEqual(summary["aggregation"], "cycle")
+            self.assertEqual(summary["query_attempts"], 3)
+            self.assertEqual(summary["completed_queries"], 2)
+            self.assertEqual(summary["failed_queries"], 1)
+            self.assertEqual(summary["pending_queries"], 0)
+            self.assertEqual(summary["discovery_hits"], 1)
+            self.assertEqual(summary["discovery_review"]["pending"], 1)
+            self.assertEqual(len(list((root / "runs").glob("*-queries.json"))), 1)
 
             no_op_path = root / ".harvester-cache" / "no-op.json"
             no_op = export_query_batch(
@@ -197,6 +328,154 @@ class QueryBatchTests(unittest.TestCase):
                 next_queries["python-trusted-publishing"]["previous_completed_at"],
                 "2026-08-29T09:03:00Z",
             )
+
+    def test_topic_matrix_expands_domain_intent_queries_deterministically(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "config").mkdir()
+            atomic_write_json(
+                root / "config" / "topic-bank.json",
+                {
+                    "schema_version": 2,
+                    "topics": [],
+                    "operations": [
+                        {
+                            "id": "build",
+                            "intent": "create",
+                            "text": "build reproducibly",
+                        },
+                        {
+                            "id": "debug",
+                            "intent": "diagnose",
+                            "text": "debug failures",
+                        },
+                    ],
+                    "query_matrices": [
+                        {
+                            "id": "container-delivery",
+                            "domain": "software",
+                            "source_group": "containers-docker",
+                            "route": "github-code",
+                            "scope": "repo:docker/docs",
+                            "tier_constraint": ["T0", "T1", "T2"],
+                            "subjects": [
+                                {"id": "images", "text": "Docker images"},
+                                {"id": "compose", "text": "Docker Compose"},
+                            ],
+                            "operation_ids": ["build", "debug"],
+                        }
+                    ],
+                },
+            )
+
+            queries = load_topic_bank(root)
+
+        self.assertEqual(len(queries), 4)
+        self.assertEqual(
+            [query["id"] for query in queries],
+            [
+                "container-delivery-images-build",
+                "container-delivery-images-debug",
+                "container-delivery-compose-build",
+                "container-delivery-compose-debug",
+            ],
+        )
+        self.assertEqual(queries[1]["intent"], "diagnose")
+        self.assertEqual(
+            queries[1]["topic_id"], "software.diagnose.container-delivery"
+        )
+        self.assertEqual(
+            queries[1]["text"],
+            "repo:docker/docs Docker images debug failures",
+        )
+
+    def test_github_query_executor_checkpoints_on_first_failure_without_raw_bodies(
+        self,
+    ) -> None:
+        class FakeSearch:
+            def __init__(self) -> None:
+                self.calls: list[str] = []
+
+            def search(self, route: str, text: str) -> list[dict[str, object]]:
+                self.calls.append(text)
+                if len(self.calls) == 2:
+                    raise QueryExecutionError(
+                        "GitHub code-search rate limit reached"
+                    )
+                return [
+                    {
+                        "url": "https://github.com/docker/docs/blob/main/example.md",
+                        "path": "example.md",
+                        "repository": {"nameWithOwner": "docker/docs"},
+                    }
+                ]
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            input_path = root / "query-batch.json"
+            output_path = root / "query-results.json"
+            atomic_write_json(
+                input_path,
+                {
+                    "schema_version": 1,
+                    "batch_id": "batch-1",
+                    "cycle_id": "full-campaign-2026-08-30",
+                    "queries": [
+                        {
+                            "id": "query-one",
+                            "route": "github-code",
+                            "text": "repo:docker/docs build cache",
+                        },
+                        {
+                            "id": "query-two",
+                            "route": "github-code",
+                            "text": "repo:docker/docs debug build",
+                        },
+                        {
+                            "id": "query-three",
+                            "route": "web",
+                            "text": "site:docs.docker.com deploy containers",
+                        },
+                        {
+                            "id": "query-four",
+                            "route": "github-code",
+                            "text": "repo:docker/docs validate build",
+                        },
+                    ],
+                },
+            )
+
+            report = execute_github_query_batch(
+                input_path=input_path,
+                output_path=output_path,
+                executed_at="2026-08-30T13:00:00Z",
+                executor=FakeSearch(),
+                limit=10,
+            )
+            payload = json.loads(output_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(report["attempted_queries"], 2)
+        self.assertEqual(report["completed_queries"], 1)
+        self.assertEqual(report["failed_queries"], 1)
+        self.assertEqual(report["unsupported_queries"], 1)
+        self.assertEqual(report["remaining_supported_queries"], 1)
+        self.assertTrue(report["checkpointed"])
+        self.assertEqual(payload["executed_by"], "codex-agent-reach")
+        self.assertEqual([item["status"] for item in payload["results"]], ["completed", "failed"])
+        self.assertEqual(payload["results"][0]["result_count"], 1)
+        self.assertEqual(
+            payload["results"][0]["discovery_hits"],
+            [
+                {
+                    "route": "github-code",
+                    "url": "https://github.com/docker/docs/blob/main/example.md",
+                    "repository": "docker/docs",
+                    "path": "example.md",
+                }
+            ],
+        )
+        self.assertEqual(payload["results"][0]["selected_endpoints"], [])
+        self.assertNotIn("body", json.dumps(payload))
 
 
 if __name__ == "__main__":

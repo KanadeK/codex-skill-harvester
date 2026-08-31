@@ -31,6 +31,7 @@ Use this normalized JSON shape as input to `scripts/check_snapshot.py`. Values m
   "attestations": [
     {
       "asset_name": "artifact.zip",
+      "release_tag": "v1.0.0",
       "verified": true,
       "verified_owner": "OWNER",
       "source_url": "https://github.com/OWNER/REPO/attestations"
@@ -52,7 +53,7 @@ Use this normalized JSON shape as input to `scripts/check_snapshot.py`. Values m
 }
 ```
 
-`pull_request` and `installation` may be `null`; their gates then remain `NOT_CHECKED`. When a pull request is present, its `merge_commit_sha` must equal `tag.commit_sha`. An empty `expected_assets` list means the audit makes no custom-asset claim. Set `requirements.immutable_release` to `true` only when immutable Release proof is part of the stated acceptance criteria; then `release.immutable` must come from the REST Release record and be `true`. Set `requirements.asset_attestations` to `true` only when provenance is required; every expected asset must then have a successful read-only `gh attestation verify` result in `attestations`. An attestation is not a malware or correctness verdict.
+`pull_request` and `installation` may be `null`; their gates then remain `NOT_CHECKED`. When a pull request is present, its `merge_commit_sha` must equal `tag.commit_sha`. An empty `expected_assets` list means the audit makes no custom-asset claim. Set `requirements.immutable_release` to `true` only when immutable Release proof is part of the stated acceptance criteria; then `release.immutable` must come from the REST Release record and be `true`. Set `requirements.asset_attestations` to `true` only when provenance is required; every expected asset must then have a successful read-only `gh release verify-asset TAG FILE --format json` result in `attestations`, and its `release_tag` must equal `release.tag_name`. An attestation is not a malware or correctness verdict.
 
 ## Authority sources
 
@@ -63,3 +64,4 @@ Use this normalized JSON shape as input to `scripts/check_snapshot.py`. Values m
 - GitHub REST releases: https://docs.github.com/en/rest/releases/releases
 - GitHub REST repositories: https://docs.github.com/en/rest/repos/repos
 - GitHub artifact attestations: https://docs.github.com/en/actions/concepts/security/artifact-attestations
+- GitHub CLI release asset verification: https://cli.github.com/manual/gh_release_verify-asset

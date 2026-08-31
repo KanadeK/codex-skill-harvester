@@ -5,10 +5,15 @@
     "updated_skills": 1
   },
   "checkpoint": {
-    "continuation": "All referenced work batches are complete.",
+    "continuation": "The current slice is complete; start the next inventory/query batch from persisted cursors.",
+    "pending_discovery_hits": 0,
     "pending_l4_candidates": 0,
     "pending_queries": 0,
-    "pending_semantic_observations": 0
+    "pending_semantic_observations": 0,
+    "stop_loss": {
+      "reasons": [],
+      "triggered": false
+    }
   },
   "cost": {
     "semantic_review_tokens": {
@@ -30,7 +35,7 @@
     "source_successes": 28,
     "supplemental_source_runs": 3
   },
-  "generated_at": "2026-08-29T19:54:02.337535Z",
+  "generated_at": "2026-08-30T12:16:22.843465Z",
   "inputs": {
     "campaign_report": "runs/2026-08-29T18-17-51.373491Z-campaign.json",
     "query_no_op_report": "runs/2026-08-29T19-42-08.788092Z-query-export.json",
@@ -63,6 +68,14 @@
     "pending_candidates": 0,
     "update": 1
   },
+  "objective": {
+    "completion_basis": null,
+    "controller_end": null,
+    "met": false,
+    "minimum_actual_queries": 1500,
+    "minimum_executable_endpoints": 180,
+    "type": "capacity-lower-bound"
+  },
   "queries": {
     "actual_queries": 21,
     "batch_ids": [
@@ -73,6 +86,18 @@
     "cycle_ids": [
       "content-production-2026-08-29"
     ],
+    "discovery_hits": 0,
+    "discovery_review": {
+      "conversion_rate": 0.0,
+      "duplicate": 0,
+      "not_selected": 0,
+      "pending": 0,
+      "raw_hits": 0,
+      "reviewed": 0,
+      "selected_endpoint": 0,
+      "selected_source_ids": [],
+      "unique_hits": 0
+    },
     "failed_attempts": 7,
     "pending_queries": 0,
     "query_attempts": 28,
@@ -110,5 +135,12 @@
     "pending_observations": 0,
     "reviewed_observations": 26
   },
-  "status": "completed"
+  "slice": {
+    "pending_discovery_hits": 0,
+    "pending_l4_candidates": 0,
+    "pending_queries": 0,
+    "pending_semantic_observations": 0,
+    "status": "complete"
+  },
+  "status": "active"
 }

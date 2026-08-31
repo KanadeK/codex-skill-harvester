@@ -2,6 +2,173 @@
   "external": [
     {
       "aliases": [
+        "create or update a Codex Skill",
+        "author an agent skill"
+      ],
+      "artifact_sha256": "a17383bfb1448637ac1f757ad891ddb9676fa30b0eff620200f0e1cbc0cc0d50",
+      "classification": {
+        "facets": {
+          "domain": [
+            "software"
+          ],
+          "inputs": [
+            "code",
+            "report"
+          ],
+          "intent": [
+            "create",
+            "maintain",
+            "validate"
+          ],
+          "maturity": [
+            "verified"
+          ],
+          "outputs": [
+            "code"
+          ],
+          "platforms": [
+            "codex"
+          ],
+          "risk": [
+            "standard"
+          ],
+          "side_effects": [
+            "local-write"
+          ],
+          "tools": [
+            "codex"
+          ],
+          "trust": [
+            "official"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "software.agent-skill-authoring"
+      },
+      "fingerprint": {
+        "goal": "create or update an effective Codex Skill for a reusable workflow",
+        "inputs": [
+          "user task and trigger examples",
+          "workflow requirements",
+          "supporting scripts references or assets"
+        ],
+        "outputs": [
+          "focused SKILL.md",
+          "validated skill resources"
+        ],
+        "platforms": [
+          "Codex"
+        ],
+        "side_effects": [
+          "local skill files written"
+        ],
+        "tools": [
+          "Codex",
+          "skill validation scripts"
+        ],
+        "triggers": [
+          "create a new Codex Skill",
+          "update an existing Codex Skill"
+        ]
+      },
+      "id": "openai:skill-creator",
+      "merged_source_refs": [],
+      "source_ref": "openai-official-skill-creator",
+      "source_revision": "49f948faa9258a0c61caceaf225e179651397431",
+      "source_url": "https://github.com/openai/skills/tree/49f948faa9258a0c61caceaf225e179651397431/skills/.system/skill-creator",
+      "variants": []
+    },
+    {
+      "aliases": [
+        "adopt Next.js Cache Components",
+        "migrate to Cache Components"
+      ],
+      "artifact_sha256": "0c3de4f2b8d383c706a8b86fcdffe061dead9fbd23c94f614ee8cebf28a0cf57",
+      "classification": {
+        "facets": {
+          "domain": [
+            "software"
+          ],
+          "inputs": [
+            "code",
+            "repository"
+          ],
+          "intent": [
+            "transform",
+            "validate"
+          ],
+          "maturity": [
+            "verified"
+          ],
+          "outputs": [
+            "code",
+            "evidence"
+          ],
+          "platforms": [
+            "nodejs",
+            "web"
+          ],
+          "risk": [
+            "standard"
+          ],
+          "side_effects": [
+            "local-write"
+          ],
+          "tools": [
+            "npm"
+          ],
+          "trust": [
+            "official"
+          ],
+          "volatility": [
+            "fast-moving"
+          ]
+        },
+        "primary_family": "software.frontend-migration"
+      },
+      "fingerprint": {
+        "goal": "adopt Next.js Cache Components and resolve blocking routes to a passing build",
+        "inputs": [
+          "Next.js App Router project",
+          "Next.js configuration",
+          "instant navigation validation errors"
+        ],
+        "outputs": [
+          "Cache Components configuration",
+          "resolved blocking routes",
+          "passing build evidence"
+        ],
+        "platforms": [
+          "Next.js",
+          "Node.js"
+        ],
+        "side_effects": [
+          "application code and configuration changes",
+          "local build and codemod execution"
+        ],
+        "tools": [
+          "Next.js CLI",
+          "Next.js codemod"
+        ],
+        "triggers": [
+          "enable or adopt Next.js Cache Components",
+          "resolve Cache Components blocking prerender or instant validation errors"
+        ]
+      },
+      "id": "vercel:next-cache-components-adoption",
+      "merged_source_refs": [
+        "nextjs-cache-components-migration",
+        "nextjs-version-16-upgrade"
+      ],
+      "source_ref": "nextjs-official-cache-components-adoption-skill",
+      "source_revision": "2fe6f962a1982594bdda96a7de16c594677266d2",
+      "source_url": "https://github.com/vercel/next.js/tree/2fe6f962a1982594bdda96a7de16c594677266d2/skills/next-cache-components-adoption",
+      "variants": []
+    },
+    {
+      "aliases": [
         "fix github actions checks"
       ],
       "artifact_sha256": "7b326b4a2f0f5f85122144628ec02077e48841e0e0e82efce88b3415bcfb7c26",
@@ -157,6 +324,539 @@
       "source_ref": "openai-gh-address-comments",
       "source_url": "https://github.com/openai/skills/tree/main/skills/.curated/gh-address-comments",
       "variants": []
+    },
+    {
+      "aliases": [
+        "Docker development",
+        "Dockerfile optimization"
+      ],
+      "artifact_sha256": "6215c518d3d862a2e0d34ce816a4bbf63f35b263508b8840ebe42fe9240c07b8",
+      "classification": {
+        "facets": {
+          "domain": [
+            "software"
+          ],
+          "inputs": [
+            "code",
+            "file",
+            "repository"
+          ],
+          "intent": [
+            "create",
+            "operate",
+            "validate"
+          ],
+          "maturity": [
+            "signal"
+          ],
+          "outputs": [
+            "code",
+            "report"
+          ],
+          "platforms": [
+            "docker",
+            "linux",
+            "macos",
+            "windows"
+          ],
+          "risk": [
+            "standard"
+          ],
+          "side_effects": [
+            "local-write"
+          ],
+          "tools": [
+            "docker"
+          ],
+          "trust": [
+            "community"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "software.container-development"
+      },
+      "fingerprint": {
+        "goal": "develop audit test and operate Docker images and Compose applications",
+        "inputs": [
+          "Dockerfile",
+          "Compose configuration",
+          "container project"
+        ],
+        "outputs": [
+          "container configuration",
+          "optimization findings",
+          "test evidence"
+        ],
+        "platforms": [
+          "Docker",
+          "Docker Compose"
+        ],
+        "side_effects": [
+          "local image and container changes"
+        ],
+        "tools": [
+          "docker",
+          "docker compose"
+        ],
+        "triggers": [
+          "work on a Dockerfile or Compose application",
+          "audit a Docker build or container workflow"
+        ]
+      },
+      "id": "netresearch:docker-development",
+      "merged_source_refs": [],
+      "source_ref": "external-docker-development-skill",
+      "source_revision": "8c87bb70343b4ca55455307c294a9e0417894bd7",
+      "source_url": "https://github.com/netresearch/docker-development-skill/blob/8c87bb70343b4ca55455307c294a9e0417894bd7/skills/docker-development/SKILL.md",
+      "variants": []
+    },
+    {
+      "aliases": [
+        "Playwright browser automation",
+        "Playwright test reliability"
+      ],
+      "artifact_sha256": "07284ef18242f29c673d363568e8b7a8ce59e05d4bdbd14bd75612d6dc916e45",
+      "classification": {
+        "facets": {
+          "domain": [
+            "software"
+          ],
+          "inputs": [
+            "code",
+            "repository",
+            "webpage"
+          ],
+          "intent": [
+            "create",
+            "diagnose",
+            "operate",
+            "validate"
+          ],
+          "maturity": [
+            "signal"
+          ],
+          "outputs": [
+            "code",
+            "evidence",
+            "report"
+          ],
+          "platforms": [
+            "playwright",
+            "web"
+          ],
+          "risk": [
+            "standard"
+          ],
+          "side_effects": [
+            "local-write",
+            "network-read"
+          ],
+          "tools": [
+            "playwright",
+            "python"
+          ],
+          "trust": [
+            "community"
+          ],
+          "volatility": [
+            "fast-moving"
+          ]
+        },
+        "primary_family": "software.browser-testing"
+      },
+      "fingerprint": {
+        "goal": "author run debug and audit Playwright browser workflows",
+        "inputs": [
+          "Playwright tests",
+          "Playwright configuration",
+          "web application"
+        ],
+        "outputs": [
+          "browser automation",
+          "reliability findings",
+          "test evidence"
+        ],
+        "platforms": [
+          "Playwright",
+          "Node.js",
+          "web browsers"
+        ],
+        "side_effects": [
+          "local test execution",
+          "browser and network requests"
+        ],
+        "tools": [
+          "Playwright CLI",
+          "pwrun"
+        ],
+        "triggers": [
+          "write run or fix Playwright tests",
+          "audit Playwright selector isolation and assertion reliability"
+        ]
+      },
+      "id": "magnus919:playwright",
+      "merged_source_refs": [],
+      "source_ref": "external-playwright-skill",
+      "source_revision": "46ef33a21dd420401ec69696af2aab403a225fe2",
+      "source_url": "https://github.com/magnus919/agent-skills/blob/46ef33a21dd420401ec69696af2aab403a225fe2/playwright/SKILL.md",
+      "variants": []
+    },
+    {
+      "aliases": [
+        "advanced Git workflows",
+        "Git bisect workflow"
+      ],
+      "artifact_sha256": "f305fe33a2436cfb4403c8412161f8f50de8c757bacc5ee42909676368155c54",
+      "classification": {
+        "facets": {
+          "domain": [
+            "software"
+          ],
+          "inputs": [
+            "repository"
+          ],
+          "intent": [
+            "diagnose",
+            "maintain",
+            "operate"
+          ],
+          "maturity": [
+            "signal"
+          ],
+          "outputs": [
+            "code",
+            "evidence",
+            "report"
+          ],
+          "platforms": [
+            "git",
+            "linux",
+            "macos",
+            "windows"
+          ],
+          "risk": [
+            "standard"
+          ],
+          "side_effects": [
+            "local-write"
+          ],
+          "tools": [
+            "git"
+          ],
+          "trust": [
+            "community"
+          ],
+          "volatility": [
+            "stable"
+          ]
+        },
+        "primary_family": "software.git-workflows"
+      },
+      "fingerprint": {
+        "goal": "perform advanced Git history debugging worktree recovery and repository operations",
+        "inputs": [
+          "Git repository",
+          "revision history",
+          "user-selected operation"
+        ],
+        "outputs": [
+          "changed or recovered repository state",
+          "diagnostic evidence"
+        ],
+        "platforms": [
+          "Git",
+          "Windows macOS and Linux"
+        ],
+        "side_effects": [
+          "local Git metadata and working-tree changes"
+        ],
+        "tools": [
+          "git"
+        ],
+        "triggers": [
+          "bisect a regression",
+          "rebase recover or manage advanced Git state"
+        ]
+      },
+      "id": "openskill-forge:git-workflows",
+      "merged_source_refs": [],
+      "source_ref": "external-git-workflows-skill",
+      "source_revision": "7aa51fda64177a6ffa70160d61c79ee97a106c35",
+      "source_url": "https://github.com/albertdobmeyer/openskill-forge/blob/7aa51fda64177a6ffa70160d61c79ee97a106c35/skills/git-workflows/SKILL.md",
+      "variants": []
+    },
+    {
+      "aliases": [
+        "Git state recovery",
+        "Git repository preservation"
+      ],
+      "artifact_sha256": "c4fc4daeba580c9ccbca2aea007cfff449759013f69b2b30ba72098d5a7217b9",
+      "classification": {
+        "facets": {
+          "domain": [
+            "software"
+          ],
+          "inputs": [
+            "file",
+            "repository"
+          ],
+          "intent": [
+            "analyze",
+            "maintain",
+            "operate"
+          ],
+          "maturity": [
+            "signal"
+          ],
+          "outputs": [
+            "evidence",
+            "file",
+            "report"
+          ],
+          "platforms": [
+            "git",
+            "linux",
+            "macos"
+          ],
+          "risk": [
+            "standard"
+          ],
+          "side_effects": [
+            "local-write",
+            "network-read"
+          ],
+          "tools": [
+            "git"
+          ],
+          "trust": [
+            "community"
+          ],
+          "volatility": [
+            "stable"
+          ]
+        },
+        "primary_family": "software.git-recovery"
+      },
+      "fingerprint": {
+        "goal": "audit preserve recover and safely retire local Git state",
+        "inputs": [
+          "Git repositories and worktrees",
+          "branches stashes reflogs and untracked files",
+          "authorized preservation target"
+        ],
+        "outputs": [
+          "loss audit",
+          "verified preservation bundle",
+          "recovery or retirement evidence"
+        ],
+        "platforms": [
+          "Git",
+          "local filesystems"
+        ],
+        "side_effects": [
+          "local backup and optional preservation-ref writes",
+          "optional remote fetch"
+        ],
+        "tools": [
+          "git",
+          "repository preservation scripts"
+        ],
+        "triggers": [
+          "check whether Git work could be lost",
+          "preserve a repository before cleanup or clone retirement"
+        ]
+      },
+      "id": "daymade:git-safety-net",
+      "merged_source_refs": [],
+      "source_ref": "external-git-safety-net-skill",
+      "source_revision": "d42550c1a225613f9be94c6297cd328781fac979",
+      "source_url": "https://github.com/daymade/claude-code-skills/blob/d42550c1a225613f9be94c6297cd328781fac979/git-safety-net/SKILL.md",
+      "variants": []
+    },
+    {
+      "aliases": [
+        "pytest best practices",
+        "pytest fixture organization"
+      ],
+      "artifact_sha256": "2946c883b59d94a99b6de88728a60b99be172abb057b57b6967bfc2ba19e30d2",
+      "classification": {
+        "facets": {
+          "domain": [
+            "software"
+          ],
+          "inputs": [
+            "code",
+            "repository"
+          ],
+          "intent": [
+            "create",
+            "maintain",
+            "validate"
+          ],
+          "maturity": [
+            "signal"
+          ],
+          "outputs": [
+            "code",
+            "report"
+          ],
+          "platforms": [
+            "pytest",
+            "linux",
+            "macos",
+            "windows"
+          ],
+          "risk": [
+            "standard"
+          ],
+          "side_effects": [
+            "local-write"
+          ],
+          "tools": [
+            "pytest",
+            "python"
+          ],
+          "trust": [
+            "community"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "software.python-testing"
+      },
+      "fingerprint": {
+        "goal": "write and organize maintainable pytest tests",
+        "inputs": [
+          "Python project",
+          "pytest test suite",
+          "fixture and case requirements"
+        ],
+        "outputs": [
+          "organized pytest tests",
+          "fixture and parametrization design"
+        ],
+        "platforms": [
+          "pytest",
+          "Python"
+        ],
+        "side_effects": [
+          "local test-code changes",
+          "local test execution"
+        ],
+        "tools": [
+          "pytest"
+        ],
+        "triggers": [
+          "write or organize pytest tests",
+          "design pytest fixtures and parametrization"
+        ]
+      },
+      "id": "microsoft-debugpy:pytest",
+      "merged_source_refs": [],
+      "source_ref": "external-debugpy-pytest-skill",
+      "source_revision": "e5743d3a00c6dee7d8140275c7df7e719ebb132f",
+      "source_url": "https://github.com/microsoft/debugpy/blob/e5743d3a00c6dee7d8140275c7df7e719ebb132f/.claude/skills/pytest/SKILL.md",
+      "variants": []
+    },
+    {
+      "aliases": [
+        "release Rust crate",
+        "cargo publish preflight"
+      ],
+      "artifact_sha256": "0eda91961715f5927d7562ee95ce3f1f40047dc97322e13b84dfc56ddffd9ab2",
+      "classification": {
+        "facets": {
+          "domain": [
+            "software"
+          ],
+          "inputs": [
+            "code",
+            "repository",
+            "release"
+          ],
+          "intent": [
+            "publish",
+            "validate"
+          ],
+          "maturity": [
+            "signal"
+          ],
+          "outputs": [
+            "evidence",
+            "release",
+            "report"
+          ],
+          "platforms": [
+            "cargo",
+            "github",
+            "rust"
+          ],
+          "risk": [
+            "credentials",
+            "standard"
+          ],
+          "side_effects": [
+            "external-publish",
+            "local-write",
+            "network-write"
+          ],
+          "tools": [
+            "cargo",
+            "gh",
+            "git"
+          ],
+          "trust": [
+            "community"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "software.rust-release"
+      },
+      "fingerprint": {
+        "goal": "release a Rust crate to crates.io and GitHub with mandatory gates",
+        "inputs": [
+          "Rust crate repository",
+          "confirmed version",
+          "tag convention",
+          "CI and registry access"
+        ],
+        "outputs": [
+          "verified crate package",
+          "crates.io publication",
+          "GitHub release",
+          "post-publish smoke evidence"
+        ],
+        "platforms": [
+          "Cargo",
+          "crates.io",
+          "GitHub"
+        ],
+        "side_effects": [
+          "repository and version changes",
+          "tag push",
+          "irreversible registry publication"
+        ],
+        "tools": [
+          "cargo",
+          "git",
+          "gh"
+        ],
+        "triggers": [
+          "release or publish a Rust crate",
+          "run a crates.io release workflow"
+        ]
+      },
+      "id": "glslang:release-rust-crates-io",
+      "merged_source_refs": [],
+      "source_ref": "external-rust-crates-release-skill",
+      "source_revision": "54e8f99096623864905fc470701e72ad1461178c",
+      "source_url": "https://github.com/glslang/agent-skills/blob/54e8f99096623864905fc470701e72ad1461178c/.claude/skills/release-rust-crates-io/SKILL.md",
+      "variants": []
     }
   ],
   "internal": [
@@ -165,7 +865,7 @@
         "github release audit",
         "release evidence audit"
       ],
-      "artifact_sha256": "6d76bb6631aee1ccd2be3dd40cddaa22bdf112f1175780f5a364662f82c9d561",
+      "artifact_sha256": "e8ca4f3d137fd17dc65dea0f14d601387caf235fd1bd2741bbb8a9ea1b8bae78",
       "classification": {
         "facets": {
           "domain": [
@@ -258,12 +958,13 @@
         "openai-build-plugins"
       ],
       "plugin_id": "github-release-evidence",
-      "revision": 4,
+      "revision": 5,
       "skill_name": "audit-github-release",
       "source_refs": [
         "github-artifact-attestations",
         "github-cli-api",
         "github-cli-pr-checks",
+        "github-cli-release-verify-asset",
         "github-cli-release-view",
         "github-cli-repo-view",
         "github-rest-releases",
@@ -273,7 +974,7 @@
         "openai-gh-address-comments",
         "openai-gh-fix-ci"
       ],
-      "updated_at": "2026-08-29T18:36:00Z",
+      "updated_at": "2026-08-30T19:22:00Z",
       "variants": []
     },
     {
@@ -282,7 +983,7 @@
         "pypi publishing preflight",
         "python distribution audit"
       ],
-      "artifact_sha256": "42b52d7e6da043001035e53975b6d59e2375b1d3a1d25eafcfe91df184fc8a83",
+      "artifact_sha256": "43bda5426bc170b461e719d9f7b43543735ec3dd591b8e027033c691138e26a7",
       "classification": {
         "facets": {
           "domain": [
@@ -377,7 +1078,7 @@
         "pypa-single-source-version"
       ],
       "plugin_id": "python-package-delivery",
-      "revision": 1,
+      "revision": 2,
       "skill_name": "audit-python-release-readiness",
       "source_refs": [
         "pypa-build-readme",
@@ -394,10 +1095,1540 @@
         "pypi-trusted-publisher-security",
         "pypi-trusted-publisher-use"
       ],
-      "updated_at": "2026-08-29T18:56:00Z",
+      "updated_at": "2026-08-30T12:26:02Z",
       "variants": []
+    },
+    {
+      "aliases": [
+        "offline Git bundle transfer",
+        "air-gapped Git history transfer"
+      ],
+      "artifact_sha256": "027178cfca44be11433416ad77d072aa0618a59e4e96af61a3f763d65b904918",
+      "classification": {
+        "facets": {
+          "domain": [
+            "software"
+          ],
+          "inputs": [
+            "repository"
+          ],
+          "intent": [
+            "create",
+            "validate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "file",
+            "evidence",
+            "report"
+          ],
+          "platforms": [
+            "git",
+            "linux",
+            "macos",
+            "windows"
+          ],
+          "risk": [
+            "standard"
+          ],
+          "side_effects": [
+            "local-write",
+            "read-only"
+          ],
+          "tools": [
+            "git",
+            "python"
+          ],
+          "trust": [
+            "official",
+            "primary"
+          ],
+          "volatility": [
+            "stable"
+          ]
+        },
+        "primary_family": "software.git-transfer"
+      },
+      "created_at": "2026-08-30T14:05:00Z",
+      "fingerprint": {
+        "goal": "create and verify an offline git repository transfer bundle",
+        "inputs": [
+          "destination bundle path",
+          "git repository",
+          "selected refs or revision range"
+        ],
+        "outputs": [
+          "advertised refs",
+          "prerequisite and restore plan",
+          "verified bundle file"
+        ],
+        "platforms": [
+          "git",
+          "offline environments",
+          "windows macos and linux"
+        ],
+        "side_effects": [
+          "local bundle and optional clone write",
+          "local repository read"
+        ],
+        "tools": [
+          "git bundle",
+          "git clone or git fetch"
+        ],
+        "triggers": [
+          "create and verify a git bundle for offline transfer or backup",
+          "move this git repository without network access"
+        ]
+      },
+      "id": "software.git-offline-transfer",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml",
+        "references/transfer-contract.md",
+        "scripts/git_transfer_bundle.py"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "git-offline-transfer",
+      "revision": 1,
+      "skill_name": "create-git-transfer-bundle",
+      "source_refs": [
+        "external-git-safety-net-skill",
+        "external-git-workflows-skill",
+        "git-bundle-manual",
+        "git-clone-manual"
+      ],
+      "updated_at": "2026-08-30T14:05:00Z",
+      "variants": []
+    },
+    {
+      "aliases": [
+        "Ansible collection preflight",
+        "ansible-test collection validation"
+      ],
+      "artifact_sha256": "1308f39ee3c3614cf22b1d3911743a96ccf3146e048afe9dca37b12befbdf210",
+      "classification": {
+        "facets": {
+          "domain": [
+            "software"
+          ],
+          "inputs": [
+            "code",
+            "repository"
+          ],
+          "intent": [
+            "validate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "evidence",
+            "report"
+          ],
+          "platforms": [
+            "ansible",
+            "linux"
+          ],
+          "risk": [
+            "standard"
+          ],
+          "side_effects": [
+            "local-write",
+            "read-only"
+          ],
+          "tools": [
+            "ansible-test",
+            "python"
+          ],
+          "trust": [
+            "official",
+            "primary"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "software.ansible-collection-quality"
+      },
+      "created_at": "2026-08-30T14:05:00Z",
+      "fingerprint": {
+        "goal": "validate an ansible collection change locally before review or release",
+        "inputs": [
+          "ansible collection repository",
+          "optional pull request ref",
+          "target ansible-core versions"
+        ],
+        "outputs": [
+          "compatibility matrix",
+          "local verification report",
+          "sanity unit and integration evidence"
+        ],
+        "platforms": [
+          "ansible",
+          "git",
+          "linux or a linux container"
+        ],
+        "side_effects": [
+          "local dependency and collection installation",
+          "local test execution"
+        ],
+        "tools": [
+          "ansible-galaxy",
+          "ansible-test",
+          "git",
+          "optional docker"
+        ],
+        "triggers": [
+          "test this ansible collection before review",
+          "verify an ansible collection pull request locally"
+        ]
+      },
+      "id": "software.ansible-collection-validation",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml",
+        "references/validation-contract.md",
+        "scripts/plan_collection_tests.py"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "ansible-collection-quality",
+      "revision": 1,
+      "skill_name": "validate-ansible-collection",
+      "source_refs": [
+        "ansible-collection-integration-tests",
+        "ansible-collection-local-pr-test",
+        "ansible-collection-testing",
+        "ansible-install-collections"
+      ],
+      "updated_at": "2026-08-30T14:05:00Z",
+      "variants": []
+    },
+    {
+      "aliases": [
+        "npm publish preflight",
+        "npm package payload audit"
+      ],
+      "artifact_sha256": "db1a0cc48c47a86faa8e264b0dfa81fa15bcf330447cf65be9c571d95b4f58ad",
+      "classification": {
+        "facets": {
+          "domain": [
+            "software"
+          ],
+          "inputs": [
+            "code",
+            "file",
+            "repository"
+          ],
+          "intent": [
+            "validate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "evidence",
+            "report"
+          ],
+          "platforms": [
+            "linux",
+            "macos",
+            "nodejs",
+            "npm",
+            "windows"
+          ],
+          "risk": [
+            "standard"
+          ],
+          "side_effects": [
+            "local-write",
+            "read-only"
+          ],
+          "tools": [
+            "git",
+            "npm",
+            "python"
+          ],
+          "trust": [
+            "official",
+            "primary"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "software.release-assurance"
+      },
+      "created_at": "2026-08-30T14:45:00Z",
+      "fingerprint": {
+        "goal": "audit an npm package payload and publication configuration before release",
+        "inputs": [
+          "npm package files",
+          "optional publish configuration",
+          "optional typescript declaration contract",
+          "package.json"
+        ],
+        "outputs": [
+          "declaration packaging findings",
+          "lifecycle and visibility findings",
+          "package payload inventory",
+          "publication readiness report"
+        ],
+        "platforms": [
+          "node.js",
+          "npm",
+          "typescript",
+          "windows macos and linux"
+        ],
+        "side_effects": [
+          "local-read",
+          "optional temporary local artifact write"
+        ],
+        "tools": [
+          "codex package and declaration review",
+          "npm pack dry-run with scripts disabled"
+        ],
+        "triggers": [
+          "check this npm package before publishing",
+          "check whether this npm package ships its declared typescript types",
+          "inspect what npm pack would include without publishing"
+        ]
+      },
+      "id": "software.npm-package-readiness",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml",
+        "references/package-contract.md",
+        "scripts/inspect_npm_package.py"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "javascript-package-delivery",
+      "revision": 2,
+      "skill_name": "audit-npm-package-readiness",
+      "source_refs": [
+        "npm-pack",
+        "npm-publish",
+        "typescript-declaration-deep-dive",
+        "typescript-declaration-publishing",
+        "typescript-library-structures"
+      ],
+      "updated_at": "2026-08-30T15:36:00Z",
+      "variants": []
+    },
+    {
+      "aliases": [
+        "Rust build speed diagnosis",
+        "Cargo cold warm build measurement"
+      ],
+      "artifact_sha256": "9a1ed991b04bb55b1d6d6e0fb215fc297132a8d5961acd2f883fec5bc8e22571",
+      "classification": {
+        "facets": {
+          "domain": [
+            "software"
+          ],
+          "inputs": [
+            "code",
+            "repository"
+          ],
+          "intent": [
+            "analyze",
+            "diagnose"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "evidence",
+            "report"
+          ],
+          "platforms": [
+            "cargo",
+            "linux",
+            "macos",
+            "rust",
+            "windows"
+          ],
+          "risk": [
+            "standard"
+          ],
+          "side_effects": [
+            "local-write"
+          ],
+          "tools": [
+            "cargo",
+            "python"
+          ],
+          "trust": [
+            "official",
+            "primary"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "software.build-performance"
+      },
+      "created_at": "2026-08-30T14:45:00Z",
+      "fingerprint": {
+        "goal": "diagnose and improve cargo build performance with reproducible measurements",
+        "inputs": [
+          "cold and warm build measurements",
+          "effective cargo configuration",
+          "rust workspace"
+        ],
+        "outputs": [
+          "bottleneck evidence",
+          "bounded optimization experiment",
+          "cache and configuration findings"
+        ],
+        "platforms": [
+          "cargo",
+          "rust",
+          "windows macos and linux"
+        ],
+        "side_effects": [
+          "local build artifacts",
+          "optional local configuration change after approval"
+        ],
+        "tools": [
+          "cargo timing and build commands",
+          "codex configuration review"
+        ],
+        "triggers": [
+          "audit rust build cache and cargo configuration performance",
+          "find why this cargo build is slow"
+        ]
+      },
+      "id": "software.cargo-build-performance",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml",
+        "references/measurement-contract.md",
+        "scripts/measure_cargo_build.py"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "rust-build-performance",
+      "revision": 1,
+      "skill_name": "measure-cargo-build-performance",
+      "source_refs": [
+        "cargo-build-cache",
+        "cargo-build-performance",
+        "cargo-config"
+      ],
+      "updated_at": "2026-08-30T14:45:00Z",
+      "variants": []
+    },
+    {
+      "aliases": [
+        "CORS preflight diagnosis",
+        "Fetch CORS failure classifier"
+      ],
+      "artifact_sha256": "04c0e2de71bb90ee417e34c35b05ae02e19820cace46acd690acfd9f962a39ab",
+      "classification": {
+        "facets": {
+          "domain": [
+            "software"
+          ],
+          "inputs": [
+            "api",
+            "report"
+          ],
+          "intent": [
+            "diagnose"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "decision",
+            "evidence",
+            "report"
+          ],
+          "platforms": [
+            "http",
+            "web"
+          ],
+          "risk": [
+            "standard"
+          ],
+          "side_effects": [
+            "read-only"
+          ],
+          "tools": [
+            "python"
+          ],
+          "trust": [
+            "official",
+            "primary"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "software.web-request-diagnostics"
+      },
+      "created_at": "2026-08-30T14:45:00Z",
+      "fingerprint": {
+        "goal": "diagnose a browser fetch or cors request failure from request and response evidence",
+        "inputs": [
+          "browser console and network evidence",
+          "request url origin method and headers",
+          "server response headers"
+        ],
+        "outputs": [
+          "client versus server responsibility",
+          "failure classification",
+          "minimal validation and remediation plan"
+        ],
+        "platforms": [
+          "fetch api",
+          "http",
+          "web browsers"
+        ],
+        "side_effects": [
+          "optional local test change after approval",
+          "read-only diagnosis"
+        ],
+        "tools": [
+          "browser network evidence",
+          "codex http and fetch review"
+        ],
+        "triggers": [
+          "diagnose this failed cors preflight without disabling browser security",
+          "find why this browser fetch is blocked by cors"
+        ]
+      },
+      "id": "software.cors-request-diagnosis",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml",
+        "references/evidence-schema.md",
+        "scripts/classify_cors.py"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "web-request-diagnostics",
+      "revision": 1,
+      "skill_name": "diagnose-cors-request",
+      "source_refs": [
+        "mdn-cors",
+        "mdn-using-fetch"
+      ],
+      "updated_at": "2026-08-30T14:45:00Z",
+      "variants": []
+    },
+    {
+      "aliases": [
+        "curl command preflight",
+        "offline curl request audit"
+      ],
+      "artifact_sha256": "031332b625aac362e4e40f0c34cf667a756b6e3948d2731b14c3c0a6f056d444",
+      "classification": {
+        "facets": {
+          "domain": [
+            "software"
+          ],
+          "inputs": [
+            "api",
+            "file"
+          ],
+          "intent": [
+            "validate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "evidence",
+            "report"
+          ],
+          "platforms": [
+            "curl",
+            "http",
+            "linux",
+            "macos",
+            "windows"
+          ],
+          "risk": [
+            "standard"
+          ],
+          "side_effects": [
+            "read-only"
+          ],
+          "tools": [
+            "codex",
+            "curl",
+            "python"
+          ],
+          "trust": [
+            "official",
+            "primary"
+          ],
+          "volatility": [
+            "stable"
+          ]
+        },
+        "primary_family": "software.api-request-safety"
+      },
+      "created_at": "2026-08-30T15:37:00Z",
+      "fingerprint": {
+        "goal": "audit a curl command or config file for request-semantics and local-file disclosure risks before execution",
+        "inputs": [
+          "curl argument list",
+          "intended http request contract",
+          "optional curl config file"
+        ],
+        "outputs": [
+          "normalized request intent",
+          "redacted execution checklist",
+          "semantic and disclosure findings"
+        ],
+        "platforms": [
+          "curl",
+          "http",
+          "windows macos and linux"
+        ],
+        "side_effects": [
+          "local-read"
+        ],
+        "tools": [
+          "bounded local curl-config parser",
+          "codex command review"
+        ],
+        "triggers": [
+          "check this curl config for method body and file-reference mistakes",
+          "review this curl command without sending it"
+        ]
+      },
+      "id": "software.curl-request-audit",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml",
+        "references/audit-contract.md",
+        "scripts/inspect_curl_request.py"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "api-request-safety",
+      "revision": 1,
+      "skill_name": "audit-curl-request",
+      "source_refs": [
+        "curl-config-option",
+        "curl-data-option",
+        "curl-data-urlencode-option",
+        "curl-request-option"
+      ],
+      "updated_at": "2026-08-30T15:37:00Z",
+      "variants": []
+    },
+    {
+      "aliases": [
+        "market shopping plan",
+        "买菜计划"
+      ],
+      "artifact_sha256": "1f32c55804b57f0e43afed8d98cf5936ce455b05519d1b2e38c0c905d7c13bd8",
+      "classification": {
+        "facets": {
+          "domain": [
+            "daily-life"
+          ],
+          "inputs": [
+            "food",
+            "household-context",
+            "shopping-needs"
+          ],
+          "intent": [
+            "create",
+            "operate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "decision",
+            "instructions",
+            "plan"
+          ],
+          "platforms": [
+            "fresh-market",
+            "grocery-store"
+          ],
+          "risk": [
+            "food-safety",
+            "standard"
+          ],
+          "side_effects": [
+            "household-consumption",
+            "human-physical-action"
+          ],
+          "tools": [
+            "codex"
+          ],
+          "trust": [
+            "official"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "daily-life.fresh-market-and-grocery-shopping"
+      },
+      "created_at": "2026-08-31T04:50:00Z",
+      "fingerprint": {
+        "goal": "plan a fresh-market or grocery trip for a household",
+        "inputs": [
+          "budget and dietary constraints",
+          "existing food and storage space",
+          "household size and meals",
+          "local availability and travel time"
+        ],
+        "outputs": [
+          "bounded shopping list",
+          "quantity and substitution decisions",
+          "stall or aisle route",
+          "transport and separation plan"
+        ],
+        "platforms": [
+          "fresh market",
+          "grocery store",
+          "home"
+        ],
+        "side_effects": [
+          "human purchases and transports food"
+        ],
+        "tools": [
+          "codex guidance",
+          "household inventory",
+          "shopping list"
+        ],
+        "triggers": [
+          "plan my grocery or fresh-market trip",
+          "帮我按预算和人数列菜市场采购清单"
+        ]
+      },
+      "id": "daily-life.fresh-market-shopping-plan",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "fresh-market-and-grocery-shopping",
+      "revision": 1,
+      "skill_name": "plan-fresh-market-trip",
+      "source_refs": [
+        "hk-cfs-food-purchase-zh",
+        "hk-cfs-food-waste-storage"
+      ],
+      "updated_at": "2026-08-31T04:50:00Z",
+      "variants": [
+        "market-layout and regional-unit variants"
+      ]
+    },
+    {
+      "aliases": [
+        "fresh food screening",
+        "挑选新鲜食材"
+      ],
+      "artifact_sha256": "d9e16e2160531acb230bc481df18ae14572cbb3273b1ad0e628e276badafe2c1",
+      "classification": {
+        "facets": {
+          "domain": [
+            "daily-life"
+          ],
+          "inputs": [
+            "food",
+            "household-context"
+          ],
+          "intent": [
+            "analyze",
+            "operate",
+            "validate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "decision",
+            "evidence",
+            "instructions"
+          ],
+          "platforms": [
+            "fresh-market",
+            "grocery-store"
+          ],
+          "risk": [
+            "food-safety",
+            "standard"
+          ],
+          "side_effects": [
+            "household-consumption",
+            "human-physical-action"
+          ],
+          "tools": [
+            "codex"
+          ],
+          "trust": [
+            "official"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "daily-life.fresh-market-and-grocery-shopping"
+      },
+      "created_at": "2026-08-31T04:51:00Z",
+      "fingerprint": {
+        "goal": "choose and transport fresh perishable groceries using observable rejection clues",
+        "inputs": [
+          "food type",
+          "observable package and product condition",
+          "planned use date",
+          "travel time and cooling method"
+        ],
+        "outputs": [
+          "buy or reject decision",
+          "limits of observable clues",
+          "separation and cold-transport plan"
+        ],
+        "platforms": [
+          "fresh market",
+          "grocery store",
+          "transport to home"
+        ],
+        "side_effects": [
+          "human inspects purchases and transports perishable food"
+        ],
+        "tools": [
+          "codex guidance",
+          "cool bag when available",
+          "user observation"
+        ],
+        "triggers": [
+          "help me choose and carry fresh perishable food",
+          "这个鱼肉蛋菜新不新鲜怎么挑"
+        ]
+      },
+      "id": "daily-life.choose-fresh-perishables",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "fresh-market-and-grocery-shopping",
+      "revision": 1,
+      "skill_name": "choose-fresh-perishables",
+      "source_refs": [
+        "fda-select-store-seafood",
+        "hk-cfs-food-purchase-zh"
+      ],
+      "updated_at": "2026-08-31T04:51:00Z",
+      "variants": [
+        "produce egg meat and seafood variants"
+      ]
+    },
+    {
+      "aliases": [
+        "grocery storage priority",
+        "食材收纳和先吃顺序"
+      ],
+      "artifact_sha256": "3bd50c02356c00f096d64223e7cd172bb50278617c931d5147dcafb86d577c45",
+      "classification": {
+        "facets": {
+          "domain": [
+            "daily-life"
+          ],
+          "inputs": [
+            "food",
+            "household-context"
+          ],
+          "intent": [
+            "maintain",
+            "operate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "decision",
+            "instructions",
+            "plan"
+          ],
+          "platforms": [
+            "home-kitchen"
+          ],
+          "risk": [
+            "food-safety",
+            "standard"
+          ],
+          "side_effects": [
+            "household-consumption",
+            "human-physical-action"
+          ],
+          "tools": [
+            "codex"
+          ],
+          "trust": [
+            "official"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "daily-life.fresh-market-and-grocery-shopping"
+      },
+      "created_at": "2026-08-31T04:52:00Z",
+      "fingerprint": {
+        "goal": "put away groceries and decide what to use first",
+        "inputs": [
+          "planned meals and use dates",
+          "purchased foods and package labels",
+          "refrigerator freezer and pantry space"
+        ],
+        "outputs": [
+          "eat-first priority",
+          "label and discard checks",
+          "storage destination plan",
+          "waste-reduction actions"
+        ],
+        "platforms": [
+          "freezer",
+          "home kitchen",
+          "pantry",
+          "refrigerator"
+        ],
+        "side_effects": [
+          "human stores labels freezes or discards food"
+        ],
+        "tools": [
+          "codex guidance",
+          "food labels",
+          "storage containers"
+        ],
+        "triggers": [
+          "help me put groceries away and prioritize them",
+          "买菜回来怎么分类放冰箱先吃什么"
+        ]
+      },
+      "id": "daily-life.put-away-groceries",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "fresh-market-and-grocery-shopping",
+      "revision": 1,
+      "skill_name": "put-away-groceries",
+      "source_refs": [
+        "hk-cfs-food-waste-storage"
+      ],
+      "updated_at": "2026-08-31T04:52:00Z",
+      "variants": [
+        "refrigerator freezer and pantry variants"
+      ]
+    },
+    {
+      "aliases": [
+        "laundry sorting",
+        "洗衣分桶"
+      ],
+      "artifact_sha256": "3579d1ff63579f290f2427afce5120eed79dddca9502034365529fe14e9db777",
+      "classification": {
+        "facets": {
+          "domain": [
+            "daily-life"
+          ],
+          "inputs": [
+            "clothing",
+            "household-context"
+          ],
+          "intent": [
+            "analyze",
+            "operate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "decision",
+            "instructions",
+            "plan"
+          ],
+          "platforms": [
+            "laundry-area"
+          ],
+          "risk": [
+            "physical-safety",
+            "standard"
+          ],
+          "side_effects": [
+            "human-physical-action"
+          ],
+          "tools": [
+            "codex"
+          ],
+          "trust": [
+            "official"
+          ],
+          "volatility": [
+            "stable"
+          ]
+        },
+        "primary_family": "daily-life.laundry-and-clothing-care"
+      },
+      "created_at": "2026-08-31T05:00:00Z",
+      "fingerprint": {
+        "goal": "read clothing care labels and sort a compatible laundry load",
+        "inputs": [
+          "available drying methods",
+          "care symbols or label text",
+          "colors fabrics soil and stain condition"
+        ],
+        "outputs": [
+          "compatible load groups",
+          "items requiring hand wash or professional care",
+          "label interpretation"
+        ],
+        "platforms": [
+          "home",
+          "laundry area"
+        ],
+        "side_effects": [
+          "human sorts clothing before washing"
+        ],
+        "tools": [
+          "codex guidance",
+          "garment care labels"
+        ],
+        "triggers": [
+          "read these care labels and sort my laundry",
+          "帮我看洗护标签并把衣服分批"
+        ]
+      },
+      "id": "daily-life.sort-laundry-load",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "laundry-and-clothing-care",
+      "revision": 1,
+      "skill_name": "sort-laundry-load",
+      "source_refs": [
+        "canada-textile-care-symbols",
+        "cdc-bleach-mixing-safety"
+      ],
+      "updated_at": "2026-08-31T05:00:00Z",
+      "variants": [
+        "colour fabric soil and drying variants"
+      ]
+    },
+    {
+      "aliases": [
+        "washer cycle selection",
+        "洗衣机程序和用量"
+      ],
+      "artifact_sha256": "b30521bef0ed63af9f1b94020137494a2aa659f142d0e97fc860be741a21f300",
+      "classification": {
+        "facets": {
+          "domain": [
+            "daily-life"
+          ],
+          "inputs": [
+            "clothing",
+            "document",
+            "household-context"
+          ],
+          "intent": [
+            "operate",
+            "validate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "decision",
+            "instructions",
+            "plan"
+          ],
+          "platforms": [
+            "laundry-area"
+          ],
+          "risk": [
+            "physical-safety",
+            "standard"
+          ],
+          "side_effects": [
+            "human-physical-action"
+          ],
+          "tools": [
+            "codex",
+            "household-appliance"
+          ],
+          "trust": [
+            "official"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "daily-life.laundry-and-clothing-care"
+      },
+      "created_at": "2026-08-31T05:01:00Z",
+      "fingerprint": {
+        "goal": "choose washer settings and detergent for a prepared laundry load",
+        "inputs": [
+          "soil stains load size and detergent instructions",
+          "sorted load and care labels",
+          "washer make model and manual"
+        ],
+        "outputs": [
+          "cycle temperature spin and dose plan",
+          "model-specific manual lookup",
+          "post-wash checks and safe recovery"
+        ],
+        "platforms": [
+          "household washing machine",
+          "laundry area"
+        ],
+        "side_effects": [
+          "human configures and runs a washing machine"
+        ],
+        "tools": [
+          "codex guidance",
+          "detergent label",
+          "exact washer manual"
+        ],
+        "triggers": [
+          "choose washer settings and detergent for this load",
+          "这桶衣服洗衣机选什么程序温度转速"
+        ]
+      },
+      "id": "daily-life.choose-washer-settings",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "laundry-and-clothing-care",
+      "revision": 1,
+      "skill_name": "choose-washer-settings",
+      "source_refs": [
+        "cdc-bleach-mixing-safety",
+        "hk-consumer-laundry-machine-zh",
+        "samsung-washer-cycle-guidance"
+      ],
+      "updated_at": "2026-08-31T05:01:00Z",
+      "variants": [
+        "model manual load and residue variants"
+      ]
+    },
+    {
+      "aliases": [
+        "wool sweater care",
+        "羊毛衫洗护"
+      ],
+      "artifact_sha256": "a64c4fb2f5d0d50ad1d6305a8c5aef18b59804e33b742bb499bac3b55d771576",
+      "classification": {
+        "facets": {
+          "domain": [
+            "daily-life"
+          ],
+          "inputs": [
+            "clothing",
+            "household-context"
+          ],
+          "intent": [
+            "maintain",
+            "operate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "decision",
+            "instructions"
+          ],
+          "platforms": [
+            "laundry-area"
+          ],
+          "risk": [
+            "physical-safety",
+            "standard"
+          ],
+          "side_effects": [
+            "human-physical-action"
+          ],
+          "tools": [
+            "codex",
+            "household-appliance"
+          ],
+          "trust": [
+            "primary"
+          ],
+          "volatility": [
+            "stable"
+          ]
+        },
+        "primary_family": "daily-life.laundry-and-clothing-care"
+      },
+      "created_at": "2026-08-31T05:02:00Z",
+      "fingerprint": {
+        "goal": "wash and dry wool knitwear without exceeding its care label",
+        "inputs": [
+          "drying space",
+          "stain and shape condition",
+          "washer wool-cycle availability",
+          "wool garment care label"
+        ],
+        "outputs": [
+          "gentle wash steps",
+          "machine hand-wash or professional-care decision",
+          "reshape and drying checks"
+        ],
+        "platforms": [
+          "flat drying surface",
+          "hand-wash basin",
+          "laundry area"
+        ],
+        "side_effects": [
+          "human washes reshapes and dries wool clothing"
+        ],
+        "tools": [
+          "care label",
+          "codex guidance",
+          "wool detergent when permitted"
+        ],
+        "triggers": [
+          "help me wash and dry this wool sweater",
+          "这件羊毛衫怎么洗才不缩水变形"
+        ]
+      },
+      "id": "daily-life.wash-wool-knitwear",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "laundry-and-clothing-care",
+      "revision": 1,
+      "skill_name": "wash-wool-knitwear",
+      "source_refs": [
+        "canada-textile-care-symbols",
+        "woolmark-wool-sweater-care"
+      ],
+      "updated_at": "2026-08-31T05:02:00Z",
+      "variants": [
+        "machine hand wash and professional-care variants"
+      ]
+    },
+    {
+      "aliases": [
+        "home meal timeline",
+        "一顿饭备菜顺序"
+      ],
+      "artifact_sha256": "61dfe79f170ee51d24ec91b5b1696cf67ce0fc568ed5f4c1453cbcf585bffaf0",
+      "classification": {
+        "facets": {
+          "domain": [
+            "daily-life"
+          ],
+          "inputs": [
+            "food",
+            "household-context"
+          ],
+          "intent": [
+            "create",
+            "operate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "instructions",
+            "plan"
+          ],
+          "platforms": [
+            "home-kitchen"
+          ],
+          "risk": [
+            "allergen",
+            "food-safety",
+            "physical-safety",
+            "standard"
+          ],
+          "side_effects": [
+            "household-consumption",
+            "human-physical-action"
+          ],
+          "tools": [
+            "codex",
+            "kitchen-tools"
+          ],
+          "trust": [
+            "official"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "daily-life.home-cooking-and-meal-preparation"
+      },
+      "created_at": "2026-08-31T05:03:00Z",
+      "fingerprint": {
+        "goal": "plan and sequence a home meal from household constraints and available food",
+        "inputs": [
+          "allergen and safety constraints",
+          "available food and use priority",
+          "people portions and preferences",
+          "time and kitchen equipment"
+        ],
+        "outputs": [
+          "completion and leftover plan",
+          "meal scope and portions",
+          "missing-item list",
+          "prep and cooking timeline"
+        ],
+        "platforms": [
+          "home kitchen"
+        ],
+        "side_effects": [
+          "human prepares and cooks a meal"
+        ],
+        "tools": [
+          "codex guidance",
+          "kitchen tools available to the user",
+          "timer when useful"
+        ],
+        "triggers": [
+          "plan this home meal and give me a cooking timeline",
+          "按人数时间现有食材帮我安排一顿饭和备菜顺序"
+        ]
+      },
+      "id": "daily-life.plan-home-meal",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "home-cooking-and-meal-preparation",
+      "revision": 1,
+      "skill_name": "plan-home-meal",
+      "source_refs": [
+        "fda-food-allergy-boundaries",
+        "hk-cfs-cooking-safety-zh",
+        "hk-cfs-food-waste-zh",
+        "usfa-cooking-fire-safety"
+      ],
+      "updated_at": "2026-08-31T05:03:00Z",
+      "variants": [
+        "plan live-step and recovery modes"
+      ]
+    },
+    {
+      "aliases": [
+        "functional ingredient substitution",
+        "食材按作用替代"
+      ],
+      "artifact_sha256": "15fe5b1459e59ff716178dfa8cb38bdb652c721b2ee3b08bb4976ad3a5c8aa60",
+      "classification": {
+        "facets": {
+          "domain": [
+            "daily-life"
+          ],
+          "inputs": [
+            "food",
+            "household-context"
+          ],
+          "intent": [
+            "analyze",
+            "transform"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "decision",
+            "instructions"
+          ],
+          "platforms": [
+            "home-kitchen"
+          ],
+          "risk": [
+            "allergen",
+            "food-safety",
+            "standard"
+          ],
+          "side_effects": [
+            "household-consumption",
+            "human-physical-action"
+          ],
+          "tools": [
+            "codex",
+            "kitchen-tools"
+          ],
+          "trust": [
+            "official",
+            "primary"
+          ],
+          "volatility": [
+            "stable"
+          ]
+        },
+        "primary_family": "daily-life.home-cooking-and-meal-preparation"
+      },
+      "created_at": "2026-08-31T05:04:00Z",
+      "fingerprint": {
+        "goal": "replace a missing cooking ingredient by preserving its function",
+        "inputs": [
+          "allergy and safety constraints",
+          "available alternatives",
+          "dish and recipe role",
+          "missing ingredient and amount"
+        ],
+        "outputs": [
+          "expected texture flavor or risk change",
+          "function classification",
+          "quantity and connected adjustment",
+          "ranked compatible substitutes"
+        ],
+        "platforms": [
+          "home kitchen"
+        ],
+        "side_effects": [
+          "human changes ingredients and cooking process"
+        ],
+        "tools": [
+          "codex guidance",
+          "measuring tools"
+        ],
+        "triggers": [
+          "substitute this missing ingredient without breaking the dish",
+          "做饭缺这个材料能用什么替代"
+        ]
+      },
+      "id": "daily-life.substitute-ingredient-by-function",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "home-cooking-and-meal-preparation",
+      "revision": 1,
+      "skill_name": "substitute-ingredient-by-function",
+      "source_refs": [
+        "csu-ingredient-substitutions",
+        "fda-food-allergy-boundaries"
+      ],
+      "updated_at": "2026-08-31T05:04:00Z",
+      "variants": [
+        "cooking and baking function variants"
+      ]
+    },
+    {
+      "aliases": [
+        "food doneness and leftovers",
+        "熟度剩菜检查"
+      ],
+      "artifact_sha256": "b1859db9206e0098b3a27a66079be4a33fd6fc24606ee7fb52315c8c40ee9cd5",
+      "classification": {
+        "facets": {
+          "domain": [
+            "daily-life"
+          ],
+          "inputs": [
+            "food",
+            "household-context"
+          ],
+          "intent": [
+            "operate",
+            "validate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "decision",
+            "evidence",
+            "instructions"
+          ],
+          "platforms": [
+            "home-kitchen"
+          ],
+          "risk": [
+            "allergen",
+            "food-safety",
+            "physical-safety",
+            "standard"
+          ],
+          "side_effects": [
+            "household-consumption",
+            "human-physical-action"
+          ],
+          "tools": [
+            "codex",
+            "kitchen-tools"
+          ],
+          "trust": [
+            "official"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "daily-life.home-cooking-and-meal-preparation"
+      },
+      "created_at": "2026-08-31T05:05:00Z",
+      "fingerprint": {
+        "goal": "check food doneness and handle leftovers safely",
+        "inputs": [
+          "elapsed room-temperature time",
+          "food type thickness and cooking method",
+          "storage and reheating equipment",
+          "thermometer availability"
+        ],
+        "outputs": [
+          "doneness check",
+          "hold cool store reheat or discard decision",
+          "observable completion and stop signals"
+        ],
+        "platforms": [
+          "freezer",
+          "home kitchen",
+          "refrigerator"
+        ],
+        "side_effects": [
+          "human cooks cools stores reheats or discards food"
+        ],
+        "tools": [
+          "clean shallow containers",
+          "codex guidance",
+          "food thermometer when available"
+        ],
+        "triggers": [
+          "check doneness and tell me how to store or reheat leftovers",
+          "这锅熟了吗剩菜怎么冷藏再加热"
+        ]
+      },
+      "id": "daily-life.check-doneness-leftovers",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "home-cooking-and-meal-preparation",
+      "revision": 1,
+      "skill_name": "check-doneness-and-leftovers",
+      "source_refs": [
+        "fda-food-allergy-boundaries",
+        "hk-cfs-cooking-safety-zh",
+        "hk-cfs-food-waste-storage",
+        "usfa-cooking-fire-safety"
+      ],
+      "updated_at": "2026-08-31T05:05:00Z",
+      "variants": [
+        "food type thermometer and storage variants"
+      ]
     }
   ],
   "schema_version": 2,
-  "taxonomy_version": "1.0.0"
+  "taxonomy_version": "1.2.0"
 }

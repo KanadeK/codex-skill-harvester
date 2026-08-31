@@ -1,0 +1,4 @@
+interface:
+  display_name: "Substitute an Ingredient by Function"
+  short_description: "Preserve the ingredient's role in the dish"
+  default_prompt: "Use $substitute-ingredient-by-function to replace a missing ingredient."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Choose Fresh Perishables"
+  short_description: "Screen fresh food without false guarantees"
+  default_prompt: "Use $choose-fresh-perishables to help me assess food at this market."

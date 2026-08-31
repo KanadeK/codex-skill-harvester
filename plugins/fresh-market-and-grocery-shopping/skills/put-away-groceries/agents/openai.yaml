@@ -1,0 +1,4 @@
+interface:
+  display_name: "Put Away Groceries"
+  short_description: "Store food and decide what to use first"
+  default_prompt: "Use $put-away-groceries to help me store today's groceries."

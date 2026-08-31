@@ -1,0 +1,4 @@
+interface:
+  display_name: "Measure Cargo Build Performance"
+  short_description: "Measure cold and warm Cargo build behavior"
+  default_prompt: "Use $measure-cargo-build-performance to diagnose this Cargo build with reproducible measurements."

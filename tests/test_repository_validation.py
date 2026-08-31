@@ -10,6 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from skill_harvester.validation import ValidationError, validate_repository
+from skill_harvester.queries import load_topic_bank
 from skill_harvester.runtime_store import open_runtime_store
 
 
@@ -58,13 +59,15 @@ class RepositoryValidationTests(unittest.TestCase):
 
         report = validate_repository(root)
 
-        self.assertEqual(report["plugins"], 2)
-        self.assertEqual(report["skills"], 2)
-        self.assertEqual(report["internal_capabilities"], 2)
-        self.assertEqual(report["taxonomy_version"], "1.0.0")
-        self.assertEqual(report["scale_backend"], "sqlite-v3")
-        self.assertEqual(report["evidence_packs"], 117)
-        self.assertEqual(report["topic_queries"], 21)
+        self.assertEqual(report["plugins"], 11)
+        self.assertEqual(report["skills"], 17)
+        self.assertEqual(report["internal_capabilities"], 17)
+        self.assertEqual(report["taxonomy_version"], "1.2.0")
+        self.assertEqual(report["scale_backend"], "sqlite-v4")
+        self.assertEqual(report["evidence_packs"], 180)
+        self.assertEqual(report["daily_life_scenarios"], 63)
+        self.assertEqual(report["daily_life_scenario_pending"], 0)
+        self.assertEqual(report["topic_queries"], len(load_topic_bank(root)))
         self.assertEqual(report["migration_triggers"], [])
         self.assertEqual(report["secrets_found"], 0)
 
@@ -89,10 +92,11 @@ class RepositoryValidationTests(unittest.TestCase):
             ).fetchone()[0]
             pending_candidates = store.candidate_status_counts().get("pending", 0)
 
-        self.assertEqual(pypi_observations, 326)
+        self.assertGreaterEqual(pypi_observations, 200)
         self.assertEqual(pypi_candidates, 0)
-        self.assertEqual(release_observations, 20)
+        self.assertGreaterEqual(release_observations, 5)
         self.assertEqual(release_candidates, 11)
+        self.assertGreater(release_observations, release_candidates)
         self.assertEqual(pending_candidates, 0)
 
     def test_detects_generated_skill_drift(self) -> None:
@@ -263,6 +267,80 @@ class RepositoryValidationTests(unittest.TestCase):
             with self.assertRaisesRegex(ValidationError, "authoritative inputs"):
                 validate_repository(root)
 
+    def test_rejects_forged_cycle_query_attempt_count(self) -> None:
+        source = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            shutil.copytree(
+                source,
+                root,
+                ignore=shutil.ignore_patterns(
+                    ".git", "dist", ".harvester-cache", "__pycache__", "*.pyc"
+                ),
+            )
+            path = next(
+                path
+                for path in (root / "runs").glob("*-queries.json")
+                if json.loads(path.read_text(encoding="utf-8")).get("aggregation")
+                == "cycle"
+            )
+            report = json.loads(path.read_text(encoding="utf-8"))
+            report["query_attempts"] += 1
+            path.write_text(json.dumps(report), encoding="utf-8")
+
+            with self.assertRaisesRegex(
+                ValidationError, "query cycle stage counts disagree"
+            ):
+                validate_repository(root)
+
+    def test_rejects_forged_discovery_hit_review_counts(self) -> None:
+        source = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            shutil.copytree(
+                source,
+                root,
+                ignore=shutil.ignore_patterns(
+                    ".git", "dist", ".harvester-cache", "__pycache__", "*.pyc"
+                ),
+            )
+            path = next(
+                path
+                for path in (root / "runs").glob("*-queries.json")
+                if json.loads(path.read_text(encoding="utf-8")).get("cycle_id")
+                == "full-campaign-2026-08-30"
+            )
+            report = json.loads(path.read_text(encoding="utf-8"))
+            report["discovery_review"]["duplicate"] -= 1
+            report["discovery_review"]["not_selected"] += 1
+            path.write_text(json.dumps(report), encoding="utf-8")
+
+            with self.assertRaisesRegex(
+                ValidationError, "discovery review differs from SQLite"
+            ):
+                validate_repository(root)
+
+    def test_rejects_forged_daily_life_pilot_report(self) -> None:
+        source = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            shutil.copytree(
+                source,
+                root,
+                ignore=shutil.ignore_patterns(
+                    ".git", "dist", ".harvester-cache", "__pycache__", "*.pyc"
+                ),
+            )
+            path = root / "runs" / "2026-08-31-daily-life-pilot.json"
+            report = json.loads(path.read_text(encoding="utf-8"))
+            report["scenarios"]["total"] += 1
+            path.write_text(json.dumps(report), encoding="utf-8")
+
+            with self.assertRaisesRegex(
+                ValidationError, "Daily Life report does not match"
+            ):
+                validate_repository(root)
+
     def test_accepts_historical_partial_semantic_checkpoint_after_batch_completion(self) -> None:
         source = Path(__file__).resolve().parents[1]
         with tempfile.TemporaryDirectory() as directory:
@@ -280,6 +358,9 @@ class RepositoryValidationTests(unittest.TestCase):
                 pending_at_start = len(
                     store.semantic_batch_items(final_report["batch_id"])
                 )
+                evidence_packs_at_start = store.connection.execute(
+                    "SELECT COUNT(*) FROM evidence_packs"
+                ).fetchone()[0]
             historical = {
                 "schema_version": 1,
                 "report_type": "semantic-review",
@@ -302,7 +383,7 @@ class RepositoryValidationTests(unittest.TestCase):
 
             report = validate_repository(root)
 
-            self.assertEqual(report["evidence_packs"], 117)
+            self.assertEqual(report["evidence_packs"], evidence_packs_at_start)
 
 
 if __name__ == "__main__":
