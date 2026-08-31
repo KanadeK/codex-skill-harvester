@@ -204,7 +204,7 @@ Completion checkpoint: the branch starts at verified correction HEAD `7aa8f86`; 
 ## Task 26: validate and submit the Daily Life pilot
 
 - [x] Acceptance: all 63 scenarios are resolved, each family has three useful installable Skills, pending query-hit/semantic/L4 work is zero, and Usage remains `measured=false`.
-- [x] Verify: 146 unittest cases, 17 evals, validator, SQLite-v4 benchmark, deterministic source/11-Plugin build, isolated install/invocation, and independent five-axis audit pass without tracked pollution. Official standalone validators are unavailable only because their own local Python environment lacks PyYAML.
+- [x] Verify: 146 unittest cases, 17 evals, validator, SQLite-v4 benchmark, deterministic source/11-Plugin build, isolated install/invocation, and independent five-axis audit pass without tracked pollution. At that checkpoint the standalone validators lacked PyYAML; Task 29 later supplies it in an isolated validator-only environment.
 - [x] Submit: exact commits are pushed to `codex/daily-life-skills-pilot-2026-08-30`; stacked PR #11 targets `codex/pr8-campaign-corrections`, implementation HEAD `e290fdf` is `CLEAN` with passing Ubuntu/Windows CI, and no PR, tag, or Release is merged or created. The final documentation-only HEAD is rechecked before handoff.
 - Dependencies: Tasks 23–25 and no payment/login/high-risk authorization blocker.
 

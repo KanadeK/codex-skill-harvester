@@ -50,7 +50,7 @@ The repository has three deliberately separate layers:
 2. Capability Registry stores one canonical capability ID, seven-field fingerprint, facets, aliases, variants, merges, updates, decisions, and reactivation conditions.
 3. Published Skills stores only original, trigger-safe, installable, E2E-verified artifacts grouped into small user-task Plugins.
 
-Runtime observation, Evidence Pack, candidate, query/semantic batch, five-queue, decision, and checkpoint state has one authority: [state/runtime.db](../state/runtime.db), schema 4. There is no legacy JSON runtime fallback or dual write. Git remains authoritative for Skills, manifests, catalog snapshots, evals, compact reports, and release history.
+Runtime observation, Evidence Pack, candidate, query/semantic batch, five-queue, decision, and checkpoint state has one authority: [state/harvest.sqlite3](../state/harvest.sqlite3), schema 4. There is no legacy JSON runtime fallback or dual write. Git remains authoritative for Skills, manifests, catalog snapshots, evals, compact reports, and release history.
 
 The migration contract is documented in [ADR-002](decisions/0002-adopt-sqlite-runtime-store.md) and [schema-migrations.md](schema-migrations.md). Current data flow and responsibility boundaries are in [architecture.md](architecture.md), [spec.md](spec.md), and [plan-adoption-audit.md](plan-adoption-audit.md).
 

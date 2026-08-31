@@ -281,6 +281,20 @@ jobs:
         self.assertIn("archive-size | fail", INSPECTOR._render(archive_checks))
         self.assertIn("expanded-size | fail", INSPECTOR._render(expanded_checks))
 
+    def test_total_distribution_work_is_bounded_with_small_fixtures(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            pyproject, dist, workflow = create_fixture(root)
+            with mock.patch.object(INSPECTOR, "MAX_DISTRIBUTION_FILES", 1):
+                file_count_checks = INSPECTOR.inspect(pyproject, dist, workflow)
+            with mock.patch.object(INSPECTOR, "MAX_TOTAL_ARCHIVE_BYTES", 1):
+                total_bytes_checks = INSPECTOR.inspect(pyproject, dist, workflow)
+
+        self.assertIn("artifacts:file-count | fail", INSPECTOR._render(file_count_checks))
+        self.assertIn("files=2 limit=1", INSPECTOR._render(file_count_checks))
+        self.assertIn("artifacts:total-bytes | fail", INSPECTOR._render(total_bytes_checks))
+        self.assertIn("limit=1", INSPECTOR._render(total_bytes_checks))
+
     def test_reviewed_triggers_and_e2e_fixture_pass(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             report = run_eval_file(

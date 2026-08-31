@@ -15,6 +15,8 @@ from pathlib import Path, PurePosixPath
 MAX_ARCHIVE_BYTES = 512 * 1024 * 1024
 MAX_ARCHIVE_MEMBERS = 10_000
 MAX_EXPANDED_BYTES = 512 * 1024 * 1024
+MAX_DISTRIBUTION_FILES = 128
+MAX_TOTAL_ARCHIVE_BYTES = 1024 * 1024 * 1024
 MAX_METADATA_BYTES = 1024 * 1024
 MAX_RECORD_BYTES = 8 * 1024 * 1024
 
@@ -432,6 +434,30 @@ def inspect(pyproject: Path, dist: Path, workflow: Path | None) -> list[dict[str
     wheels = sorted(dist.glob("*.whl"))
     _check(checks, "artifacts:sdist-present", "pass" if sdists else "fail", f"sdists={len(sdists)}")
     _check(checks, "artifacts:wheel-present", "pass" if wheels else "fail", f"wheels={len(wheels)}")
+    artifacts = [*sdists, *wheels]
+    file_count_allowed = len(artifacts) <= MAX_DISTRIBUTION_FILES
+    _check(
+        checks,
+        "artifacts:file-count",
+        "pass" if file_count_allowed else "fail",
+        f"files={len(artifacts)} limit={MAX_DISTRIBUTION_FILES}",
+    )
+    if not file_count_allowed:
+        return checks
+    try:
+        total_archive_bytes = sum(path.stat().st_size for path in artifacts)
+    except OSError as error:
+        _check(checks, "artifacts:total-bytes", "fail", f"unreadable artifact: {error}")
+        return checks
+    total_bytes_allowed = total_archive_bytes <= MAX_TOTAL_ARCHIVE_BYTES
+    _check(
+        checks,
+        "artifacts:total-bytes",
+        "pass" if total_bytes_allowed else "fail",
+        f"bytes={total_archive_bytes} limit={MAX_TOTAL_ARCHIVE_BYTES}",
+    )
+    if not total_bytes_allowed:
+        return checks
     for path in sdists:
         _inspect_sdist(path, expected_name=normalized_name, expected_version=version, checks=checks)
     for path in wheels:

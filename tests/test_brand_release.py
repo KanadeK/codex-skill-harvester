@@ -91,6 +91,9 @@ class BrandReleaseTests(unittest.TestCase):
         engineering = (ROOT / "docs" / "engineering-status.md").read_text(
             encoding="utf-8"
         )
+        adoption = (ROOT / "docs" / "plan-adoption-audit.md").read_text(
+            encoding="utf-8"
+        )
 
         self.assertIn("## 0.2.0", changelog)
         for heading in ("### Added", "### Changed", "### Fixed", "### Security"):
@@ -100,6 +103,12 @@ class BrandReleaseTests(unittest.TestCase):
         self.assertIn("17 Skills", engineering)
         self.assertIn("11 Plugins", engineering)
         self.assertIn("63", engineering)
+        self.assertIn(
+            "[state/harvest.sqlite3](../state/harvest.sqlite3)", engineering
+        )
+        self.assertNotIn(
+            "SQLite schema 3 is the sole runtime authority", adoption
+        )
 
 
 if __name__ == "__main__":

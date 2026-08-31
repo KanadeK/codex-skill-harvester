@@ -182,7 +182,7 @@ None for the first vertical slice.
 
 ## PR #7 required repair: restore the dual-speed funnel
 
-The earlier Task 17/18 implementation conflated observations with candidates and its reported candidate yield is superseded. Preserve its acquired evidence; PR #7's repaired schema-2 separation is historical base work, while Phase 18–20 schema-3 content reports are the current production authority.
+The earlier Task 17/18 implementation conflated observations with candidates and its reported candidate yield is superseded. Preserve its acquired evidence; PR #7's repaired schema-2 separation and Phase 18–20 schema-3 reports are historical inputs, while the schema-4 SQLite store is the current runtime authority.
 
 ### Phase 15: separate evidence from candidate work
 

@@ -8,7 +8,7 @@ Use this reference after the deterministic checker. It is an original synthesis 
 - Require project name and version to agree across `pyproject.toml`, archive filenames, `PKG-INFO`, and wheel `METADATA`.
 - A modern sdist should contain one name-version root with `pyproject.toml` and `PKG-INFO`. Inspect member paths without extracting the archive.
 - A wheel should contain one matching `.dist-info` directory with `METADATA`, `WHEEL`, and `RECORD`. Compatibility tags are a support claim; compare them with the release's intended Python, ABI, and platform matrix.
-- Fail closed before expensive archive work: at most 512 MiB compressed bytes, 10,000 members, and 512 MiB declared expanded bytes per archive; read at most 1 MiB from `PKG-INFO`/`METADATA` and 8 MiB from `RECORD`. These are checker resource boundaries, not Python packaging format limits.
+- Fail closed before expensive archive work: inspect at most 128 distribution files and 1 GiB of aggregate archive bytes; per archive, allow at most 512 MiB compressed bytes, 10,000 members, and 512 MiB declared expanded bytes; read at most 1 MiB from `PKG-INFO`/`METADATA` and 8 MiB from `RECORD`. These are checker resource boundaries, not Python packaging format limits.
 - A structural pass does not prove that the package imports or behaves correctly. Record isolated local-wheel installation and an authorized smoke check separately when required.
 
 ## Publishing workflow gates

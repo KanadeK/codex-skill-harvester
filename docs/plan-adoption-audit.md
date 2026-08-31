@@ -9,7 +9,7 @@
 ## What is confirmed now
 
 - PR #6 is the scale-planning foundation; it is not the complete production line.
-- SQLite schema 3 is the sole runtime authority. It has separate observations, query/semantic batches, Evidence Packs, candidates, five queues, decisions, source utility, and run checkpoints. There is no JSON fallback, dual read, or dual write.
+- SQLite schema 4 is the sole runtime authority. It has separate observations, discovery hits, query/semantic batches, Evidence Packs, candidates, five queues, decisions, source utility, and run checkpoints. There is no JSON fallback, dual read, or dual write.
 - The current store preserves 462 observations, 117 Evidence Packs, and 113 reviewed candidates/decisions across 30 registered source cursors. PyPI package updates remain observations, not queue work. The current catalog has two internal Skills in two task-domain Plugins, and no candidate or semantic/query batch is pending.
 - A candidate exists only after Codex reads the actual cached evidence as untrusted data and imports an Evidence Pack with one user goal, inputs/outputs, non-obvious decisions, authority/license/risk judgment, adjacent capabilities, and the complete seven-field fingerprint. `workflow_signal` is only an optional non-authoritative hint.
 - Source trust and workflow authority are separate. An official registry or package feed may be authentic while remaining discovery-only. `official-gap` requires explicit operational workflow authority.
