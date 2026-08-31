@@ -301,3 +301,38 @@ Local content checkpoint: 20 scoped queries completed without query failure and 
 Local verification checkpoint: 146 tests, 17 eval files, the code-rebuildable Daily Life report, repository validator, SQLite benchmark, deterministic source/11-Plugin build, isolated archive installation, CLI invocation, and Plugin E2E pass. Independent review corrected the wet/electrical washer-fault boundary before the final run. Work remains only to commit/push, open the stacked PR, and wait for dual-platform CI.
 
 Remote checkpoint: PR #11 is open and `CLEAN`; implementation HEAD `e290fdf` passed Ubuntu in 23 seconds and Windows in 1 minute 51 seconds. PR #7 and PR #9 remain open, `main` and v0.1.1 remain unchanged, and the final documentation-only HEAD is rechecked before handoff.
+
+## v0.2.0 · 会过日子 Human Skills launch
+
+Remote baseline verified before this package: PR #7 is squash-merged to `main` at `2167dcb`; PR #11 is merged into PR #9; PR #9 remains open/dirty at `8d271f6` with green Ubuntu/Windows CI; v0.1.1 remains published. Branch `codex/v0.2.0-human-skills-release` starts from current main.
+
+### Phase 28: prove a clean integration baseline
+
+- [x] Fetch explicit remote refs and map the squash-induced PR #9 ancestry conflict.
+- [x] Apply only the net tree delta from main to PR #9 as integration commit `3c9e6ab`, excluding duplicate PR #7 history.
+- [x] Prove `HEAD^{tree}` and PR #9 head tree are both `764fe2f074b36a6c318b3d1655620699d5abc653`, with zero tree diff and a passing repository validator.
+
+### Phase 29: launch the bilingual public brand
+
+- [ ] Rewrite `README.md` as the Simplified-Chinese-first “会过日子 · Human Skills” homepage and preserve a full English `README.en.md`, with reciprocal language links and user-first examples/install flow.
+- [ ] Move engineering metrics and campaign history to `docs/engineering-status.md` without deleting evidence or historical reports.
+- [ ] Add bilingual `SKILLS.md` covering all 17 stable capabilities, user tasks, examples, safety boundaries, Plugin grouping, and release state without copying Skill bodies.
+- [ ] Update the three life Plugin UI manifests and repo marketplace display copy to Chinese-first bilingual metadata while keeping plugin IDs, Skill folders, and canonical capability IDs stable.
+- [ ] Add `CHANGELOG.md`, v0.2.0 release notes, and GitHub-facing description/topic metadata; keep copy in “upcoming release” state until remote publication succeeds.
+
+### Phase 30: version and close all launch gates
+
+- [ ] Make v0.2.0 the single release version across pyproject, builders, 11 Plugin manifests, marketplace, fixtures, archives, docs, and validation; preserve historical v0.1.1 tag/Release.
+- [ ] Create an isolated validator environment, install validator-only dependencies, and run official Skill validation for all 17 Skills plus official Plugin validation for all 11 Plugins. Missing validator/dependency access is a release blocker.
+- [ ] Add RED/GREEN checks for bilingual README/catalog/marketplace/version consistency and release asset inventory.
+- [ ] Run 146+ tests, 17 evals, repository validator, SQLite benchmark, migration/status/no-op, secrets/license/source checks, two deterministic builds, archive/checksum verification, isolated source install/CLI call, and all 11 Plugin installs/E2E.
+- [ ] Complete five-axis independent review and resolve every Required/Critical finding before submission.
+
+### Phase 31: PR, merge, publish, and remote verification
+
+- [ ] Open one main-based PR titled `release: launch 会过日子 Human Skills v0.2.0`, documenting PR #9 supersession, tree-equivalence proof, validation, rollback, 17 Skills/11 Plugins/63 scenarios, and release plan.
+- [ ] Wait for final Ubuntu/Windows CI, merge only when every local/remote gate is green, then read back main merge SHA and close PR #9 as superseded without deleting history.
+- [ ] Update repository description/topics, create annotated `v0.2.0`, publish bilingual non-draft/non-prerelease Release, upload source + 11 Plugin archives + `SHA256SUMS`, and enable immutable Release only through the verified existing workflow.
+- [ ] Re-download every published asset, verify checksums/targets/contributors/main CI/v0.1.1 preservation, install source and all Plugins from Release assets, and execute CLI plus critical Skill/E2E calls.
+
+Rollback: stop promotion and use a reviewed revert/fix PR for serious post-release issues. Never rewrite or delete the published tag/Release to conceal a defect.
