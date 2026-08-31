@@ -24,11 +24,20 @@ class BrandReleaseTests(unittest.TestCase):
         self.assertIn("不会替你完成物理动作", chinese)
         self.assertIn("[Skill 目录](SKILLS.md)", chinese)
         self.assertIn("[工程状态](docs/engineering-status.md)", chinese)
+        self.assertIn(
+            "[v0.2.0](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.2.0)",
+            chinese,
+        )
+        self.assertNotIn("当前公开稳定版仍是 [v0.1.1]", chinese)
 
         self.assertTrue(english.startswith("# Human Skills · 会过日子"))
         self.assertIn("[简体中文](README.md)", english)
         self.assertIn("AI has no hands", english)
         self.assertIn("[Skill Catalog](SKILLS.md)", english)
+        self.assertIn(
+            "[v0.2.0](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.2.0)",
+            english,
+        )
 
     def test_skill_catalog_covers_every_stable_capability(self) -> None:
         catalog = json.loads(
@@ -42,6 +51,8 @@ class BrandReleaseTests(unittest.TestCase):
         self.assertGreaterEqual(skill_catalog.count("示例提问"), 17)
         self.assertIn("发布状态", skill_catalog)
         self.assertIn("安全边界", skill_catalog)
+        self.assertNotIn("v0.2.0 candidate", skill_catalog)
+        self.assertGreaterEqual(skill_catalog.count("v0.2.0 published"), 16)
 
     def test_v020_is_the_single_current_release_version(self) -> None:
         project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
@@ -103,12 +114,29 @@ class BrandReleaseTests(unittest.TestCase):
         self.assertIn("17 Skills", engineering)
         self.assertIn("11 Plugins", engineering)
         self.assertIn("63", engineering)
+        self.assertIn("Released version: v0.2.0", engineering)
+        self.assertNotIn("Candidate version: v0.2.0", engineering)
         self.assertIn(
             "[state/harvest.sqlite3](../state/harvest.sqlite3)", engineering
         )
         self.assertNotIn(
             "SQLite schema 3 is the sole runtime authority", adoption
         )
+
+    def test_final_release_attestation_records_remote_publication(self) -> None:
+        paths = sorted((ROOT / "runs").glob("*-v0.2.0-attestation.json"))
+        self.assertEqual(len(paths), 1)
+        attestation = json.loads(paths[0].read_text(encoding="utf-8"))
+
+        self.assertEqual(attestation["report_type"], "release-attestation")
+        self.assertEqual(
+            attestation["release"]["tag_commit_sha"],
+            "ef4bd07bb1d5465ed1f26e7dfe478681c0193042",
+        )
+        self.assertTrue(attestation["release"]["immutable"])
+        self.assertEqual(len(attestation["release"]["assets"]), 13)
+        self.assertEqual(attestation["verification"]["tests"], 152)
+        self.assertEqual(attestation["verification"]["live_skill_result"], "complete")
 
 
 if __name__ == "__main__":

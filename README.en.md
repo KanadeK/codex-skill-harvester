@@ -22,7 +22,7 @@ Each Skill asks for facts that materially change the answer, then gives steps, s
 
 ## What is included
 
-The v0.2.0 candidate catalog contains 17 Skills distributed as 11 small Plugins organized by installation intent.
+The released [v0.2.0](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.2.0) catalog contains 17 Skills distributed as 11 small Plugins organized by installation intent.
 
 | Everyday-life Plugin | Scope |
 | --- | --- |
@@ -45,13 +45,13 @@ See the bilingual [Skill Catalog](SKILLS.md) for every stable capability ID, exa
 
 ## Install
 
-After v0.2.0 is published, add the repository marketplace:
+Starting with v0.2.0, add the repository marketplace:
 
     codex plugin marketplace add KanadeK/codex-skill-harvester --ref v0.2.0
 
 Then open the Plugins Directory in Codex or Work mode and install only the Plugin that matches your task. You do not need all 11.
 
-Until that Release exists, use the version actually listed on [GitHub Releases](https://github.com/KanadeK/codex-skill-harvester/releases). The current public stable version remains [v0.1.1](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.1.1).
+The current public stable version is [v0.2.0](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.2.0). Its immutable Release has 13 GitHub-attested assets, and the downloaded source plus all 11 Plugins passed isolated install/E2E verification. [v0.1.1](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.1.1) remains available as immutable history.
 
 ## Safety boundaries
 
