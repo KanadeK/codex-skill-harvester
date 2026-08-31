@@ -1,0 +1,458 @@
+{
+  "campaign_id": "first-high-throughput",
+  "canary_completed": true,
+  "canary_endpoints": 3,
+  "checkpoint": {
+    "completed_source_ids": [
+      "openai-build-skills",
+      "github-cli-release-view",
+      "pypi-updates",
+      "openai-build-plugins",
+      "openai-codex-releases",
+      "github-cli-repo-view",
+      "github-cli-pr-checks",
+      "github-cli-api",
+      "github-rest-releases",
+      "github-rest-repositories"
+    ],
+    "last_successful_run": "2026-08-29T13:55:27.992610Z",
+    "pending_source_ids": []
+  },
+  "metrics": {
+    "candidate_duplicates": 0,
+    "deep_reviews": {
+      "measured": false
+    },
+    "downloaded_bytes": 363165,
+    "failures": 0,
+    "l3_recalls": 0,
+    "normalized_candidates": 0,
+    "observation_duplicates": 0,
+    "observations_inserted": 100,
+    "pending_queue": 0,
+    "raw_observations": 100,
+    "runtime_store_bytes": 1302528,
+    "source_requests": 10,
+    "source_success_rate": 1.0,
+    "source_successes": 10,
+    "usage_credits": {
+      "measured": false
+    }
+  },
+  "planned_capacity_range": {
+    "actual_queries": [
+      1500,
+      3000
+    ],
+    "deep_reviews": [
+      400,
+      1000
+    ],
+    "endpoints": [
+      180,
+      260
+    ],
+    "normalized_candidates": [
+      4000,
+      12000
+    ],
+    "observations": [
+      80000,
+      250000
+    ]
+  },
+  "ramped": true,
+  "registered_endpoints": 10,
+  "report_type": "campaign",
+  "run_id": "2026-08-29T13-55-27.992601Z",
+  "runs": [
+    {
+      "campaign_phase": "canary",
+      "metrics": {
+        "candidate_duplicates": 0,
+        "deep_reviews": {
+          "measured": false
+        },
+        "downloaded_bytes": 10925,
+        "failures": 0,
+        "l3_recalls": 0,
+        "normalized_candidates": 0,
+        "observation_duplicates": 0,
+        "observations_inserted": 0,
+        "observations_staged": 0,
+        "raw_observations": 0,
+        "source_requests": 1,
+        "source_success_rate": 1.0,
+        "sources_succeeded": 1
+      },
+      "observations": 0,
+      "report_type": "scan",
+      "run_id": "2026-08-29T13-55-27.992601Z",
+      "schema_version": 2,
+      "sources": [
+        {
+          "downloaded_bytes": 10925,
+          "observations_staged": 0,
+          "raw_observations": 0,
+          "source_group": "openai-format-authority",
+          "source_id": "openai-build-skills",
+          "status": "unchanged_content",
+          "topic_id": "software.create.codex-skills",
+          "window_changed": false
+        }
+      ],
+      "status": "no_op",
+      "unresolved_issues": [],
+      "validations": []
+    },
+    {
+      "campaign_phase": "canary",
+      "metrics": {
+        "candidate_duplicates": 0,
+        "deep_reviews": {
+          "measured": false
+        },
+        "downloaded_bytes": 0,
+        "failures": 0,
+        "l3_recalls": 0,
+        "normalized_candidates": 0,
+        "observation_duplicates": 0,
+        "observations_inserted": 0,
+        "observations_staged": 0,
+        "raw_observations": 0,
+        "source_requests": 1,
+        "source_success_rate": 1.0,
+        "sources_succeeded": 1
+      },
+      "observations": 0,
+      "report_type": "scan",
+      "run_id": "2026-08-29T13-55-27.992602Z",
+      "schema_version": 2,
+      "sources": [
+        {
+          "downloaded_bytes": 0,
+          "observations_staged": 0,
+          "raw_observations": 0,
+          "source_group": "github-delivery",
+          "source_id": "github-cli-release-view",
+          "status": "not_modified",
+          "topic_id": "software.validate.github-delivery"
+        }
+      ],
+      "status": "no_op",
+      "unresolved_issues": [],
+      "validations": []
+    },
+    {
+      "campaign_phase": "canary",
+      "metrics": {
+        "candidate_duplicates": 0,
+        "deep_reviews": {
+          "measured": false
+        },
+        "downloaded_bytes": 32278,
+        "failures": 0,
+        "l3_recalls": 0,
+        "normalized_candidates": 0,
+        "observation_duplicates": 0,
+        "observations_inserted": 100,
+        "observations_staged": 100,
+        "raw_observations": 100,
+        "source_requests": 1,
+        "source_success_rate": 1.0,
+        "sources_succeeded": 1
+      },
+      "observations": 100,
+      "report_type": "scan",
+      "run_id": "2026-08-29T13-55-27.992603Z",
+      "schema_version": 2,
+      "sources": [
+        {
+          "downloaded_bytes": 32278,
+          "observations_staged": 100,
+          "raw_observations": 100,
+          "source_group": "python-packaging",
+          "source_id": "pypi-updates",
+          "status": "changed",
+          "topic_id": "software.publish.python-packaging",
+          "window_changed": true
+        }
+      ],
+      "status": "changed",
+      "unresolved_issues": [],
+      "validations": []
+    },
+    {
+      "campaign_phase": "ramp",
+      "metrics": {
+        "candidate_duplicates": 0,
+        "deep_reviews": {
+          "measured": false
+        },
+        "downloaded_bytes": 0,
+        "failures": 0,
+        "l3_recalls": 0,
+        "normalized_candidates": 0,
+        "observation_duplicates": 0,
+        "observations_inserted": 0,
+        "observations_staged": 0,
+        "raw_observations": 0,
+        "source_requests": 1,
+        "source_success_rate": 1.0,
+        "sources_succeeded": 1
+      },
+      "observations": 0,
+      "report_type": "scan",
+      "run_id": "2026-08-29T13-55-27.992604Z",
+      "schema_version": 2,
+      "sources": [
+        {
+          "downloaded_bytes": 0,
+          "observations_staged": 0,
+          "raw_observations": 0,
+          "source_group": "openai-format-authority",
+          "source_id": "openai-build-plugins",
+          "status": "not_modified",
+          "topic_id": "software.create.codex-skills"
+        }
+      ],
+      "status": "no_op",
+      "unresolved_issues": [],
+      "validations": []
+    },
+    {
+      "campaign_phase": "ramp",
+      "metrics": {
+        "candidate_duplicates": 0,
+        "deep_reviews": {
+          "measured": false
+        },
+        "downloaded_bytes": 0,
+        "failures": 0,
+        "l3_recalls": 0,
+        "normalized_candidates": 0,
+        "observation_duplicates": 0,
+        "observations_inserted": 0,
+        "observations_staged": 0,
+        "raw_observations": 0,
+        "source_requests": 1,
+        "source_success_rate": 1.0,
+        "sources_succeeded": 1
+      },
+      "observations": 0,
+      "report_type": "scan",
+      "run_id": "2026-08-29T13-55-27.992605Z",
+      "schema_version": 2,
+      "sources": [
+        {
+          "downloaded_bytes": 0,
+          "observations_staged": 0,
+          "raw_observations": 0,
+          "source_group": "openai-format-authority",
+          "source_id": "openai-codex-releases",
+          "status": "not_modified",
+          "topic_id": "software.create.codex-skills"
+        }
+      ],
+      "status": "no_op",
+      "unresolved_issues": [],
+      "validations": []
+    },
+    {
+      "campaign_phase": "ramp",
+      "metrics": {
+        "candidate_duplicates": 0,
+        "deep_reviews": {
+          "measured": false
+        },
+        "downloaded_bytes": 106644,
+        "failures": 0,
+        "l3_recalls": 0,
+        "normalized_candidates": 0,
+        "observation_duplicates": 0,
+        "observations_inserted": 0,
+        "observations_staged": 0,
+        "raw_observations": 0,
+        "source_requests": 1,
+        "source_success_rate": 1.0,
+        "sources_succeeded": 1
+      },
+      "observations": 0,
+      "report_type": "scan",
+      "run_id": "2026-08-29T13-55-27.992606Z",
+      "schema_version": 2,
+      "sources": [
+        {
+          "downloaded_bytes": 106644,
+          "observations_staged": 0,
+          "raw_observations": 0,
+          "source_group": "github-delivery",
+          "source_id": "github-cli-repo-view",
+          "status": "unchanged_content",
+          "topic_id": "software.validate.github-delivery",
+          "window_changed": false
+        }
+      ],
+      "status": "no_op",
+      "unresolved_issues": [],
+      "validations": []
+    },
+    {
+      "campaign_phase": "ramp",
+      "metrics": {
+        "candidate_duplicates": 0,
+        "deep_reviews": {
+          "measured": false
+        },
+        "downloaded_bytes": 101714,
+        "failures": 0,
+        "l3_recalls": 0,
+        "normalized_candidates": 0,
+        "observation_duplicates": 0,
+        "observations_inserted": 0,
+        "observations_staged": 0,
+        "raw_observations": 0,
+        "source_requests": 1,
+        "source_success_rate": 1.0,
+        "sources_succeeded": 1
+      },
+      "observations": 0,
+      "report_type": "scan",
+      "run_id": "2026-08-29T13-55-27.992607Z",
+      "schema_version": 2,
+      "sources": [
+        {
+          "downloaded_bytes": 101714,
+          "observations_staged": 0,
+          "raw_observations": 0,
+          "source_group": "github-delivery",
+          "source_id": "github-cli-pr-checks",
+          "status": "unchanged_content",
+          "topic_id": "software.validate.github-delivery",
+          "window_changed": false
+        }
+      ],
+      "status": "no_op",
+      "unresolved_issues": [],
+      "validations": []
+    },
+    {
+      "campaign_phase": "ramp",
+      "metrics": {
+        "candidate_duplicates": 0,
+        "deep_reviews": {
+          "measured": false
+        },
+        "downloaded_bytes": 111604,
+        "failures": 0,
+        "l3_recalls": 0,
+        "normalized_candidates": 0,
+        "observation_duplicates": 0,
+        "observations_inserted": 0,
+        "observations_staged": 0,
+        "raw_observations": 0,
+        "source_requests": 1,
+        "source_success_rate": 1.0,
+        "sources_succeeded": 1
+      },
+      "observations": 0,
+      "report_type": "scan",
+      "run_id": "2026-08-29T13-55-27.992608Z",
+      "schema_version": 2,
+      "sources": [
+        {
+          "downloaded_bytes": 111604,
+          "observations_staged": 0,
+          "raw_observations": 0,
+          "source_group": "github-delivery",
+          "source_id": "github-cli-api",
+          "status": "unchanged_content",
+          "topic_id": "software.validate.github-delivery",
+          "window_changed": false
+        }
+      ],
+      "status": "no_op",
+      "unresolved_issues": [],
+      "validations": []
+    },
+    {
+      "campaign_phase": "ramp",
+      "metrics": {
+        "candidate_duplicates": 0,
+        "deep_reviews": {
+          "measured": false
+        },
+        "downloaded_bytes": 0,
+        "failures": 0,
+        "l3_recalls": 0,
+        "normalized_candidates": 0,
+        "observation_duplicates": 0,
+        "observations_inserted": 0,
+        "observations_staged": 0,
+        "raw_observations": 0,
+        "source_requests": 1,
+        "source_success_rate": 1.0,
+        "sources_succeeded": 1
+      },
+      "observations": 0,
+      "report_type": "scan",
+      "run_id": "2026-08-29T13-55-27.992609Z",
+      "schema_version": 2,
+      "sources": [
+        {
+          "downloaded_bytes": 0,
+          "observations_staged": 0,
+          "raw_observations": 0,
+          "source_group": "github-delivery",
+          "source_id": "github-rest-releases",
+          "status": "not_modified",
+          "topic_id": "software.validate.github-delivery"
+        }
+      ],
+      "status": "no_op",
+      "unresolved_issues": [],
+      "validations": []
+    },
+    {
+      "campaign_phase": "ramp",
+      "metrics": {
+        "candidate_duplicates": 0,
+        "deep_reviews": {
+          "measured": false
+        },
+        "downloaded_bytes": 0,
+        "failures": 0,
+        "l3_recalls": 0,
+        "normalized_candidates": 0,
+        "observation_duplicates": 0,
+        "observations_inserted": 0,
+        "observations_staged": 0,
+        "raw_observations": 0,
+        "source_requests": 1,
+        "source_success_rate": 1.0,
+        "sources_succeeded": 1
+      },
+      "observations": 0,
+      "report_type": "scan",
+      "run_id": "2026-08-29T13-55-27.992610Z",
+      "schema_version": 2,
+      "sources": [
+        {
+          "downloaded_bytes": 0,
+          "observations_staged": 0,
+          "raw_observations": 0,
+          "source_group": "github-delivery",
+          "source_id": "github-rest-repositories",
+          "status": "not_modified",
+          "topic_id": "software.validate.github-delivery"
+        }
+      ],
+      "status": "no_op",
+      "unresolved_issues": [],
+      "validations": []
+    }
+  ],
+  "schema_version": 2,
+  "status": "changed",
+  "stop_reasons": []
+}

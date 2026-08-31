@@ -1,0 +1,45 @@
+{
+  "discoveries": 100,
+  "metrics": {
+    "candidates_enqueued": 100,
+    "discoveries_staged": 100,
+    "downloaded_bytes": 42198,
+    "exact_record_duplicates": 0,
+    "observations_seen": 100,
+    "source_success_rate": 1.0,
+    "sources_failed": 0,
+    "sources_selected": 3,
+    "sources_succeeded": 3,
+    "stage": "discovery"
+  },
+  "run_id": "2026-08-29T11-56-24.273178Z",
+  "schema_version": 1,
+  "sources": [
+    {
+      "discoveries": 0,
+      "downloaded_bytes": 10925,
+      "observations": 0,
+      "source_id": "openai-build-skills",
+      "status": "unchanged_content",
+      "window_changed": false
+    },
+    {
+      "discoveries": 0,
+      "downloaded_bytes": 0,
+      "observations": 0,
+      "source_id": "github-cli-release-view",
+      "status": "not_modified"
+    },
+    {
+      "discoveries": 100,
+      "downloaded_bytes": 31273,
+      "observations": 100,
+      "source_id": "pypi-updates",
+      "status": "changed",
+      "window_changed": false
+    }
+  ],
+  "status": "changed",
+  "unresolved_issues": [],
+  "validations": []
+}

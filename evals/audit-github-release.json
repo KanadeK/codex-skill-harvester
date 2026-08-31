@@ -56,9 +56,11 @@
     }
   ],
   "end_to_end": {
+    "kind": "github-release-snapshot",
+    "script": "plugins/github-release-evidence/skills/audit-github-release/scripts/check_snapshot.py",
     "snapshot": "evals/fixtures/complete-release-snapshot.json",
     "expected_exit_code": 0,
     "expected_result": "complete",
-    "expected_gates": 9
+    "expected_gates": 10
   }
 }

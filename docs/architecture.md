@@ -10,8 +10,8 @@ Users install small task-domain Plugins or Collections. They do not install the 
 
 | Layer | Owns | Does not own | Current implementation | Scale target |
 | --- | --- | --- | --- | --- |
-| Evidence/Discovery | Source identity, cursor, revision, trust, license, necessary facts, evidence hash, exact dedupe | Semantic approval, copied third-party bodies, published instructions | `sources/registry.json`, `state/harvest-state.json`, `candidates/inbox/*.json`, temporary raw responses | Partitioned evidence metadata with per-source cursors; indexed storage only after a trigger |
-| Capability Registry | Canonical id, fingerprint, family, facets, aliases, variants, merge/update history, non-promotion rationale and reactivation conditions | Plugin installation layout as identity, raw pages | `catalog/capabilities.json`, `candidates/reviewed/*.json`, `decisions/records/*.json` | Indexed queue and immutable decision log with a rebuildable semantic index |
+| Evidence/Discovery | Source identity, cursor, revision, trust, license, necessary facts, evidence hash, exact dedupe | Semantic approval, copied third-party bodies, published instructions | `sources/registry.json`, `state/harvest.sqlite3`, temporary raw responses | Partitioned evidence metadata with per-source cursors; indexed storage only after a measured need |
+| Capability Registry | Canonical id, fingerprint, family, facets, aliases, variants, merge/update history, non-promotion rationale and reactivation conditions | Plugin installation layout as identity, raw pages | Git catalog plus SQLite runtime decision/queue records | Indexed queue and immutable decision log with a rebuildable semantic index |
 | Published Skills | Original validated Skill bodies, scripts, evals, Plugin/Collection manifests | Discovery noise or every candidate | `plugins/`, `.agents/plugins/marketplace.json`, `evals/` | Curated, task-domain Plugins containing a bounded set of coherent Skills |
 
 ## Data flow
@@ -20,12 +20,21 @@ Users install small task-domain Plugins or Collections. They do not install the 
 registered sources
       |
       v
-bounded fetch -> temporary raw body -> normalized evidence metadata
+bounded fetch -> temporary raw body -> observation/evidence metadata
       |                                      |
-      | exact hash / source cursor           v
-      +------------------------------> discovery queue
+      | source cursor + L0/L1 dedupe         v
+      +-----------------------> resumable Codex content review
                                              |
-                                      budgeted Codex review
+                                    original Evidence Pack
+                                             |
+                               seven-field candidate fingerprint
+                                             |
+                                      L2 exact fingerprint +
+                                      L3 bounded recall
+                                             |
+                                      five candidate queues
+                                             |
+                                      budgeted L4 review
                                              |
                     +------------------------+----------------------+
                     |                        |                      |
@@ -45,7 +54,8 @@ Deterministic code owns fetching, exact hashes, cursors, persistence, schema val
 ## Invariants
 
 - External content is untrusted data. Raw bodies remain temporary and downloaded scripts are never executed.
-- A successful selected scan commits all selected source cursors and queue records atomically; a failed selection advances none.
+- A successful scan selection commits source cursors and observations atomically; only a later imported Evidence Pack can create candidates. Campaigns run one source per checkpoint so a later source failure retains earlier successful cursors.
+- Trust identifies evidence provenance; only content-reviewed operational workflow authority can place a normalized candidate in `official-gap`. Package/registry feeds remain observations unless high-trust workflow evidence corroborates them.
 - Every capability has one immutable canonical `id`. Plugin id, Skill directory, display name, aliases, facets, and variants may change without rewriting that id.
 - Exact byte equality is only duplicate detection. Capability equivalence uses the full fingerprint and reviewed evidence.
 - `not_promoted` is a reversible registry decision, not deletion. Provenance, rationale, and a reactivation condition remain queryable.
@@ -54,13 +64,12 @@ Deterministic code owns fetching, exact hashes, cursors, persistence, schema val
 
 ## Incremental, sharded, and recoverable execution
 
-The current backend is intentionally simple and Git-reviewable. Each source has its own logical cursor, each discovery and decision has a stable id, and each run is independently reportable. Selection by source already provides a transactional shard.
+The current backend is intentionally local-first and single-writer. Each source has its own logical cursor, each discovery and decision has a stable id, and each run is independently reportable. Selection by source already provides a transactional shard.
 
-Before a storage migration, bounded review pages prevent one round from attempting the complete queue. High-trust sources are checked every scheduled cycle; discovery queries rotate by topic once there is more than one discovery query. Each rotation owns its cursor and next-due time.
+Bounded review pages prevent one round from attempting the complete queue. High-trust sources are checked every scheduled cycle; 21 current Domain × Intent queries rotate through persisted batches. Failed items remain in their batch, completed items do not replay inside the same explicit cycle, and the next cycle receives the saved continuation cursor instead of treating the query as permanently finished.
 
-After a measured migration trigger:
+After a measured need beyond the SQLite envelope:
 
-- SQLite becomes the local-first operational store for cursors, exact hashes, queue priority, canonical capabilities, aliases, and decision links.
 - Parquet may hold cold evidence metadata partitioned by source and observation month when analytical scans justify it.
 - Git continues to hold schemas, source definitions, taxonomy, summaries, published Skills, evals, and migration manifests.
 - Any semantic/vector index is derived and can be rebuilt without losing authority.

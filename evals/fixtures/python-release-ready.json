@@ -1,0 +1,5 @@
+{
+  "project_name": "sample-pkg",
+  "version": "1.2.3",
+  "workflow": "name: publish\njobs:\n  build:\n    steps:\n      - run: python -m build\n  publish:\n    environment: pypi\n    permissions:\n      id-token: write\n    steps:\n      - uses: pypa/gh-action-pypi-publish@release/v1\n"
+}

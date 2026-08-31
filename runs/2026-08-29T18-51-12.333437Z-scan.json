@@ -1,0 +1,38 @@
+{
+  "metrics": {
+    "candidate_duplicates": 0,
+    "deep_reviews": {
+      "measured": false
+    },
+    "downloaded_bytes": 2672,
+    "failures": 0,
+    "l3_recalls": 0,
+    "normalized_candidates": 0,
+    "observation_duplicates": 0,
+    "observations_inserted": 1,
+    "observations_staged": 1,
+    "raw_observations": 1,
+    "source_requests": 1,
+    "source_success_rate": 1.0,
+    "sources_succeeded": 1
+  },
+  "observations": 1,
+  "report_type": "scan",
+  "run_id": "2026-08-29T18-51-12.333437Z",
+  "schema_version": 2,
+  "sources": [
+    {
+      "downloaded_bytes": 2672,
+      "observations_staged": 1,
+      "raw_observations": 1,
+      "source_group": "python-packaging",
+      "source_id": "pypa-single-source-version",
+      "status": "changed",
+      "topic_id": "software.publish.python-packaging",
+      "window_changed": false
+    }
+  ],
+  "status": "changed",
+  "unresolved_issues": [],
+  "validations": []
+}

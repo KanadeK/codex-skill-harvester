@@ -9,8 +9,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from skill_harvester.decisions import DecisionError, apply_decision
+from skill_harvester.runtime_store import create_empty_runtime, open_runtime_store
 
-from _support import read_json
+from _support import read_json, write_runtime_discovery
 
 
 FINGERPRINT = {
@@ -58,6 +59,7 @@ def create_decision(root: Path, *, reviewed_by: str = "codex") -> Path:
                     "adapter": "document",
                     "url": "https://cli.github.com/manual/gh_release_view",
                     "trust": "official",
+                    "tier": "T1",
                     "authority": "vendor-docs",
                     "license": {"status": "known", "identifier": "MIT"},
                 },
@@ -66,15 +68,33 @@ def create_decision(root: Path, *, reviewed_by: str = "codex") -> Path:
                     "adapter": "document",
                     "url": "https://docs.github.com/en/rest/releases/releases",
                     "trust": "official",
+                    "tier": "T1",
                     "authority": "vendor-docs",
                     "license": {"status": "facts-only", "identifier": "CC-BY-4.0"},
                 },
             ],
         },
     )
-    write_json(
-        root / "candidates" / "inbox" / f"{candidate_id}.json",
-        {"schema_version": 1, "id": candidate_id, "review_status": "pending"},
+    create_empty_runtime(root)
+    write_runtime_discovery(
+        root,
+        {
+                "schema_version": 1,
+                "id": candidate_id,
+                "source_id": "github-cli-release-view",
+                "source_revision": "fixture-v1",
+                "observed_at": "2026-08-27T07:00:00Z",
+                "title": "Fixture source candidate",
+                "canonical_url": "https://cli.github.com/manual/gh_release_view",
+                "evidence_sha256": "a" * 64,
+                "trust": "official",
+                "authority": "vendor-docs",
+                "license": {"status": "known", "identifier": "MIT"},
+                "extracted_facts": [],
+                "review_status": "pending",
+                "fingerprint": FINGERPRINT,
+            },
+        queue="official-gap",
     )
     decision = {
         "schema_version": 1,
@@ -161,12 +181,10 @@ class ApplyDecisionTests(unittest.TestCase):
                 catalog["internal"][0]["id"],
                 "github-release-evidence:audit-github-release",
             )
-            records = list((root / "decisions" / "records").glob("*.json"))
-            self.assertEqual(len(records), 1)
-            self.assertEqual(read_json(records[0])["outcome"], "create")
-            discovery = read_json(
-                root / "candidates" / "inbox" / "real-source-candidate.json"
-            )
+            with open_runtime_store(root) as store:
+                self.assertEqual(store.decision_count(), 1)
+                discovery = store.candidate("real-source-candidate")
+                self.assertEqual(list(store.decisions())[0]["outcome"], "create")
             self.assertEqual(discovery["review_status"], "applied")
             self.assertEqual(result["outcome"], "create")
 
@@ -218,7 +236,8 @@ class ApplyDecisionTests(unittest.TestCase):
             with self.assertRaisesRegex(DecisionError, "reactivation"):
                 apply_decision(root, decision_path)
 
-            self.assertFalse((root / "decisions").exists())
+            with open_runtime_store(root) as store:
+                self.assertEqual(store.decision_count(), 0)
 
     def test_schema_two_non_promotion_is_retained_without_publication(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -245,9 +264,8 @@ class ApplyDecisionTests(unittest.TestCase):
                 decision["reactivation_conditions"],
             )
             self.assertFalse((root / "plugins").exists())
-            discovery = read_json(
-                root / "candidates" / "inbox" / "real-source-candidate.json"
-            )
+            with open_runtime_store(root) as store:
+                discovery = store.candidate("real-source-candidate")
             self.assertEqual(discovery["decision_outcome"], "not_promoted")
 
     def test_schema_two_canonical_id_is_independent_of_packaging(self) -> None:
@@ -282,9 +300,25 @@ class ApplyDecisionTests(unittest.TestCase):
             )
 
             candidate_id = "changed-source-candidate"
-            write_json(
-                root / "candidates" / "inbox" / f"{candidate_id}.json",
-                {"schema_version": 1, "id": candidate_id, "review_status": "pending"},
+            write_runtime_discovery(
+                root,
+                {
+                        "schema_version": 1,
+                        "id": candidate_id,
+                        "source_id": "github-cli-release-view",
+                        "source_revision": "fixture-v2",
+                        "observed_at": "2026-08-27T08:00:00Z",
+                        "title": "Changed fixture candidate",
+                        "canonical_url": "https://cli.github.com/manual/gh_release_view?changed=1",
+                        "evidence_sha256": "b" * 64,
+                        "trust": "official",
+                        "authority": "vendor-docs",
+                        "license": {"status": "known", "identifier": "MIT"},
+                        "extracted_facts": [],
+                        "review_status": "pending",
+                        "fingerprint": FINGERPRINT,
+                    },
+                queue="official-gap",
             )
             update = read_json(create_path)
             update["candidate_id"] = candidate_id

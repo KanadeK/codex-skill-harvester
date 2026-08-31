@@ -8,15 +8,24 @@ Volume is a capacity trigger, not a publication KPI. Every phase retains the sam
 - Normalize deletion-like terminology to `not_promoted`.
 - Bound review batches and add continuation.
 - Add stage-owned metrics, storage inventory, projections, and migration triggers.
-- Keep Git-JSON and runtime dependencies unchanged.
+- Keep the Git-native published catalog and artifacts unchanged; runtime lifecycle has moved to SQLite after the measured file-traversal bottleneck.
 
 Exit: contracts validate, benchmark is reproducible, CI is green, and no broad scan was run.
 
-## Phase B: larger Git-native operation
+## Current work package: content-driven production slice
 
-Trigger: queue growth is material but below storage thresholds.
+- Keep PR #7 as the deterministic stacked base and reserve `v0.2.0` without issuing it.
+- Persist content/query work in SQLite schema 3, make source-level workflow hints non-authoritative, and require Codex-reviewed Evidence Packs before candidate creation.
+- Exercise 21 Domain × Intent queries, 26 executable endpoints, resumable failures, three semantic batches, L2/L3, L4, original synthesis, evals, and no-op replay in one real slice.
+- Submit one new Python package-delivery Skill and one GitHub release-evidence update for review without merging either PR or publishing a Release.
 
-- Add discovery-query topics and a round-robin cursor for each.
+Exit: the stacked PR is reviewable with code-generated metrics, all local/remote gates, and zero pending query, semantic, or candidate work. Projected campaign ranges remain capacity direction, not completion claims.
+
+## Phase B: larger SQLite-backed operation
+
+Trigger: the current 26-endpoint/21-query slice remains stable, its stacked change is accepted in the approved merge order, and a new explicit campaign cycle is opened. Ordinary inventory expansion inside the existing stop-loss policy does not require a separate volume approval.
+
+- Expand the existing Topic Bank and persisted query batches from measured source utility; do not replay completed queries inside one cycle, and start each later explicit cycle from its saved continuation cursor.
 - Check all high-trust sources each cycle; rotate discovery topics under explicit source/review budgets.
 - Calculate due-for-review from volatility and last authoritative review.
 - Record review duration/token/cost only when an authoritative usage feed exists.
@@ -24,14 +33,14 @@ Trigger: queue growth is material but below storage thresholds.
 
 Exit: large queues are bounded, prioritized, resumable, and observable without changing storage authority.
 
-## Phase C: indexed local-first registry
+## Phase C: concurrent local-first registry
 
-Trigger: a policy threshold is crossed and a benchmark confirms file traversal or whole-state rewrites are limiting.
+Trigger: measured single-writer queue latency or campaign backlog exceeds the current SQLite execution envelope.
 
-- Migrate cursors, hashes, queue, capability links, aliases, and decision indexes to SQLite.
+- Operate the existing SQLite authority; add worker claims only after measured concurrent-writer demand.
 - Keep schemas, taxonomy, published Skills, evals, and review summaries in Git.
-- Provide deterministic import/export and side-by-side validation.
-- Add worker claims only if parallel writers are actually required.
+- Migrate in one validated write/swap slice with one runtime authority; do not retain side-by-side readers or writers.
+- Add worker claims only if parallel writers are actually required and lease/recovery behavior is tested.
 
 Exit: old and new backend fixtures produce equivalent cursors, pages, canonical ids, and decisions.
 

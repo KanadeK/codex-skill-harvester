@@ -10,6 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from skill_harvester.validation import ValidationError, validate_repository
+from skill_harvester.runtime_store import open_runtime_store
 
 
 class RepositoryValidationTests(unittest.TestCase):
@@ -37,8 +38,9 @@ class RepositoryValidationTests(unittest.TestCase):
         self.assertIn("contents: write", workflow)
         self.assertIn("pull-requests: write", workflow)
         self.assertIn("actions: write", workflow)
-        self.assertIn("python -m skill_harvester scan --root .", workflow)
-        self.assertIn("git add -- state/harvest-state.json candidates/inbox runs", workflow)
+        self.assertIn("python -m skill_harvester campaign --root . --ramp", workflow)
+        self.assertNotIn("python -m skill_harvester scan --root .", workflow)
+        self.assertIn("git add -- state/harvest.sqlite3 runs", workflow)
         self.assertIn('gh workflow run ci.yml --ref "$branch"', workflow)
         self.assertNotIn("skill_harvester apply", workflow)
 
@@ -56,13 +58,42 @@ class RepositoryValidationTests(unittest.TestCase):
 
         report = validate_repository(root)
 
-        self.assertEqual(report["plugins"], 1)
-        self.assertEqual(report["skills"], 1)
-        self.assertEqual(report["internal_capabilities"], 1)
+        self.assertEqual(report["plugins"], 2)
+        self.assertEqual(report["skills"], 2)
+        self.assertEqual(report["internal_capabilities"], 2)
         self.assertEqual(report["taxonomy_version"], "1.0.0")
-        self.assertEqual(report["scale_backend"], "git-json-v1")
+        self.assertEqual(report["scale_backend"], "sqlite-v3")
+        self.assertEqual(report["evidence_packs"], 117)
+        self.assertEqual(report["topic_queries"], 21)
         self.assertEqual(report["migration_triggers"], [])
         self.assertEqual(report["secrets_found"], 0)
+
+    def test_existing_feed_noise_is_preserved_as_observations_not_queue_work(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        with open_runtime_store(root) as store:
+            pypi_observations = store.connection.execute(
+                "SELECT COUNT(*) FROM observations WHERE source_id = ?",
+                ("pypi-updates",),
+            ).fetchone()[0]
+            pypi_candidates = store.connection.execute(
+                "SELECT COUNT(*) FROM candidates WHERE source_id = ?",
+                ("pypi-updates",),
+            ).fetchone()[0]
+            release_observations = store.connection.execute(
+                "SELECT COUNT(*) FROM observations WHERE source_id = ?",
+                ("openai-codex-releases",),
+            ).fetchone()[0]
+            release_candidates = store.connection.execute(
+                "SELECT COUNT(*) FROM candidates WHERE source_id = ?",
+                ("openai-codex-releases",),
+            ).fetchone()[0]
+            pending_candidates = store.candidate_status_counts().get("pending", 0)
+
+        self.assertEqual(pypi_observations, 326)
+        self.assertEqual(pypi_candidates, 0)
+        self.assertEqual(release_observations, 20)
+        self.assertEqual(release_candidates, 11)
+        self.assertEqual(pending_candidates, 0)
 
     def test_detects_generated_skill_drift(self) -> None:
         source = Path(__file__).resolve().parents[1]
@@ -121,6 +152,157 @@ class RepositoryValidationTests(unittest.TestCase):
 
             with self.assertRaisesRegex(ValidationError, "review batch"):
                 validate_repository(root)
+
+    def test_rejects_a_second_legacy_runtime_authority(self) -> None:
+        source = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            shutil.copytree(
+                source,
+                root,
+                ignore=shutil.ignore_patterns(".git", "dist", "__pycache__", "*.pyc"),
+            )
+            (root / "state" / "harvest-state.json").write_text(
+                "{}\n", encoding="utf-8"
+            )
+
+            with self.assertRaisesRegex(ValidationError, "legacy runtime authority"):
+                validate_repository(root)
+
+    def test_rejects_forged_campaign_stage_metrics(self) -> None:
+        source = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            shutil.copytree(
+                source,
+                root,
+                ignore=shutil.ignore_patterns(".git", "dist", "__pycache__", "*.pyc"),
+            )
+            report = {
+                "schema_version": 2,
+                "report_type": "campaign",
+                "campaign_id": "first-high-throughput",
+                "run_id": "forged",
+                "status": "checkpoint",
+                "stop_reasons": ["test checkpoint"],
+                "checkpoint": {
+                    "completed_source_ids": [],
+                    "pending_source_ids": [],
+                    "last_successful_run": None,
+                },
+                "metrics": {
+                    "source_requests": 0,
+                    "source_successes": 0,
+                    "source_success_rate": 0.0,
+                    "failures": 0,
+                    "raw_observations": 0,
+                    "observations_inserted": 0,
+                    "observation_duplicates": 0,
+                    "normalized_candidates": 1,
+                    "candidate_duplicates": 0,
+                    "pending_queue": 0,
+                    "l3_recalls": 0,
+                    "downloaded_bytes": 0,
+                    "runtime_store_bytes": 1,
+                    "deep_reviews": {"measured": False},
+                    "usage_credits": {"measured": False},
+                },
+                "runs": [],
+            }
+            path = root / "runs" / "forged-campaign.json"
+            path.write_text(json.dumps(report), encoding="utf-8")
+
+            with self.assertRaisesRegex(
+                ValidationError, "normalized_candidates does not match"
+            ):
+                validate_repository(root)
+
+            report["metrics"]["normalized_candidates"] = 0
+            report["metrics"]["deep_reviews"] = 0
+            path.write_text(json.dumps(report), encoding="utf-8")
+            with self.assertRaisesRegex(ValidationError, "deep_reviews"):
+                validate_repository(root)
+
+    def test_rejects_campaign_source_context_drift(self) -> None:
+        source = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            shutil.copytree(
+                source,
+                root,
+                ignore=shutil.ignore_patterns(".git", "dist", "__pycache__", "*.pyc"),
+            )
+            path = next((root / "runs").glob("*-campaign.json"))
+            report = json.loads(path.read_text(encoding="utf-8"))
+            report["runs"][0]["sources"][0]["source_group"] = "wrong-group"
+            path.write_text(json.dumps(report), encoding="utf-8")
+
+            with self.assertRaisesRegex(ValidationError, "source context drift"):
+                validate_repository(root)
+
+    def test_rejects_forged_content_production_counts(self) -> None:
+        source = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            shutil.copytree(
+                source,
+                root,
+                ignore=shutil.ignore_patterns(".git", "dist", "__pycache__", "*.pyc"),
+            )
+            path = next((root / "runs").glob("*-production.json"))
+            report = json.loads(path.read_text(encoding="utf-8"))
+            report["semantic"]["normalized_candidates"] += 1
+            path.write_text(json.dumps(report), encoding="utf-8")
+
+            with self.assertRaisesRegex(ValidationError, "authoritative inputs"):
+                validate_repository(root)
+
+            report["semantic"]["normalized_candidates"] -= 1
+            report["l4"]["deep_reviews"]["count"] += 1
+            path.write_text(json.dumps(report), encoding="utf-8")
+            with self.assertRaisesRegex(ValidationError, "authoritative inputs"):
+                validate_repository(root)
+
+    def test_accepts_historical_partial_semantic_checkpoint_after_batch_completion(self) -> None:
+        source = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            shutil.copytree(
+                source,
+                root,
+                ignore=shutil.ignore_patterns(
+                    ".git", "dist", ".harvester-cache", "__pycache__", "*.pyc"
+                ),
+            )
+            final_report_path = sorted((root / "runs").glob("*-semantic.json"))[0]
+            final_report = json.loads(final_report_path.read_text(encoding="utf-8"))
+            with open_runtime_store(root) as store:
+                pending_at_start = len(
+                    store.semantic_batch_items(final_report["batch_id"])
+                )
+            historical = {
+                "schema_version": 1,
+                "report_type": "semantic-review",
+                "batch_id": final_report["batch_id"],
+                "reviewed_at": "2026-08-29T18:24:00Z",
+                "status": "pending",
+                "reviewed_observations": 0,
+                "pending_observations": pending_at_start,
+                "evidence_packs": 0,
+                "not_promoted": 0,
+                "normalized_candidates": 0,
+                "l2_matches": 0,
+                "l3_recalls": 0,
+                "deep_reviews": {"measured": False},
+                "usage_credits": {"measured": False},
+            }
+            (root / "runs" / "2026-08-29T18-24-00Z-semantic.json").write_text(
+                json.dumps(historical), encoding="utf-8"
+            )
+
+            report = validate_repository(root)
+
+            self.assertEqual(report["evidence_packs"], 117)
 
 
 if __name__ == "__main__":

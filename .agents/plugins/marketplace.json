@@ -15,6 +15,18 @@
         "path": "./plugins/github-release-evidence",
         "source": "local"
       }
+    },
+    {
+      "category": "Developer Tools",
+      "name": "python-package-delivery",
+      "policy": {
+        "authentication": "ON_INSTALL",
+        "installation": "AVAILABLE"
+      },
+      "source": {
+        "path": "./plugins/python-package-delivery",
+        "source": "local"
+      }
     }
   ]
 }

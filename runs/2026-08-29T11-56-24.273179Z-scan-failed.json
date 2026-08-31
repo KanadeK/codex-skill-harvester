@@ -1,0 +1,29 @@
+{
+  "discoveries": 0,
+  "error": "SourceFetchError: source returned HTTP 403",
+  "failed_source_id": "openai-plugin-catalog",
+  "metrics": {
+    "candidates_enqueued": 0,
+    "discoveries_staged": 0,
+    "downloaded_bytes": 0,
+    "exact_record_duplicates": 0,
+    "observations_seen": 0,
+    "source_success_rate": 0.125,
+    "sources_failed": 1,
+    "sources_selected": 8,
+    "sources_succeeded": 1,
+    "stage": "discovery"
+  },
+  "run_id": "2026-08-29T11-56-24.273179Z",
+  "schema_version": 1,
+  "sources": [
+    {
+      "discoveries": 0,
+      "downloaded_bytes": 0,
+      "observations": 0,
+      "source_id": "openai-build-plugins",
+      "status": "not_modified"
+    }
+  ],
+  "status": "failed"
+}

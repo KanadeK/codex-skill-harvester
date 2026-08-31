@@ -1,51 +1,30 @@
 from __future__ import annotations
 
 import re
-import unicodedata
 from pathlib import Path, PurePosixPath
 from typing import Any
 
 from .io import atomic_write_json, atomic_write_text, canonical_json_bytes, load_json, sha256_bytes
+from .fingerprints import (
+    FINGERPRINT_FIELDS,
+    FingerprintError,
+    normalize_fingerprint as _normalize_fingerprint,
+    recall_capabilities as _recall_capabilities,
+)
+from .runtime_store import open_runtime_store
 from .sources import load_registry
 from .taxonomy import TaxonomyError, validate_catalog_taxonomy, validate_classification
-
-
-FINGERPRINT_FIELDS = (
-    "goal",
-    "triggers",
-    "inputs",
-    "outputs",
-    "tools",
-    "side_effects",
-    "platforms",
-)
 
 
 class DecisionError(ValueError):
     pass
 
 
-def _normalized_text(value: str) -> str:
-    return " ".join(unicodedata.normalize("NFKC", value).casefold().split())
-
-
 def normalize_fingerprint(value: Any) -> dict[str, Any]:
-    if not isinstance(value, dict):
-        raise DecisionError("fingerprint must be an object")
-    normalized: dict[str, Any] = {}
-    for field in FINGERPRINT_FIELDS:
-        field_value = value.get(field)
-        if field == "goal":
-            if not isinstance(field_value, str) or not field_value.strip():
-                raise DecisionError("fingerprint goal must be a non-empty string")
-            normalized[field] = _normalized_text(field_value)
-            continue
-        if not isinstance(field_value, list) or not field_value:
-            raise DecisionError(f"fingerprint {field} must be a non-empty list")
-        if any(not isinstance(item, str) or not item.strip() for item in field_value):
-            raise DecisionError(f"fingerprint {field} values must be non-empty strings")
-        normalized[field] = sorted({_normalized_text(item) for item in field_value})
-    return normalized
+    try:
+        return _normalize_fingerprint(value)
+    except FingerprintError as error:
+        raise DecisionError(str(error)) from error
 
 
 def bundle_hash(artifact: Any) -> str:
@@ -111,6 +90,13 @@ def recommend_decision(candidate: Any, catalog: Any) -> dict[str, Any]:
             "artifact_sha256": artifact_sha256,
         }
     return {"outcome": "create_new", "matches": [], "artifact_sha256": artifact_sha256}
+
+
+def recall_capabilities(fingerprint: Any, catalog: Any, *, limit: int = 30) -> list[dict[str, Any]]:
+    try:
+        return _recall_capabilities(fingerprint, catalog, limit=limit)
+    except FingerprintError as error:
+        raise DecisionError(str(error)) from error
 
 
 def _kebab(value: Any, label: str) -> str:
@@ -356,9 +342,12 @@ def _validate_source_refs(root: Path, source_refs: list[str], *, require_officia
 
 def apply_decision(root: Path, decision_path: Path) -> dict[str, Any]:
     decision = _validate_decision(load_json(decision_path))
-    discovery_path = root / "candidates" / "inbox" / f"{decision['candidate_id']}.json"
-    discovery = load_json(discovery_path)
-    if not isinstance(discovery, dict) or discovery.get("id") != decision["candidate_id"]:
+    with open_runtime_store(root) as store:
+        try:
+            discovery = store.candidate(decision["candidate_id"])
+        except ValueError as error:
+            raise DecisionError("decision candidate_id must name a runtime discovery") from error
+    if discovery.get("id") != decision["candidate_id"]:
         raise DecisionError("decision candidate_id must name an inbox discovery")
 
     catalog = _catalog(root)
@@ -495,11 +484,6 @@ def apply_decision(root: Path, decision_path: Path) -> dict[str, Any]:
     }
     if outcome == "not_promoted":
         record["reactivation_conditions"] = decision["reactivation_conditions"]
-    record_name = f"{decision['reviewed_at'].replace(':', '-')}-{decision['candidate_id']}.json"
-    record_path = root / "decisions" / "records" / record_name
-    atomic_write_json(record_path, record)
-    discovery["review_status"] = "applied"
-    discovery["decision_outcome"] = outcome
-    discovery["decision_record"] = record_path.relative_to(root).as_posix()
-    atomic_write_json(discovery_path, discovery)
+    with open_runtime_store(root) as store:
+        store.record_decision(decision["candidate_id"], record)
     return record

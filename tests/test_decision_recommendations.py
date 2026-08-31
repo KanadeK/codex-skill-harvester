@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from skill_harvester.decisions import bundle_hash, recommend_decision
+from skill_harvester.decisions import bundle_hash, recall_capabilities, recommend_decision
 
 
 RELEASE_FINGERPRINT = {
@@ -147,6 +147,15 @@ class DecisionRecommendationTests(unittest.TestCase):
 
         self.assertEqual(recommendation["outcome"], "create_new")
         self.assertEqual(recommendation["matches"], [])
+
+    def test_l3_recall_is_deterministic_bounded_and_never_a_decision(self) -> None:
+        recalled = recall_capabilities(RELEASE_FINGERPRINT, catalog(), limit=1)
+
+        self.assertEqual(len(recalled), 1)
+        self.assertEqual(
+            recalled[0]["id"], "github-release-evidence:audit-github-release"
+        )
+        self.assertGreater(recalled[0]["score"], 0)
 
 
 if __name__ == "__main__":

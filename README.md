@@ -8,7 +8,9 @@ Codex Skill Harvester incrementally turns changed, authoritative public workflow
 
 It is deliberately not a Skill mirror. Deterministic Python owns fetching, change detection, exact deduplication, state, validation, and packaging. Codex owns semantic comparison and the decision to not promote, merge, update, or create.
 
-The current unreleased scale foundation keeps the Git-JSON backend, adds versioned capability taxonomy and schema migration, bounds review work, and measures when an indexed backend is actually justified. It does not claim that the current backend already supports the long-term capacity envelope.
+The current unreleased content-production slice uses one SQLite runtime store with separate observations, Evidence Packs, normalized candidates, query/semantic batches, queues, decisions, and checkpoints. Git continues to hold Skills, manifests, evals, and readable run records. It does not claim that the currently registered source inventory already reaches the long-term capacity envelope.
+
+Its first real content campaign expanded the executable inventory from 10 to 26 endpoints and ran all 21 Topic Bank queries. It made 28 source requests, read 26 high-trust observations in resumable semantic batches, produced seven Evidence Packs, normalized three candidates, executed nine L3 recalls and three supervised L4 decisions, then created one Python release-readiness Skill, updated one GitHub release Skill, and merged one narrower version-consistency capability. Query, semantic, and stable-source replay all ended in code-generated no-op checkpoints. [The production report](runs/2026-08-29-content-production.json) is rebuilt by the validator from SQLite and its referenced run reports.
 
 ## What v0.1.1 proves
 
@@ -16,7 +18,7 @@ The current unreleased scale foundation keeps the Git-JSON backend, adds version
 - A real incremental maintenance scan resumed from the committed cursors, completed all 13 sources through transactional subsets, and discovered 15 genuinely unseen items without recreating previously seen candidates.
 - JSON-list sources separate material item identity from a moving result window. Revision-only changes and reordering are observable but do not create duplicate candidates; genuinely unseen repository identities still do.
 - Controlled tests distinguish exact duplicates, semantic/capability duplicates, updates, and genuinely new capabilities.
-- All 110 real discoveries have explicit decisions: 103 were not promoted to independent Skills, 4 merged, 2 updated existing capability evidence, and 1 created a Skill. The review queue is zero; legacy `discard` records remain intact and are reported as `not_promoted` rather than deleted.
+- All 110 reviewed v0.1.1 candidates have explicit decisions: 103 were not promoted to independent Skills, 4 merged, 2 updated existing capability evidence, and 1 created a Skill. The current store also retains later feed evidence as observations without pretending it is candidate work; legacy `discard` records remain intact and are reported as `not_promoted` rather than deleted.
 - The generated `github-release-evidence` Plugin contains one original `audit-github-release` Skill with source provenance, positive/negative trigger reviews, and a deterministic nine-gate end-to-end checker including optional immutable Release proof.
 - Read-only `status` and `review-queue` commands expose durable handoff state without opening JSON files.
 - A weekly/manual GitHub Actions workflow performs only deterministic scanning and opens a changed-only review PR. It never applies a semantic decision or publishes a Skill.
@@ -41,7 +43,7 @@ The long-term model has three layers:
 - Capability Registry owns stable canonical capability IDs, one primary family, versioned facets, aliases, variants, merged evidence, decision history, and reactivation conditions.
 - Published Skills contains only capabilities that pass the quality gates, packaged into small user-task Plugins or Collections rather than one enormous installation.
 
-The active backend remains `git-json-v1`. Crossing a measured threshold opens a migration evaluation; it does not silently rewrite storage. See [architecture](docs/architecture.md), [taxonomy](docs/taxonomy.md), [schema migrations](docs/schema-migrations.md), [scale audit](docs/scale-audit.md), [roadmap](docs/roadmap.md), and the accepted [storage decision](docs/decisions/0001-defer-indexed-storage-until-measured-trigger.md).
+The active runtime backend is `sqlite-v3`, selected after the measured JSON lifecycle bottleneck and extended with content-review and query state while retaining one authority. See [architecture](docs/architecture.md), [taxonomy](docs/taxonomy.md), [schema migrations](docs/schema-migrations.md), [scale audit](docs/scale-audit.md), [roadmap](docs/roadmap.md), and [ADR-002](docs/decisions/0002-adopt-sqlite-runtime-store.md).
 
 ## Quick start
 
@@ -53,22 +55,22 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\skill-harvester --help
 ```
 
-Run a registered source subset:
+Run the policy canary and automatically ramp while stop-loss stays healthy:
 
 ```powershell
-.\.venv\Scripts\skill-harvester scan --root . --source openai-build-skills
+.\.venv\Scripts\skill-harvester campaign --root . --ramp
 ```
 
-Run all registered sources, using `GITHUB_TOKEN` if the GitHub API needs authenticated rate limits:
+Run one explicitly scoped source outside campaign policy:
 
 ```powershell
-.\.venv\Scripts\skill-harvester scan --root .
+.\.venv\Scripts\skill-harvester scan --root . --source SOURCE_ID --source-group GROUP --topic TOPIC_ID
 ```
 
 Or reuse an existing official GitHub CLI login without exporting its keyring credential:
 
 ```powershell
-.\.venv\Scripts\skill-harvester scan --root . --github-auth gh-cli
+.\.venv\Scripts\skill-harvester campaign --root . --ramp --github-auth gh-cli
 ```
 
 Inspect the durable handoff state and pending review queue:
@@ -81,10 +83,19 @@ Inspect the durable handoff state and pending review queue:
 
 The review page size defaults to `review_batch.default` in `config/scale-policy.json`. An explicit `--limit <count>` must not exceed the policy's `review_batch.maximum`.
 
-A scan stores only source metadata, necessary extracted facts, and evidence hashes. It does not store raw pages or execute fetched code. Review a discovery by creating the explicit decision contract documented in [.agents/skills/maintain-skill-harvester](.agents/skills/maintain-skill-harvester/SKILL.md), then apply it:
+Export or resume deterministic discovery and content-review work batches; Codex executes the untrusted semantic work and imports factual/query or Evidence Pack results:
 
 ```powershell
-.\.venv\Scripts\skill-harvester apply --root . --decision candidates/reviewed/CANDIDATE_ID.json
+.\.venv\Scripts\skill-harvester query-export --root . --cycle content-production-YYYY-MM-DD --limit 100 --output .harvester-cache/query-batch.json
+.\.venv\Scripts\skill-harvester query-import --root . --batch BATCH_ID --results .harvester-cache/query-results.json
+.\.venv\Scripts\skill-harvester semantic-export --root . --limit 100 --output .harvester-cache/semantic-batch.json
+.\.venv\Scripts\skill-harvester semantic-import --root . --batch BATCH_ID --review .harvester-cache/review.json
+```
+
+A campaign stores only source metadata, necessary extracted facts, evidence hashes, and explicitly normalized candidate metadata. It does not store raw pages or execute fetched code. Review a candidate by creating the explicit decision contract documented in [.agents/skills/maintain-skill-harvester](.agents/skills/maintain-skill-harvester/SKILL.md), then apply it:
+
+```powershell
+.\.venv\Scripts\skill-harvester apply --root . --decision .harvester-cache/CANDIDATE_ID.json
 ```
 
 ## Validate and package
@@ -98,10 +109,11 @@ py -3.12 scripts/build_release.py
 py -3.12 scripts/verify_release_archive.py
 ```
 
-CI runs the same gates on current Ubuntu and Windows runners. A separate weekly/manual workflow scans from the persisted cursor and opens a PR only when discoveries exist. The build creates:
+CI runs the same gates on current Ubuntu and Windows runners. A separate weekly/manual workflow runs the bounded campaign from persisted cursors and opens a review PR for changed observations/candidates or a stop-loss checkpoint. The build creates:
 
 - `codex-skill-harvester-v0.1.1.zip`
 - `github-release-evidence-v0.1.1.zip`
+- `python-package-delivery-v0.1.1.zip` (unreleased branch build only)
 - `SHA256SUMS.txt`
 
 ## Install the generated Plugin
@@ -114,16 +126,17 @@ codex plugin marketplace add KanadeK/codex-skill-harvester --ref v0.1.1
 
 Restart the ChatGPT desktop app, open the Plugins Directory in Codex or Work mode, choose **Codex Skill Harvester**, and install **GitHub Release Evidence**. This follows the [official repo-marketplace flow](https://developers.openai.com/plugins/build/plugins#add-a-marketplace-from-the-cli).
 
+The current branch marketplace also contains **Python Package Delivery**, but it is not part of published v0.1.1 and must not be described as released before controller approval, merge, tag, and Release.
+
 ## Repository map
 
 - `sources/registry.json` — fixed source, trust, license, adapter, and optional authentication metadata.
-- `state/harvest-state.json` — successful per-source cursor and seen-item state.
-- `candidates/` and `decisions/` — discoveries, reviewed decisions, and append-only outcome records.
+- `state/harvest.sqlite3` — authoritative runtime cursor, observation, query batch, Evidence Pack, normalized candidate, queue, decision, and checkpoint state.
 - `catalog/capabilities.json` and `catalog/taxonomy.json` — canonical capabilities, representative external fingerprints, and versioned classification.
 - `config/scale-policy.json` — active backend, review budget, projection targets, and measured migration triggers.
 - `plugins/` and `.agents/plugins/marketplace.json` — installable task-domain Plugin output.
 - `evals/` — Codex-reviewed trigger cases and deterministic end-to-end fixtures.
-- `runs/` — machine-readable and human-readable scan/delivery reports.
+- `runs/` — machine-readable and human-readable campaign, scan, migration, delivery, and release reports.
 
 ## License
 

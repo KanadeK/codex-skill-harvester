@@ -13,9 +13,16 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from skill_harvester.cli import main
+from skill_harvester.runtime_store import open_runtime_store
 from skill_harvester.sources import FetchResponse
 
-from _support import QueueFetcher, document_source, write_registry
+from _support import (
+    QueueFetcher,
+    document_source,
+    write_registry,
+    write_runtime_discovery,
+    write_runtime_state,
+)
 from test_apply_decision import create_decision, write_json
 
 
@@ -35,16 +42,13 @@ class ScanCliTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             write_registry(root, [document_source("official-doc"), document_source("other-doc")])
-            write_json(
-                root / "state" / "harvest-state.json",
-                {
-                    "schema_version": 1,
-                    "last_successful_run": "2026-08-27T06:00:00Z",
-                    "sources": {"official-doc": {}, "other-doc": {}},
-                },
+            write_runtime_state(
+                root,
+                last_successful_run="2026-08-27T06:00:00Z",
+                sources={"official-doc": {}, "other-doc": {}},
             )
-            write_json(
-                root / "candidates" / "inbox" / "pending-one.json",
+            write_runtime_discovery(
+                root,
                 {
                     "id": "pending-one",
                     "source_id": "official-doc",
@@ -56,8 +60,8 @@ class ScanCliTests(unittest.TestCase):
                     "review_status": "pending",
                 },
             )
-            write_json(
-                root / "candidates" / "inbox" / "applied-one.json",
+            write_runtime_discovery(
+                root,
                 {
                     "id": "applied-one",
                     "source_id": "other-doc",
@@ -69,10 +73,8 @@ class ScanCliTests(unittest.TestCase):
                     "review_status": "applied",
                 },
             )
-            write_json(
-                root / "decisions" / "records" / "record.json",
-                {"outcome": "discard"},
-            )
+            with open_runtime_store(root) as store:
+                store.record_decision("applied-one", {"outcome": "discard"})
             write_json(
                 root / "catalog" / "capabilities.json",
                 {"schema_version": 1, "internal": [{"id": "plugin:skill"}], "external": []},
@@ -106,8 +108,8 @@ class ScanCliTests(unittest.TestCase):
                 ("pending-two", "other-doc", "pending"),
                 ("applied-one", "official-doc", "applied"),
             ):
-                write_json(
-                    root / "candidates" / "inbox" / f"{candidate_id}.json",
+                write_runtime_discovery(
+                    root,
                     {
                         "id": candidate_id,
                         "source_id": source_id,
@@ -162,8 +164,8 @@ class ScanCliTests(unittest.TestCase):
                 ("representative-one", "representative-doc", "representative"),
                 ("official-one", "official-doc", "official"),
             ):
-                write_json(
-                    root / "candidates" / "inbox" / f"{candidate_id}.json",
+                write_runtime_discovery(
+                    root,
                     {
                         "id": candidate_id,
                         "source_id": source_id,
@@ -174,6 +176,11 @@ class ScanCliTests(unittest.TestCase):
                         "observed_at": "2026-08-27T06:00:00Z",
                         "review_status": "pending",
                     },
+                    queue=(
+                        "official-gap"
+                        if trust == "official"
+                        else "novel-discovery"
+                    ),
                 )
 
             first_output = io.StringIO()
@@ -219,8 +226,8 @@ class ScanCliTests(unittest.TestCase):
             write_scale_policy(root, default=2, maximum=3)
             for index in range(3):
                 candidate_id = f"pending-{index}"
-                write_json(
-                    root / "candidates" / "inbox" / f"{candidate_id}.json",
+                write_runtime_discovery(
+                    root,
                     {
                         "id": candidate_id,
                         "source_id": "official-doc",
@@ -283,14 +290,24 @@ class ScanCliTests(unittest.TestCase):
 
             with contextlib.redirect_stdout(output):
                 exit_code = main(
-                    ["scan", "--root", str(root)],
+                    [
+                        "scan",
+                        "--root",
+                        str(root),
+                        "--source",
+                        "official-doc",
+                        "--source-group",
+                        "fixture-group",
+                        "--topic",
+                        "fixture.topic",
+                    ],
                     fetcher=fetcher,
                     now="2026-08-27T06:00:00Z",
                 )
 
             self.assertEqual(exit_code, 0)
             self.assertIn("status=changed", output.getvalue())
-            self.assertIn("discoveries=1", output.getvalue())
+            self.assertIn("observations=1", output.getvalue())
 
     def test_apply_command_reports_reviewed_outcome(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -328,8 +345,19 @@ class ScanCliTests(unittest.TestCase):
             )
 
             with contextlib.redirect_stdout(io.StringIO()):
-                self.assertEqual(main(["scan", "--root", str(root)], fetcher=first), 0)
-                self.assertEqual(main(["scan", "--root", str(root)], fetcher=second), 0)
+                command = [
+                    "scan",
+                    "--root",
+                    str(root),
+                    "--source",
+                    "official-doc",
+                    "--source-group",
+                    "fixture-group",
+                    "--topic",
+                    "fixture.topic",
+                ]
+                self.assertEqual(main(command, fetcher=first), 0)
+                self.assertEqual(main(command, fetcher=second), 0)
 
             self.assertEqual(len(list((root / "runs").glob("*-scan.json"))), 2)
 

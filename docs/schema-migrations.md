@@ -14,7 +14,7 @@
 | Catalog | schema 1 | schema 2 + taxonomy 1.0.0 | schema 1 migrates only with an explicit classification map; schema 2 validates directly |
 | Reviewed decision | schema 1 | schema 2 | schema 1 `discard` is interpreted as `not_promoted`; schema 2 uses `not_promoted` and requires reactivation conditions |
 | Applied decision record | schema 1 | schema 2 | both remain readable; legacy files stay byte-preserved |
-| Source state/discovery/run | schema 1 | schema 1 | unchanged in this foundation |
+| Runtime source state/discovery/decision/checkpoint | Git-JSON schema 1 | SQLite runtime schema 3 | every discovery imports as an observation; only reviewed records receive Evidence Packs and candidates; content/query batches and explicit query cycles use schema 3; no runtime JSON or older-SQLite reader after cutover |
 
 ## Migration protocol
 
@@ -27,7 +27,7 @@
 7. Atomically replace the active manifest/store only after every check passes.
 8. Preserve the migration manifest and append-only history through the rollback window.
 
-For Git-native files, rollback is the prior commit. A future SQLite migration writes a new database and swaps it after validation. Parquet migrations write versioned partitions before changing their manifest.
+For the completed JSON-to-SQLite cutover, the importer writes a temporary schema-3 database and swaps it only after source-state, observation, Evidence Pack, candidate, decision, and stable-id validation; legacy JSON is then removed from the active tree. Query state stores the last completed cycle and continuation cursor, so a later cycle resumes discovery without replaying completed work inside the earlier cycle. PR #7's unmerged intermediate schemas were replaced rather than supported by a compatibility path. A later SQLite migration writes a new database and swaps it after validation. Parquet migrations write versioned partitions before changing their manifest.
 
 ## Legacy non-promotion semantics
 

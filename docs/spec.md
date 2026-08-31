@@ -1,85 +1,93 @@
-# Spec: Codex Skill Harvester v0.1.x
+# Spec: Codex Skill Harvester
 
 ## Objective
 
-Create a public, local-first OSS repository that incrementally discovers changed public material, extracts reviewable workflow facts, compares candidate capabilities against its own catalog and representative external skills, and publishes only useful, original, source-traceable Codex skills grouped into task-domain plugins.
+Maintain a public, local-first system that incrementally acquires changed public evidence, normalizes only proven repeatable workflows into capability candidates, compares them against the catalog, and publishes only useful, original, source-traceable Codex Skills grouped into small task-domain Plugins.
 
-The primary operator is a Codex maintainer working inside this repository. A later request such as "scan again" must resume from the last successful persisted source state without depending on chat memory.
+A later “scan again” resumes from SQLite cursors and checkpoints without chat memory. Throughput expands evidence coverage; it never creates a publication quota.
 
-### Product boundary
+## Product boundary
 
-- This is not RepoPilot Skillforge. RepoPilot inspects one supplied code repository and generates repository-local onboarding/review/release guidance.
-- This is not a skill subscription mirror such as skillx. The harvester does not clone and republish upstream skill bodies.
-- This is not a large skill retrieval corpus such as SkillCorpus. The v0.1 product maintains a small reviewed catalog and synthesizes original workflows from authoritative material.
+- RepoPilot Skillforge analyzes one supplied repository and writes repository-local guidance. This project watches cross-source public evidence over time.
+- This is not a Skill mirror or subscription corpus. It does not copy and redistribute upstream Skill bodies.
+- Registries, directories, searches, and discussions are discovery/demand signals, not automatic operational authority.
+- Users install curated task-domain Plugins or Collections, not the evidence store or the whole future catalog.
 
-## Tech stack
+## Runtime and authority
 
-- Python 3.12+
-- Python standard library only at runtime and in tests
-- JSON for source registry, state, discoveries, decisions, catalog, eval cases, and machine-readable run reports
-- Markdown for human run reports and generated `SKILL.md` files
-- GitHub Actions for Linux/Windows validation
+- Python 3.12+ and the standard library only.
+- `sources/registry.json` owns source identity, adapter, trust, authority, license, and optional non-authoritative workflow hints.
+- `config/topic-bank.json` owns versioned Domain × Intent discovery queries and their source-tier constraints.
+- `config/campaign-policy.json` owns campaign groups, topics, canary, queue precedence, and stop-loss.
+- `config/scale-policy.json` owns review page default and maximum.
+- `state/harvest.sqlite3` schema 3 is the only runtime authority for cursors, observations, query/semantic batches, Evidence Packs, candidates, queues, decisions, source utility, and checkpoints.
+- Git owns source/config schemas, taxonomy, capability catalog, published Skills/Plugins, evals, readable reports, and release history.
+- Raw source bodies are temporary and never committed. Third-party scripts are never executed.
 
-Framework-specific behavior is limited to the documented Codex Skill/Plugin file formats. Their authority sources are listed in `docs/research.md`.
+There is no runtime JSON fallback, SQLite-schema-1 reader, dual write, or compatibility shim.
 
 ## Commands
 
-- Scan configured sources: `python -m skill_harvester scan --root .`
-- Scan with the current official GitHub CLI keyring login: `python -m skill_harvester scan --root . --github-auth gh-cli`
-- Scan a subset: `python -m skill_harvester scan --root . --source <source-id>`
-- Inspect durable repository state: `python -m skill_harvester status --root .`
-- List a bounded pending review page: `python -m skill_harvester review-queue --root . [--limit <count>] [--after <candidate-id>]`; the omitted default and explicit maximum are owned by `config/scale-policy.json`.
-- Apply one reviewed candidate decision: `python -m skill_harvester apply --root . --decision candidates/reviewed/<id>.json`
-- Validate repository and generated artifacts: `python scripts/validate_repo.py`
-- Run tests: `python -m unittest discover -s tests -v`
-- Build deterministic release archives: `python scripts/build_release.py`
+- Run canary and bounded ramp: `python -m skill_harvester campaign --root . --ramp`
+- Reuse official GitHub CLI authentication: add `--github-auth gh-cli`
+- Run a manual scoped source: `python -m skill_harvester scan --root . --source <id> --source-group <group> --topic <topic>`
+- Inspect state: `python -m skill_harvester status --root .`
+- Page candidates: `python -m skill_harvester review-queue --root . [--source <id>] [--limit <count>] [--after <candidate-id>]`
+- Apply one reviewed decision: `python -m skill_harvester apply --root . --decision <path>`
+- Export or resume a discovery-query batch within one explicit campaign cycle: `python -m skill_harvester query-export --root . --cycle <cycle-id> --limit <count> --output <ignored-path>`
+- Import actual query results and advance only completed query cursors: `python -m skill_harvester query-import --root . --batch <batch-id> --results <path>`
+- Export or resume an observation content-review batch: `python -m skill_harvester semantic-export --root . --limit <count> --output <ignored-path>`
+- Import Codex-authored Evidence Packs and candidate/not-promoted conclusions: `python -m skill_harvester semantic-import --root . --batch <batch-id> --review <path>`
+- Rebuild an auditable end-to-end funnel report from generated run reports and SQLite decisions: `python -m skill_harvester production-report --root . <report inputs> --output runs/<name>-production.json`
+- Test: `python -m unittest discover -s tests -p "test_*.py" -v`
+- Evals: `python scripts/run_evals.py`
+- Validate: `python scripts/validate_repo.py`
+- Benchmark: `python scripts/benchmark_storage.py --root . --records 100`
+- Build and verify release archives: `python scripts/build_release.py` and `python scripts/verify_release_archive.py`
 
 ## Project structure
 
-- `src/skill_harvester/`: deterministic CLI, source adapters, state, dedupe recommendations, decision application, and validation
-- `sources/registry.json`: fixed source registry with authority, trust, license, and adapter metadata
-- `state/harvest-state.json`: last successful cursors and seen evidence
-- `catalog/capabilities.json`: published capabilities and full fingerprints
-- `candidates/inbox/`: changed-source discoveries awaiting Codex review
-- `candidates/reviewed/`: explicit reviewed decisions ready to apply
-- `decisions/`: append-only applied and rejected decision records
-- `plugins/`: installable task-domain plugins and their generated skills
+- `src/skill_harvester/`: source boundaries, fingerprints, SQLite store, campaign, reporting, decisions, validation, packaging
+- `sources/registry.json`: registered executable sources and optional non-authoritative hints
+- `config/topic-bank.json`: query rotation and source-tier policy
+- `config/`: campaign and scale policy
+- `state/harvest.sqlite3`: sole runtime authority
+- `catalog/`: taxonomy and canonical capability catalog
+- `plugins/` and `.agents/plugins/marketplace.json`: published installable output
 - `.agents/skills/`: repository-scoped maintainer workflow
-- `evals/`: positive trigger, negative trigger, and end-to-end cases
-- `runs/`: committed machine and human reports for real scans
-- `tests/fixtures/`: controlled source and decision examples; no external executable content
-- `scripts/`: repository validation and deterministic release packaging
+- `evals/`: trigger and E2E cases
+- `runs/`: generated campaign/scan reports and delivery/release evidence
+- `tests/`: controlled source, funnel, migration, decision, pagination, validation, and release fixtures
 - `tasks/`: durable implementation plan and checklist
 
-Directories are created only when their first real file is added.
+Do not create empty future module trees.
 
-## Code style
-
-Use explicit immutable records and pure transformations where possible:
-
-```python
-@dataclass(frozen=True)
-class CapabilityFingerprint:
-    goal: str
-    triggers: tuple[str, ...]
-    inputs: tuple[str, ...]
-    outputs: tuple[str, ...]
-    tools: tuple[str, ...]
-    side_effects: tuple[str, ...]
-    platforms: tuple[str, ...]
-```
-
-Keep network I/O at the source boundary, pass fetched bytes into pure extractors, and use temporary files only for raw bodies. Do not introduce a helper or abstraction for a single call site.
-
-## Data and decision contracts
+## Funnel contracts
 
 ### Source state
 
-Each source records its adapter, trust tier, authority role, license status, ETag/Last-Modified when available, logical cursor, content hash, seen entry IDs, and last successful observation time. A scan stages all selected source updates in memory and atomically commits them only if every selected source succeeds.
+Each source cursor stores adapter, URL, ETag/Last-Modified when present, logical cursor, content hash, seen/material item maps, current window IDs, and last successful time. A direct multi-source scan commits its selection atomically. A campaign scans one source per transaction so completed sources survive a later stop.
 
-### Capability fingerprint
+### Observation
 
-Every candidate and catalog entry covers at least:
+Every changed document/feed/API item first becomes an observation containing:
+
+- stable id and L0 source item/revision identity;
+- L1 evidence hash;
+- source id, source group, and topic id;
+- observed time and canonical URL;
+- trust, authority, and license;
+- minimal extracted facts.
+
+An observation is evidence, not candidate work. Official package/registry provenance does not imply an operational workflow.
+
+### Normalized candidate
+
+`workflow_signal`, when present, is a seed/hint only. It cannot promote an observation, supply the authoritative fingerprint, choose a queue, or count as content review. A completed query is a no-op only within its explicit cycle; a later cycle re-exports the query with its saved continuation cursor and previous completion time.
+
+Any T0/T1/T2 observation may enter a persisted semantic batch. T3/T4 observations may enter as demand/discovery signals but cannot support publication without corroborating T0/T1/T2 evidence. Codex reads the actual evidence as untrusted data and writes an original Evidence Pack containing source revisions, necessary paraphrased facts, one candidate user goal, inputs/outputs, non-obvious decisions, tools, platforms, side effects, license/risk notes, and adjacent capabilities. Raw bodies remain in ignored temporary cache only.
+
+Only an imported Codex-reviewed Evidence Pack can promote one or more observations into a normalized candidate. A promoted candidate must contain the normalized seven-field fingerprint:
 
 - `goal`
 - `triggers`
@@ -89,118 +97,88 @@ Every candidate and catalog entry covers at least:
 - `side_effects`
 - `platforms`
 
-### Decision ownership
+The candidate persists its Evidence Pack and observation links, source group/topic, fingerprint, L2 exact fingerprint matches, bounded L3 capability recalls, and one queue. L2/L3 are recall evidence only. The semantic batch remains pending until every exported observation is reviewed, so interruption resumes from SQLite rather than chat memory.
 
-The program may deterministically recommend:
+### Discovery-query rotation
 
-- `discard_exact`: identical canonical bundle hash
-- `merge_semantic`: materially the same capability fingerprint
-- `update_existing`: an identified capability has new authoritative evidence or behavior
-- `create_new`: no catalog capability covers the task
+The Topic Bank supplies real queries rather than forecast counts. A persisted query batch records the exact query, topic, source-tier constraint, cursor, result count, selected endpoints, and completion status. Codex executes it through the approved background search/GitHub route and imports only factual result metadata. Failed or unexecuted queries keep their cursor. Source utility accumulates successful requests, bytes, observations, candidate yield, and failures; it informs later rotation but never weakens evidence gates.
 
-Only a reviewed decision marked `reviewed_by: codex` may merge, update, or create a published skill. The rationale must name the compared capability IDs and source evidence. Exact byte duplicates may be rejected automatically and are still reported.
+### Queues
 
-## Source and content safety
+Stable precedence is `urgent-impact`, `official-gap`, `reactivation`, `novel-discovery`, `aged-backlog`. `official-gap` requires explicit operational workflow authority, not merely `trust=official`.
 
-- Only `https://` network sources are accepted.
-- Network responses have bounded size and timeout.
-- GitHub API authentication may use a process-scoped `GITHUB_TOKEN` or `gh api`; credentials are never persisted, printed, or placed in command arguments.
-- Redirects must remain HTTPS.
-- Raw bodies live only in an OS temporary directory during a run.
-- Extracted instruction-like text is stored as quoted evidence/facts and never executed.
-- Downloaded scripts are never invoked.
-- Unknown or incompatible license status blocks copying; synthesis may use necessary factual observations with attribution.
-- Generated skills must be original writing and include source URLs and observed revisions in a concise reference file when details are conditional.
+SQLite performs pending filters, source filters, stable priority/time/id ordering, cursor comparison, and `LIMIT`. Status uses SQL counts/aggregations rather than materializing all candidates.
 
-## Testing strategy
+### L4 decision and publication
 
-- Unit tests: normalization, fingerprints, exact hash dedupe, semantic recommendation, update recommendation, JSON validation, and path safety.
-- Integration tests: fake in-memory fetcher exercises transactional scans and cursor persistence.
-- Incremental proof: the same fixture source is scanned twice; the second run reports a no-op and creates no duplicate discovery.
-- Fixture decisions: distinguish exact duplicate, semantic duplicate, update, and new capability.
-- Skill evals: positive triggers, negative non-triggers, format validation, and one end-to-end task artifact.
-- Isolated script proof: copy the repository to a temporary directory and run the CLI/validator there.
-- Live proof: scan at least one real official source, apply at least one original reviewed skill, then run a second unchanged scan that reports no-op.
+Only a reviewed Codex decision may mark `not_promoted`, merge, update, or create. `not_promoted` retains rationale, provenance, and executable reactivation conditions; it is not deletion.
 
-## Boundaries
+Publication additionally requires authoritative evidence, original synthesis, distinct user intent, correct triggers/non-triggers, format validation, license safety, installation proof, and an E2E task. High-risk medical, legal, financial, real-world-control, credential-heavy, or high-privilege work is evidence-only until explicit user and controller approval.
 
-- Always: preserve provenance, record rejections, validate all generated skills/plugins, and keep cursor writes transactional.
-- Ask first: runtime dependencies, hosted services, embeddings/API costs, a new product identity, or publication with a red gate.
-- Never: execute fetched code, persist raw pages, expose credentials, copy unknown-license skills, synthesize unverifiable procedures, or publish a source summary as a skill.
+## Campaign contract
 
-## Success criteria
+The canary is the first 5–10% of the same complete campaign. Campaign execution checks stop-loss before requesting the next source and after committing each completed source. Current policy bounds:
 
-- The target is an independent nested Git repository; the outer workspace and sibling repositories remain untouched.
-- Name and overlap research is recorded, including the distinction from RepoPilot Skillforge, skillx, and SkillCorpus.
-- A real source registry includes current official OpenAI Skill/Plugin authority, vendor official docs/examples, GitHub incremental discovery, a public API/registry, and release/changelog/RSS sources.
-- Two consecutive runs of the same pipeline demonstrate changed-only processing; an unchanged second run is a truthful no-op.
-- Controlled fixtures prove exact duplicate, semantic duplicate, update, and genuinely new outcomes.
-- At least one useful original skill is generated or updated from a real official source and is traceable to evidence.
-- Skill and Plugin format validation, positive/negative trigger evals, an end-to-end task, and isolated execution pass.
-- CI validates repository structure, state consistency, generated Skill/Plugin format, tests, and release build on pull requests and `main`.
-- No external script is executed; no secret, private data, unauthorized material, or substantial copied text is committed.
-- The run report lists discoveries, rejections, merges, updates, creations, sources, validation, and unresolved issues.
-- The public GitHub repository, merged PR, green remote CI, annotated tag, Release assets, install/call path, author history, and GitHub contributors are verified before v0.1.0 is declared complete.
+- source requests;
+- cumulative bytes;
+- runtime store bytes;
+- raw observations;
+- normalized candidates;
+- L3 recall work; and
+- 100 Usage credits only when an authoritative campaign-scoped meter exists.
 
-## Open questions
+If Usage cannot be measured, reports store `{"measured": false}`. Credits are not purchased and auto top-up is not enabled.
 
-None that block v0.1.x. Hosted semantic embeddings, unattended semantic publication, and a large multi-plugin catalog remain explicit non-goals.
+A canary failure, ramp failure, or limit creates a `checkpoint` report with completed and pending source ids. It does not mark unprocessed evidence `not_promoted`. A complete unchanged stable-source run is `no_op`; genuinely new PyPI feed items keep the campaign truthfully `changed` even though they remain observations.
 
-## v0.1.1 maintenance scope
+Scheduled/manual GitHub automation must invoke `campaign --ramp`. It may commit SQLite and generated run reports and open a review PR. It never performs L4 decisions, semantic merges, Skill publication, tags, or Releases.
 
-- Review every candidate carried over from v0.1.0 and persist a concrete Codex decision; source listings and release titles are rejected when they do not contain enough authoritative workflow evidence.
-- Treat the moving GitHub repository-search window separately from material item changes. Revision-only churn and reordering must not create discoveries, while new identities or changed titles/URLs must.
-- Add read-only `status` and `review-queue` commands for durable operator handoff.
-- Add a scheduled/manual GitHub workflow that performs deterministic scans and opens a pull request only when discoveries exist. It must never apply semantic decisions or publish Skills.
-- Add repository security/community metadata, dependency update configuration, and remote default-branch protection without adding runtime dependencies.
-- Update the existing release-audit Skill only when reviewed authoritative evidence changes a useful gate; validate its format, triggers, and isolated end-to-end behavior before release.
-- Publish changes as immutable v0.1.1 after local gates, pull-request CI, remote settings, release assets, source installation, Skill invocation, and contributors are verified.
+## Report schema
 
-## Scale architecture foundation scope
+Campaign reports use schema 2 and separate measured stages:
 
-### Objective
+- source requests/successes/failures;
+- raw, inserted, and duplicate observations;
+- normalized and duplicate candidates;
+- pending candidate queue;
+- L3 recalls;
+- downloaded and runtime-store bytes;
+- deep reviews and Usage measurement state.
 
-Prepare the harvester to evolve toward millions of source observations, hundreds of thousands of discoveries, tens of thousands of normalized capability candidates, and thousands of published Skills without treating those numbers as publication targets. Preserve the existing quality gates and implement only the foundations that are required before another broad scan.
+Numeric observation/candidate/L3 totals are recomputed from embedded generated scan runs by repository validation. Unexecuted or unobservable stages use `{"measured": false}`; a hand-edited zero is invalid.
 
-### Assumptions and decisions
+Query reports distinguish unique completed queries from attempts and retain failed work in the same batch until it succeeds. Semantic reports are recomputed from Evidence Packs and candidate links. A content-production report references its campaign, query, semantic, and replay reports; validation rebuilds the complete document from those inputs plus SQLite L4 decisions, so fabricated candidate, deep-review, decision, or artifact counts fail.
 
-- The current Git-native JSON layout remains the active backend until a measured migration trigger is crossed. This change does not introduce SQLite, Parquet, embeddings, hosted services, or a runtime dependency.
-- Legacy decision outcome `discard` means `not_promoted`: the evidence and decision stay durable and may be reconsidered. New operator output must not imply deletion.
-- A capability has one immutable canonical `id`. Its Plugin, Skill path, aliases, facets, evidence, and variants may evolve without changing that identity.
-- Classification uses one primary capability family plus versioned multi-dimensional facets. Taxonomy values may grow from evidence; the initial registry is not an exhaustive ontology.
-- Source fetching, semantic review, and publication remain separate stages. A metric is emitted only by the stage that actually measured it; unperformed semantic work is never reported as zero.
+## Migration contract
 
-### Required behavior in this change
+The supported legacy upgrade reads v0.1.1 Git-JSON, creates a temporary schema-3 database, imports every discovery as an observation, creates an Evidence Pack and candidate only when a reviewed decision exists, validates counts/ids/references, and atomically installs the database. The active legacy JSON paths are then deleted. A second runtime authority is rejected.
 
-- Document the three-layer architecture: Evidence/Discovery, Capability Registry, and Published Skills.
-- Add a validated, versioned taxonomy contract covering domain, intent, inputs, outputs, tools, platforms, side effects, risk, volatility, maturity, and trust.
-- Add an explicit schema/taxonomy migration policy and prove legacy catalog migration with deterministic fixtures.
-- Normalize legacy `discard` counts to `not_promoted` in operator-facing status while retaining old append-only records unchanged.
-- Require explicit reactivation conditions for new schema-version-2 `not_promoted` decisions.
-- Bound review queue pages with a stable continuation cursor and deterministic trust-based priority.
-- Add discovery-stage metrics for selected/succeeded/failed sources, staged discoveries, newly enqueued candidates, and exact record duplicates.
-- Add a reproducible storage inventory/benchmark and explicit thresholds that decide when the Git-JSON backend must be replaced or indexed.
-- Update repository validation and CI so these contracts cannot silently drift.
+Future migrations follow the same one-write/validate/swap pattern and state the old-path deletion condition. Parquet is cold evidence only after measured need; semantic indexes are rebuildable recall only.
 
-### Success criteria
+## Safety
 
-- Existing 110 candidates and 110 decision records remain valid and byte-preserved unless a file is directly required by the new catalog contract.
-- Status reports 103 legacy `discard` records as 103 `not_promoted` decisions and reports zero deleted records.
-- A schema-version-2 `not_promoted` decision without reactivation conditions fails; one with conditions is accepted and remains unpublished.
-- Review queue output defaults to a bounded batch, exposes priority and a continuation cursor, and can resume without duplicating an item.
-- Scan fixtures distinguish staged discoveries, new queue entries, and exact queue-record duplicates; failed transactional runs report the measured source failure without advancing state.
-- The scale benchmark inventories the current backend, exercises temporary synthetic records, projects the named target sizes, and evaluates migration triggers without writing benchmark data into the repository.
-- The complete unit/integration suite, repository validator, evals, release build, isolated archive verification, and Linux/Windows CI remain green.
-- Work is submitted on a `codex/` branch in one reviewable PR. This change is not merged, tagged, or released automatically.
+- Only HTTPS sources are accepted; responses are bounded and timed out.
+- GitHub credentials may come from process-scoped `GITHUB_TOKEN` or `gh api`; tokens are not persisted, printed, or passed to other hosts.
+- Redirects remain HTTPS.
+- External content is data, never instructions.
+- Unknown/incompatible license blocks copying.
+- Errors fail fast; failed scan selections do not advance their cursor.
+- Secrets, private data, raw pages, downloaded executables, and substantial copied text are forbidden in Git.
 
-### Non-goals
+## Required regression evidence
 
-- No broad source scan or candidate-generation campaign.
-- No automatic semantic approval or Skill publication.
-- No storage backend rewrite before a measured trigger.
-- No attempt to enumerate every possible domain or publish thousands of Skills into one Plugin.
+- PyPI release entries become observations and never `official-gap` candidates solely from trust.
+- A complete workflow fixture traverses source extraction, observation, topic/group, candidate normalization, seven fields, queue, L2, and L3.
+- All five queues are exercised through the source pipeline.
+- Stable repeated input is no-op and an exact observation is not duplicated.
+- Canary/ramp failure plus request/byte/store stop-loss produce checkpoints.
+- Campaign automation cannot call bare `scan`.
+- Campaign reports are code-generated and validator-recomputed; forged normalized/deep-review values fail.
+- Review pages are SQL-bounded, indexed, stable, and resumable at a large fixture size.
+- Legacy import preserves ids/counts and leaves one authority.
+- Tests do not modify tracked repository state.
+- Full tests, evals, validator, benchmark, deterministic build, isolated installation/call, and Ubuntu/Windows CI pass before merge consideration.
 
-### Open questions for later control-plane decisions
+## Release boundary
 
-- Which model-usage and cost telemetry is authoritative enough to populate per-candidate token and currency metrics without estimates being mistaken for measurements?
-- When a storage trigger is crossed, should the first indexed backend optimize for a single maintainer (SQLite) or coordinated workers (a service-backed queue)? The current local-first default is SQLite unless operational evidence changes the requirement.
+Published `v0.1.1` remains unchanged. `v0.2.0` is reserved and must not be created by this PR. It requires the completed vertical slice, one real calibrated campaign, every applicable gate, and a new controller approval. Automatic Release remains deferred until at least three stable campaigns and another explicit decision.

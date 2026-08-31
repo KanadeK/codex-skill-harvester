@@ -1,13 +1,13 @@
 # Reviewed decision contract
 
-Read this only when a changed-source discovery has survived the initial usefulness and provenance review.
+Read this only when an observation has been explicitly normalized into a queued candidate and survived usefulness and provenance review.
 
 ## Required fields
 
 ```json
 {
   "schema_version": 2,
-  "candidate_id": "stable-discovery-id",
+  "candidate_id": "stable-normalized-candidate-id",
   "reviewed_by": "codex",
   "reviewed_at": "RFC-3339 timestamp",
   "outcome": "not_promoted|merge|update|create",

@@ -1,0 +1,17 @@
+{
+  "actual_queries": 7,
+  "batch_id": "4ab80a0565aa885ebc813478",
+  "cycle_id": "content-production-2026-08-29",
+  "completed_queries": 7,
+  "executed_at": "2026-08-29T18:59:00Z",
+  "failed_queries": 0,
+  "pending_queries": 0,
+  "report_type": "query-results",
+  "result_count": 46,
+  "schema_version": 1,
+  "selected_endpoints": 1,
+  "selected_source_ids": [
+    "pypa-sampleproject-readme"
+  ],
+  "status": "completed"
+}

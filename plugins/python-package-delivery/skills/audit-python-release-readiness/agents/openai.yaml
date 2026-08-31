@@ -1,0 +1,4 @@
+interface:
+  display_name: "Audit Python Release Readiness"
+  short_description: "Validate Python artifacts and publishing workflow"
+  default_prompt: "Audit whether these Python distributions and publishing workflow are ready for release without publishing anything."

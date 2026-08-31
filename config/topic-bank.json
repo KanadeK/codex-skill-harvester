@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "topics": [
+    {
+      "id": "software.create.codex-skills",
+      "domain": "software",
+      "intent": "create",
+      "source_group": "openai-format-authority",
+      "queries": [
+        {
+          "id": "openai-skill-format",
+          "route": "github-code",
+          "text": "org:openai SKILL.md name description agent skill",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "openai-plugin-manifest",
+          "route": "github-code",
+          "text": "org:openai .codex-plugin plugin.json skills",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "openai-skill-progressive-disclosure",
+          "route": "web",
+          "text": "site:developers.openai.com skills progressive disclosure",
+          "tier_constraint": ["T0", "T1"]
+        }
+      ]
+    },
+    {
+      "id": "software.validate.github-delivery",
+      "domain": "software",
+      "intent": "validate",
+      "source_group": "github-delivery",
+      "queries": [
+        {
+          "id": "github-release-verification",
+          "route": "github-code",
+          "text": "repo:cli/cli release verify asset attestation",
+          "tier_constraint": ["T1", "T2"]
+        },
+        {
+          "id": "github-artifact-attestations",
+          "route": "github-code",
+          "text": "repo:github/docs artifact attestations verify release",
+          "tier_constraint": ["T1", "T2"]
+        },
+        {
+          "id": "github-release-api-evidence",
+          "route": "github-code",
+          "text": "repo:github/docs REST releases assets endpoint",
+          "tier_constraint": ["T1", "T2"]
+        }
+      ]
+    },
+    {
+      "id": "software.publish.python-packaging",
+      "domain": "software",
+      "intent": "publish",
+      "source_group": "python-packaging",
+      "queries": [
+        {
+          "id": "python-packaging-build-distributions",
+          "route": "github-code",
+          "text": "repo:pypa/packaging.python.org build source distribution wheel",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "python-packaging-github-publish",
+          "route": "github-code",
+          "text": "repo:pypa/packaging.python.org publishing package distribution releases GitHub Actions",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "python-packaging-testpypi",
+          "route": "github-code",
+          "text": "repo:pypa/packaging.python.org TestPyPI install distribution",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "python-packaging-metadata",
+          "route": "github-code",
+          "text": "repo:pypa/packaging.python.org core metadata license readme requires-python",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "python-build-frontend",
+          "route": "github-code",
+          "text": "repo:pypa/build python -m build sdist wheel isolated",
+          "tier_constraint": ["T1", "T2"]
+        },
+        {
+          "id": "python-twine-check",
+          "route": "github-code",
+          "text": "repo:pypa/twine twine check distributions",
+          "tier_constraint": ["T1", "T2"]
+        },
+        {
+          "id": "python-trusted-publisher-use",
+          "route": "github-code",
+          "text": "repo:pypi/warehouse trusted publisher GitHub Actions id-token write",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "python-trusted-publisher-security",
+          "route": "github-code",
+          "text": "repo:pypi/warehouse trusted publisher security model",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "python-pypi-attestations",
+          "route": "github-code",
+          "text": "repo:pypi/warehouse producing attestations gh-action-pypi-publish",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "python-publish-action",
+          "route": "github-code",
+          "text": "repo:pypa/gh-action-pypi-publish release/v1 trusted publishing attestations",
+          "tier_constraint": ["T1", "T2"]
+        },
+        {
+          "id": "python-sampleproject-metadata",
+          "route": "github-code",
+          "text": "repo:pypa/sampleproject pyproject.toml project metadata",
+          "tier_constraint": ["T2"]
+        },
+        {
+          "id": "python-release-file-specifications",
+          "route": "github-code",
+          "text": "repo:pypa/packaging.python.org source distribution wheel filename specification",
+          "tier_constraint": ["T0", "T1", "T2"]
+        }
+      ]
+    },
+    {
+      "id": "software.discover.agent-skills",
+      "domain": "software",
+      "intent": "discover",
+      "source_group": "discovery-signals",
+      "queries": [
+        {
+          "id": "agent-skill-demand-signals",
+          "route": "github-repository",
+          "text": "agent skills reusable workflow registry",
+          "tier_constraint": ["T3", "T4"]
+        }
+      ]
+    },
+    {
+      "id": "software.diagnose.github-actions",
+      "domain": "software",
+      "intent": "diagnose",
+      "source_group": "external-skill-comparison",
+      "queries": [
+        {
+          "id": "github-actions-remediation-skill",
+          "route": "github-code",
+          "text": "repo:openai/skills gh-fix-ci SKILL.md",
+          "tier_constraint": ["T2", "T3"]
+        }
+      ]
+    },
+    {
+      "id": "software.operate.github-review",
+      "domain": "software",
+      "intent": "operate",
+      "source_group": "external-skill-comparison",
+      "queries": [
+        {
+          "id": "github-review-remediation-skill",
+          "route": "github-code",
+          "text": "repo:openai/skills gh-address-comments SKILL.md",
+          "tier_constraint": ["T2", "T3"]
+        }
+      ]
+    }
+  ]
+}

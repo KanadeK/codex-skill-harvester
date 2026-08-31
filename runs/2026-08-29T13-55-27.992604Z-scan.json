@@ -1,0 +1,37 @@
+{
+  "metrics": {
+    "candidate_duplicates": 0,
+    "deep_reviews": {
+      "measured": false
+    },
+    "downloaded_bytes": 0,
+    "failures": 0,
+    "l3_recalls": 0,
+    "normalized_candidates": 0,
+    "observation_duplicates": 0,
+    "observations_inserted": 0,
+    "observations_staged": 0,
+    "raw_observations": 0,
+    "source_requests": 1,
+    "source_success_rate": 1.0,
+    "sources_succeeded": 1
+  },
+  "observations": 0,
+  "report_type": "scan",
+  "run_id": "2026-08-29T13-55-27.992604Z",
+  "schema_version": 2,
+  "sources": [
+    {
+      "downloaded_bytes": 0,
+      "observations_staged": 0,
+      "raw_observations": 0,
+      "source_group": "openai-format-authority",
+      "source_id": "openai-build-plugins",
+      "status": "not_modified",
+      "topic_id": "software.create.codex-skills"
+    }
+  ],
+  "status": "no_op",
+  "unresolved_issues": [],
+  "validations": []
+}

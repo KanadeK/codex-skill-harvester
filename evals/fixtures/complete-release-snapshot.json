@@ -1,6 +1,7 @@
 {
   "requirements": {
-    "immutable_release": true
+    "immutable_release": true,
+    "asset_attestations": true
   },
   "repository": {
     "name_with_owner": "KanadeK/codex-skill-harvester",
@@ -25,6 +26,14 @@
   },
   "expected_assets": [
     "codex-skill-harvester-v0.1.0.zip"
+  ],
+  "attestations": [
+    {
+      "asset_name": "codex-skill-harvester-v0.1.0.zip",
+      "verified": true,
+      "verified_owner": "KanadeK",
+      "source_url": "https://github.com/KanadeK/codex-skill-harvester/attestations"
+    }
   ],
   "pull_request": {
     "number": 1,

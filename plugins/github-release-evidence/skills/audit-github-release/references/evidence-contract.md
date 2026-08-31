@@ -5,7 +5,8 @@ Use this normalized JSON shape as input to `scripts/check_snapshot.py`. Values m
 ```json
 {
   "requirements": {
-    "immutable_release": true
+    "immutable_release": true,
+    "asset_attestations": true
   },
   "repository": {
     "name_with_owner": "OWNER/REPO",
@@ -27,6 +28,14 @@ Use this normalized JSON shape as input to `scripts/check_snapshot.py`. Values m
     "commit_sha": "full commit SHA"
   },
   "expected_assets": ["artifact.zip"],
+  "attestations": [
+    {
+      "asset_name": "artifact.zip",
+      "verified": true,
+      "verified_owner": "OWNER",
+      "source_url": "https://github.com/OWNER/REPO/attestations"
+    }
+  ],
   "pull_request": {
     "number": 1,
     "state": "MERGED",
@@ -43,7 +52,7 @@ Use this normalized JSON shape as input to `scripts/check_snapshot.py`. Values m
 }
 ```
 
-`pull_request` and `installation` may be `null`; their gates then remain `NOT_CHECKED`. When a pull request is present, its `merge_commit_sha` must equal `tag.commit_sha`. An empty `expected_assets` list means the audit makes no custom-asset claim. Set `requirements.immutable_release` to `true` only when immutable Release proof is part of the stated acceptance criteria; then `release.immutable` must come from the REST Release record and be `true`.
+`pull_request` and `installation` may be `null`; their gates then remain `NOT_CHECKED`. When a pull request is present, its `merge_commit_sha` must equal `tag.commit_sha`. An empty `expected_assets` list means the audit makes no custom-asset claim. Set `requirements.immutable_release` to `true` only when immutable Release proof is part of the stated acceptance criteria; then `release.immutable` must come from the REST Release record and be `true`. Set `requirements.asset_attestations` to `true` only when provenance is required; every expected asset must then have a successful read-only `gh attestation verify` result in `attestations`. An attestation is not a malware or correctness verdict.
 
 ## Authority sources
 
@@ -53,3 +62,4 @@ Use this normalized JSON shape as input to `scripts/check_snapshot.py`. Values m
 - Authenticated GitHub API access: https://cli.github.com/manual/gh_api
 - GitHub REST releases: https://docs.github.com/en/rest/releases/releases
 - GitHub REST repositories: https://docs.github.com/en/rest/repos/repos
+- GitHub artifact attestations: https://docs.github.com/en/actions/concepts/security/artifact-attestations

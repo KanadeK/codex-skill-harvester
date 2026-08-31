@@ -1,0 +1,32 @@
+{
+  "author": {
+    "name": "KanadeK"
+  },
+  "description": "Read-only readiness audits for Python distribution artifacts and PyPI publishing workflows.",
+  "homepage": "https://github.com/KanadeK/codex-skill-harvester",
+  "interface": {
+    "capabilities": [
+      "Read"
+    ],
+    "category": "Developer Tools",
+    "defaultPrompt": [
+      "Audit these Python distributions and publishing workflow before release."
+    ],
+    "developerName": "KanadeK",
+    "displayName": "Python Package Delivery",
+    "longDescription": "Inspect Python source distributions, wheels, metadata, and a PyPI Trusted Publishing workflow without uploading or executing package code.",
+    "shortDescription": "Audit Python artifacts before publication"
+  },
+  "keywords": [
+    "python",
+    "pypi",
+    "release",
+    "audit",
+    "codex-skill"
+  ],
+  "license": "MIT",
+  "name": "python-package-delivery",
+  "repository": "https://github.com/KanadeK/codex-skill-harvester",
+  "skills": "./skills/",
+  "version": "0.1.0"
+}

@@ -1,0 +1,12 @@
+{
+  "backend": "sqlite-v3",
+  "candidates": 110,
+  "decisions": 110,
+  "legacy_sha256": "ddfc0fa74dfef3ab56644445aba527c00935658a9446150155e9b88ccb883de9",
+  "evidence_packs": 110,
+  "observations": 419,
+  "pending_candidates": 0,
+  "pr7_observations_reclassified": 209,
+  "schema_version": 3,
+  "source_states": 14
+}

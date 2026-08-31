@@ -165,7 +165,7 @@
         "github release audit",
         "release evidence audit"
       ],
-      "artifact_sha256": "55501c46b8ad4c52fbcad92953be63aabf343542e9b43941ade9aef0f4452719",
+      "artifact_sha256": "6d76bb6631aee1ccd2be3dd40cddaa22bdf112f1175780f5a364662f82c9d561",
       "classification": {
         "facets": {
           "domain": [
@@ -258,9 +258,10 @@
         "openai-build-plugins"
       ],
       "plugin_id": "github-release-evidence",
-      "revision": 3,
+      "revision": 4,
       "skill_name": "audit-github-release",
       "source_refs": [
+        "github-artifact-attestations",
         "github-cli-api",
         "github-cli-pr-checks",
         "github-cli-release-view",
@@ -272,7 +273,128 @@
         "openai-gh-address-comments",
         "openai-gh-fix-ci"
       ],
-      "updated_at": "2026-08-27T13:00:38Z",
+      "updated_at": "2026-08-29T18:36:00Z",
+      "variants": []
+    },
+    {
+      "aliases": [
+        "python release readiness",
+        "pypi publishing preflight",
+        "python distribution audit"
+      ],
+      "artifact_sha256": "42b52d7e6da043001035e53975b6d59e2375b1d3a1d25eafcfe91df184fc8a83",
+      "classification": {
+        "facets": {
+          "domain": [
+            "software"
+          ],
+          "inputs": [
+            "file",
+            "repository"
+          ],
+          "intent": [
+            "validate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "evidence",
+            "report"
+          ],
+          "platforms": [
+            "codex",
+            "github-actions",
+            "linux",
+            "macos",
+            "windows"
+          ],
+          "risk": [
+            "standard"
+          ],
+          "side_effects": [
+            "local-write",
+            "read-only"
+          ],
+          "tools": [
+            "codex",
+            "python"
+          ],
+          "trust": [
+            "official",
+            "primary"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "software.release-assurance"
+      },
+      "created_at": "2026-08-29T18:35:00Z",
+      "fingerprint": {
+        "goal": "audit python distribution artifacts and publishing workflow readiness before publication",
+        "inputs": [
+          "optional github actions publishing workflow",
+          "pyproject.toml",
+          "source distribution",
+          "wheel files"
+        ],
+        "outputs": [
+          "artifact consistency findings",
+          "publishing workflow findings",
+          "release readiness report"
+        ],
+        "platforms": [
+          "github actions",
+          "pypi",
+          "python packaging",
+          "windows macos and linux"
+        ],
+        "side_effects": [
+          "local-read",
+          "temporary-local-write"
+        ],
+        "tools": [
+          "python standard library",
+          "tarfile",
+          "tomllib",
+          "zipfile"
+        ],
+        "triggers": [
+          "audit these sdist and wheel files before a pypi release",
+          "check whether this python package is ready to publish",
+          "review a pypi trusted publishing workflow without publishing"
+        ]
+      },
+      "id": "software.python-release-readiness",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml",
+        "references/readiness-contract.md",
+        "scripts/inspect_dist.py"
+      ],
+      "merged_source_refs": [
+        "pypa-single-source-version"
+      ],
+      "plugin_id": "python-package-delivery",
+      "revision": 1,
+      "skill_name": "audit-python-release-readiness",
+      "source_refs": [
+        "pypa-build-readme",
+        "pypa-core-metadata",
+        "pypa-packaging-tutorial",
+        "pypa-publish-action-readme",
+        "pypa-publish-github-actions",
+        "pypa-single-source-version",
+        "pypa-source-distribution-spec",
+        "pypa-testpypi",
+        "pypa-twine-readme",
+        "pypa-wheel-spec",
+        "pypi-attestations-produce",
+        "pypi-trusted-publisher-security",
+        "pypi-trusted-publisher-use"
+      ],
+      "updated_at": "2026-08-29T18:56:00Z",
       "variants": []
     }
   ],

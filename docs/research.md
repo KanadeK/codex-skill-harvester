@@ -69,6 +69,12 @@ The first original Skill will use official GitHub CLI documentation and GitHub A
 
 Representative external comparisons will include official `gh-fix-ci` and `gh-address-comments` metadata/fingerprints without copying their bodies.
 
+## 2026-08-29 content-production sources
+
+The first content-driven production batch used the exact registered PyPA, PyPI, and GitHub sources recorded on `software.python-release-readiness`. The synthesis combines official distribution-format/core-metadata specifications, the PyPA build and publishing guides, TestPyPI guidance, PyPI Trusted Publishing/security and attestation documentation, and the official PyPA publishing action. The generated Skill text and checker are original; raw source bodies remain ignored cache data.
+
+The official single-source-version guide was initially a redirect-only endpoint. After the registry URL was corrected, its live content was reviewed and merged into the Python release-readiness capability rather than split into another Skill. A query-selected PyPA sampleproject README was retained as evidence but not promoted because it explicitly is not a complete development or release workflow. GitHub artifact-attestation guidance updated the existing GitHub Release audit as one optional provenance gate; provenance is not treated as safety proof.
+
 ## Maintenance automation authority
 
 - GitHub `GITHUB_TOKEN` event behavior: https://docs.github.com/en/actions/concepts/security/github_token

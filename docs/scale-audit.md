@@ -38,7 +38,7 @@ Filesystem traversal, Git metadata, antivirus scanning, checkout, and CI time be
 
 The state sample uses about 21.8 KB for 100 seen entries plus fixed metadata. Linear extrapolation is deliberately conservative: 100,000 source items can make a tens-of-megabytes single rewrite, while one million can make it hundreds of megabytes.
 
-## Decision
+## Historical decision (superseded)
 
 Keep Git-JSON now. It is transparent, dependency-free, transactional at current volume, and below every migration trigger. Add bounded review and measurement first.
 
@@ -74,7 +74,11 @@ CI uses a smaller deterministic fixture to prove the benchmark remains runnable 
 
 The fixture deliberately keeps each JSON payload small, so these timings isolate the current three-files-per-lifecycle traversal shape rather than reproduce the projected 37.6 MB of real candidate payload. The 10,000-record result confirms that filesystem enumeration, per-file open/parse work, Git metadata, and local antivirus effects can dominate raw bytes.
 
-The same benchmark command measured current in-process full repository validation at 0.178 seconds and passed that value into trigger evaluation. This does not trigger an immediate migration: the real repository still has 110 candidate records, 330 lifecycle files, a 21,772-byte harvest state, 100 seen source items, and no active trigger. It does show that the 60-second full-validation trigger is likely to open a migration evaluation before the 150,000-file ceiling as the repository grows. The backend remains `git-json-v1` until a real trigger is crossed and an ADR selects the replacement.
+The same benchmark command measured current in-process full repository validation at 0.178 seconds and passed that value into trigger evaluation. At the time, this did not trigger an immediate migration: the real repository still had 110 candidate records, 330 lifecycle files, a 21,772-byte harvest state, 100 seen source items, and no active trigger. The 30,000-file benchmark nevertheless exposed the filesystem traversal bottleneck that ADR-002 later used for the SQLite cutover.
+
+## 2026-08-29 cutover
+
+ADR-002 supersedes the historical decision above. The original one-time import recorded 13 source states, 110 observations, 110 reviewed candidates, and 110 decisions with legacy digest `ddfc0fa74dfef3ab56644445aba527c00935658a9446150155e9b88ccb883de9`. During PR #7 the live source state reached 14 sources and 209 additional evidence records; the final schema-3 cutover preserved every observation, created Evidence Packs only for reviewed legacy records, and added query/content batches without a second authority. Active JSON lifecycle files are removed at cutover; Git history and the migration manifest preserve the audit trail. The current production slice has 30 source cursors, 462 observations, 117 Evidence Packs, and 113 reviewed candidates/decisions. The active benchmark measures SQLite reads/writes and retains the JSON benchmark only as a historical baseline.
 
 ## Limitations
 
