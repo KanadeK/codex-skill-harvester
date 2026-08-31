@@ -30,11 +30,18 @@ class RuntimeStoreError(ValueError):
 
 
 def discovery_hit_id(hit: dict[str, Any]) -> str:
-    seed = {
-        "route": hit["route"],
-        "repository": hit["repository"].casefold(),
-        "path": hit.get("path"),
-    }
+    seed = (
+        {
+            "route": hit["route"],
+            "url": hit["url"].split("#", 1)[0],
+        }
+        if hit["route"] == "web"
+        else {
+            "route": hit["route"],
+            "repository": hit["repository"].casefold(),
+            "path": hit.get("path"),
+        }
+    )
     return sha256_bytes(b"discovery-hit\0" + canonical_json_bytes(seed))[:24]
 
 
@@ -882,6 +889,44 @@ class RuntimeStore:
                 )
                 applied += 1
         return {"applied": applied, "no_op": no_op}
+
+    def reopen_failed_discovery_selection(
+        self, *, hit_id: str, reopened_at: str, reason: str
+    ) -> dict[str, Any]:
+        self.validate()
+        with self.connection:
+            row = self.connection.execute(
+                "SELECT status, selected_source_id, record_json "
+                "FROM discovery_hits WHERE id = ?",
+                (hit_id,),
+            ).fetchone()
+            if row is None or row["status"] != "selected_endpoint":
+                raise RuntimeStoreError(
+                    "only a selected discovery hit can be reopened"
+                )
+            source_id = str(row["selected_source_id"])
+            if self.source_state(source_id):
+                raise RuntimeStoreError(
+                    "a successfully scanned selected source cannot be reopened"
+                )
+            record = _json_value(row["record_json"])
+            history = list(record.get("review_history", []))
+            history.append(record["review"])
+            record.update(
+                {
+                    "status": "pending",
+                    "review": None,
+                    "review_history": history,
+                    "last_reopened_at": reopened_at,
+                    "last_reopen_reason": reason,
+                }
+            )
+            self.connection.execute(
+                "UPDATE discovery_hits SET status = 'pending', reviewed_at = NULL, "
+                "selected_source_id = NULL, record_json = ? WHERE id = ?",
+                (_json_text(record), hit_id),
+            )
+        return {"hit_id": hit_id, "source_id": source_id}
 
     def discovery_hit_cycles(self, hit_ids: set[str]) -> list[str]:
         self.validate()

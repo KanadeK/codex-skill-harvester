@@ -59,12 +59,14 @@ class RepositoryValidationTests(unittest.TestCase):
 
         report = validate_repository(root)
 
-        self.assertEqual(report["plugins"], 8)
-        self.assertEqual(report["skills"], 8)
-        self.assertEqual(report["internal_capabilities"], 8)
+        self.assertEqual(report["plugins"], 11)
+        self.assertEqual(report["skills"], 17)
+        self.assertEqual(report["internal_capabilities"], 17)
         self.assertEqual(report["taxonomy_version"], "1.2.0")
         self.assertEqual(report["scale_backend"], "sqlite-v4")
-        self.assertEqual(report["evidence_packs"], 168)
+        self.assertEqual(report["evidence_packs"], 180)
+        self.assertEqual(report["daily_life_scenarios"], 63)
+        self.assertEqual(report["daily_life_scenario_pending"], 0)
         self.assertEqual(report["topic_queries"], len(load_topic_bank(root)))
         self.assertEqual(report["migration_triggers"], [])
         self.assertEqual(report["secrets_found"], 0)
@@ -305,17 +307,37 @@ class RepositoryValidationTests(unittest.TestCase):
             path = next(
                 path
                 for path in (root / "runs").glob("*-queries.json")
-                if json.loads(path.read_text(encoding="utf-8")).get("aggregation")
-                == "cycle"
+                if json.loads(path.read_text(encoding="utf-8")).get("cycle_id")
+                == "full-campaign-2026-08-30"
             )
             report = json.loads(path.read_text(encoding="utf-8"))
-            report["discovery_review"]["pending"] -= 1
+            report["discovery_review"]["duplicate"] -= 1
             report["discovery_review"]["not_selected"] += 1
-            report["discovery_review"]["reviewed"] += 1
             path.write_text(json.dumps(report), encoding="utf-8")
 
             with self.assertRaisesRegex(
                 ValidationError, "discovery review differs from SQLite"
+            ):
+                validate_repository(root)
+
+    def test_rejects_forged_daily_life_pilot_report(self) -> None:
+        source = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            shutil.copytree(
+                source,
+                root,
+                ignore=shutil.ignore_patterns(
+                    ".git", "dist", ".harvester-cache", "__pycache__", "*.pyc"
+                ),
+            )
+            path = root / "runs" / "2026-08-31-daily-life-pilot.json"
+            report = json.loads(path.read_text(encoding="utf-8"))
+            report["scenarios"]["total"] += 1
+            path.write_text(json.dumps(report), encoding="utf-8")
+
+            with self.assertRaisesRegex(
+                ValidationError, "Daily Life report does not match"
             ):
                 validate_repository(root)
 

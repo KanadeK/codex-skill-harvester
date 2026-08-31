@@ -1,0 +1,146 @@
+{
+  "artifacts": {
+    "plugins": 3,
+    "release_published": false,
+    "skills": 9
+  },
+  "checkpoint": {
+    "continuation": "Start the next explicit Daily Life discovery cycle from SQLite cursors."
+  },
+  "discovery_hits": {
+    "conversion_rate": 0.722222,
+    "duplicate": 0,
+    "not_selected": 5,
+    "pending": 0,
+    "raw_hits": 20,
+    "reviewed": 18,
+    "selected_endpoint": 13,
+    "selected_source_ids": [
+      "canada-textile-care-symbols",
+      "cdc-bleach-mixing-safety",
+      "csu-ingredient-substitutions",
+      "fda-food-allergy-boundaries",
+      "fda-select-store-seafood",
+      "hk-cfs-cooking-safety-zh",
+      "hk-cfs-food-purchase-zh",
+      "hk-cfs-food-waste-storage",
+      "hk-cfs-food-waste-zh",
+      "hk-consumer-laundry-machine-zh",
+      "samsung-washer-cycle-guidance",
+      "usfa-cooking-fire-safety",
+      "woolmark-wool-sweater-care"
+    ],
+    "unique_hits": 18
+  },
+  "evals": {
+    "files": 9,
+    "instruction_scenarios": 27,
+    "modes_per_skill": [
+      "plan",
+      "live",
+      "recovery"
+    ]
+  },
+  "generated_at": "2026-08-31T05:30:00Z",
+  "inputs": {
+    "query_no_op": "runs/daily-life-pilot-2026-08-30-query-export.json",
+    "query_summary": "runs/daily-life-pilot-2026-08-30-queries.json",
+    "scenario_bank": "catalog/scenario-bank.json",
+    "semantic_no_op": "runs/2026-08-31T04-38-50.821414Z-semantic-export.json",
+    "source_metadata": "config/daily-life-sources.json",
+    "stable_source_no_op": "runs/2026-08-31T04-39-08.958543Z-scan.json"
+  },
+  "l4": {
+    "create": 9,
+    "merge": 0,
+    "not_promoted": 0,
+    "update": 0
+  },
+  "pending": {
+    "discovery_hits": 0,
+    "l4_candidates": 0,
+    "semantic_observations": 0
+  },
+  "queries": {
+    "attempts": 20,
+    "completed": 20,
+    "failures": 0,
+    "result_count": 20
+  },
+  "replay": {
+    "query": "no_op",
+    "semantic": "no_op",
+    "stable_source": "hk-cfs-food-purchase-zh",
+    "stable_source_result": "no_op"
+  },
+  "report_type": "daily-life-pilot",
+  "risk": {
+    "automatic_high_risk_publication": "blocked",
+    "not_promoted_evidence_packs": 3,
+    "not_promoted_scenarios": 9
+  },
+  "scenarios": {
+    "by_family": {
+      "fresh-market-and-grocery-shopping": 21,
+      "home-cooking-and-meal-preparation": 21,
+      "laundry-and-clothing-care": 21
+    },
+    "outcomes": {
+      "create": 9,
+      "merge": 45,
+      "not_promoted": 9
+    },
+    "pending": 0,
+    "total": 63
+  },
+  "schema_version": 1,
+  "semantic": {
+    "evidence_packs": 12,
+    "l2_matches": 0,
+    "l3_recalls": 156,
+    "normalized_candidates": 9,
+    "not_promoted_evidence_packs": 3,
+    "observations": 13
+  },
+  "sources": {
+    "by_family": {
+      "fresh-market-and-grocery-shopping": 3,
+      "home-cooking-and-meal-preparation": 5,
+      "laundry-and-clothing-care": 5
+    },
+    "by_language": {
+      "en": 9,
+      "zh-Hant": 4
+    },
+    "by_region": {
+      "Canada": 1,
+      "Global": 1,
+      "Hong Kong": 5,
+      "United States": 6
+    },
+    "downloaded_bytes": 1283848,
+    "failures": 0,
+    "observations": 13,
+    "requests": 14,
+    "scanned": 13,
+    "selected": 13,
+    "selection_failure_source_ids": [
+      "foodsafety-safe-temperatures",
+      "usda-fsis-safe-temperatures",
+      "usda-myplate-budget-planning",
+      "usda-snaped-meal-planning",
+      "usu-seasonal-meal-planning"
+    ],
+    "selection_failures": 5,
+    "successes": 14
+  },
+  "status": "complete",
+  "usage": {
+    "credits": {
+      "measured": false
+    },
+    "semantic_review_tokens": {
+      "measured": false
+    }
+  }
+}

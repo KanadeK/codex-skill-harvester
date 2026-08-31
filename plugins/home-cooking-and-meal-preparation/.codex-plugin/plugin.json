@@ -1,0 +1,34 @@
+{
+  "author": {
+    "name": "KanadeK"
+  },
+  "description": "Plan a home meal, adapt missing ingredients, and verify doneness and leftovers.",
+  "homepage": "https://github.com/KanadeK/codex-skill-harvester",
+  "interface": {
+    "capabilities": [
+      "Read"
+    ],
+    "category": "Lifestyle",
+    "defaultPrompt": [
+      "按人数、时间、现有食材和厨具帮我安排这顿饭。",
+      "这个材料缺了，按作用帮我找替代并调整用量。",
+      "帮我判断食物是否熟了，剩菜怎么冷却保存和复热。"
+    ],
+    "developerName": "KanadeK",
+    "displayName": "Home Cooking and Meal Preparation",
+    "longDescription": "Interactive household guidance for scoping and sequencing a meal, substituting ingredients by function, checking food doneness, and handling leftovers with clear allergen, knife, heat, and fire stop boundaries.",
+    "shortDescription": "Plan, adapt, and check a home meal"
+  },
+  "keywords": [
+    "cooking",
+    "meal-planning",
+    "ingredient-substitution",
+    "leftovers",
+    "daily-life"
+  ],
+  "license": "MIT",
+  "name": "home-cooking-and-meal-preparation",
+  "repository": "https://github.com/KanadeK/codex-skill-harvester",
+  "skills": "./skills/",
+  "version": "0.1.0"
+}

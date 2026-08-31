@@ -126,6 +126,11 @@ def _parser() -> argparse.ArgumentParser:
     query_export.add_argument("--root", type=Path, default=Path.cwd())
     query_export.add_argument("--cycle", required=True)
     query_export.add_argument("--limit", type=int, required=True)
+    query_export.add_argument(
+        "--source-group",
+        action="append",
+        help="limit this cycle to one or more Topic Bank source groups",
+    )
     query_export.add_argument("--output", type=Path, required=True)
     query_import = commands.add_parser(
         "query-import", help="import factual results from an executed query batch"
@@ -245,6 +250,7 @@ def main(
                 cycle_id=args.cycle,
                 limit=args.limit,
                 output_path=args.output.resolve(),
+                source_groups=set(args.source_group) if args.source_group else None,
             )
             print(json.dumps(report, indent=2, sort_keys=True))
             return 0

@@ -1719,6 +1719,914 @@
       ],
       "updated_at": "2026-08-30T15:37:00Z",
       "variants": []
+    },
+    {
+      "aliases": [
+        "market shopping plan",
+        "买菜计划"
+      ],
+      "artifact_sha256": "1f32c55804b57f0e43afed8d98cf5936ce455b05519d1b2e38c0c905d7c13bd8",
+      "classification": {
+        "facets": {
+          "domain": [
+            "daily-life"
+          ],
+          "inputs": [
+            "food",
+            "household-context",
+            "shopping-needs"
+          ],
+          "intent": [
+            "create",
+            "operate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "decision",
+            "instructions",
+            "plan"
+          ],
+          "platforms": [
+            "fresh-market",
+            "grocery-store"
+          ],
+          "risk": [
+            "food-safety",
+            "standard"
+          ],
+          "side_effects": [
+            "household-consumption",
+            "human-physical-action"
+          ],
+          "tools": [
+            "codex"
+          ],
+          "trust": [
+            "official"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "daily-life.fresh-market-and-grocery-shopping"
+      },
+      "created_at": "2026-08-31T04:50:00Z",
+      "fingerprint": {
+        "goal": "plan a fresh-market or grocery trip for a household",
+        "inputs": [
+          "budget and dietary constraints",
+          "existing food and storage space",
+          "household size and meals",
+          "local availability and travel time"
+        ],
+        "outputs": [
+          "bounded shopping list",
+          "quantity and substitution decisions",
+          "stall or aisle route",
+          "transport and separation plan"
+        ],
+        "platforms": [
+          "fresh market",
+          "grocery store",
+          "home"
+        ],
+        "side_effects": [
+          "human purchases and transports food"
+        ],
+        "tools": [
+          "codex guidance",
+          "household inventory",
+          "shopping list"
+        ],
+        "triggers": [
+          "plan my grocery or fresh-market trip",
+          "帮我按预算和人数列菜市场采购清单"
+        ]
+      },
+      "id": "daily-life.fresh-market-shopping-plan",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "fresh-market-and-grocery-shopping",
+      "revision": 1,
+      "skill_name": "plan-fresh-market-trip",
+      "source_refs": [
+        "hk-cfs-food-purchase-zh",
+        "hk-cfs-food-waste-storage"
+      ],
+      "updated_at": "2026-08-31T04:50:00Z",
+      "variants": [
+        "market-layout and regional-unit variants"
+      ]
+    },
+    {
+      "aliases": [
+        "fresh food screening",
+        "挑选新鲜食材"
+      ],
+      "artifact_sha256": "d9e16e2160531acb230bc481df18ae14572cbb3273b1ad0e628e276badafe2c1",
+      "classification": {
+        "facets": {
+          "domain": [
+            "daily-life"
+          ],
+          "inputs": [
+            "food",
+            "household-context"
+          ],
+          "intent": [
+            "analyze",
+            "operate",
+            "validate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "decision",
+            "evidence",
+            "instructions"
+          ],
+          "platforms": [
+            "fresh-market",
+            "grocery-store"
+          ],
+          "risk": [
+            "food-safety",
+            "standard"
+          ],
+          "side_effects": [
+            "household-consumption",
+            "human-physical-action"
+          ],
+          "tools": [
+            "codex"
+          ],
+          "trust": [
+            "official"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "daily-life.fresh-market-and-grocery-shopping"
+      },
+      "created_at": "2026-08-31T04:51:00Z",
+      "fingerprint": {
+        "goal": "choose and transport fresh perishable groceries using observable rejection clues",
+        "inputs": [
+          "food type",
+          "observable package and product condition",
+          "planned use date",
+          "travel time and cooling method"
+        ],
+        "outputs": [
+          "buy or reject decision",
+          "limits of observable clues",
+          "separation and cold-transport plan"
+        ],
+        "platforms": [
+          "fresh market",
+          "grocery store",
+          "transport to home"
+        ],
+        "side_effects": [
+          "human inspects purchases and transports perishable food"
+        ],
+        "tools": [
+          "codex guidance",
+          "cool bag when available",
+          "user observation"
+        ],
+        "triggers": [
+          "help me choose and carry fresh perishable food",
+          "这个鱼肉蛋菜新不新鲜怎么挑"
+        ]
+      },
+      "id": "daily-life.choose-fresh-perishables",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "fresh-market-and-grocery-shopping",
+      "revision": 1,
+      "skill_name": "choose-fresh-perishables",
+      "source_refs": [
+        "fda-select-store-seafood",
+        "hk-cfs-food-purchase-zh"
+      ],
+      "updated_at": "2026-08-31T04:51:00Z",
+      "variants": [
+        "produce egg meat and seafood variants"
+      ]
+    },
+    {
+      "aliases": [
+        "grocery storage priority",
+        "食材收纳和先吃顺序"
+      ],
+      "artifact_sha256": "3bd50c02356c00f096d64223e7cd172bb50278617c931d5147dcafb86d577c45",
+      "classification": {
+        "facets": {
+          "domain": [
+            "daily-life"
+          ],
+          "inputs": [
+            "food",
+            "household-context"
+          ],
+          "intent": [
+            "maintain",
+            "operate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "decision",
+            "instructions",
+            "plan"
+          ],
+          "platforms": [
+            "home-kitchen"
+          ],
+          "risk": [
+            "food-safety",
+            "standard"
+          ],
+          "side_effects": [
+            "household-consumption",
+            "human-physical-action"
+          ],
+          "tools": [
+            "codex"
+          ],
+          "trust": [
+            "official"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "daily-life.fresh-market-and-grocery-shopping"
+      },
+      "created_at": "2026-08-31T04:52:00Z",
+      "fingerprint": {
+        "goal": "put away groceries and decide what to use first",
+        "inputs": [
+          "planned meals and use dates",
+          "purchased foods and package labels",
+          "refrigerator freezer and pantry space"
+        ],
+        "outputs": [
+          "eat-first priority",
+          "label and discard checks",
+          "storage destination plan",
+          "waste-reduction actions"
+        ],
+        "platforms": [
+          "freezer",
+          "home kitchen",
+          "pantry",
+          "refrigerator"
+        ],
+        "side_effects": [
+          "human stores labels freezes or discards food"
+        ],
+        "tools": [
+          "codex guidance",
+          "food labels",
+          "storage containers"
+        ],
+        "triggers": [
+          "help me put groceries away and prioritize them",
+          "买菜回来怎么分类放冰箱先吃什么"
+        ]
+      },
+      "id": "daily-life.put-away-groceries",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "fresh-market-and-grocery-shopping",
+      "revision": 1,
+      "skill_name": "put-away-groceries",
+      "source_refs": [
+        "hk-cfs-food-waste-storage"
+      ],
+      "updated_at": "2026-08-31T04:52:00Z",
+      "variants": [
+        "refrigerator freezer and pantry variants"
+      ]
+    },
+    {
+      "aliases": [
+        "laundry sorting",
+        "洗衣分桶"
+      ],
+      "artifact_sha256": "3579d1ff63579f290f2427afce5120eed79dddca9502034365529fe14e9db777",
+      "classification": {
+        "facets": {
+          "domain": [
+            "daily-life"
+          ],
+          "inputs": [
+            "clothing",
+            "household-context"
+          ],
+          "intent": [
+            "analyze",
+            "operate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "decision",
+            "instructions",
+            "plan"
+          ],
+          "platforms": [
+            "laundry-area"
+          ],
+          "risk": [
+            "physical-safety",
+            "standard"
+          ],
+          "side_effects": [
+            "human-physical-action"
+          ],
+          "tools": [
+            "codex"
+          ],
+          "trust": [
+            "official"
+          ],
+          "volatility": [
+            "stable"
+          ]
+        },
+        "primary_family": "daily-life.laundry-and-clothing-care"
+      },
+      "created_at": "2026-08-31T05:00:00Z",
+      "fingerprint": {
+        "goal": "read clothing care labels and sort a compatible laundry load",
+        "inputs": [
+          "available drying methods",
+          "care symbols or label text",
+          "colors fabrics soil and stain condition"
+        ],
+        "outputs": [
+          "compatible load groups",
+          "items requiring hand wash or professional care",
+          "label interpretation"
+        ],
+        "platforms": [
+          "home",
+          "laundry area"
+        ],
+        "side_effects": [
+          "human sorts clothing before washing"
+        ],
+        "tools": [
+          "codex guidance",
+          "garment care labels"
+        ],
+        "triggers": [
+          "read these care labels and sort my laundry",
+          "帮我看洗护标签并把衣服分批"
+        ]
+      },
+      "id": "daily-life.sort-laundry-load",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "laundry-and-clothing-care",
+      "revision": 1,
+      "skill_name": "sort-laundry-load",
+      "source_refs": [
+        "canada-textile-care-symbols",
+        "cdc-bleach-mixing-safety"
+      ],
+      "updated_at": "2026-08-31T05:00:00Z",
+      "variants": [
+        "colour fabric soil and drying variants"
+      ]
+    },
+    {
+      "aliases": [
+        "washer cycle selection",
+        "洗衣机程序和用量"
+      ],
+      "artifact_sha256": "b30521bef0ed63af9f1b94020137494a2aa659f142d0e97fc860be741a21f300",
+      "classification": {
+        "facets": {
+          "domain": [
+            "daily-life"
+          ],
+          "inputs": [
+            "clothing",
+            "document",
+            "household-context"
+          ],
+          "intent": [
+            "operate",
+            "validate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "decision",
+            "instructions",
+            "plan"
+          ],
+          "platforms": [
+            "laundry-area"
+          ],
+          "risk": [
+            "physical-safety",
+            "standard"
+          ],
+          "side_effects": [
+            "human-physical-action"
+          ],
+          "tools": [
+            "codex",
+            "household-appliance"
+          ],
+          "trust": [
+            "official"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "daily-life.laundry-and-clothing-care"
+      },
+      "created_at": "2026-08-31T05:01:00Z",
+      "fingerprint": {
+        "goal": "choose washer settings and detergent for a prepared laundry load",
+        "inputs": [
+          "soil stains load size and detergent instructions",
+          "sorted load and care labels",
+          "washer make model and manual"
+        ],
+        "outputs": [
+          "cycle temperature spin and dose plan",
+          "model-specific manual lookup",
+          "post-wash checks and safe recovery"
+        ],
+        "platforms": [
+          "household washing machine",
+          "laundry area"
+        ],
+        "side_effects": [
+          "human configures and runs a washing machine"
+        ],
+        "tools": [
+          "codex guidance",
+          "detergent label",
+          "exact washer manual"
+        ],
+        "triggers": [
+          "choose washer settings and detergent for this load",
+          "这桶衣服洗衣机选什么程序温度转速"
+        ]
+      },
+      "id": "daily-life.choose-washer-settings",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "laundry-and-clothing-care",
+      "revision": 1,
+      "skill_name": "choose-washer-settings",
+      "source_refs": [
+        "cdc-bleach-mixing-safety",
+        "hk-consumer-laundry-machine-zh",
+        "samsung-washer-cycle-guidance"
+      ],
+      "updated_at": "2026-08-31T05:01:00Z",
+      "variants": [
+        "model manual load and residue variants"
+      ]
+    },
+    {
+      "aliases": [
+        "wool sweater care",
+        "羊毛衫洗护"
+      ],
+      "artifact_sha256": "a64c4fb2f5d0d50ad1d6305a8c5aef18b59804e33b742bb499bac3b55d771576",
+      "classification": {
+        "facets": {
+          "domain": [
+            "daily-life"
+          ],
+          "inputs": [
+            "clothing",
+            "household-context"
+          ],
+          "intent": [
+            "maintain",
+            "operate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "decision",
+            "instructions"
+          ],
+          "platforms": [
+            "laundry-area"
+          ],
+          "risk": [
+            "physical-safety",
+            "standard"
+          ],
+          "side_effects": [
+            "human-physical-action"
+          ],
+          "tools": [
+            "codex",
+            "household-appliance"
+          ],
+          "trust": [
+            "primary"
+          ],
+          "volatility": [
+            "stable"
+          ]
+        },
+        "primary_family": "daily-life.laundry-and-clothing-care"
+      },
+      "created_at": "2026-08-31T05:02:00Z",
+      "fingerprint": {
+        "goal": "wash and dry wool knitwear without exceeding its care label",
+        "inputs": [
+          "drying space",
+          "stain and shape condition",
+          "washer wool-cycle availability",
+          "wool garment care label"
+        ],
+        "outputs": [
+          "gentle wash steps",
+          "machine hand-wash or professional-care decision",
+          "reshape and drying checks"
+        ],
+        "platforms": [
+          "flat drying surface",
+          "hand-wash basin",
+          "laundry area"
+        ],
+        "side_effects": [
+          "human washes reshapes and dries wool clothing"
+        ],
+        "tools": [
+          "care label",
+          "codex guidance",
+          "wool detergent when permitted"
+        ],
+        "triggers": [
+          "help me wash and dry this wool sweater",
+          "这件羊毛衫怎么洗才不缩水变形"
+        ]
+      },
+      "id": "daily-life.wash-wool-knitwear",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "laundry-and-clothing-care",
+      "revision": 1,
+      "skill_name": "wash-wool-knitwear",
+      "source_refs": [
+        "canada-textile-care-symbols",
+        "woolmark-wool-sweater-care"
+      ],
+      "updated_at": "2026-08-31T05:02:00Z",
+      "variants": [
+        "machine hand wash and professional-care variants"
+      ]
+    },
+    {
+      "aliases": [
+        "home meal timeline",
+        "一顿饭备菜顺序"
+      ],
+      "artifact_sha256": "61dfe79f170ee51d24ec91b5b1696cf67ce0fc568ed5f4c1453cbcf585bffaf0",
+      "classification": {
+        "facets": {
+          "domain": [
+            "daily-life"
+          ],
+          "inputs": [
+            "food",
+            "household-context"
+          ],
+          "intent": [
+            "create",
+            "operate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "instructions",
+            "plan"
+          ],
+          "platforms": [
+            "home-kitchen"
+          ],
+          "risk": [
+            "allergen",
+            "food-safety",
+            "physical-safety",
+            "standard"
+          ],
+          "side_effects": [
+            "household-consumption",
+            "human-physical-action"
+          ],
+          "tools": [
+            "codex",
+            "kitchen-tools"
+          ],
+          "trust": [
+            "official"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "daily-life.home-cooking-and-meal-preparation"
+      },
+      "created_at": "2026-08-31T05:03:00Z",
+      "fingerprint": {
+        "goal": "plan and sequence a home meal from household constraints and available food",
+        "inputs": [
+          "allergen and safety constraints",
+          "available food and use priority",
+          "people portions and preferences",
+          "time and kitchen equipment"
+        ],
+        "outputs": [
+          "completion and leftover plan",
+          "meal scope and portions",
+          "missing-item list",
+          "prep and cooking timeline"
+        ],
+        "platforms": [
+          "home kitchen"
+        ],
+        "side_effects": [
+          "human prepares and cooks a meal"
+        ],
+        "tools": [
+          "codex guidance",
+          "kitchen tools available to the user",
+          "timer when useful"
+        ],
+        "triggers": [
+          "plan this home meal and give me a cooking timeline",
+          "按人数时间现有食材帮我安排一顿饭和备菜顺序"
+        ]
+      },
+      "id": "daily-life.plan-home-meal",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "home-cooking-and-meal-preparation",
+      "revision": 1,
+      "skill_name": "plan-home-meal",
+      "source_refs": [
+        "fda-food-allergy-boundaries",
+        "hk-cfs-cooking-safety-zh",
+        "hk-cfs-food-waste-zh",
+        "usfa-cooking-fire-safety"
+      ],
+      "updated_at": "2026-08-31T05:03:00Z",
+      "variants": [
+        "plan live-step and recovery modes"
+      ]
+    },
+    {
+      "aliases": [
+        "functional ingredient substitution",
+        "食材按作用替代"
+      ],
+      "artifact_sha256": "15fe5b1459e59ff716178dfa8cb38bdb652c721b2ee3b08bb4976ad3a5c8aa60",
+      "classification": {
+        "facets": {
+          "domain": [
+            "daily-life"
+          ],
+          "inputs": [
+            "food",
+            "household-context"
+          ],
+          "intent": [
+            "analyze",
+            "transform"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "decision",
+            "instructions"
+          ],
+          "platforms": [
+            "home-kitchen"
+          ],
+          "risk": [
+            "allergen",
+            "food-safety",
+            "standard"
+          ],
+          "side_effects": [
+            "household-consumption",
+            "human-physical-action"
+          ],
+          "tools": [
+            "codex",
+            "kitchen-tools"
+          ],
+          "trust": [
+            "official",
+            "primary"
+          ],
+          "volatility": [
+            "stable"
+          ]
+        },
+        "primary_family": "daily-life.home-cooking-and-meal-preparation"
+      },
+      "created_at": "2026-08-31T05:04:00Z",
+      "fingerprint": {
+        "goal": "replace a missing cooking ingredient by preserving its function",
+        "inputs": [
+          "allergy and safety constraints",
+          "available alternatives",
+          "dish and recipe role",
+          "missing ingredient and amount"
+        ],
+        "outputs": [
+          "expected texture flavor or risk change",
+          "function classification",
+          "quantity and connected adjustment",
+          "ranked compatible substitutes"
+        ],
+        "platforms": [
+          "home kitchen"
+        ],
+        "side_effects": [
+          "human changes ingredients and cooking process"
+        ],
+        "tools": [
+          "codex guidance",
+          "measuring tools"
+        ],
+        "triggers": [
+          "substitute this missing ingredient without breaking the dish",
+          "做饭缺这个材料能用什么替代"
+        ]
+      },
+      "id": "daily-life.substitute-ingredient-by-function",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "home-cooking-and-meal-preparation",
+      "revision": 1,
+      "skill_name": "substitute-ingredient-by-function",
+      "source_refs": [
+        "csu-ingredient-substitutions",
+        "fda-food-allergy-boundaries"
+      ],
+      "updated_at": "2026-08-31T05:04:00Z",
+      "variants": [
+        "cooking and baking function variants"
+      ]
+    },
+    {
+      "aliases": [
+        "food doneness and leftovers",
+        "熟度剩菜检查"
+      ],
+      "artifact_sha256": "b1859db9206e0098b3a27a66079be4a33fd6fc24606ee7fb52315c8c40ee9cd5",
+      "classification": {
+        "facets": {
+          "domain": [
+            "daily-life"
+          ],
+          "inputs": [
+            "food",
+            "household-context"
+          ],
+          "intent": [
+            "operate",
+            "validate"
+          ],
+          "maturity": [
+            "published"
+          ],
+          "outputs": [
+            "decision",
+            "evidence",
+            "instructions"
+          ],
+          "platforms": [
+            "home-kitchen"
+          ],
+          "risk": [
+            "allergen",
+            "food-safety",
+            "physical-safety",
+            "standard"
+          ],
+          "side_effects": [
+            "household-consumption",
+            "human-physical-action"
+          ],
+          "tools": [
+            "codex",
+            "kitchen-tools"
+          ],
+          "trust": [
+            "official"
+          ],
+          "volatility": [
+            "periodic"
+          ]
+        },
+        "primary_family": "daily-life.home-cooking-and-meal-preparation"
+      },
+      "created_at": "2026-08-31T05:05:00Z",
+      "fingerprint": {
+        "goal": "check food doneness and handle leftovers safely",
+        "inputs": [
+          "elapsed room-temperature time",
+          "food type thickness and cooking method",
+          "storage and reheating equipment",
+          "thermometer availability"
+        ],
+        "outputs": [
+          "doneness check",
+          "hold cool store reheat or discard decision",
+          "observable completion and stop signals"
+        ],
+        "platforms": [
+          "freezer",
+          "home kitchen",
+          "refrigerator"
+        ],
+        "side_effects": [
+          "human cooks cools stores reheats or discards food"
+        ],
+        "tools": [
+          "clean shallow containers",
+          "codex guidance",
+          "food thermometer when available"
+        ],
+        "triggers": [
+          "check doneness and tell me how to store or reheat leftovers",
+          "这锅熟了吗剩菜怎么冷藏再加热"
+        ]
+      },
+      "id": "daily-life.check-doneness-leftovers",
+      "managed_files": [
+        "SKILL.md",
+        "agents/openai.yaml"
+      ],
+      "merged_source_refs": [],
+      "plugin_id": "home-cooking-and-meal-preparation",
+      "revision": 1,
+      "skill_name": "check-doneness-and-leftovers",
+      "source_refs": [
+        "fda-food-allergy-boundaries",
+        "hk-cfs-cooking-safety-zh",
+        "hk-cfs-food-waste-storage",
+        "usfa-cooking-fire-safety"
+      ],
+      "updated_at": "2026-08-31T05:05:00Z",
+      "variants": [
+        "food type thermometer and storage variants"
+      ]
     }
   ],
   "schema_version": 2,

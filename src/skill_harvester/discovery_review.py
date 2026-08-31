@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import json
 import re
 import tempfile
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
-from .io import atomic_write_json, load_json
+from .io import atomic_write_json, atomic_write_text, load_json
 from .queries import refresh_query_cycle_report
 from .runtime_store import RuntimeStoreError, open_runtime_store
 from .sources import RegistryError, load_registry
@@ -188,7 +189,7 @@ def _normalized_review_item(
 def _registry_with_sources(
     root: Path,
     selected_reviews: list[dict[str, Any]],
-) -> dict[str, Any]:
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     registry = load_json(root / "sources" / "registry.json")
     if not isinstance(registry, dict) or not isinstance(registry.get("sources"), list):
         raise DiscoveryReviewError("source registry is invalid")
@@ -196,6 +197,7 @@ def _registry_with_sources(
     ids = {source["id"] for source in existing}
     urls = {source["url"] for source in existing}
     result = {**registry, "sources": list(registry["sources"])}
+    appended: list[dict[str, Any]] = []
     for review in selected_reviews:
         endpoint = review["selected_endpoint"]
         if endpoint["source_id"] in ids:
@@ -211,6 +213,7 @@ def _registry_with_sources(
         }
         source["id"] = endpoint["source_id"]
         result["sources"].append(source)
+        appended.append(source)
         ids.add(source["id"])
         urls.add(source["url"])
     with tempfile.TemporaryDirectory() as directory:
@@ -220,7 +223,52 @@ def _registry_with_sources(
             load_registry(validation_root)
         except RegistryError as error:
             raise DiscoveryReviewError(f"selected source registry is invalid: {error}") from error
-    return result
+    return result, appended
+
+
+def _source_block(source: dict[str, Any]) -> str:
+    return "\n".join(
+        "    " + line
+        for line in json.dumps(
+            source, ensure_ascii=False, indent=2, sort_keys=True
+        ).splitlines()
+    )
+
+
+def _append_registry_sources(root: Path, sources: list[dict[str, Any]]) -> None:
+    if not sources:
+        return
+    path = root / "sources" / "registry.json"
+    text = path.read_text(encoding="utf-8")
+    marker = '\n  ],\n  "repository_sets":'
+    if text.count(marker) != 1:
+        raise DiscoveryReviewError("source registry layout is not appendable")
+    prefix, suffix = text.split(marker, 1)
+    separator = "" if prefix.rstrip().endswith("[") else ","
+    updated = (
+        prefix.rstrip()
+        + separator
+        + "\n"
+        + ",\n".join(_source_block(source) for source in sources)
+        + marker
+        + suffix
+    )
+    atomic_write_text(path, updated)
+
+
+def _remove_registry_source(root: Path, source: dict[str, Any]) -> None:
+    path = root / "sources" / "registry.json"
+    text = path.read_text(encoding="utf-8")
+    block = _source_block(source)
+    trailing = ",\n" + block
+    leading = block + ",\n"
+    if trailing in text:
+        updated = text.replace(trailing, "", 1)
+    elif leading in text:
+        updated = text.replace(leading, "", 1)
+    else:
+        raise DiscoveryReviewError("selected source layout cannot be removed safely")
+    atomic_write_text(path, updated)
 
 
 def import_discovery_reviews(root: Path, *, review_path: Path) -> dict[str, Any]:
@@ -267,7 +315,7 @@ def import_discovery_reviews(root: Path, *, review_path: Path) -> dict[str, Any]
     selected_reviews = [
         review for review in new_reviews if review["outcome"] == "selected_endpoint"
     ]
-    registry = _registry_with_sources(root, selected_reviews)
+    registry, appended_sources = _registry_with_sources(root, selected_reviews)
     with open_runtime_store(root) as store:
         cycles = store.discovery_hit_cycles(set(hit_ids))
         try:
@@ -276,7 +324,7 @@ def import_discovery_reviews(root: Path, *, review_path: Path) -> dict[str, Any]
             raise DiscoveryReviewError(str(error)) from error
         metrics = store.discovery_review_metrics()
     if selected_reviews:
-        atomic_write_json(root / "sources" / "registry.json", registry)
+        _append_registry_sources(root, appended_sources)
     for cycle_id in cycles:
         refresh_query_cycle_report(root, cycle_id)
     report = {
@@ -299,6 +347,73 @@ def import_discovery_reviews(root: Path, *, review_path: Path) -> dict[str, Any]
     }
     atomic_write_json(
         root / "runs" / f"{reviewed_at.replace(':', '-')}-discovery-review.json",
+        report,
+    )
+    return report
+
+
+def reopen_failed_selection(
+    root: Path,
+    *,
+    hit_id: str,
+    reopened_at: str,
+    reason: str,
+) -> dict[str, Any]:
+    if not isinstance(reason, str) or len(reason.strip()) < 40:
+        raise DiscoveryReviewError("selection reopen reason needs concrete failure evidence")
+    registry = load_json(root / "sources" / "registry.json")
+    if not isinstance(registry, dict) or not isinstance(registry.get("sources"), list):
+        raise DiscoveryReviewError("source registry is invalid")
+    with open_runtime_store(root) as store:
+        hit = store.discovery_hit(hit_id)
+        review = hit.get("review")
+        if not isinstance(review, dict) or review.get("outcome") != "selected_endpoint":
+            raise DiscoveryReviewError("only a selected discovery hit can be reopened")
+        source_id = review["selected_endpoint"]["source_id"]
+        if store.source_state(source_id):
+            raise DiscoveryReviewError(
+                "a successfully scanned selected source cannot be reopened"
+            )
+        cycles = store.discovery_hit_cycles({hit_id})
+    retained_sources = [
+        source for source in registry["sources"] if source.get("id") != source_id
+    ]
+    if len(retained_sources) != len(registry["sources"]) - 1:
+        raise DiscoveryReviewError("selected source is not one explicit registry entry")
+    updated_registry = {**registry, "sources": retained_sources}
+    selected_source = next(
+        source for source in registry["sources"] if source.get("id") == source_id
+    )
+    with tempfile.TemporaryDirectory() as directory:
+        validation_root = Path(directory)
+        atomic_write_json(
+            validation_root / "sources" / "registry.json", updated_registry
+        )
+        load_registry(validation_root)
+    with open_runtime_store(root) as store:
+        try:
+            reopened = store.reopen_failed_discovery_selection(
+                hit_id=hit_id,
+                reopened_at=reopened_at,
+                reason=reason,
+            )
+        except RuntimeStoreError as error:
+            raise DiscoveryReviewError(str(error)) from error
+    _remove_registry_source(root, selected_source)
+    for cycle_id in cycles:
+        refresh_query_cycle_report(root, cycle_id)
+    report = {
+        "schema_version": 1,
+        "report_type": "discovery-review-reopen",
+        "status": "reopened",
+        "hit_id": hit_id,
+        "source_id": reopened["source_id"],
+        "reopened_at": reopened_at,
+        "reason": reason,
+        "affected_cycles": cycles,
+    }
+    atomic_write_json(
+        root / "runs" / f"{reopened_at.replace(':', '-')}-discovery-review-reopen.json",
         report,
     )
     return report

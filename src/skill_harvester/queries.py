@@ -182,9 +182,20 @@ def export_query_batch(
     cycle_id: str,
     limit: int,
     output_path: Path,
+    source_groups: set[str] | None = None,
 ) -> dict[str, Any]:
     cycle_id = _cycle_id(cycle_id)
     queries = load_topic_bank(root)
+    if source_groups is not None:
+        known_groups = {query["source_group"] for query in queries}
+        unknown = sorted(source_groups - known_groups)
+        if unknown:
+            raise QueryBatchError(
+                "unknown query source group: " + ", ".join(unknown)
+            )
+        queries = [
+            query for query in queries if query["source_group"] in source_groups
+        ]
     with open_runtime_store(root) as store:
         batch = store.create_or_resume_query_batch(
             now=now, cycle_id=cycle_id, queries=queries, limit=limit
@@ -210,6 +221,7 @@ def export_query_batch(
         "cycle_id": cycle_id,
         "resumed": bool(batch["queries"]) and not batch["created"],
         "exported_queries": len(batch["queries"]),
+        "source_groups": sorted(source_groups) if source_groups is not None else None,
         "output": str(output_path),
     }
     atomic_write_json(
@@ -222,26 +234,36 @@ def export_query_batch(
 def _discovery_hit(value: Any) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise QueryBatchError("discovery hits must be objects")
-    if value.get("route") not in {"github-code", "github-repository"}:
+    route = value.get("route")
+    if route not in {"github-code", "github-repository", "web"}:
         raise QueryBatchError("discovery hit route is invalid")
-    if not isinstance(value.get("repository"), str) or not re.fullmatch(
-        r"[^/\s]+/[^/\s]+", value["repository"]
-    ):
-        raise QueryBatchError("discovery hit repository is invalid")
     url = value.get("url")
     parsed = urlparse(url) if isinstance(url, str) else None
     if (
         parsed is None
         or parsed.scheme != "https"
-        or parsed.hostname != "github.com"
+        or parsed.hostname is None
         or parsed.username is not None
         or parsed.password is not None
     ):
-        raise QueryBatchError("discovery hit must use credential-free GitHub https")
-    if value["route"] == "github-code" and (
-        not isinstance(value.get("path"), str) or not value["path"]
-    ):
-        raise QueryBatchError("GitHub code discovery hit needs a path")
+        raise QueryBatchError("discovery hit must use credential-free https")
+    if route == "web":
+        if any(
+            not isinstance(value.get(field), str) or not value[field].strip()
+            for field in ("title", "source_name")
+        ):
+            raise QueryBatchError("web discovery hit needs title and source identity")
+    else:
+        if parsed.hostname != "github.com":
+            raise QueryBatchError("GitHub discovery hit must use github.com")
+        if not isinstance(value.get("repository"), str) or not re.fullmatch(
+            r"[^/\s]+/[^/\s]+", value["repository"]
+        ):
+            raise QueryBatchError("discovery hit repository is invalid")
+        if route == "github-code" and (
+            not isinstance(value.get("path"), str) or not value["path"]
+        ):
+            raise QueryBatchError("GitHub code discovery hit needs a path")
     for field in ("path", "updated_at"):
         if field in value and (
             not isinstance(value[field], str) or not value[field]
@@ -325,6 +347,13 @@ def import_query_results(
             raise QueryBatchError("query result is not pending in its batch")
         for result in results:
             tier_constraint = pending_items[result["query_id"]]["tier_constraint"]
+            if any(
+                hit["route"] != pending_items[result["query_id"]]["route"]
+                for hit in result["discovery_hits"]
+            ):
+                raise QueryBatchError(
+                    f"discovery hit route disagrees with query: {result['query_id']}"
+                )
             if any(
                 endpoint["tier"] not in tier_constraint
                 for endpoint in result["selected_endpoints"]

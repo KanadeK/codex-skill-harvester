@@ -5,6 +5,10 @@ from pathlib import Path
 from typing import Any
 
 from .decisions import bundle_hash, normalize_fingerprint
+from .daily_life_report import (
+    DailyLifeReportError,
+    build_daily_life_report,
+)
 from .campaign import (
     CampaignPolicyError,
     campaign_source_context,
@@ -20,6 +24,7 @@ from .scaling import (
     load_scale_policy,
 )
 from .runtime_store import RuntimeStoreError, open_runtime_store
+from .scenario_bank import ScenarioBankError, load_scenario_bank
 from .sources import load_registry
 from .taxonomy import TaxonomyError, validate_catalog_taxonomy
 
@@ -470,6 +475,10 @@ def validate_repository(root: Path) -> dict[str, Any]:
         topic_queries = load_topic_bank(root)
     except QueryBatchError as error:
         raise ValidationError(str(error)) from error
+    try:
+        scenario_report = load_scenario_bank(root)
+    except ScenarioBankError as error:
+        raise ValidationError(str(error)) from error
     topic_ids = {query["topic_id"] for query in topic_queries}
     try:
         with open_runtime_store(root) as store:
@@ -791,6 +800,38 @@ def validate_repository(root: Path) -> dict[str, Any]:
             f"production report does not match authoritative inputs: {path.name}",
         )
 
+    daily_life_path = root / "runs" / "2026-08-31-daily-life-pilot.json"
+    if daily_life_path.is_file():
+        daily_life = load_json(daily_life_path)
+        _require(
+            isinstance(daily_life, dict)
+            and daily_life.get("schema_version") == 1
+            and daily_life.get("report_type") == "daily-life-pilot",
+            "Daily Life report schema is invalid",
+        )
+        try:
+            expected_daily_life = build_daily_life_report(
+                root,
+                generated_at=daily_life["generated_at"],
+                query_no_op_path=_relative_path(
+                    root, daily_life["inputs"]["query_no_op"]
+                ),
+                semantic_no_op_path=_relative_path(
+                    root, daily_life["inputs"]["semantic_no_op"]
+                ),
+                stable_scan_path=_relative_path(
+                    root, daily_life["inputs"]["stable_source_no_op"]
+                ),
+            )
+        except (KeyError, DailyLifeReportError, RuntimeStoreError) as error:
+            raise ValidationError(
+                f"Daily Life report cannot be rebuilt: {error}"
+            ) from error
+        _require(
+            daily_life == expected_daily_life,
+            "Daily Life report does not match authoritative inputs",
+        )
+
     secret_files = _scan_secrets(root)
     _require(not secret_files, "secret-like material found: " + ", ".join(secret_files))
     return {
@@ -802,6 +843,8 @@ def validate_repository(root: Path) -> dict[str, Any]:
         "decision_records": len(records),
         "evidence_packs": len(evidence_packs),
         "topic_queries": len(topic_queries),
+        "daily_life_scenarios": scenario_report["scenarios"],
+        "daily_life_scenario_pending": scenario_report["pending"],
         "plugins": len(marketplace_plugins),
         "skills": skill_count,
         "internal_capabilities": len(internal),

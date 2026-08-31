@@ -21,12 +21,70 @@ from skill_harvester.query_execution import (
     QueryExecutionError,
     execute_github_query_batch,
 )
-from skill_harvester.runtime_store import open_runtime_store
+from skill_harvester.runtime_store import create_empty_runtime, open_runtime_store
 
 from _support import document_source, write_registry
 
 
 class QueryBatchTests(unittest.TestCase):
+    def test_query_export_can_scope_a_cycle_to_selected_source_groups(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "config").mkdir()
+            atomic_write_json(
+                root / "config" / "topic-bank.json",
+                {
+                    "schema_version": 2,
+                    "topics": [
+                        {
+                            "id": "software.validate.delivery",
+                            "domain": "software",
+                            "intent": "validate",
+                            "source_group": "github-delivery",
+                            "queries": [
+                                {
+                                    "id": "software-query",
+                                    "route": "github-code",
+                                    "text": "repo:example/project release",
+                                    "tier_constraint": ["T1"],
+                                }
+                            ],
+                        },
+                        {
+                            "id": "daily-life.research.market",
+                            "domain": "daily-life",
+                            "intent": "research",
+                            "source_group": "daily-life-market",
+                            "queries": [
+                                {
+                                    "id": "daily-life-query",
+                                    "route": "web",
+                                    "text": "official grocery shopping food safety",
+                                    "tier_constraint": ["T0", "T1", "T2"],
+                                }
+                            ],
+                        },
+                    ],
+                    "operations": [],
+                    "query_matrices": [],
+                },
+            )
+            create_empty_runtime(root)
+            output_path = root / ".harvester-cache" / "daily-life.json"
+
+            report = export_query_batch(
+                root,
+                now="2026-08-30T20:00:00Z",
+                cycle_id="daily-life-pilot",
+                limit=10,
+                output_path=output_path,
+                source_groups={"daily-life-market"},
+            )
+            payload = json.loads(output_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(report["exported_queries"], 1)
+        self.assertEqual([query["id"] for query in payload["queries"]], ["daily-life-query"])
+
     def test_github_repository_search_uses_supported_json_fields(self) -> None:
         with patch("skill_harvester.query_execution.subprocess.run") as run:
             run.return_value.returncode = 0

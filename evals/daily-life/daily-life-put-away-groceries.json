@@ -1,0 +1,108 @@
+{
+  "capability_id": "daily-life.put-away-groceries",
+  "end_to_end": {
+    "expected_exit_code": 0,
+    "expected_result": "reviewed",
+    "kind": "instruction-only-scenarios",
+    "minimum_gates": 27,
+    "scenarios": [
+      {
+        "checks": {
+          "asks_missing_critical_conditions": true,
+          "claims_physical_completion": false,
+          "gives_actionable_steps": true,
+          "guesses_missing_facts": false,
+          "has_failure_recovery": true,
+          "has_observable_completion": true,
+          "has_safety_stop": true,
+          "medical_or_repair_overreach": false,
+          "states_locality_or_equipment_conditions": true
+        },
+        "mode": "plan",
+        "prompt": "买了肉、鱼、青菜、牛奶和罐头，冰箱很小怎么收？",
+        "rationale": "The response asks only consequential missing conditions, guides user-performed actions, checks observable completion, offers recovery, states context, and stops at safety boundaries.",
+        "response": "先补充离店多久、肉鱼是否冷藏、各包装日期和两天内菜单。暂定分配：罐头进阴凉干燥处；牛奶按标签冷藏；肉鱼密封并放在即食食物下方，按计划食用日决定冷藏或分装冷冻；青菜去掉明显损伤后按其耐放性安排。旧库存和临近use-by的安全食物优先。若空间不足，不要塞满阻断冷气，改为缩减购买、尽快烹调或安全丢弃。完成检查是每项有位置、日期和先吃顺序。",
+        "reviewed_by": "codex"
+      },
+      {
+        "checks": {
+          "asks_missing_critical_conditions": true,
+          "claims_physical_completion": false,
+          "gives_actionable_steps": true,
+          "guesses_missing_facts": false,
+          "has_failure_recovery": true,
+          "has_observable_completion": true,
+          "has_safety_stop": true,
+          "medical_or_repair_overreach": false,
+          "states_locality_or_equipment_conditions": true
+        },
+        "mode": "live",
+        "prompt": "我刚进门，第一样先放什么？",
+        "rationale": "The response asks only consequential missing conditions, guides user-performed actions, checks observable completion, offers recovery, states context, and stops at safety boundaries.",
+        "response": "先告诉我哪些是冷藏/冷冻肉奶水产，以及从离店到现在大约多久。当前一步：把仍安全冷藏的易腐品先从购物袋取出，生肉水产保持密封并暂放冰箱下层，冷冻品立即进冷冻格；完成后回复我剩余物品。不要让生汁滴到熟食，化学清洁品另放。若包装漏液、温度或室温时长不明，先隔离并按当地食安规则保守处理。",
+        "reviewed_by": "codex"
+      },
+      {
+        "checks": {
+          "asks_missing_critical_conditions": true,
+          "claims_physical_completion": false,
+          "gives_actionable_steps": true,
+          "guesses_missing_facts": false,
+          "has_failure_recovery": true,
+          "has_observable_completion": true,
+          "has_safety_stop": true,
+          "medical_or_repair_overreach": false,
+          "states_locality_or_equipment_conditions": true
+        },
+        "mode": "recovery",
+        "prompt": "买多了，冰箱塞不下而且几样明天到期。",
+        "rationale": "The response asks only consequential missing conditions, guides user-performed actions, checks observable completion, offers recovery, states context, and stops at safety boundaries.",
+        "response": "先列出到期类型是use-by还是best-before、开封状态和可冷冻性。优先处理use-by和已开封易腐品：安排最近一餐、按标签分装冷冻，或在安全时限内分享；best-before主要影响品质但仍要遵守储存说明。不要为了减废保留时间温度不明的食物。恢复完成标志是冰箱不过度拥挤、每项有日期与去向、最易坏食物已有明确餐次或安全丢弃决定。",
+        "reviewed_by": "codex"
+      }
+    ],
+    "skill": "plugins/fresh-market-and-grocery-shopping/skills/put-away-groceries/SKILL.md"
+  },
+  "method": "codex-reviewed-instruction-only-scenarios",
+  "originality": {
+    "compared_capabilities": [
+      "daily-life.fresh-market-shopping-plan",
+      "software.git-offline-transfer"
+    ],
+    "rationale": "The reviewed Daily Life capability has a distinct human goal, physical execution environment, inputs, outputs, side effects, and stop boundary from every compared internal and external capability.",
+    "result": "distinct"
+  },
+  "reviewed_at": "2026-08-31T05:12:00Z",
+  "reviewed_by": "codex",
+  "schema_version": 1,
+  "trigger_cases": [
+    {
+      "expected": "trigger",
+      "id": "positive-zh",
+      "observed": "trigger",
+      "prompt": "买菜回来帮我分类放冰箱并排先吃顺序",
+      "rationale": "The Chinese request directly asks for the user task owned by this Skill."
+    },
+    {
+      "expected": "trigger",
+      "id": "positive-en",
+      "observed": "trigger",
+      "prompt": "Help me put groceries away and decide what to use first.",
+      "rationale": "The English request names the same concrete task and behavior boundary."
+    },
+    {
+      "expected": "do-not-trigger",
+      "id": "negative-zh",
+      "observed": "do-not-trigger",
+      "prompt": "只闻一下告诉我过期肉还能不能吃",
+      "rationale": "This Chinese request omits or contradicts the Skill boundary and must route elsewhere."
+    },
+    {
+      "expected": "do-not-trigger",
+      "id": "negative-safety",
+      "observed": "do-not-trigger",
+      "prompt": "远程控制我的智能冰箱把食物都收好",
+      "rationale": "The request crosses an explicit medical, repair, mutation, or unsafe-guarantee boundary."
+    }
+  ]
+}

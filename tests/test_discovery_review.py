@@ -12,6 +12,7 @@ from skill_harvester.discovery_review import (
     DiscoveryReviewError,
     export_discovery_review_batch,
     import_discovery_reviews,
+    reopen_failed_selection,
 )
 from skill_harvester.io import atomic_write_json
 from skill_harvester.queries import QueryBatchError, export_query_batch, import_query_results
@@ -20,7 +21,12 @@ from skill_harvester.runtime_store import open_runtime_store
 from _support import document_source, write_registry
 
 
-def prepare_query(root: Path, *, query_id: str = "market-guide") -> dict[str, object]:
+def prepare_query(
+    root: Path,
+    *,
+    query_id: str = "market-guide",
+    route: str = "github-code",
+) -> dict[str, object]:
     write_registry(root, [document_source("existing-official-doc")])
     (root / "config").mkdir(exist_ok=True)
     atomic_write_json(
@@ -36,8 +42,12 @@ def prepare_query(root: Path, *, query_id: str = "market-guide") -> dict[str, ob
                     "queries": [
                         {
                             "id": query_id,
-                            "route": "github-code",
-                            "text": "repo:example/official-guides grocery planning",
+                            "route": route,
+                            "text": (
+                                "repo:example/official-guides grocery planning"
+                                if route == "github-code"
+                                else "official grocery planning food safety guidance"
+                            ),
                             "tier_constraint": ["T0", "T1", "T2"],
                         }
                     ],
@@ -89,6 +99,148 @@ def import_hits(
 
 
 class DiscoveryReviewTests(unittest.TestCase):
+    def test_failed_unscanned_selection_reopens_without_erasing_review_history(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            batch = prepare_query(root, route="web")
+            hit = {
+                "route": "web",
+                "url": "https://www.example.gov/blocked-guide",
+                "title": "Blocked official guide",
+                "source_name": "Example Government",
+            }
+            import_hits(root, str(batch["batch_id"]), [hit])
+            export_path = root / ".harvester-cache" / "discovery.json"
+            export_discovery_review_batch(
+                root,
+                now="2026-08-30T20:02:00Z",
+                limit=10,
+                after=None,
+                output_path=export_path,
+            )
+            hit_id = json.loads(export_path.read_text(encoding="utf-8"))["hits"][0]["id"]
+            review_path = root / ".harvester-cache" / "review.json"
+            atomic_write_json(
+                review_path,
+                {
+                    "schema_version": 1,
+                    "reviewed_by": "codex",
+                    "reviewed_at": "2026-08-30T20:03:00Z",
+                    "items": [
+                        {
+                            "hit_id": hit_id,
+                            "outcome": "selected_endpoint",
+                            "assessed_trust": "official",
+                            "license_assessment": {
+                                "status": "facts-only",
+                                "identifier": "government-public-information",
+                            },
+                            "rationale": (
+                                "The reviewed government page appears authoritative and useful, "
+                                "so it is selected subject to a reproducible source scan."
+                            ),
+                            "selected_endpoint": {
+                                "source_id": "blocked-official-guide",
+                                "url": hit["url"],
+                                "adapter": "document",
+                                "tier": "T1",
+                                "trust": "official",
+                                "authority": "government-consumer-guidance",
+                                "license": {
+                                    "status": "facts-only",
+                                    "identifier": "government-public-information",
+                                },
+                                "cursor": "reviewed-2026-08-30",
+                            },
+                        }
+                    ],
+                },
+            )
+            import_discovery_reviews(root, review_path=review_path)
+
+            report = reopen_failed_selection(
+                root,
+                hit_id=hit_id,
+                reopened_at="2026-08-30T20:04:00Z",
+                reason="The selected endpoint returned HTTP 403 before any source state was committed.",
+            )
+            registry = json.loads(
+                (root / "sources" / "registry.json").read_text(encoding="utf-8")
+            )
+            with open_runtime_store(root) as store:
+                record = store.discovery_hit(hit_id)
+
+        self.assertEqual(report["status"], "reopened")
+        self.assertEqual(record["status"], "pending")
+        self.assertIsNone(record["review"])
+        self.assertEqual(len(record["review_history"]), 1)
+        self.assertNotIn(
+            "blocked-official-guide", [source["id"] for source in registry["sources"]]
+        )
+
+    def test_agent_reach_web_hit_uses_the_same_review_lifecycle(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            batch = prepare_query(root, route="web")
+            hit = {
+                "route": "web",
+                "url": "https://www.example.gov/food/grocery-planning",
+                "title": "Plan groceries safely",
+                "source_name": "Example Food Safety Authority",
+            }
+            import_hits(root, str(batch["batch_id"]), [hit])
+            export_path = root / ".harvester-cache" / "web-discovery.json"
+            export_discovery_review_batch(
+                root,
+                now="2026-08-30T20:02:00Z",
+                limit=10,
+                after=None,
+                output_path=export_path,
+            )
+            hit_id = json.loads(export_path.read_text(encoding="utf-8"))["hits"][0]["id"]
+            review_path = root / ".harvester-cache" / "web-review.json"
+            atomic_write_json(
+                review_path,
+                {
+                    "schema_version": 1,
+                    "reviewed_by": "codex",
+                    "reviewed_at": "2026-08-30T20:03:00Z",
+                    "items": [
+                        {
+                            "hit_id": hit_id,
+                            "outcome": "selected_endpoint",
+                            "assessed_trust": "official",
+                            "license_assessment": {
+                                "status": "facts-only",
+                                "identifier": "government-public-information",
+                            },
+                            "rationale": (
+                                "The reviewed government page provides operational grocery "
+                                "planning and food-safety decisions with clear public provenance."
+                            ),
+                            "selected_endpoint": {
+                                "source_id": "government-grocery-planning",
+                                "url": hit["url"],
+                                "adapter": "document",
+                                "tier": "T1",
+                                "trust": "official",
+                                "authority": "government-food-safety-guidance",
+                                "license": {
+                                    "status": "facts-only",
+                                    "identifier": "government-public-information",
+                                },
+                                "cursor": "reviewed-2026-08-30",
+                            },
+                        }
+                    ],
+                },
+            )
+
+            report = import_discovery_reviews(root, review_path=review_path)
+
+        self.assertEqual(report["selected_endpoint"], 1)
+        self.assertEqual(report["pending"], 0)
+
     def test_duplicate_and_not_selected_reviews_are_terminal_and_idempotent(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -286,6 +438,11 @@ class DiscoveryReviewTests(unittest.TestCase):
                 },
             )
 
+            original_registry_prefix = (
+                root / "sources" / "registry.json"
+            ).read_text(encoding="utf-8").split(
+                '\n  ],\n  "repository_sets":', 1
+            )[0]
             imported = import_discovery_reviews(root, review_path=review_path)
             resumed_path = root / ".harvester-cache" / "resumed.json"
             resumed = export_discovery_review_batch(
@@ -298,6 +455,9 @@ class DiscoveryReviewTests(unittest.TestCase):
             registry = json.loads(
                 (root / "sources" / "registry.json").read_text(encoding="utf-8")
             )
+            registry_text = (root / "sources" / "registry.json").read_text(
+                encoding="utf-8"
+            )
 
         self.assertEqual(exported["exported_hits"], 2)
         self.assertEqual(imported["selected_endpoint"], 1)
@@ -306,6 +466,10 @@ class DiscoveryReviewTests(unittest.TestCase):
         self.assertEqual(
             [source["id"] for source in registry["sources"]],
             ["existing-official-doc", "official-market-guide"],
+        )
+        self.assertTrue(
+            registry_text.startswith(original_registry_prefix.rstrip() + ","),
+            "existing registry bytes were reformatted instead of appending a source",
         )
 
     def test_invalid_license_leaves_hit_pending_and_duplicate_recurrence_is_no_op(self) -> None:

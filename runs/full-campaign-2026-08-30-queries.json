@@ -7,11 +7,11 @@
   "discovery_hits": 151,
   "discovery_review": {
     "conversion_rate": 0.0,
-    "duplicate": 0,
-    "not_selected": 0,
-    "pending": 49,
+    "duplicate": 6,
+    "not_selected": 43,
+    "pending": 0,
     "raw_hits": 151,
-    "reviewed": 0,
+    "reviewed": 49,
     "selected_endpoint": 0,
     "selected_source_ids": [],
     "unique_hits": 49

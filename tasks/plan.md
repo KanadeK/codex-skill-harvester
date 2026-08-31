@@ -263,35 +263,39 @@ Remote baseline verified on 2026-08-30: `main` remains `6a54e7f`; PR #7 and PR #
 
 ### Phase 24: make Daily Life and discovery-hit review first-class
 
-- [ ] Register `daily-life` as the user-facing top-level domain with the first families `fresh-market-and-grocery-shopping`, `laundry-and-clothing-care`, and `home-cooking-and-meal-preparation`.
-- [ ] Clarify the existing seven-field fingerprint so `platforms` means software platform or real execution environment; add only the taxonomy values needed by exercised life capabilities, with no fingerprint schema fork or dual meaning.
-- [ ] Add RED tests for a single SQLite discovery-hit lifecycle: `pending -> selected_endpoint|duplicate|not_selected`, bounded partial review/resume, duplicate hits, invalid license/source metadata, selection failure, and no-op.
-- [ ] Persist query-to-hit provenance and reviewed metadata in the sole runtime authority; selected endpoints must pass URL, identity, revision, license, duplicate, and registry validation before entering the source registry.
-- [ ] Make query and production reports distinguish raw hits, pending review, selected, duplicate, not selected, and conversion rate. Completed query execution must not imply completed hit review.
+- [x] Register `daily-life` as the user-facing top-level domain with the first families `fresh-market-and-grocery-shopping`, `laundry-and-clothing-care`, and `home-cooking-and-meal-preparation`.
+- [x] Clarify the existing seven-field fingerprint so `platforms` means software platform or real execution environment; add only the taxonomy values needed by exercised life capabilities, with no fingerprint schema fork or dual meaning.
+- [x] Add RED tests for a single SQLite discovery-hit lifecycle: `pending -> selected_endpoint|duplicate|not_selected`, bounded partial review/resume, duplicate hits, invalid license/source metadata, selection failure/reopen, web hits, and no-op.
+- [x] Persist query-to-hit provenance and reviewed metadata in the sole runtime authority; selected endpoints pass URL, identity, revision/cursor, license, duplicate, registry, and reproducible-scan validation before remaining selected.
+- [x] Make query and production reports distinguish raw hits, pending review, selected, duplicate, not selected, and conversion rate. Completed query execution no longer implies completed hit review.
 
 Checkpoint: the existing query executor may continue producing untrusted hit metadata, but only a Codex-reviewed discovery decision may register a source. No JSON inbox becomes a second authority.
 
 ### Phase 25: build the bilingual Scenario Bank and evidence base
 
-- [ ] Use agent-reach background search/web routes to select Chinese and English T0/T1/T2 sources across consumer/food safety, agriculture extension, textile care, appliance/garment instructions, and cooking education; retain community material only as discovery signal.
-- [ ] Define at least 60 specific scenarios, with at least 20 in each of the three Daily Life families. Every scenario records locality/equipment assumptions, safety boundary, source refs, and a final `create|update|merge|not_promoted` outcome.
-- [ ] Scan selected sources from persisted cursors, review actual cached evidence into Evidence Packs, and carry every independent capability through L2/L3 recall and supervised L4. Unsafe, medical, repair, contradictory, or unsupported scenarios remain evidence with explicit reactivation conditions.
-- [ ] Keep raw pages temporary and commit only compact provenance, the Scenario Bank, SQLite state, decisions, and campaign reports.
+- [x] Use agent-reach background search/web routes to select Chinese and English T0/T1/T2 sources across consumer/food safety, textile care, appliance/garment instructions, and cooking education; retain community material only as discovery signal.
+- [x] Define 63 specific scenarios, 21 in each Daily Life family. Every scenario records locality/equipment assumptions, safety boundary, source refs, and a final `create|merge|not_promoted` outcome.
+- [x] Scan 13 selected sources from persisted cursors, review 13 observations into 12 Evidence Packs, and carry nine independent capabilities through 156 L3 recalls and supervised L4. Three unsafe evidence packs and nine high-risk/unsupported scenarios remain not promoted.
+- [x] Keep raw pages temporary and commit only compact provenance, the Scenario Bank, SQLite state, decisions, and campaign reports.
 
 Checkpoint: 60+ scenarios have no pending outcome; counts are review coverage, never a Skill quota.
 
 ### Phase 26: synthesize human-executed instruction-only Skills
 
-- [ ] Create every qualified original capability under three installation-intent Plugins. Broad concepts such as cooking remain families/collections; each Skill has one discriminating user task and nearby scenarios become variants or references.
-- [ ] Keep instruction-only as the default. Add a script only when deterministic repeated arithmetic or parsing materially improves a real workflow, and run it in an isolated temporary directory.
-- [ ] Make Chinese trigger and anti-trigger cases first-class, preserve English discovery where useful, ask only missing critical conditions, and support plan / one-step-at-a-time / recovery modes without claiming that Codex performed a physical action.
-- [ ] Extend evals minimally for instruction-only life workflows and verify observable decision branches, completion checks, recovery, locality/equipment conditions, and stop/professional-help boundaries rather than fixed wording.
+- [x] Create nine qualified original capabilities under exactly three installation-intent Plugins. Broad concepts remain families; nearby scenarios merge into the same canonical capability.
+- [x] Keep all nine Skills instruction-only; no script was invented for appearance, and physical action remains the user's responsibility.
+- [x] Make Chinese trigger and anti-trigger cases first-class, preserve English discovery, ask only missing critical conditions, and support plan / one-step-at-a-time / recovery modes without claiming physical completion.
+- [x] Extend evals minimally for instruction-only workflows: nine files cover 36 trigger decisions and 27 realistic plan/live/recovery responses with 243 behavioral gates.
 
 Checkpoint: every generated Skill passes source, originality, non-overlap, trigger, instruction-only E2E, safety, Plugin format, and isolated installation/invocation review.
 
 ### Phase 27: execute, validate, and submit the life campaign
 
-- [ ] Run reviewable vertical batches until all 60+ scenarios are resolved and every family forms a useful installable capability set; pending work or three demonstration Skills cannot complete the pilot.
-- [ ] Prove discovery review, semantic processing, and stable-source replay resume or no-op from SQLite; Usage remains `measured=false` without an authoritative meter.
-- [ ] Run 128+ unittest cases, all existing and new evals, repository validator, SQLite benchmark, deterministic build, Plugin packaging, isolated install/invocation, official Skill/Plugin validators when locally available, independent Skill review, and `git diff --check`.
+- [x] Run reviewable vertical batches until all 63 scenarios are resolved and every family has three installable Skills; this is a complete pilot rather than three demonstrations.
+- [x] Prove discovery review, query rotation, semantic processing, and a stable Chinese source replay resume or no-op from SQLite; Usage remains `measured=false` without an authoritative meter.
+- [x] Run 146 unittest cases, 17 evals, repository validator, SQLite-v4 benchmark, deterministic build of 11 Plugins, isolated install/invocation, independent five-axis Skill review, and diff checks. Official standalone Skill/Plugin validators were attempted but unavailable because their local environment lacks PyYAML; the repository validator covers the committed format.
 - [ ] Commit exact paths, push the new branch, open one stacked PR against `codex/pr8-campaign-corrections`, and wait for Ubuntu/Windows CI without merging, tagging, or releasing.
+
+Local content checkpoint: 20 scoped queries completed without query failure and produced 18 unique hits. Thirteen remained selected after reproducible scans; five authoritative pages that returned HTTP 403 were reopened and retained as `not_selected`. The 13 scanned sources span Hong Kong (5), United States (6), Canada (1), and a global textile authority (1), with four Chinese and nine English endpoints. Thirteen observations produced 12 Evidence Packs, nine candidates, 156 L3 recalls, three evidence-level safety non-promotions, and nine L4 creates. The Scenario Bank holds 63 final outcomes (9 create, 45 merge, 9 not promoted), and all query/semantic/stable-source replay is no-op with zero pending.
+
+Local verification checkpoint: 146 tests, 17 eval files, the code-rebuildable Daily Life report, repository validator, SQLite benchmark, deterministic source/11-Plugin build, isolated archive installation, CLI invocation, and Plugin E2E pass. Independent review corrected the wet/electrical washer-fault boundary before the final run. Work remains only to commit/push, open the stacked PR, and wait for dual-platform CI.
