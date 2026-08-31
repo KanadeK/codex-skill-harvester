@@ -4,12 +4,12 @@ This is the maintainer-facing handoff for 会过日子 · Human Skills. The publ
 
 ## Release state
 
-- Candidate version: v0.2.0
-- Public stable version before this release workflow completes: [v0.1.1](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.1.1)
-- Candidate inventory: 17 Skills in 11 Plugins
+- Released version: v0.2.0
+- Public stable version: [v0.2.0](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.2.0)
+- Release inventory: 17 Skills in 11 Plugins
 - Daily Life acceptance bank: 63 resolved scenarios, 21 in each of three task families
 - Runtime authority: SQLite v4
-- Release is not complete until the final main CI, annotated tag, GitHub Release assets, checksums, isolated download/install/invocation, repository metadata, and remote readback all pass.
+- Release completed at commit ef4bd07 with green Ubuntu/Windows main CI, an annotated tag, an immutable non-prerelease GitHub Release, 13 signed assets, remote checksum verification, isolated download/install/invocation, repository metadata, and a complete live Skill audit.
 
 ## Measured campaign state
 
@@ -41,6 +41,7 @@ Authoritative compact reports:
 - [Daily Life pilot](../runs/2026-08-31-daily-life-pilot.json)
 - [First production slice](../runs/2026-08-29-content-production.json)
 - [v0.1.1 final attestation](../runs/2026-08-27T14-31-10Z-v0.1.1-attestation.md)
+- [v0.2.0 final attestation](../runs/2026-08-31T07-43-48Z-v0.2.0-attestation.md)
 
 ## Authority and lifecycle
 
@@ -84,6 +85,6 @@ Release validation additionally runs the official bundled Skill validator over a
 
 - v0.1.0 proved one real source-to-Skill vertical slice.
 - v0.1.1 repaired moving GitHub search-window identity, reviewed the entire legacy queue, added review-only automation, and published immutable verified artifacts.
-- PR #7 landed the scale/storage foundation. PR #9 accumulated the full campaign and Daily Life pilot but diverged after the squash merge; this release branch reproduces its exact resulting tree on current main before applying public brand and release changes. The release PR records the supersession evidence.
+- PR #7 landed the scale/storage foundation. PR #9 accumulated the full campaign and Daily Life pilot but diverged after the squash merge. PR #12 reproduced its exact integration tree on current main, added the public launch changes, passed both CI platforms, merged as ef4bd07, and superseded #9.
 
 Predicted scale ranges remain planning inputs, never promises or reasons to manufacture candidates. A no-op means the supplied stable inputs have no new, changed, or unfinished work; it does not permanently end future campaigns.

@@ -332,9 +332,11 @@ Final local checkpoint on 2026-08-31: 152 tests, 17 evals, 17/17 official Skill 
 
 ### Phase 31: PR, merge, publish, and remote verification
 
-- [ ] Open one main-based PR titled `release: launch 会过日子 Human Skills v0.2.0`, documenting PR #9 supersession, tree-equivalence proof, validation, rollback, 17 Skills/11 Plugins/63 scenarios, and release plan.
-- [ ] Wait for final Ubuntu/Windows CI, merge only when every local/remote gate is green, then read back main merge SHA and close PR #9 as superseded without deleting history.
-- [ ] Update repository description/topics, create annotated `v0.2.0`, publish bilingual non-draft/non-prerelease Release, upload source + 11 Plugin archives + `SHA256SUMS`, and enable immutable Release only through the verified existing workflow.
-- [ ] Re-download every published asset, verify checksums/targets/contributors/main CI/v0.1.1 preservation, install source and all Plugins from Release assets, and execute CLI plus critical Skill/E2E calls.
+- [x] Open one main-based PR titled `release: launch 会过日子 Human Skills v0.2.0`, documenting PR #9 supersession, tree-equivalence proof, validation, rollback, 17 Skills/11 Plugins/63 scenarios, and release plan.
+- [x] Wait for final Ubuntu/Windows CI, merge only when every local/remote gate is green, then read back main merge SHA and close PR #9 as superseded without deleting history.
+- [x] Update repository description/topics, create annotated `v0.2.0`, publish bilingual non-draft/non-prerelease Release, upload source + 11 Plugin archives + `SHA256SUMS`, and enable immutable Release only through the verified existing workflow.
+- [x] Re-download every published asset, verify checksums/targets/contributors/main CI/v0.1.1 preservation, install source and all Plugins from Release assets, and execute CLI plus critical Skill/E2E calls.
+
+Remote completion checkpoint on 2026-08-31: PR #12 merged as `ef4bd07`; its tree matches the locally verified release tree, and main CI run 33368616448 passed Ubuntu/Windows. PR #9 closed as superseded with history preserved. The annotated `v0.2.0` tag points to `ef4bd07`; Release 379579317 is public, latest, non-draft, non-prerelease, and immutable. All 13 assets were downloaded, byte/checksum/server-digest matched, and appeared in GitHub's signed Release attestation. The downloaded source and 11 Plugins passed install/CLI/E2E, and the downloaded Release Evidence Skill returned `complete` with every gate passing. Repository metadata is bilingual, v0.1.1 remains immutable, and the final evidence is stored in `runs/2026-08-31T07-43-48Z-v0.2.0-attestation.*`.
 
 Rollback: stop promotion and use a reviewed revert/fix PR for serious post-release issues. Never rewrite or delete the published tag/Release to conceal a defect.

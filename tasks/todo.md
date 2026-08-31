@@ -233,8 +233,8 @@ Completion checkpoint: the branch starts at verified correction HEAD `7aa8f86`; 
 
 ## Task 30: merge and publish v0.2.0
 
-- [ ] Acceptance: one clean PR targets main and explains PR #9 supersession, integration equivalence, brand, inventory, verification, release plan, and rollback.
-- [ ] Acceptance: final PR CI passes on Ubuntu/Windows, PR merges, PR #9 closes as superseded, repository description/topics update, and annotated `v0.2.0` points at verified main.
-- [ ] Acceptance: public bilingual Release is non-draft/non-prerelease with source archive, 11 Plugin archives, and `SHA256SUMS`; immutable state follows verified repository capability.
-- [ ] Verify: assets are re-downloaded, checksums/target/main CI/contributors/v0.1.1 are read back, source and all 11 Plugins install from Release assets, and real CLI/Skill/E2E calls pass.
+- [x] Acceptance: one clean PR targets main and explains PR #9 supersession, integration equivalence, brand, inventory, verification, release plan, and rollback.
+- [x] Acceptance: final PR CI passes on Ubuntu/Windows, PR merges, PR #9 closes as superseded, repository description/topics update, and annotated `v0.2.0` points at verified main.
+- [x] Acceptance: public bilingual Release is non-draft/non-prerelease with source archive, 11 Plugin archives, and `SHA256SUMS`; immutable state follows verified repository capability.
+- [x] Verify: assets are re-downloaded, checksums/target/main CI/contributors/v0.1.1 are read back, source and all 11 Plugins install from Release assets, and real CLI/Skill/E2E calls pass.
 - Dependencies: Task 29 and explicit user authorization already granted for in-scope GitHub publication.

@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "report_type": "release-attestation",
+  "generated_at": "2026-08-31T07:43:48Z",
+  "repository": {
+    "name_with_owner": "KanadeK/codex-skill-harvester",
+    "public": true,
+    "release_commit_sha": "ef4bd07bb1d5465ed1f26e7dfe478681c0193042",
+    "release_tree_sha": "2dc02e760b72ec19368ef719ba36e043569645e8",
+    "description": "会过日子 · Human Skills — Evidence-reviewed bilingual Codex Skills for everyday life and software.",
+    "topics": [
+      "agent-skills",
+      "bilingual",
+      "chinese",
+      "codex",
+      "cooking",
+      "daily-life",
+      "grocery-shopping",
+      "laundry",
+      "life-skills",
+      "openai",
+      "python"
+    ]
+  },
+  "pull_requests": {
+    "release": {
+      "number": 12,
+      "state": "MERGED",
+      "merge_commit_sha": "ef4bd07bb1d5465ed1f26e7dfe478681c0193042",
+      "merged_at": "2026-08-31T07:29:43Z",
+      "url": "https://github.com/KanadeK/codex-skill-harvester/pull/12"
+    },
+    "superseded": {
+      "number": 9,
+      "state": "CLOSED",
+      "closed_at": "2026-08-31T07:31:39Z",
+      "history_preserved": true,
+      "url": "https://github.com/KanadeK/codex-skill-harvester/pull/9"
+    }
+  },
+  "ci": {
+    "run_id": 33368616448,
+    "head_sha": "ef4bd07bb1d5465ed1f26e7dfe478681c0193042",
+    "conclusion": "success",
+    "url": "https://github.com/KanadeK/codex-skill-harvester/actions/runs/33368616448",
+    "jobs": [
+      {
+        "name": "validate (ubuntu-latest)",
+        "job_id": 99414490304,
+        "conclusion": "success"
+      },
+      {
+        "name": "validate (windows-latest)",
+        "job_id": 99414490156,
+        "conclusion": "success"
+      }
+    ]
+  },
+  "release": {
+    "id": 379579317,
+    "tag_name": "v0.2.0",
+    "tag_object_sha": "a9830b3fee3f03a7a6642a2588b1145441104631",
+    "tag_commit_sha": "ef4bd07bb1d5465ed1f26e7dfe478681c0193042",
+    "annotated_tag": true,
+    "title": "会过日子 · Human Skills v0.2.0",
+    "draft": false,
+    "prerelease": false,
+    "immutable": true,
+    "published_at": "2026-08-31T07:36:32Z",
+    "url": "https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.2.0",
+    "assets": [
+      {
+        "name": "ansible-collection-quality-v0.2.0.zip",
+        "size": 4871,
+        "sha256": "da686e39608e472da563fd7a5c7387a40ed625acc531a056164719bcac7a0395"
+      },
+      {
+        "name": "api-request-safety-v0.2.0.zip",
+        "size": 7394,
+        "sha256": "bf708a32571591fb9e38a576f0f6d9aaff6afd193ab27a5327c334394e2ad35e"
+      },
+      {
+        "name": "codex-skill-harvester-v0.2.0.zip",
+        "size": 1481182,
+        "sha256": "69872ede7f0ca36cc8973393cffa9a175dbb51afb721eed9b593725f3103f116"
+      },
+      {
+        "name": "fresh-market-and-grocery-shopping-v0.2.0.zip",
+        "size": 7188,
+        "sha256": "9da8715640d66090b138dde30b9b2d0bf1eee9817cea809431f69627746c12f3"
+      },
+      {
+        "name": "git-offline-transfer-v0.2.0.zip",
+        "size": 4829,
+        "sha256": "4457ec6a33cac8807d1252d1a5da41478952e33178832a49d8dc711b1b2ceb7c"
+      },
+      {
+        "name": "github-release-evidence-v0.2.0.zip",
+        "size": 6376,
+        "sha256": "1f1cf9bf2ddb369321246c8907abf85ea5907c8b4667870c1f8cc9eb355b7f86"
+      },
+      {
+        "name": "home-cooking-and-meal-preparation-v0.2.0.zip",
+        "size": 7202,
+        "sha256": "c310ad919b0c995424e8fa0a309f557f1db68b3ae51c1f467bf52964b6e9474f"
+      },
+      {
+        "name": "javascript-package-delivery-v0.2.0.zip",
+        "size": 6939,
+        "sha256": "ea0715148d70bc95c00ec3e46a62ee27cc98ba46a4ba737fbb8d2c21f2c5d9ad"
+      },
+      {
+        "name": "laundry-and-clothing-care-v0.2.0.zip",
+        "size": 6740,
+        "sha256": "eb0b92ddf847ae33de1891c8ba6b5406b3b8130895f47e326d8b1ca8c3641a76"
+      },
+      {
+        "name": "python-package-delivery-v0.2.0.zip",
+        "size": 9162,
+        "sha256": "54c103301cf62039dbf33e5c074e13762684065f99aba25f5d2240421ee8f5de"
+      },
+      {
+        "name": "rust-build-performance-v0.2.0.zip",
+        "size": 4858,
+        "sha256": "db7c8fa2d9573dd1efb85bd2e067818f3743b0bb1ca6fd00da1b9a9628c940f5"
+      },
+      {
+        "name": "SHA256SUMS.txt",
+        "size": 1230,
+        "sha256": "448ca8149bfd34c39f7747055aa1a32898702343a0fc28bed4f12816affc4f1f"
+      },
+      {
+        "name": "web-request-diagnostics-v0.2.0.zip",
+        "size": 5444,
+        "sha256": "5bb94b677d8bbbb4d32c3176447542038705833d17206264286f74011309f8c6"
+      }
+    ]
+  },
+  "verification": {
+    "tests": 152,
+    "eval_files": 17,
+    "official_skill_validations": 17,
+    "official_plugin_validations": 11,
+    "repository_validator": "passed",
+    "secrets_found": 0,
+    "benchmark_records": 1000,
+    "deterministic_builds": 2,
+    "archive_files": 12,
+    "checksum_entries": 12,
+    "remote_downloaded_assets": 13,
+    "remote_bytes_match_upload": true,
+    "signed_attested_assets": 13,
+    "source_install_and_cli": "passed",
+    "plugin_installs_and_e2e": 11,
+    "live_skill_result": "complete",
+    "live_skill_failed_gates": 0
+  },
+  "campaign": {
+    "executable_endpoints": 204,
+    "unique_queries": 1622,
+    "observations": 1217,
+    "evidence_packs": 180,
+    "candidates_and_decisions": 145,
+    "skills": 17,
+    "plugins": 11,
+    "daily_life_scenarios": 63
+  },
+  "cost": {
+    "usage_credits": {
+      "measured": false
+    },
+    "semantic_review_tokens": {
+      "measured": false
+    }
+  },
+  "contributors": [
+    {
+      "login": "KanadeK",
+      "contributions": 9
+    }
+  ],
+  "previous_release": {
+    "tag_name": "v0.1.1",
+    "release_id": 377882951,
+    "draft": false,
+    "prerelease": false,
+    "immutable": true,
+    "published_at": "2026-08-27T14:21:20Z"
+  },
+  "remaining_policy": [
+    "Automatic Release remains deferred until at least three stable campaigns and a new explicit approval.",
+    "High-risk medical, legal, financial, credential-heavy, high-privilege, and real-world-control capabilities remain blocked from automatic publication.",
+    "The old full-campaign query cycle now exposes one newly eligible query after Topic Bank expansion and must not be called a current no-op."
+  ]
+}

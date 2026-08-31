@@ -22,7 +22,7 @@ Skill 会先补齐真正影响结果的信息，再给出步骤、停止条件�
 
 ## 当前收录
 
-v0.2.0 候选目录包含 17 个 Skills，按 11 个安装意图明确的 Plugins 分发。
+[v0.2.0](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.2.0) 正式目录包含 17 个 Skills，按 11 个安装意图明确的 Plugins 分发。
 
 | 生活 Plugin | 能做什么 |
 | --- | --- |
@@ -45,13 +45,13 @@ v0.2.0 候选目录包含 17 个 Skills，按 11 个安装意图明确的 Plugin
 
 ## 安装
 
-v0.2.0 正式发布后，可从仓库 Marketplace 安装：
+从 v0.2.0 起，可从仓库 Marketplace 安装：
 
     codex plugin marketplace add KanadeK/codex-skill-harvester --ref v0.2.0
 
 然后在 Codex 或 Work mode 的 Plugins Directory 中，按任务选择一个 Plugin 安装。无需一次安装全部 11 个。
 
-发布前，请以 [GitHub Releases](https://github.com/KanadeK/codex-skill-harvester/releases) 中实际存在的版本为准；当前公开稳定版仍是 [v0.1.1](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.1.1)。
+当前公开稳定版是 [v0.2.0](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.2.0)：Release 已不可变，13 个资产具备 GitHub 签名 attestation，源码和全部 11 个 Plugin 均从远端下载后通过安装/E2E。[v0.1.1](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.1.1) 仍作为不可变历史版本保留。
 
 ## 安全边界
 
