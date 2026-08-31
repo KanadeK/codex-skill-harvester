@@ -84,7 +84,7 @@ def _nonnegative_integer(value: Any, label: str) -> None:
     )
 
 
-def _validate_query_report(path: Path, report: dict[str, Any]) -> None:
+def _validate_query_report(root: Path, path: Path, report: dict[str, Any]) -> None:
     _require(report.get("schema_version") == 1, f"query schema invalid: {path.name}")
     _require(report.get("report_type") == "query-results", f"query type invalid: {path.name}")
     _require(
@@ -114,6 +114,51 @@ def _validate_query_report(path: Path, report: dict[str, Any]) -> None:
             and report["query_attempts"]
             == report["completed_queries"] + report["failed_queries"],
             f"query cycle stage counts disagree: {path.name}",
+        )
+        review = report.get("discovery_review")
+        _require(
+            isinstance(review, dict),
+            f"query discovery review missing: {path.name}",
+        )
+        for field in (
+            "raw_hits",
+            "unique_hits",
+            "pending",
+            "selected_endpoint",
+            "duplicate",
+            "not_selected",
+            "reviewed",
+        ):
+            _nonnegative_integer(
+                review.get(field), f"query discovery review {field}: {path.name}"
+            )
+        _require(
+            review["raw_hits"] >= review["unique_hits"]
+            and review["unique_hits"]
+            == review["pending"]
+            + review["selected_endpoint"]
+            + review["duplicate"]
+            + review["not_selected"]
+            and review["reviewed"]
+            == review["selected_endpoint"]
+            + review["duplicate"]
+            + review["not_selected"],
+            f"query discovery review counts disagree: {path.name}",
+        )
+        expected_rate = (
+            round(review["selected_endpoint"] / review["reviewed"], 6)
+            if review["reviewed"]
+            else 0.0
+        )
+        _require(
+            review.get("conversion_rate") == expected_rate,
+            f"query discovery review conversion disagrees: {path.name}",
+        )
+        with open_runtime_store(root) as store:
+            expected_review = store.discovery_review_metrics(report["cycle_id"])
+        _require(
+            review == expected_review,
+            f"query discovery review differs from SQLite: {path.name}",
         )
     else:
         _require(
@@ -675,7 +720,7 @@ def validate_repository(root: Path) -> dict[str, Any]:
     for path in (root / "runs").glob("*-queries.json"):
         report = load_json(path)
         _require(isinstance(report, dict), f"query report invalid: {path.name}")
-        _validate_query_report(path, report)
+        _validate_query_report(root, path, report)
 
     semantic_reports: list[tuple[Path, dict[str, Any]]] = []
     latest_semantic_report: dict[str, tuple[str, Path]] = {}

@@ -130,48 +130,18 @@ class QueryBatchTests(unittest.TestCase):
                                     "path": "source/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows.rst",
                                 }
                             ],
-                            "selected_endpoints": [
-                                {
-                                    "source_id": "pypa-publishing-guide",
-                                    "url": "https://raw.githubusercontent.com/pypa/packaging.python.org/main/source/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows.rst",
-                                    "adapter": "document",
-                                    "tier": "T1",
-                                    "trust": "official",
-                                    "authority": "official-operational-guide",
-                                    "license": {"status": "facts-only", "identifier": None},
-                                }
-                            ],
+                            "selected_endpoints": [],
                         }
                     ],
                 },
             )
-            incompatible = json.loads(result_path.read_text(encoding="utf-8"))
-            incompatible["results"][0]["selected_endpoints"][0]["tier"] = "T4"
-            atomic_write_json(result_path, incompatible)
-            with self.assertRaisesRegex(QueryBatchError, "tier constraint"):
-                import_query_results(
-                    root, batch_id=first["batch_id"], results_path=result_path
-                )
-            incompatible["results"][0]["selected_endpoints"][0]["tier"] = "T1"
-            incompatible["results"][0]["selected_endpoints"][0][
-                "url"
-            ] = "https://secret@example.test/guide"
-            atomic_write_json(result_path, incompatible)
-            with self.assertRaisesRegex(QueryBatchError, "credential-free https"):
-                import_query_results(
-                    root, batch_id=first["batch_id"], results_path=result_path
-                )
-            incompatible["results"][0]["selected_endpoints"][0][
-                "url"
-            ] = "https://example.test/guide"
-            atomic_write_json(result_path, incompatible)
             partial = import_query_results(
                 root, batch_id=first["batch_id"], results_path=result_path
             )
             self.assertEqual(partial["status"], "pending")
             self.assertEqual(partial["pending_queries"], 1)
             self.assertEqual(
-                partial["selected_source_ids"], ["pypa-publishing-guide"]
+                partial["selected_source_ids"], []
             )
             self.assertEqual(partial["discovery_hits"], 1)
             with open_runtime_store(root) as store:
@@ -259,6 +229,7 @@ class QueryBatchTests(unittest.TestCase):
             self.assertEqual(summary["failed_queries"], 1)
             self.assertEqual(summary["pending_queries"], 0)
             self.assertEqual(summary["discovery_hits"], 1)
+            self.assertEqual(summary["discovery_review"]["pending"], 1)
             self.assertEqual(len(list((root / "runs").glob("*-queries.json"))), 1)
 
             no_op_path = root / ".harvester-cache" / "no-op.json"

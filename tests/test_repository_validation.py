@@ -62,8 +62,8 @@ class RepositoryValidationTests(unittest.TestCase):
         self.assertEqual(report["plugins"], 8)
         self.assertEqual(report["skills"], 8)
         self.assertEqual(report["internal_capabilities"], 8)
-        self.assertEqual(report["taxonomy_version"], "1.1.0")
-        self.assertEqual(report["scale_backend"], "sqlite-v3")
+        self.assertEqual(report["taxonomy_version"], "1.2.0")
+        self.assertEqual(report["scale_backend"], "sqlite-v4")
         self.assertEqual(report["evidence_packs"], 168)
         self.assertEqual(report["topic_queries"], len(load_topic_bank(root)))
         self.assertEqual(report["migration_triggers"], [])
@@ -288,6 +288,34 @@ class RepositoryValidationTests(unittest.TestCase):
 
             with self.assertRaisesRegex(
                 ValidationError, "query cycle stage counts disagree"
+            ):
+                validate_repository(root)
+
+    def test_rejects_forged_discovery_hit_review_counts(self) -> None:
+        source = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            shutil.copytree(
+                source,
+                root,
+                ignore=shutil.ignore_patterns(
+                    ".git", "dist", ".harvester-cache", "__pycache__", "*.pyc"
+                ),
+            )
+            path = next(
+                path
+                for path in (root / "runs").glob("*-queries.json")
+                if json.loads(path.read_text(encoding="utf-8")).get("aggregation")
+                == "cycle"
+            )
+            report = json.loads(path.read_text(encoding="utf-8"))
+            report["discovery_review"]["pending"] -= 1
+            report["discovery_review"]["not_selected"] += 1
+            report["discovery_review"]["reviewed"] += 1
+            path.write_text(json.dumps(report), encoding="utf-8")
+
+            with self.assertRaisesRegex(
+                ValidationError, "discovery review differs from SQLite"
             ):
                 validate_repository(root)
 

@@ -45,7 +45,7 @@ The long-term model has three layers:
 - Capability Registry owns stable canonical capability IDs, one primary family, versioned facets, aliases, variants, merged evidence, decision history, and reactivation conditions.
 - Published Skills contains only capabilities that pass the quality gates, packaged into small user-task Plugins or Collections rather than one enormous installation.
 
-The active runtime backend is `sqlite-v3`, selected after the measured JSON lifecycle bottleneck and extended with content-review and query state while retaining one authority. See [architecture](docs/architecture.md), [taxonomy](docs/taxonomy.md), [schema migrations](docs/schema-migrations.md), [scale audit](docs/scale-audit.md), [roadmap](docs/roadmap.md), and [ADR-002](docs/decisions/0002-adopt-sqlite-runtime-store.md).
+The active runtime backend is `sqlite-v4`, selected after the measured JSON lifecycle bottleneck and extended with content review, query state, and one reviewed discovery-hit lifecycle while retaining one authority. See [architecture](docs/architecture.md), [taxonomy](docs/taxonomy.md), [schema migrations](docs/schema-migrations.md), [scale audit](docs/scale-audit.md), [roadmap](docs/roadmap.md), and [ADR-002](docs/decisions/0002-adopt-sqlite-runtime-store.md).
 
 ## Quick start
 

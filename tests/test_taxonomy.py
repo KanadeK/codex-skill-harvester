@@ -123,8 +123,28 @@ class TaxonomyTests(unittest.TestCase):
 
         report = validate_catalog_taxonomy(catalog, taxonomy)
 
-        self.assertEqual(report["taxonomy_version"], "1.1.0")
+        self.assertEqual(report["taxonomy_version"], "1.2.0")
         self.assertEqual(report["capabilities"], 18)
+
+    def test_daily_life_uses_physical_execution_environment_facets(self) -> None:
+        taxonomy = read_json(ROOT / "catalog" / "taxonomy.json")
+
+        self.assertIn("daily-life", taxonomy["facets"]["domain"]["values"])
+        self.assertTrue(
+            {"fresh-market", "grocery-store", "home-kitchen", "laundry-area"}
+            <= set(taxonomy["facets"]["platforms"]["values"])
+        )
+        self.assertTrue(
+            {"food", "clothing", "household-context", "shopping-needs"}
+            <= set(taxonomy["facets"]["inputs"]["values"])
+        )
+        self.assertTrue(
+            {"instructions", "plan"}
+            <= set(taxonomy["facets"]["outputs"]["values"])
+        )
+        self.assertIn(
+            "human-physical-action", taxonomy["facets"]["side_effects"]["values"]
+        )
 
 
 if __name__ == "__main__":

@@ -97,11 +97,17 @@ Only an imported Codex-reviewed Evidence Pack can promote one or more observatio
 - `side_effects`
 - `platforms`
 
+`platforms` means the execution environment, not necessarily a software ecosystem. A reality-facing capability may name a fresh market, home kitchen, or laundry area. The other fields likewise describe the actual human task: physical tools and user actions are recorded honestly, while outputs distinguish Codex instructions/plans from results the person must still perform.
+
 The candidate persists its Evidence Pack and observation links, source group/topic, fingerprint, L2 exact fingerprint matches, bounded L3 capability recalls, and one queue. L2/L3 are recall evidence only. The semantic batch remains pending until every exported observation is reviewed, so interruption resumes from SQLite rather than chat memory.
 
-### Discovery-query rotation
+### Discovery-query rotation and hit review
 
-The Topic Bank supplies real queries rather than forecast counts. A persisted query batch records the exact query, topic, source-tier constraint, cursor, result count, selected endpoints, and completion status. Codex executes it through the approved background search/GitHub route and imports only factual result metadata. Failed or unexecuted queries keep their cursor. Source utility accumulates successful requests, bytes, observations, candidate yield, and failures; it informs later rotation but never weakens evidence gates.
+The Topic Bank supplies real queries rather than forecast counts. A persisted query batch records the exact query, topic, source-tier constraint, cursor, result count, discovery hits, and completion status. Codex executes it through the approved background search/GitHub route and imports only factual result metadata. Failed or unexecuted queries keep their cursor.
+
+A query hit first enters the sole SQLite authority as `pending`; query import cannot select an endpoint. Codex may later review a bounded page and choose `selected_endpoint`, `duplicate`, or `not_selected`. Every terminal review records reviewer, trust, license, concrete rationale, and reactivation conditions when not selected. Selection additionally requires a credential-free URL, stable source identity, revision or cursor, T0/T1/T2 evidence tier, sufficient trust, a known/facts-only license, and registry non-duplication. Query reports distinguish raw and unique hits, pending review, selected, duplicate, not selected, and conversion rate. Query execution completion never hides pending hit work.
+
+Source utility accumulates successful requests, bytes, observations, candidate yield, and failures; it informs later rotation but never weakens evidence gates.
 
 ### Queues
 
@@ -131,7 +137,7 @@ If Usage cannot be measured, reports store `{"measured": false}`. Credits are no
 
 A canary failure, ramp failure, or limit creates a `checkpoint` report with completed and pending source ids. It does not mark unprocessed evidence `not_promoted`. A complete unchanged stable-source run is `no_op`; genuinely new PyPI feed items keep the campaign truthfully `changed` even though they remain observations.
 
-The parent campaign and one processed slice have separate lifecycles. A slice is `complete` when its referenced query, semantic, and L4 work has no pending item. The parent remains `active` until the policy-owned capacity lower bound is reached; a technical limit or pending slice is `checkpoint`; only the objective or an explicit non-null controller-end record may produce `campaign_completed`. A source/query/semantic `no_op` proves only that the same handled input did not change. It never completes the parent campaign.
+The parent campaign and one processed slice have separate lifecycles. A slice is `complete` only when its referenced query execution, discovery-hit review, semantic review, and L4 work have no pending item. The parent remains `active` until the policy-owned capacity lower bound is reached; a technical limit or pending slice is `checkpoint`; only the objective or an explicit non-null controller-end record may produce `campaign_completed`. A source/query/discovery/semantic `no_op` proves only that the same handled input did not change. It never completes the parent campaign.
 
 Scheduled/manual GitHub automation must invoke `campaign --ramp`. It may commit SQLite and generated run reports and open a review PR. It never performs L4 decisions, semantic merges, Skill publication, tags, or Releases.
 

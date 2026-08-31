@@ -5,7 +5,8 @@
     "updated_skills": 3
   },
   "checkpoint": {
-    "continuation": "The explicit parent-campaign completion condition is satisfied.",
+    "continuation": "Resume the persisted discovery-hit review queue before claiming the query cycle is fully adjudicated.",
+    "pending_discovery_hits": 49,
     "pending_l4_candidates": 0,
     "pending_queries": 0,
     "pending_semantic_observations": 0,
@@ -84,6 +85,17 @@
       "full-campaign-2026-08-30"
     ],
     "discovery_hits": 151,
+    "discovery_review": {
+      "conversion_rate": 0.0,
+      "duplicate": 0,
+      "not_selected": 0,
+      "pending": 49,
+      "raw_hits": 151,
+      "reviewed": 0,
+      "selected_endpoint": 0,
+      "selected_source_ids": [],
+      "unique_hits": 49
+    },
     "failed_attempts": 4,
     "pending_queries": 0,
     "query_attempts": 1626,
@@ -130,10 +142,11 @@
     "reviewed_observations": 217
   },
   "slice": {
+    "pending_discovery_hits": 49,
     "pending_l4_candidates": 0,
     "pending_queries": 0,
     "pending_semantic_observations": 0,
-    "status": "complete"
+    "status": "checkpoint"
   },
-  "status": "campaign_completed"
+  "status": "checkpoint"
 }

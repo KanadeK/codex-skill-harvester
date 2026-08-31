@@ -6,6 +6,7 @@
   },
   "checkpoint": {
     "continuation": "The current slice is complete; start the next inventory/query batch from persisted cursors.",
+    "pending_discovery_hits": 0,
     "pending_l4_candidates": 0,
     "pending_queries": 0,
     "pending_semantic_observations": 0,
@@ -86,6 +87,17 @@
       "content-production-2026-08-29"
     ],
     "discovery_hits": 0,
+    "discovery_review": {
+      "conversion_rate": 0.0,
+      "duplicate": 0,
+      "not_selected": 0,
+      "pending": 0,
+      "raw_hits": 0,
+      "reviewed": 0,
+      "selected_endpoint": 0,
+      "selected_source_ids": [],
+      "unique_hits": 0
+    },
     "failed_attempts": 7,
     "pending_queries": 0,
     "query_attempts": 28,
@@ -124,6 +136,7 @@
     "reviewed_observations": 26
   },
   "slice": {
+    "pending_discovery_hits": 0,
     "pending_l4_candidates": 0,
     "pending_queries": 0,
     "pending_semantic_observations": 0,

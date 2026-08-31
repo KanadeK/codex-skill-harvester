@@ -7,12 +7,12 @@
     "domain": {
       "cardinality": "one-or-more",
       "extensible": true,
-      "values": ["business", "data", "design", "documents", "education", "life", "media", "operations", "research", "science", "software"]
+      "values": ["business", "daily-life", "data", "design", "documents", "education", "life", "media", "operations", "research", "science", "software"]
     },
     "inputs": {
       "cardinality": "one-or-more",
       "extensible": true,
-      "values": ["api", "audio", "code", "document", "file", "image", "release", "report", "repository", "spreadsheet", "webpage"]
+      "values": ["api", "audio", "clothing", "code", "document", "file", "food", "household-context", "image", "release", "report", "repository", "shopping-needs", "spreadsheet", "webpage"]
     },
     "intent": {
       "cardinality": "one-or-more",
@@ -27,27 +27,27 @@
     "outputs": {
       "cardinality": "one-or-more",
       "extensible": true,
-      "values": ["code", "decision", "evidence", "file", "release", "report"]
+      "values": ["code", "decision", "evidence", "file", "instructions", "plan", "release", "report"]
     },
     "platforms": {
       "cardinality": "one-or-more",
       "extensible": true,
-      "values": ["ansible", "cargo", "codex", "curl", "docker", "git", "github", "github-actions", "http", "linux", "macos", "nodejs", "npm", "playwright", "pytest", "rust", "web", "windows"]
+      "values": ["ansible", "cargo", "codex", "curl", "docker", "fresh-market", "git", "github", "github-actions", "grocery-store", "home-kitchen", "http", "laundry-area", "linux", "macos", "nodejs", "npm", "playwright", "pytest", "rust", "web", "windows"]
     },
     "risk": {
       "cardinality": "one-or-more",
       "extensible": true,
-      "values": ["credentials", "financial", "high-risk", "legal", "medical", "standard"]
+      "values": ["allergen", "credentials", "financial", "food-safety", "high-risk", "legal", "medical", "physical-safety", "standard"]
     },
     "side_effects": {
       "cardinality": "one-or-more",
       "extensible": true,
-      "values": ["external-publish", "local-write", "network-read", "network-write", "read-only"]
+      "values": ["external-publish", "household-consumption", "human-physical-action", "local-write", "network-read", "network-write", "read-only"]
     },
     "tools": {
       "cardinality": "one-or-more",
       "extensible": true,
-      "values": ["ansible-test", "cargo", "codex", "curl", "docker", "gh", "git", "npm", "playwright", "pytest", "python"]
+      "values": ["ansible-test", "cargo", "codex", "curl", "docker", "gh", "git", "household-appliance", "kitchen-tools", "npm", "playwright", "pytest", "python"]
     },
     "trust": {
       "cardinality": "one-or-more",
@@ -65,5 +65,5 @@
     "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$"
   },
   "schema_version": 1,
-  "taxonomy_version": "1.1.0"
+  "taxonomy_version": "1.2.0"
 }
