@@ -226,7 +226,7 @@ Completion checkpoint: the branch starts at verified correction HEAD `7aa8f86`; 
 ## Task 29: prepare and validate v0.2.0
 
 - [x] Acceptance: one v0.2.0 source of truth drives package, 11 Plugin manifests, archive names, fixtures, checksums, docs, and release notes; v0.1.1 remains untouched and no consumer migration is required.
-- [x] Acceptance: `CHANGELOG.md` records Added/Changed/Fixed/Security for the 9 life Skills, 6 later software Skills, Python/GitHub updates, discovery review, SQLite v4, campaign correction, and bilingual brand.
+- [x] Acceptance: `CHANGELOG.md` records Added/Changed/Fixed/Security for the 9 life Skills, 7 later software Skills, the GitHub update, discovery review, SQLite v4, campaign correction, and bilingual brand.
 - [ ] Verify: official quick validator passes all 17 Skills and official Plugin validator passes all 11 Plugins in an isolated dependency environment.
 - [ ] Verify: full tests/evals/validator/benchmark/no-op/security, two identical builds, 12 archives + checksums, isolated installs and all Plugin E2E pass; five-axis review has no Required/Critical findings.
 - Dependencies: Task 28.

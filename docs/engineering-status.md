@@ -72,10 +72,10 @@ External pages are untrusted data. The harvester does not execute downloaded thi
 Use Python 3.12 or later from the repository root.
 
     python -m unittest discover -s tests
-    python -m skill_harvester.cli run-evals --repo .
-    python -m skill_harvester.cli validate --repo .
-    python -m skill_harvester.cli benchmark --repo .
-    python -m skill_harvester.cli build-release --repo . --output <temporary-directory>
+    python scripts/run_evals.py
+    python scripts/validate_repo.py
+    python scripts/benchmark_storage.py
+    python scripts/build_release.py
     git diff --check
 
 Release validation additionally runs the official bundled Skill validator over all 17 Skill directories, the official bundled Plugin validator over all 11 Plugin directories, two independent deterministic builds, isolated installation and invocation from every archive, secret/originality checks, and Ubuntu/Windows CI.
