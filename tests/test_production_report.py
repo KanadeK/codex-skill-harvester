@@ -223,6 +223,36 @@ class ProductionReportTests(unittest.TestCase):
         )
         self.assertIn("persisted checkpoint", report["checkpoint"]["continuation"])
 
+    def test_pending_discovery_hit_keeps_completed_queries_at_checkpoint(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repository"
+            _copy_production_fixture(root)
+            with open_runtime_store(root) as store, store.connection:
+                store.record_discovery_hits(
+                    cycle_id="content-production-2026-08-29",
+                    query={
+                        "id": "daily-life-market-guide",
+                        "source_group": "daily-life-market",
+                        "topic_id": "daily-life.research.fresh-market",
+                    },
+                    observed_at="2026-08-30T20:00:00Z",
+                    hits=[
+                        {
+                            "route": "github-code",
+                            "url": "https://github.com/example/guides/blob/main/market.md",
+                            "repository": "example/guides",
+                            "path": "market.md",
+                        }
+                    ],
+                )
+
+            report = build_production_report(root, **_report_arguments(root))
+
+        self.assertEqual(report["queries"]["discovery_review"]["pending"], 1)
+        self.assertEqual(report["slice"]["pending_discovery_hits"], 1)
+        self.assertEqual(report["status"], "checkpoint")
+        self.assertIn("discovery-hit", report["checkpoint"]["continuation"])
+
     def test_historical_semantic_imports_do_not_duplicate_batch_or_hide_pending_l4(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory) / "repository"

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 import sqlite3
 import tempfile
 from collections import Counter
@@ -11,7 +12,7 @@ from .io import canonical_json_bytes, load_json, sha256_bytes
 
 
 RUNTIME_DB = Path("state") / "harvest.sqlite3"
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 QUEUE_PRIORITY = {
     "urgent-impact": 0,
@@ -26,6 +27,22 @@ TIER_PRIORITY = {"T0": 0, "T1": 1, "T2": 2, "T3": 3, "T4": 4}
 
 class RuntimeStoreError(ValueError):
     pass
+
+
+def discovery_hit_id(hit: dict[str, Any]) -> str:
+    seed = (
+        {
+            "route": hit["route"],
+            "url": hit["url"].split("#", 1)[0],
+        }
+        if hit["route"] == "web"
+        else {
+            "route": hit["route"],
+            "repository": hit["repository"].casefold(),
+            "path": hit.get("path"),
+        }
+    )
+    return sha256_bytes(b"discovery-hit\0" + canonical_json_bytes(seed))[:24]
 
 
 def _json_text(value: Any) -> str:
@@ -225,6 +242,28 @@ class RuntimeStore:
                     selected_endpoint_count INTEGER NOT NULL,
                     record_json TEXT NOT NULL
                 );
+                CREATE TABLE discovery_hits (
+                    id TEXT PRIMARY KEY,
+                    status TEXT NOT NULL,
+                    first_seen_at TEXT NOT NULL,
+                    last_seen_at TEXT NOT NULL,
+                    reviewed_at TEXT,
+                    selected_source_id TEXT,
+                    record_json TEXT NOT NULL
+                );
+                CREATE INDEX discovery_hits_review_page
+                    ON discovery_hits (status, first_seen_at, id);
+                CREATE TABLE discovery_hit_occurrences (
+                    hit_id TEXT NOT NULL REFERENCES discovery_hits(id),
+                    cycle_id TEXT NOT NULL,
+                    query_id TEXT NOT NULL,
+                    source_group TEXT NOT NULL,
+                    topic_id TEXT NOT NULL,
+                    observed_at TEXT NOT NULL,
+                    PRIMARY KEY (hit_id, cycle_id, query_id)
+                );
+                CREATE INDEX discovery_hit_occurrences_cycle
+                    ON discovery_hit_occurrences (cycle_id, hit_id);
                 """
             )
             self._set_meta("schema_version", str(SCHEMA_VERSION))
@@ -597,7 +636,12 @@ class RuntimeStore:
             "SELECT value FROM metadata WHERE key = ?", (key,)
         ).fetchone()
         if persisted is not None:
-            return _json_value(persisted["value"])
+            metrics = _json_value(persisted["value"])
+            metrics["discovery_review"] = self.discovery_review_metrics(cycle_id)
+            metrics["selected_source_ids"] = metrics["discovery_review"][
+                "selected_source_ids"
+            ]
+            return metrics
 
         metrics: dict[str, Any] = {
             "query_attempts": 0,
@@ -608,7 +652,6 @@ class RuntimeStore:
             "discovery_hits": 0,
             "selected_source_ids": [],
         }
-        selected_source_ids: set[str] = set()
         rows = self.connection.execute(
             "SELECT query_batch_items.status, query_batch_items.record_json "
             "FROM query_batch_items JOIN query_batches "
@@ -629,12 +672,273 @@ class RuntimeStore:
                 metrics["failed_queries"] += 1
             metrics["result_count"] += int(attempt.get("result_count", 0))
             metrics["discovery_hits"] += len(attempt.get("discovery_hits", []))
-            selected_source_ids.update(
-                endpoint["source_id"]
-                for endpoint in attempt.get("selected_endpoints", [])
-            )
-        metrics["selected_source_ids"] = sorted(selected_source_ids)
+        metrics["discovery_review"] = self.discovery_review_metrics(cycle_id)
+        metrics["selected_source_ids"] = metrics["discovery_review"][
+            "selected_source_ids"
+        ]
         return metrics
+
+    def record_discovery_hits(
+        self,
+        *,
+        cycle_id: str,
+        query: dict[str, Any],
+        observed_at: str,
+        hits: list[dict[str, Any]],
+    ) -> int:
+        inserted = 0
+        for hit in hits:
+            hit_id = discovery_hit_id(hit)
+            existing = self.connection.execute(
+                "SELECT record_json FROM discovery_hits WHERE id = ?", (hit_id,)
+            ).fetchone()
+            if existing is None:
+                record = {
+                    "schema_version": 1,
+                    "id": hit_id,
+                    "status": "pending",
+                    "first_seen_at": observed_at,
+                    "last_seen_at": observed_at,
+                    "seen_count": 1,
+                    "hit": hit,
+                    "review": None,
+                }
+                self.connection.execute(
+                    "INSERT INTO discovery_hits("
+                    "id, status, first_seen_at, last_seen_at, reviewed_at, "
+                    "selected_source_id, record_json"
+                    ") VALUES(?, 'pending', ?, ?, NULL, NULL, ?)",
+                    (hit_id, observed_at, observed_at, _json_text(record)),
+                )
+                inserted += 1
+            occurrence = self.connection.execute(
+                "INSERT OR IGNORE INTO discovery_hit_occurrences("
+                "hit_id, cycle_id, query_id, source_group, topic_id, observed_at"
+                ") VALUES(?, ?, ?, ?, ?, ?)",
+                (
+                    hit_id,
+                    cycle_id,
+                    query["id"],
+                    query["source_group"],
+                    query["topic_id"],
+                    observed_at,
+                ),
+            )
+            if existing is not None and occurrence.rowcount:
+                record = _json_value(existing["record_json"])
+                record["last_seen_at"] = observed_at
+                record["seen_count"] = int(record["seen_count"]) + 1
+                self.connection.execute(
+                    "UPDATE discovery_hits SET last_seen_at = ?, record_json = ? "
+                    "WHERE id = ?",
+                    (observed_at, _json_text(record), hit_id),
+                )
+        return inserted
+
+    def discovery_hit(self, hit_id: str) -> dict[str, Any]:
+        self.validate()
+        row = self.connection.execute(
+            "SELECT record_json FROM discovery_hits WHERE id = ?", (hit_id,)
+        ).fetchone()
+        if row is None:
+            raise RuntimeStoreError(f"unknown discovery hit: {hit_id}")
+        return _json_value(row["record_json"])
+
+    def discovery_review_page(
+        self, *, limit: int, after: str | None
+    ) -> dict[str, Any]:
+        self.validate()
+        parameters: list[Any] = []
+        cursor_clause = ""
+        if after is not None:
+            cursor = self.connection.execute(
+                "SELECT first_seen_at, id FROM discovery_hits WHERE id = ?",
+                (after,),
+            ).fetchone()
+            if cursor is None:
+                raise RuntimeStoreError(f"unknown discovery review cursor: {after}")
+            cursor_clause = (
+                "AND (first_seen_at > ? OR (first_seen_at = ? AND id > ?)) "
+            )
+            parameters.extend(
+                (cursor["first_seen_at"], cursor["first_seen_at"], cursor["id"])
+            )
+        parameters.append(limit + 1)
+        rows = self.connection.execute(
+            "SELECT id, record_json FROM discovery_hits "
+            "WHERE status = 'pending' "
+            f"{cursor_clause}ORDER BY first_seen_at, id LIMIT ?",
+            parameters,
+        ).fetchall()
+        page_rows = rows[:limit]
+        records: list[dict[str, Any]] = []
+        for row in page_rows:
+            record = _json_value(row["record_json"])
+            contexts = self.connection.execute(
+                "SELECT cycle_id, query_id, source_group, topic_id, observed_at "
+                "FROM discovery_hit_occurrences WHERE hit_id = ? "
+                "ORDER BY cycle_id, query_id",
+                (row["id"],),
+            ).fetchall()
+            record["contexts"] = [dict(context) for context in contexts]
+            records.append(record)
+        return {
+            "records": records,
+            "next_cursor": page_rows[-1]["id"] if len(rows) > limit else None,
+        }
+
+    def discovery_review_metrics(self, cycle_id: str | None = None) -> dict[str, Any]:
+        self.validate()
+        if cycle_id is None:
+            target = "SELECT id FROM discovery_hits"
+            parameters: tuple[Any, ...] = ()
+            raw_hits = int(
+                self.connection.execute(
+                    "SELECT COUNT(*) FROM discovery_hit_occurrences"
+                ).fetchone()[0]
+            )
+        else:
+            target = (
+                "SELECT DISTINCT hit_id AS id FROM discovery_hit_occurrences "
+                "WHERE cycle_id = ?"
+            )
+            parameters = (cycle_id,)
+            raw_hits = int(
+                self.connection.execute(
+                    "SELECT COUNT(*) FROM discovery_hit_occurrences WHERE cycle_id = ?",
+                    (cycle_id,),
+                ).fetchone()[0]
+            )
+        rows = self.connection.execute(
+            "SELECT discovery_hits.status, COUNT(*) AS count "
+            f"FROM discovery_hits JOIN ({target}) AS target "
+            "ON target.id = discovery_hits.id GROUP BY discovery_hits.status",
+            parameters,
+        ).fetchall()
+        counts = {str(row["status"]): int(row["count"]) for row in rows}
+        unique_hits = sum(counts.values())
+        reviewed = unique_hits - counts.get("pending", 0)
+        selected_rows = self.connection.execute(
+            "SELECT DISTINCT discovery_hits.selected_source_id "
+            f"FROM discovery_hits JOIN ({target}) AS target "
+            "ON target.id = discovery_hits.id "
+            "WHERE discovery_hits.status = 'selected_endpoint' "
+            "ORDER BY discovery_hits.selected_source_id",
+            parameters,
+        ).fetchall()
+        selected_source_ids = [
+            str(row["selected_source_id"]) for row in selected_rows
+        ]
+        return {
+            "raw_hits": raw_hits,
+            "unique_hits": unique_hits,
+            "pending": counts.get("pending", 0),
+            "selected_endpoint": counts.get("selected_endpoint", 0),
+            "duplicate": counts.get("duplicate", 0),
+            "not_selected": counts.get("not_selected", 0),
+            "reviewed": reviewed,
+            "conversion_rate": (
+                round(counts.get("selected_endpoint", 0) / reviewed, 6)
+                if reviewed
+                else 0.0
+            ),
+            "selected_source_ids": selected_source_ids,
+        }
+
+    def apply_discovery_reviews(
+        self, reviews: list[dict[str, Any]]
+    ) -> dict[str, int]:
+        self.validate()
+        applied = 0
+        no_op = 0
+        with self.connection:
+            for review in reviews:
+                row = self.connection.execute(
+                    "SELECT status, record_json FROM discovery_hits WHERE id = ?",
+                    (review["hit_id"],),
+                ).fetchone()
+                if row is None:
+                    raise RuntimeStoreError(
+                        f"unknown discovery hit: {review['hit_id']}"
+                    )
+                record = _json_value(row["record_json"])
+                if row["status"] != "pending":
+                    if record.get("review") == review:
+                        no_op += 1
+                        continue
+                    raise RuntimeStoreError(
+                        f"discovery hit already reviewed: {review['hit_id']}"
+                    )
+                record["status"] = review["outcome"]
+                record["review"] = review
+                selected_source_id = (
+                    review["selected_endpoint"]["source_id"]
+                    if review["outcome"] == "selected_endpoint"
+                    else None
+                )
+                self.connection.execute(
+                    "UPDATE discovery_hits SET status = ?, reviewed_at = ?, "
+                    "selected_source_id = ?, record_json = ? WHERE id = ?",
+                    (
+                        review["outcome"],
+                        review["reviewed_at"],
+                        selected_source_id,
+                        _json_text(record),
+                        review["hit_id"],
+                    ),
+                )
+                applied += 1
+        return {"applied": applied, "no_op": no_op}
+
+    def reopen_failed_discovery_selection(
+        self, *, hit_id: str, reopened_at: str, reason: str
+    ) -> dict[str, Any]:
+        self.validate()
+        with self.connection:
+            row = self.connection.execute(
+                "SELECT status, selected_source_id, record_json "
+                "FROM discovery_hits WHERE id = ?",
+                (hit_id,),
+            ).fetchone()
+            if row is None or row["status"] != "selected_endpoint":
+                raise RuntimeStoreError(
+                    "only a selected discovery hit can be reopened"
+                )
+            source_id = str(row["selected_source_id"])
+            if self.source_state(source_id):
+                raise RuntimeStoreError(
+                    "a successfully scanned selected source cannot be reopened"
+                )
+            record = _json_value(row["record_json"])
+            history = list(record.get("review_history", []))
+            history.append(record["review"])
+            record.update(
+                {
+                    "status": "pending",
+                    "review": None,
+                    "review_history": history,
+                    "last_reopened_at": reopened_at,
+                    "last_reopen_reason": reason,
+                }
+            )
+            self.connection.execute(
+                "UPDATE discovery_hits SET status = 'pending', reviewed_at = NULL, "
+                "selected_source_id = NULL, record_json = ? WHERE id = ?",
+                (_json_text(record), hit_id),
+            )
+        return {"hit_id": hit_id, "source_id": source_id}
+
+    def discovery_hit_cycles(self, hit_ids: set[str]) -> list[str]:
+        self.validate()
+        if not hit_ids:
+            return []
+        placeholders = ",".join("?" for _ in hit_ids)
+        rows = self.connection.execute(
+            "SELECT DISTINCT cycle_id FROM discovery_hit_occurrences "
+            f"WHERE hit_id IN ({placeholders}) ORDER BY cycle_id",
+            tuple(sorted(hit_ids)),
+        )
+        return [str(row["cycle_id"]) for row in rows]
 
     def query_batch_items(self, batch_id: str) -> list[dict[str, Any]]:
         self.validate()
@@ -680,7 +984,6 @@ class RuntimeStore:
                 raise RuntimeStoreError(f"query batch is not pending: {batch_id}")
             cycle_id = str(batch["cycle_id"])
             metrics = self.query_cycle_metrics(cycle_id)
-            selected_source_ids = set(metrics["selected_source_ids"])
             for result in results:
                 item = self.connection.execute(
                     "SELECT record_json FROM query_batch_items "
@@ -702,11 +1005,13 @@ class RuntimeStore:
                 metrics["discovery_hits"] += len(
                     result.get("discovery_hits", [])
                 )
-                selected_source_ids.update(
-                    endpoint["source_id"]
-                    for endpoint in result["selected_endpoints"]
-                )
                 if result["status"] == "completed":
+                    self.record_discovery_hits(
+                        cycle_id=cycle_id,
+                        query=query,
+                        observed_at=executed_at,
+                        hits=result.get("discovery_hits", []),
+                    )
                     self.connection.execute(
                         "UPDATE query_batch_items SET status = 'completed', record_json = ? "
                         "WHERE batch_id = ? AND query_id = ?",
@@ -767,7 +1072,10 @@ class RuntimeStore:
                 (status, record["completed_at"], _json_text(record), batch_id),
             )
             metrics["pending_queries"] = pending
-            metrics["selected_source_ids"] = sorted(selected_source_ids)
+            metrics["discovery_review"] = self.discovery_review_metrics(cycle_id)
+            metrics["selected_source_ids"] = metrics["discovery_review"][
+                "selected_source_ids"
+            ]
             metrics["updated_at"] = executed_at
             self._set_meta(
                 f"query_cycle_metrics:{cycle_id}", _json_text(metrics)
@@ -1287,6 +1595,115 @@ def create_empty_runtime(root: Path) -> None:
         store.initialize()
 
 
+def upgrade_runtime_v3_to_v4(root: Path) -> dict[str, Any]:
+    destination = runtime_store_path(root)
+    if not destination.is_file():
+        raise RuntimeStoreError("runtime store is missing for schema upgrade")
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=".harvest-v4-", suffix=".sqlite3", dir=destination.parent
+    )
+    os.close(descriptor)
+    temporary = Path(temporary_name)
+    try:
+        shutil.copyfile(destination, temporary)
+        with RuntimeStore(temporary) as store:
+            version = store.connection.execute(
+                "SELECT value FROM metadata WHERE key = 'schema_version'"
+            ).fetchone()
+            if version is None or version["value"] != "3":
+                raise RuntimeStoreError(
+                    "runtime schema upgrade requires exactly schema version 3"
+                )
+            with store.connection:
+                store.connection.executescript(
+                    """
+                    CREATE TABLE discovery_hits (
+                        id TEXT PRIMARY KEY,
+                        status TEXT NOT NULL,
+                        first_seen_at TEXT NOT NULL,
+                        last_seen_at TEXT NOT NULL,
+                        reviewed_at TEXT,
+                        selected_source_id TEXT,
+                        record_json TEXT NOT NULL
+                    );
+                    CREATE INDEX discovery_hits_review_page
+                        ON discovery_hits (status, first_seen_at, id);
+                    CREATE TABLE discovery_hit_occurrences (
+                        hit_id TEXT NOT NULL REFERENCES discovery_hits(id),
+                        cycle_id TEXT NOT NULL,
+                        query_id TEXT NOT NULL,
+                        source_group TEXT NOT NULL,
+                        topic_id TEXT NOT NULL,
+                        observed_at TEXT NOT NULL,
+                        PRIMARY KEY (hit_id, cycle_id, query_id)
+                    );
+                    CREATE INDEX discovery_hit_occurrences_cycle
+                        ON discovery_hit_occurrences (cycle_id, hit_id);
+                    """
+                )
+                states = store.connection.execute(
+                    "SELECT query_id, last_completed_cycle, last_completed_at, record_json "
+                    "FROM query_states ORDER BY query_id"
+                ).fetchall()
+                for state_row in states:
+                    state = _json_value(state_row["record_json"])
+                    hits = state.get("discovery_hits", [])
+                    if not hits:
+                        continue
+                    query_row = store.connection.execute(
+                        "SELECT query_batch_items.record_json "
+                        "FROM query_batch_items JOIN query_batches "
+                        "ON query_batches.id = query_batch_items.batch_id "
+                        "WHERE query_batch_items.query_id = ? "
+                        "AND query_batches.cycle_id = ? "
+                        "ORDER BY query_batches.created_at DESC LIMIT 1",
+                        (
+                            state_row["query_id"],
+                            state_row["last_completed_cycle"],
+                        ),
+                    ).fetchone()
+                    if query_row is None:
+                        raise RuntimeStoreError(
+                            f"query hit migration lacks context: {state_row['query_id']}"
+                        )
+                    query = _json_value(query_row["record_json"])
+                    for field in ("id", "source_group", "topic_id"):
+                        if not isinstance(query.get(field), str) or not query[field]:
+                            raise RuntimeStoreError(
+                                f"query hit migration context is invalid: {state_row['query_id']}"
+                            )
+                    store.record_discovery_hits(
+                        cycle_id=str(state_row["last_completed_cycle"]),
+                        query=query,
+                        observed_at=str(state_row["last_completed_at"]),
+                        hits=hits,
+                    )
+                store._set_meta("schema_version", str(SCHEMA_VERSION))
+            store.validate()
+            metrics = store.discovery_review_metrics()
+            cycles = [
+                str(row["cycle_id"])
+                for row in store.connection.execute(
+                    "SELECT DISTINCT cycle_id FROM discovery_hit_occurrences "
+                    "ORDER BY cycle_id"
+                )
+            ]
+        os.replace(temporary, destination)
+    except BaseException:
+        temporary.unlink(missing_ok=True)
+        raise
+    return {
+        "schema_version": 1,
+        "report_type": "runtime-schema-upgrade",
+        "from_schema": 3,
+        "to_schema": SCHEMA_VERSION,
+        "migrated_hits": metrics["unique_hits"],
+        "pending_hits": metrics["pending"],
+        "affected_cycles": cycles,
+    }
+
+
 def _legacy_records(
     root: Path,
 ) -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]:
@@ -1351,8 +1768,8 @@ def import_legacy_runtime(root: Path) -> dict[str, Any]:
         temporary.unlink(missing_ok=True)
         raise
     return {
-        "schema_version": 3,
-        "backend": "sqlite-v3",
+        "schema_version": SCHEMA_VERSION,
+        "backend": f"sqlite-v{SCHEMA_VERSION}",
         "source_states": len(state["sources"]),
         "observations": len(discoveries),
         "candidates": len(decisions),

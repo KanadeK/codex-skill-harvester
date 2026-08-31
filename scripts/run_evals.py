@@ -16,7 +16,11 @@ def main() -> int:
     reports = []
     with tempfile.TemporaryDirectory() as directory:
         temporary_directory = Path(directory)
-        for eval_path in sorted((ROOT / "evals").glob("*.json")):
+        eval_paths = [
+            *(ROOT / "evals").glob("*.json"),
+            *(ROOT / "evals" / "daily-life").glob("*.json"),
+        ]
+        for eval_path in sorted(eval_paths):
             reports.append(run_eval_file(ROOT, eval_path, temporary_directory))
     print(json.dumps(reports, indent=2))
     return 0

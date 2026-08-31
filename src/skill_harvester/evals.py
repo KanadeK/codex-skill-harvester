@@ -422,6 +422,82 @@ def _curl_request_e2e(
     return completed, output, payload["status"], gate_count
 
 
+def _instruction_only_e2e(
+    root: Path, end_to_end: dict[str, Any], temporary_directory: Path
+) -> tuple[subprocess.CompletedProcess[str], Path, str, int]:
+    skill = _inside(root, end_to_end["skill"])
+    if skill.name != "SKILL.md" or not skill.is_file():
+        raise EvalError("instruction-only eval must reference a Skill entrypoint")
+    if (skill.parent / "scripts").exists():
+        raise EvalError("instruction-only eval cannot require a scripts directory")
+    scenarios = end_to_end.get("scenarios")
+    if not isinstance(scenarios, list) or not scenarios:
+        raise EvalError("instruction-only eval needs scenarios")
+    expected_checks = {
+        "asks_missing_critical_conditions": True,
+        "gives_actionable_steps": True,
+        "has_observable_completion": True,
+        "has_failure_recovery": True,
+        "has_safety_stop": True,
+        "states_locality_or_equipment_conditions": True,
+        "claims_physical_completion": False,
+        "guesses_missing_facts": False,
+        "medical_or_repair_overreach": False,
+    }
+    modes: set[str] = set()
+    reviewed: list[dict[str, Any]] = []
+    for scenario in scenarios:
+        if not isinstance(scenario, dict) or scenario.get("mode") not in {
+            "plan",
+            "live",
+            "recovery",
+        }:
+            raise EvalError("instruction-only scenario mode is invalid")
+        modes.add(scenario["mode"])
+        if scenario.get("reviewed_by") != "codex":
+            raise EvalError("instruction-only scenario must be reviewed_by codex")
+        if any(
+            not isinstance(scenario.get(field), str)
+            or len(scenario[field].strip()) < minimum
+            for field, minimum in (("prompt", 3), ("response", 20), ("rationale", 40))
+        ):
+            raise EvalError("instruction-only scenario evidence is incomplete")
+        checks = scenario.get("checks")
+        if not isinstance(checks, dict) or set(checks) != set(expected_checks):
+            raise EvalError("instruction-only scenario checks are incomplete")
+        failed = [
+            name for name, expected in expected_checks.items() if checks[name] is not expected
+        ]
+        if failed:
+            raise EvalError(
+                "instruction-only behavior check failed: " + ", ".join(failed)
+            )
+        reviewed.append(
+            {
+                "mode": scenario["mode"],
+                "prompt": scenario["prompt"],
+                "response": scenario["response"],
+                "rationale": scenario["rationale"],
+                "checks": checks,
+            }
+        )
+    if modes != {"plan", "live", "recovery"}:
+        raise EvalError("instruction-only eval must cover plan, live, and recovery")
+    temporary_directory.mkdir(parents=True, exist_ok=True)
+    output = temporary_directory / f"{skill.parent.name}-instruction-e2e.json"
+    output.write_text(
+        json.dumps(
+            {"result": "reviewed", "skill": str(skill), "scenarios": reviewed},
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    completed = subprocess.CompletedProcess([], 0, stdout="", stderr="")
+    return completed, output, "reviewed", len(scenarios) * len(expected_checks)
+
+
 def run_eval_file(root: Path, eval_path: Path, temporary_directory: Path) -> dict[str, Any]:
     value = load_json(eval_path)
     if not isinstance(value, dict) or value.get("schema_version") != 1:
@@ -483,6 +559,10 @@ def run_eval_file(root: Path, eval_path: Path, temporary_directory: Path) -> dic
         )
     elif kind == "curl-request-audit":
         completed, output, result, gate_count = _curl_request_e2e(
+            root, end_to_end, temporary_directory
+        )
+    elif kind == "instruction-only-scenarios":
+        completed, output, result, gate_count = _instruction_only_e2e(
             root, end_to_end, temporary_directory
         )
     else:

@@ -5,6 +5,17 @@
   "completed_queries": 1622,
   "cycle_id": "full-campaign-2026-08-30",
   "discovery_hits": 151,
+  "discovery_review": {
+    "conversion_rate": 0.0,
+    "duplicate": 6,
+    "not_selected": 43,
+    "pending": 0,
+    "raw_hits": 151,
+    "reviewed": 49,
+    "selected_endpoint": 0,
+    "selected_source_ids": [],
+    "unique_hits": 49
+  },
   "executed_at": "2026-08-30T19:06:18.234840Z",
   "failed_queries": 4,
   "pending_queries": 0,

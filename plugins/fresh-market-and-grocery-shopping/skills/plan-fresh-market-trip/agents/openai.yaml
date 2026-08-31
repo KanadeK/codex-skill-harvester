@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan a Fresh-Market Trip"
+  short_description: "Build a practical household shopping plan"
+  default_prompt: "Use $plan-fresh-market-trip to plan my next food-shopping trip."

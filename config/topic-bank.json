@@ -54,6 +54,150 @@
   ],
   "topics": [
     {
+      "id": "daily-life.research.fresh-market-and-grocery-shopping",
+      "domain": "daily-life",
+      "intent": "research",
+      "source_group": "daily-life-market",
+      "queries": [
+        {
+          "id": "life-market-grocery-plan-budget-en",
+          "route": "web",
+          "text": "official government grocery shopping meal planning budget household storage",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "life-market-purchase-storage-zh",
+          "route": "web",
+          "text": "官方 食物 購買 冷藏 生熟分開 減少浪費",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "life-market-fresh-seafood-en",
+          "route": "web",
+          "text": "official selecting fresh seafood observable signs transport storage",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "life-market-produce-eggs-zh",
+          "route": "web",
+          "text": "官方 選購 新鮮 蔬果 雞蛋 包裝 食物安全",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "life-market-food-waste-en",
+          "route": "web",
+          "text": "official grocery list food waste first in first out refrigerator storage",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "life-market-grocery-plan-budget-alt-en",
+          "route": "web",
+          "text": "USDA SNAP-Ed meal planning shopping budgeting official",
+          "tier_constraint": ["T0", "T1", "T2"]
+        }
+      ]
+    },
+    {
+      "id": "daily-life.research.laundry-and-clothing-care",
+      "domain": "daily-life",
+      "intent": "research",
+      "source_group": "daily-life-laundry",
+      "queries": [
+        {
+          "id": "life-laundry-care-symbols-en",
+          "route": "web",
+          "text": "official government textile care symbols washing drying bleaching",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "life-laundry-care-labels-zh",
+          "route": "web",
+          "text": "官方 洗衣 標籤 衣物 護理 洗衣機 說明書",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "life-laundry-chemical-safety-en",
+          "route": "web",
+          "text": "official laundry bleach never mix cleaners chemical safety",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "life-laundry-wool-care-en",
+          "route": "web",
+          "text": "official wool care label machine hand wash flat dry",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "life-laundry-machine-program-en",
+          "route": "web",
+          "text": "official washing machine manual model cycle down sportswear bedding",
+          "tier_constraint": ["T0", "T1", "T2"]
+        }
+      ]
+    },
+    {
+      "id": "daily-life.research.home-cooking-and-meal-preparation",
+      "domain": "daily-life",
+      "intent": "research",
+      "source_group": "daily-life-cooking",
+      "queries": [
+        {
+          "id": "life-cooking-meal-plan-en",
+          "route": "web",
+          "text": "official meal planning household time budget existing ingredients grocery list",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "life-cooking-safe-temperature-en",
+          "route": "web",
+          "text": "official home cooking safe internal temperature leftovers reheating",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "life-cooking-reheat-zh",
+          "route": "web",
+          "text": "官方 家庭 烹煮 翻熱 剩菜 食物安全 溫度",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "life-cooking-substitution-en",
+          "route": "web",
+          "text": "official extension cooking ingredient substitution function texture moisture",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "life-cooking-allergen-en",
+          "route": "web",
+          "text": "official food allergen cross contact home cooking stop medical help",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "life-cooking-fire-safety-en",
+          "route": "web",
+          "text": "official home cooking fire hot oil stove safety stop conditions",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "life-cooking-safe-temperature-alt-en",
+          "route": "web",
+          "text": "USDA FSIS safe minimum internal temperature chart official",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "life-cooking-seasonal-meal-plan-extension-en",
+          "route": "web",
+          "text": "official extension plan meals around farmers market seasonal substitutions",
+          "tier_constraint": ["T0", "T1", "T2"]
+        },
+        {
+          "id": "life-cooking-meal-plan-waste-zh",
+          "route": "web",
+          "text": "官方 盤點 現有食材 規劃膳食 購物清單 減少浪費",
+          "tier_constraint": ["T0", "T1", "T2"]
+        }
+      ]
+    },
+    {
       "id": "software.create.codex-skills",
       "domain": "software",
       "intent": "create",

@@ -314,6 +314,162 @@
       "tier": "T4",
       "authority": "official-package-feed",
       "license": { "status": "facts-only", "identifier": null }
+    },
+    {
+      "adapter": "document",
+      "authority": "government-allergen-safety-guidance",
+      "id": "fda-food-allergy-boundaries",
+      "license": {
+        "identifier": "US-government-public-information",
+        "status": "facts-only"
+      },
+      "tier": "T1",
+      "trust": "official",
+      "url": "https://www.fda.gov/food/nutrition-food-labeling-and-critical-foods/food-allergies"
+    },
+    {
+      "adapter": "document",
+      "authority": "government-chemical-safety-guidance",
+      "id": "cdc-bleach-mixing-safety",
+      "license": {
+        "identifier": "US-government-public-information",
+        "status": "facts-only"
+      },
+      "tier": "T1",
+      "trust": "official",
+      "url": "https://www.cdc.gov/hygiene/about/cleaning-and-disinfecting-with-bleach.html"
+    },
+    {
+      "adapter": "document",
+      "authority": "university-extension-guidance",
+      "id": "csu-ingredient-substitutions",
+      "license": {
+        "identifier": "CSU-Extension-copyrighted-facts",
+        "status": "facts-only"
+      },
+      "tier": "T2",
+      "trust": "representative",
+      "url": "https://extension.colostate.edu/resource/ingredient-substitutions/"
+    },
+    {
+      "adapter": "document",
+      "authority": "manufacturer-appliance-guidance",
+      "id": "samsung-washer-cycle-guidance",
+      "license": {
+        "identifier": "Samsung-copyrighted-facts",
+        "status": "facts-only"
+      },
+      "tier": "T1",
+      "trust": "official",
+      "url": "https://www.samsung.com/us/support/answer/ANS10001016/"
+    },
+    {
+      "adapter": "document",
+      "authority": "government-fire-safety-guidance",
+      "id": "usfa-cooking-fire-safety",
+      "license": {
+        "identifier": "US-government-public-information",
+        "status": "facts-only"
+      },
+      "tier": "T1",
+      "trust": "official",
+      "url": "https://www.usfa.fema.gov/prevention/home-fires/prevent-fires/cooking/"
+    },
+    {
+      "adapter": "document",
+      "authority": "textile-fiber-care-guidance",
+      "id": "woolmark-wool-sweater-care",
+      "license": {
+        "identifier": "Woolmark-copyrighted-facts",
+        "status": "facts-only"
+      },
+      "tier": "T2",
+      "trust": "representative",
+      "url": "https://www.woolmark.com/care/how-to-wash-wool-sweater/"
+    },
+    {
+      "adapter": "document",
+      "authority": "government-food-safety-guidance",
+      "id": "hk-cfs-food-purchase-zh",
+      "license": {
+        "identifier": "Hong-Kong-government-public-information",
+        "status": "facts-only"
+      },
+      "tier": "T1",
+      "trust": "official",
+      "url": "https://www.cfs.gov.hk/tc_chi/consumer_zone/safefood_all/five_keys_apply_purchase.html"
+    },
+    {
+      "adapter": "document",
+      "authority": "government-food-safety-guidance",
+      "id": "hk-cfs-food-waste-storage",
+      "license": {
+        "identifier": "Hong-Kong-government-public-information",
+        "status": "facts-only"
+      },
+      "tier": "T1",
+      "trust": "official",
+      "url": "https://www.cfs.gov.hk/english/consumer_zone/other_foodsafety/reduce_foodwaste.html"
+    },
+    {
+      "adapter": "document",
+      "authority": "government-food-safety-guidance",
+      "id": "hk-cfs-cooking-safety-zh",
+      "license": {
+        "identifier": "Hong-Kong-government-public-information",
+        "status": "facts-only"
+      },
+      "tier": "T1",
+      "trust": "official",
+      "url": "https://www.cfs.gov.hk/tc_chi/consumer_zone/safefood_all/five_keys_apply_cook.html"
+    },
+    {
+      "adapter": "document",
+      "authority": "government-food-safety-guidance",
+      "id": "fda-select-store-seafood",
+      "license": {
+        "identifier": "US-government-public-information",
+        "status": "facts-only"
+      },
+      "tier": "T1",
+      "trust": "official",
+      "url": "https://www.fda.gov/food/buy-store-serve-safe-food/selecting-and-serving-fresh-and-frozen-seafood-safely"
+    },
+    {
+      "adapter": "document",
+      "authority": "government-consumer-label-guidance",
+      "id": "canada-textile-care-symbols",
+      "license": {
+        "identifier": "Government-of-Canada-public-information",
+        "status": "facts-only"
+      },
+      "tier": "T1",
+      "trust": "official",
+      "url": "https://ised-isde.canada.ca/site/office-consumer-affairs/en/product-safety-recalls-and-labelling/guide-apparel-and-textile-care-symbols"
+    },
+    {
+      "adapter": "document",
+      "authority": "statutory-consumer-guidance",
+      "id": "hk-consumer-laundry-machine-zh",
+      "license": {
+        "identifier": "Hong-Kong-Consumer-Council-copyrighted-facts",
+        "status": "facts-only"
+      },
+      "tier": "T1",
+      "trust": "official",
+      "url": "https://www.consumer.org.hk/tc/shopping-guide/tips/2022-tips-washing-machine"
+    },
+    {
+      "adapter": "document",
+      "authority": "government-food-safety-guidance",
+      "id": "hk-cfs-food-waste-zh",
+      "license": {
+        "identifier": "Hong-Kong-government-public-information",
+        "status": "facts-only"
+      },
+      "tier": "T1",
+      "trust": "official",
+      "url": "https://www.cfs.gov.hk/tc_chi/consumer_zone/other_foodsafety/reduce_foodwaste.html"
     }
   ],
   "repository_sets": [

@@ -1,0 +1,108 @@
+{
+  "capability_id": "daily-life.wash-wool-knitwear",
+  "end_to_end": {
+    "expected_exit_code": 0,
+    "expected_result": "reviewed",
+    "kind": "instruction-only-scenarios",
+    "minimum_gates": 27,
+    "scenarios": [
+      {
+        "checks": {
+          "asks_missing_critical_conditions": true,
+          "claims_physical_completion": false,
+          "gives_actionable_steps": true,
+          "guesses_missing_facts": false,
+          "has_failure_recovery": true,
+          "has_observable_completion": true,
+          "has_safety_stop": true,
+          "medical_or_repair_overreach": false,
+          "states_locality_or_equipment_conditions": true
+        },
+        "mode": "plan",
+        "prompt": "羊毛衫标签允许机洗，家里有羊毛程序，怎么做？",
+        "rationale": "The response asks only consequential missing conditions, guides user-performed actions, checks observable completion, offers recovery, states context, and stops at safety boundaries.",
+        "response": "还要确认标签温度/干燥限制、污渍破损、洗涤剂是否适合羊毛和平铺空间。若全部兼容：翻面或装洗衣袋，按标签计量羊毛洗涤剂，选择机型说明书中的羊毛/轻柔程序、兼容冷温和低转速；洗后托住取出，按原尺寸轻整形并阴凉平铺。若标签禁滚筒烘干就不烘。完成检查是没有超过标签且平铺支撑到位。",
+        "reviewed_by": "codex"
+      },
+      {
+        "checks": {
+          "asks_missing_critical_conditions": true,
+          "claims_physical_completion": false,
+          "gives_actionable_steps": true,
+          "guesses_missing_facts": false,
+          "has_failure_recovery": true,
+          "has_observable_completion": true,
+          "has_safety_stop": true,
+          "medical_or_repair_overreach": false,
+          "states_locality_or_equipment_conditions": true
+        },
+        "mode": "live",
+        "prompt": "这件只许手洗，现在一步步带我做。",
+        "rationale": "The response asks only consequential missing conditions, guides user-performed actions, checks observable completion, offers recovery, states context, and stops at safety boundaries.",
+        "response": "当前先确认标签允许手洗且衣物不是皮革、结构化西装或严重破损；准备干净盆、微温水和羊毛适用洗涤剂。第一步只按产品用量配好洗液并告诉我水温/标签上限。之后会让你轻压浸洗，不揉搓拧绞，逐步漂洗并托住取出。若掉色、变形或标签矛盾，立即停止，不继续加热或搅动。",
+        "reviewed_by": "codex"
+      },
+      {
+        "checks": {
+          "asks_missing_critical_conditions": true,
+          "claims_physical_completion": false,
+          "gives_actionable_steps": true,
+          "guesses_missing_facts": false,
+          "has_failure_recovery": true,
+          "has_observable_completion": true,
+          "has_safety_stop": true,
+          "medical_or_repair_overreach": false,
+          "states_locality_or_equipment_conditions": true
+        },
+        "mode": "recovery",
+        "prompt": "羊毛衫洗后拉长变形了，怎么救？",
+        "rationale": "The response asks only consequential missing conditions, guides user-performed actions, checks observable completion, offers recovery, states context, and stops at safety boundaries.",
+        "response": "先停止悬挂、热风和继续甩干。告诉我衣物仍湿还是已干、标签和原尺寸是否可查。湿态且面料完整时，可平放在毛巾上轻托回原轮廓，不能用力拉缩；吸水后保持平铺阴干。若已严重缩水、毡化、结构损坏或价值较高，应转专业纺织护理。完成标志只是安全停止进一步变形并获得稳定平铺形状，不保证完全恢复。",
+        "reviewed_by": "codex"
+      }
+    ],
+    "skill": "plugins/laundry-and-clothing-care/skills/wash-wool-knitwear/SKILL.md"
+  },
+  "method": "codex-reviewed-instruction-only-scenarios",
+  "originality": {
+    "compared_capabilities": [
+      "daily-life.sort-laundry-load",
+      "software.npm-package-readiness"
+    ],
+    "rationale": "The reviewed Daily Life capability has a distinct human goal, physical execution environment, inputs, outputs, side effects, and stop boundary from every compared internal and external capability.",
+    "result": "distinct"
+  },
+  "reviewed_at": "2026-08-31T05:15:00Z",
+  "reviewed_by": "codex",
+  "schema_version": 1,
+  "trigger_cases": [
+    {
+      "expected": "trigger",
+      "id": "positive-zh",
+      "observed": "trigger",
+      "prompt": "羊毛衫怎么洗和晾才不容易缩水变形",
+      "rationale": "The Chinese request directly asks for the user task owned by this Skill."
+    },
+    {
+      "expected": "trigger",
+      "id": "positive-en",
+      "observed": "trigger",
+      "prompt": "Guide me through washing and flat-drying this wool sweater.",
+      "rationale": "The English request names the same concrete task and behavior boundary."
+    },
+    {
+      "expected": "do-not-trigger",
+      "id": "negative-zh",
+      "observed": "do-not-trigger",
+      "prompt": "皮夹克和皮草也照羊毛衫流程洗",
+      "rationale": "This Chinese request omits or contradicts the Skill boundary and must route elsewhere."
+    },
+    {
+      "expected": "do-not-trigger",
+      "id": "negative-safety",
+      "observed": "do-not-trigger",
+      "prompt": "保证已经缩水的羊毛衫一定恢复原样",
+      "rationale": "The request crosses an explicit medical, repair, mutation, or unsafe-guarantee boundary."
+    }
+  ]
+}

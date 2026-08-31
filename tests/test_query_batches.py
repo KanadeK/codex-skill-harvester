@@ -21,12 +21,70 @@ from skill_harvester.query_execution import (
     QueryExecutionError,
     execute_github_query_batch,
 )
-from skill_harvester.runtime_store import open_runtime_store
+from skill_harvester.runtime_store import create_empty_runtime, open_runtime_store
 
 from _support import document_source, write_registry
 
 
 class QueryBatchTests(unittest.TestCase):
+    def test_query_export_can_scope_a_cycle_to_selected_source_groups(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "config").mkdir()
+            atomic_write_json(
+                root / "config" / "topic-bank.json",
+                {
+                    "schema_version": 2,
+                    "topics": [
+                        {
+                            "id": "software.validate.delivery",
+                            "domain": "software",
+                            "intent": "validate",
+                            "source_group": "github-delivery",
+                            "queries": [
+                                {
+                                    "id": "software-query",
+                                    "route": "github-code",
+                                    "text": "repo:example/project release",
+                                    "tier_constraint": ["T1"],
+                                }
+                            ],
+                        },
+                        {
+                            "id": "daily-life.research.market",
+                            "domain": "daily-life",
+                            "intent": "research",
+                            "source_group": "daily-life-market",
+                            "queries": [
+                                {
+                                    "id": "daily-life-query",
+                                    "route": "web",
+                                    "text": "official grocery shopping food safety",
+                                    "tier_constraint": ["T0", "T1", "T2"],
+                                }
+                            ],
+                        },
+                    ],
+                    "operations": [],
+                    "query_matrices": [],
+                },
+            )
+            create_empty_runtime(root)
+            output_path = root / ".harvester-cache" / "daily-life.json"
+
+            report = export_query_batch(
+                root,
+                now="2026-08-30T20:00:00Z",
+                cycle_id="daily-life-pilot",
+                limit=10,
+                output_path=output_path,
+                source_groups={"daily-life-market"},
+            )
+            payload = json.loads(output_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(report["exported_queries"], 1)
+        self.assertEqual([query["id"] for query in payload["queries"]], ["daily-life-query"])
+
     def test_github_repository_search_uses_supported_json_fields(self) -> None:
         with patch("skill_harvester.query_execution.subprocess.run") as run:
             run.return_value.returncode = 0
@@ -130,48 +188,18 @@ class QueryBatchTests(unittest.TestCase):
                                     "path": "source/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows.rst",
                                 }
                             ],
-                            "selected_endpoints": [
-                                {
-                                    "source_id": "pypa-publishing-guide",
-                                    "url": "https://raw.githubusercontent.com/pypa/packaging.python.org/main/source/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows.rst",
-                                    "adapter": "document",
-                                    "tier": "T1",
-                                    "trust": "official",
-                                    "authority": "official-operational-guide",
-                                    "license": {"status": "facts-only", "identifier": None},
-                                }
-                            ],
+                            "selected_endpoints": [],
                         }
                     ],
                 },
             )
-            incompatible = json.loads(result_path.read_text(encoding="utf-8"))
-            incompatible["results"][0]["selected_endpoints"][0]["tier"] = "T4"
-            atomic_write_json(result_path, incompatible)
-            with self.assertRaisesRegex(QueryBatchError, "tier constraint"):
-                import_query_results(
-                    root, batch_id=first["batch_id"], results_path=result_path
-                )
-            incompatible["results"][0]["selected_endpoints"][0]["tier"] = "T1"
-            incompatible["results"][0]["selected_endpoints"][0][
-                "url"
-            ] = "https://secret@example.test/guide"
-            atomic_write_json(result_path, incompatible)
-            with self.assertRaisesRegex(QueryBatchError, "credential-free https"):
-                import_query_results(
-                    root, batch_id=first["batch_id"], results_path=result_path
-                )
-            incompatible["results"][0]["selected_endpoints"][0][
-                "url"
-            ] = "https://example.test/guide"
-            atomic_write_json(result_path, incompatible)
             partial = import_query_results(
                 root, batch_id=first["batch_id"], results_path=result_path
             )
             self.assertEqual(partial["status"], "pending")
             self.assertEqual(partial["pending_queries"], 1)
             self.assertEqual(
-                partial["selected_source_ids"], ["pypa-publishing-guide"]
+                partial["selected_source_ids"], []
             )
             self.assertEqual(partial["discovery_hits"], 1)
             with open_runtime_store(root) as store:
@@ -259,6 +287,7 @@ class QueryBatchTests(unittest.TestCase):
             self.assertEqual(summary["failed_queries"], 1)
             self.assertEqual(summary["pending_queries"], 0)
             self.assertEqual(summary["discovery_hits"], 1)
+            self.assertEqual(summary["discovery_review"]["pending"], 1)
             self.assertEqual(len(list((root / "runs").glob("*-queries.json"))), 1)
 
             no_op_path = root / ".harvester-cache" / "no-op.json"

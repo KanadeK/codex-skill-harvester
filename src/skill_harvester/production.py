@@ -93,6 +93,7 @@ def build_production_report(
     ]
     batch_ids = list(dict.fromkeys(report["batch_id"] for report in semantic_reports))
     with open_runtime_store(root) as store:
+        discovery_review = store.discovery_review_metrics(query_cycle_ids[0])
         batches = [store.semantic_batch(batch_id) for batch_id in batch_ids]
         batch_items = [
             item
@@ -128,7 +129,13 @@ def build_production_report(
         candidate["review_status"] == "pending" for candidate in candidates
     )
     pending_semantic = sum(item["status"] == "pending" for item in batch_items)
-    has_pending_work = bool(pending_queries or pending_semantic or pending_candidates)
+    pending_discovery_hits = discovery_review["pending"]
+    has_pending_work = bool(
+        pending_queries
+        or pending_discovery_hits
+        or pending_semantic
+        or pending_candidates
+    )
     stop_reasons = campaign.get("stop_reasons")
     if not isinstance(stop_reasons, list) or any(
         not isinstance(reason, str) or not reason for reason in stop_reasons
@@ -159,6 +166,11 @@ def build_production_report(
             "Resume from the persisted checkpoint after resolving the recorded "
             "stop-loss; unprocessed work retains its cursor."
         )
+    elif pending_discovery_hits:
+        continuation = (
+            "Resume the persisted discovery-hit review queue before claiming the "
+            "query cycle is fully adjudicated."
+        )
     elif has_pending_work:
         continuation = (
             "Resume the persisted query, semantic, or L4 checkpoint before "
@@ -187,6 +199,7 @@ def build_production_report(
         "slice": {
             "status": "checkpoint" if slice_checkpoint else "complete",
             "pending_queries": pending_queries,
+            "pending_discovery_hits": pending_discovery_hits,
             "pending_semantic_observations": pending_semantic,
             "pending_l4_candidates": pending_candidates,
         },
@@ -246,6 +259,7 @@ def build_production_report(
             ),
             "selected_endpoints": len(selected_source_ids),
             "selected_source_ids": selected_source_ids,
+            "discovery_review": discovery_review,
         },
         "semantic": {
             "batch_ids": batch_ids,
@@ -288,6 +302,7 @@ def build_production_report(
         },
         "checkpoint": {
             "pending_queries": pending_queries,
+            "pending_discovery_hits": pending_discovery_hits,
             "pending_semantic_observations": sum(
                 item["status"] == "pending" for item in batch_items
             ),

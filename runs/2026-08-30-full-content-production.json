@@ -6,6 +6,7 @@
   },
   "checkpoint": {
     "continuation": "The explicit parent-campaign completion condition is satisfied.",
+    "pending_discovery_hits": 0,
     "pending_l4_candidates": 0,
     "pending_queries": 0,
     "pending_semantic_observations": 0,
@@ -84,6 +85,17 @@
       "full-campaign-2026-08-30"
     ],
     "discovery_hits": 151,
+    "discovery_review": {
+      "conversion_rate": 0.0,
+      "duplicate": 6,
+      "not_selected": 43,
+      "pending": 0,
+      "raw_hits": 151,
+      "reviewed": 49,
+      "selected_endpoint": 0,
+      "selected_source_ids": [],
+      "unique_hits": 49
+    },
     "failed_attempts": 4,
     "pending_queries": 0,
     "query_attempts": 1626,
@@ -130,6 +142,7 @@
     "reviewed_observations": 217
   },
   "slice": {
+    "pending_discovery_hits": 0,
     "pending_l4_candidates": 0,
     "pending_queries": 0,
     "pending_semantic_observations": 0,

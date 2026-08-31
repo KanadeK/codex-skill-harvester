@@ -182,9 +182,20 @@ def export_query_batch(
     cycle_id: str,
     limit: int,
     output_path: Path,
+    source_groups: set[str] | None = None,
 ) -> dict[str, Any]:
     cycle_id = _cycle_id(cycle_id)
     queries = load_topic_bank(root)
+    if source_groups is not None:
+        known_groups = {query["source_group"] for query in queries}
+        unknown = sorted(source_groups - known_groups)
+        if unknown:
+            raise QueryBatchError(
+                "unknown query source group: " + ", ".join(unknown)
+            )
+        queries = [
+            query for query in queries if query["source_group"] in source_groups
+        ]
     with open_runtime_store(root) as store:
         batch = store.create_or_resume_query_batch(
             now=now, cycle_id=cycle_id, queries=queries, limit=limit
@@ -210,6 +221,7 @@ def export_query_batch(
         "cycle_id": cycle_id,
         "resumed": bool(batch["queries"]) and not batch["created"],
         "exported_queries": len(batch["queries"]),
+        "source_groups": sorted(source_groups) if source_groups is not None else None,
         "output": str(output_path),
     }
     atomic_write_json(
@@ -219,75 +231,39 @@ def export_query_batch(
     return report
 
 
-def _selected_endpoint(value: Any) -> dict[str, Any]:
-    if not isinstance(value, dict):
-        raise QueryBatchError("selected endpoints must be objects")
-    required_strings = (
-        "source_id",
-        "url",
-        "adapter",
-        "tier",
-        "trust",
-        "authority",
-    )
-    if any(not isinstance(value.get(field), str) or not value[field] for field in required_strings):
-        raise QueryBatchError("selected endpoint metadata is incomplete")
-    if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", value["source_id"]):
-        raise QueryBatchError("selected endpoint source_id must use kebab-case")
-    parsed = urlparse(value["url"])
-    if (
-        parsed.scheme != "https"
-        or parsed.hostname is None
-        or parsed.username is not None
-        or parsed.password is not None
-    ):
-        raise QueryBatchError("selected endpoint must use credential-free https")
-    if value["tier"] not in {"T0", "T1", "T2", "T3", "T4"}:
-        raise QueryBatchError("selected endpoint tier is invalid")
-    if value["trust"] not in {"official", "representative", "discovery"}:
-        raise QueryBatchError("selected endpoint trust is invalid")
-    if value["adapter"] not in {"document", "json-list", "atom", "rss"}:
-        raise QueryBatchError("selected endpoint adapter is invalid")
-    for field in ("repository", "path", "revision"):
-        if field in value and (
-            not isinstance(value[field], str) or not value[field]
-        ):
-            raise QueryBatchError(
-                f"selected endpoint optional {field} must be a non-empty string"
-            )
-    license_value = value.get("license")
-    if not isinstance(license_value, dict) or license_value.get("status") not in {
-        "known",
-        "facts-only",
-        "unknown",
-    }:
-        raise QueryBatchError("selected endpoint license is invalid")
-    return dict(value)
-
-
 def _discovery_hit(value: Any) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise QueryBatchError("discovery hits must be objects")
-    if value.get("route") not in {"github-code", "github-repository"}:
+    route = value.get("route")
+    if route not in {"github-code", "github-repository", "web"}:
         raise QueryBatchError("discovery hit route is invalid")
-    if not isinstance(value.get("repository"), str) or not re.fullmatch(
-        r"[^/\s]+/[^/\s]+", value["repository"]
-    ):
-        raise QueryBatchError("discovery hit repository is invalid")
     url = value.get("url")
     parsed = urlparse(url) if isinstance(url, str) else None
     if (
         parsed is None
         or parsed.scheme != "https"
-        or parsed.hostname != "github.com"
+        or parsed.hostname is None
         or parsed.username is not None
         or parsed.password is not None
     ):
-        raise QueryBatchError("discovery hit must use credential-free GitHub https")
-    if value["route"] == "github-code" and (
-        not isinstance(value.get("path"), str) or not value["path"]
-    ):
-        raise QueryBatchError("GitHub code discovery hit needs a path")
+        raise QueryBatchError("discovery hit must use credential-free https")
+    if route == "web":
+        if any(
+            not isinstance(value.get(field), str) or not value[field].strip()
+            for field in ("title", "source_name")
+        ):
+            raise QueryBatchError("web discovery hit needs title and source identity")
+    else:
+        if parsed.hostname != "github.com":
+            raise QueryBatchError("GitHub discovery hit must use github.com")
+        if not isinstance(value.get("repository"), str) or not re.fullmatch(
+            r"[^/\s]+/[^/\s]+", value["repository"]
+        ):
+            raise QueryBatchError("discovery hit repository is invalid")
+        if route == "github-code" and (
+            not isinstance(value.get("path"), str) or not value["path"]
+        ):
+            raise QueryBatchError("GitHub code discovery hit needs a path")
     for field in ("path", "updated_at"):
         if field in value and (
             not isinstance(value[field], str) or not value[field]
@@ -323,7 +299,11 @@ def _query_result(value: Any) -> dict[str, Any]:
     endpoints = result.get("selected_endpoints")
     if not isinstance(endpoints, list):
         raise QueryBatchError("selected_endpoints must be a list")
-    result["selected_endpoints"] = [_selected_endpoint(endpoint) for endpoint in endpoints]
+    if endpoints:
+        raise QueryBatchError(
+            "selected endpoints require the separate Codex discovery review lifecycle"
+        )
+    result["selected_endpoints"] = []
     hits = result.get("discovery_hits", [])
     if not isinstance(hits, list):
         raise QueryBatchError("discovery_hits must be a list")
@@ -367,6 +347,13 @@ def import_query_results(
             raise QueryBatchError("query result is not pending in its batch")
         for result in results:
             tier_constraint = pending_items[result["query_id"]]["tier_constraint"]
+            if any(
+                hit["route"] != pending_items[result["query_id"]]["route"]
+                for hit in result["discovery_hits"]
+            ):
+                raise QueryBatchError(
+                    f"discovery hit route disagrees with query: {result['query_id']}"
+                )
             if any(
                 endpoint["tier"] not in tier_constraint
                 for endpoint in result["selected_endpoints"]
@@ -417,10 +404,30 @@ def import_query_results(
         "pending_queries": cycle_metrics["pending_queries"],
         "result_count": cycle_metrics["result_count"],
         "discovery_hits": cycle_metrics["discovery_hits"],
+        "discovery_review": cycle_metrics["discovery_review"],
         "selected_source_ids": cycle_metrics["selected_source_ids"],
         "selected_endpoints": len(cycle_metrics["selected_source_ids"]),
     }
     atomic_write_json(
         root / "runs" / f"{batch['cycle_id']}-queries.json", cycle_summary
     )
+    return report
+
+
+def refresh_query_cycle_report(root: Path, cycle_id: str) -> dict[str, Any]:
+    path = root / "runs" / f"{cycle_id}-queries.json"
+    report = load_json(path)
+    if (
+        not isinstance(report, dict)
+        or report.get("report_type") != "query-results"
+        or report.get("aggregation") != "cycle"
+        or report.get("cycle_id") != cycle_id
+    ):
+        raise QueryBatchError(f"query cycle summary is invalid: {cycle_id}")
+    with open_runtime_store(root) as store:
+        review_metrics = store.discovery_review_metrics(cycle_id)
+    report["discovery_review"] = review_metrics
+    report["selected_source_ids"] = review_metrics["selected_source_ids"]
+    report["selected_endpoints"] = len(review_metrics["selected_source_ids"])
+    atomic_write_json(path, report)
     return report

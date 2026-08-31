@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sort a Laundry Load"
+  short_description: "Read care labels and split compatible loads"
+  default_prompt: "Use $sort-laundry-load to separate these clothes into safe loads."

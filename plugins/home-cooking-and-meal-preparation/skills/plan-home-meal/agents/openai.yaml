@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan a Home Meal"
+  short_description: "Scope portions and build a cooking timeline"
+  default_prompt: "Use $plan-home-meal to plan and sequence tonight's meal."
