@@ -352,9 +352,11 @@ The user clarified that Human Runtime content is a separate frontstage product, 
 - [x] Replace the mistaken lifestyle storefront with the discovery → evidence → deduplication → supervised decision → validation → maintenance engine boundary.
 - [x] Keep v0.2.0 Skills, Plugins, reports, SQLite state, tag, and Release unchanged as historical technical prototype and regression evidence.
 - [x] Run the complete tests, evals, repository validator, build/install checks, link checks, and git diff --check.
-- [ ] Open a documentation-only PR, wait for Ubuntu/Windows CI, review and merge.
-- [ ] Update the public GitHub description/topics to the committed engine metadata; do not create a Harvester tag or Release.
+- [x] Open a documentation-only PR, wait for Ubuntu/Windows CI, review and merge.
+- [x] Update the public GitHub description/topics to the committed engine metadata; do not create a Harvester tag or Release.
 
 Success means the first screen routes human-facing readers to Skills for Humans and technical maintainers to the Harvester pipeline without deleting history or introducing another runtime authority.
 
 Local correction checkpoint: 153 tests, 17 evals, repository validator, source/11-Plugin build and isolated E2E, focused identity regressions, README local links, and diff checks pass. Five-axis review found no Required/Critical issue. The diff changes only two READMEs, repository metadata, tests, and persistent task records; no runtime code, SQLite state, Skill, Plugin, version, tag, or Release content changes.
+
+Remote correction checkpoint: documentation PR #14 merged as a613771. Main CI run 33749159337 passed Ubuntu (job 100628475831) and Windows (job 100628475519). The public description and nine technical topics match .github/repository-metadata.json. v0.2.0 remains the unchanged historical Release, and no new Harvester tag or Release was created.
