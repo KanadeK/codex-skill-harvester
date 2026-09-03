@@ -1,16 +1,14 @@
 {
-  "description": "会过日子 · Human Skills — Evidence-reviewed bilingual Codex Skills for everyday life and software.",
+  "description": "Incremental evidence, deduplication, and review engine for maintaining Codex and Open Agent Skills.",
   "topics": [
     "agent-skills",
-    "bilingual",
-    "chinese",
+    "automation",
     "codex",
-    "cooking",
-    "daily-life",
-    "grocery-shopping",
-    "laundry",
-    "life-skills",
+    "data-pipeline",
+    "deduplication",
+    "github-actions",
     "openai",
-    "python"
+    "python",
+    "skill-maintenance"
   ]
 }

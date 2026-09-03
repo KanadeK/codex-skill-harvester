@@ -340,3 +340,21 @@ Final local checkpoint on 2026-08-31: 152 tests, 17 evals, 17/17 official Skill 
 Remote completion checkpoint on 2026-08-31: PR #12 merged as `ef4bd07`; its tree matches the locally verified release tree, and main CI run 33368616448 passed Ubuntu/Windows. PR #9 closed as superseded with history preserved. The annotated `v0.2.0` tag points to `ef4bd07`; Release 379579317 is public, latest, non-draft, non-prerelease, and immutable. All 13 assets were downloaded, byte/checksum/server-digest matched, and appeared in GitHub's signed Release attestation. The downloaded source and 11 Plugins passed install/CLI/E2E, and the downloaded Release Evidence Skill returned `complete` with every gate passing. Repository metadata is bilingual, v0.1.1 remains immutable, and the final evidence is stored in `runs/2026-08-31T07-43-48Z-v0.2.0-attestation.*`.
 
 Rollback: stop promotion and use a reviewed revert/fix PR for serious post-release issues. Never rewrite or delete the published tag/Release to conceal a defect.
+
+## Product-boundary correction after Skills for Humans v0.1.0
+
+The user clarified that Human Runtime content is a separate frontstage product, not an AI-guided lifestyle brand for this repository. KanadeK/skills-for-humans is now public at v0.1.0 with 15 bilingual Human Skills. The Harvester v0.2.0 tag and Release remain immutable historical evidence and are not rewritten.
+
+### Phase 32: restore the backend engine identity
+
+- [x] Start codex/restore-harvester-engine-identity from clean main f3ca131.
+- [x] Add RED/GREEN regression coverage for an engine-first Chinese/English README, direct Skills for Humans handoff, preserved historical-prototype wording, and technical repository metadata.
+- [x] Replace the mistaken lifestyle storefront with the discovery → evidence → deduplication → supervised decision → validation → maintenance engine boundary.
+- [x] Keep v0.2.0 Skills, Plugins, reports, SQLite state, tag, and Release unchanged as historical technical prototype and regression evidence.
+- [x] Run the complete tests, evals, repository validator, build/install checks, link checks, and git diff --check.
+- [ ] Open a documentation-only PR, wait for Ubuntu/Windows CI, review and merge.
+- [ ] Update the public GitHub description/topics to the committed engine metadata; do not create a Harvester tag or Release.
+
+Success means the first screen routes human-facing readers to Skills for Humans and technical maintainers to the Harvester pipeline without deleting history or introducing another runtime authority.
+
+Local correction checkpoint: 153 tests, 17 evals, repository validator, source/11-Plugin build and isolated E2E, focused identity regressions, README local links, and diff checks pass. Five-axis review found no Required/Critical issue. The diff changes only two READMEs, repository metadata, tests, and persistent task records; no runtime code, SQLite state, Skill, Plugin, version, tag, or Release content changes.
