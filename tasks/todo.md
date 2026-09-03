@@ -238,3 +238,12 @@ Completion checkpoint: the branch starts at verified correction HEAD `7aa8f86`; 
 - [x] Acceptance: public bilingual Release is non-draft/non-prerelease with source archive, 11 Plugin archives, and `SHA256SUMS`; immutable state follows verified repository capability.
 - [x] Verify: assets are re-downloaded, checksums/target/main CI/contributors/v0.1.1 are read back, source and all 11 Plugins install from Release assets, and real CLI/Skill/E2E calls pass.
 - Dependencies: Task 29 and explicit user authorization already granted for in-scope GitHub publication.
+
+## Task 31: restore Harvester as the backend engine
+
+- [x] Acceptance: README.md and README.en.md identify the repository as the background discovery, evidence, deduplication, supervised review, validation, and maintenance engine.
+- [x] Acceptance: the first screen links KanadeK/skills-for-humans as the Human Runtime frontstage; v0.2.0 is an immutable historical technical prototype, not deleted or rewritten.
+- [x] Acceptance: committed repository metadata removes the mistaken Daily Life brand and uses engine-focused description/topics.
+- [x] Verify: 153 tests, 17 evals, validator, build/install/E2E, Markdown links, diff checks, and five-axis review pass with no tracked pollution.
+- [ ] Submit: one documentation-only PR passes Ubuntu/Windows CI, merges, and remote description/topics match; no Harvester tag or Release is created.
+- Dependencies: public, verified skills-for-humans v0.1.0 and explicit authorization for this separate correction.

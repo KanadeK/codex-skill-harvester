@@ -1,79 +1,109 @@
-# 会过日子 · Human Skills
+# Codex Skill Harvester
 
 [English](README.en.md)
 
 [![CI](https://github.com/KanadeK/codex-skill-harvester/actions/workflows/ci.yml/badge.svg)](https://github.com/KanadeK/codex-skill-harvester/actions/workflows/ci.yml)
 
-> AI 没长手，但可以教你把日子过明白。
+Codex Skill Harvester 是公开工作流的**后台发现、证据、去重与维护引擎**。它增量读取可信来源，把原始发现整理成 Evidence Pack 和规范化能力，经监督式语义裁决后，维护可验证的 Codex / Open Agent Skills。
 
-这是一套给 Codex 用的中英双语 Skills：把“我该怎么做”变成有边界、可追问、能执行的步骤。它既能陪你买菜、洗衣、做饭，也能检查软件发布、排查网页请求和准备离线 Git 交付。
+> 想直接阅读和“安装”给人类的生活技能，请去：
+>
+> **[Skills for Humans / 给人类的 Skill](https://github.com/KanadeK/skills-for-humans)**。
 
-仓库背后的 Skill Harvester 会从公开且可追溯的资料中增量发现工作流，经证据整理、能力去重、人工监督的语义判断、触发测试和端到端验证后，才把合格能力发布成小而清楚的 Plugin。它不是海量 Skill 搬运站，也不会把网页标题直接包装成 Skill。
+两个仓库的职责不同：
 
-## 你可以直接这样问
+- **Skill Harvester** 负责来源、游标、证据、能力指纹、去重、候选、决策、验证和发行工程。
+- **Skills for Humans** 只保存给人类直接阅读与执行的最终 SKILL.md，不携带数据库、campaign 或候选队列。
 
-- “两个人吃三天，冰箱还剩鸡蛋和半颗白菜，帮我买三天菜，控制在 150 元左右。”
-- “我有白 T 恤、深色牛仔裤和一件羊毛衫，这桶衣服怎么洗？哪些要分开？”
-- “家里有鸡腿、土豆、青椒和一口炒锅，用现有食材安排晚饭，告诉我先做什么。”
-- “这个 Python wheel 和 GitHub Actions 发布流程，真的已经可以发 PyPI 了吗？”
-- “浏览器说 CORS blocked，我抓到预检请求和响应头了，问题在哪一层？”
+## v0.2.0 的历史位置
 
-Skill 会先补齐真正影响结果的信息，再给出步骤、停止条件和需要你确认的地方。它不会替你完成物理动作，也不会假装已经看见标签、闻到食物、按过洗衣机按钮或发布过软件。
+[v0.2.0](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.2.0) 是已保留的历史技术原型。它证明了 204 个可执行端点、1,622 个真实查询、SQLite v4、内容评审、17 个 Skills、11 个 Plugins、双平台 CI 与不可变 Release 工程；其中生活类 Plugin 曾被错误地当作本仓库前台产品。
 
-## 当前收录
+这段公开历史不会被删除或改写。新的产品分工是：
 
-[v0.2.0](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.2.0) 正式目录包含 17 个 Skills，按 11 个安装意图明确的 Plugins 分发。
+    codex-skill-harvester
+        发现 → 证据 → 去重 → 监督裁决 → 验证 → 维护
+                                      |
+                                      └── 合格的人类内容进入 skills-for-humans
 
-| 生活 Plugin | 能做什么 |
-| --- | --- |
-| 买菜与食品采购 · Grocery Shopping | 按人数、预算、库存规划采购；用可观察线索挑选易腐食材；回家后安排冷藏、冷冻和先吃顺序 |
-| 洗衣与衣物护理 · Laundry Care | 读洗护标签、分桶、按准确机型选择程序和用量、护理羊毛针织物 |
-| 家庭做饭与备餐 · Home Cooking | 安排一顿饭的备菜时间线、按功能替代缺少的食材、检查熟度与剩菜处理 |
+当前仓库中的 v0.2.0 Skills、Plugins、评测和报告继续作为技术原型、回归样本与维护证据存在，不再代表 Harvester 的前台品牌。
 
-| 软件 Plugin | 能做什么 |
-| --- | --- |
-| GitHub Release Evidence | 审计一个已经发布的 GitHub Release 是否真的完整 |
-| Python Package Delivery | 发布前检查 sdist、wheel、元数据和 PyPI Trusted Publishing 工作流 |
-| JavaScript Package Delivery | 检查 npm pack 内容、声明文件、生命周期脚本边界和发布配置 |
-| Git Offline Transfer | 创建并验证用于离线传递已提交历史的 Git bundle |
-| Ansible Collection Quality | 为 collection 选择并规划正确的 ansible-test 验证层 |
-| Rust Build Performance | 用隔离 target 目录复现并比较 Cargo 冷、热构建 |
-| Web Request Diagnostics | 从浏览器请求、响应和预检证据定位 CORS/Fetch 失败 |
-| API Request Safety | 在发送前审计 curl 方法、请求体、本地文件和凭据风险 |
+## 它实际做什么
 
-逐个 Skill 的触发方式、示例问题、发布状态与安全边界见 [Skill 目录](SKILLS.md)。
+### 1. Evidence / Discovery
 
-## 安装
+- 固定来源注册表包含官方文档、CLI/API/OpenAPI、正式仓库、Release/Changelog、RSS/Atom、sitemap 与受控发现查询。
+- 来源有信任、许可证、revision、ETag/Last-Modified、查询和游标。
+- 外部内容始终是不可信数据；原始网页只进临时缓存，不执行第三方脚本，也不提交许可证不明的正文。
 
-从 v0.2.0 起，可从仓库 Marketplace 安装：
+### 2. Capability Registry
 
-    codex plugin marketplace add KanadeK/codex-skill-harvester --ref v0.2.0
+- observation 经内容评估后才可能成为 Evidence Pack 和 normalized candidate。
+- 能力指纹覆盖 goal、triggers、inputs、outputs、tools、side_effects、platforms。
+- 精确散列只处理复制品；L2/L3 只负责召回，监督式 L4 决定 not_promoted、merge、update、variant 或 create。
+- not_promoted 保留来源、理由和重新激活条件，不等于删除资料。
 
-然后在 Codex 或 Work mode 的 Plugins Directory 中，按任务选择一个 Plugin 安装。无需一次安装全部 11 个。
+### 3. Published artifacts
 
-当前公开稳定版是 [v0.2.0](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.2.0)：Release 已不可变，13 个资产具备 GitHub 签名 attestation，源码和全部 11 个 Plugin 均从远端下载后通过安装/E2E。[v0.1.1](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.1.1) 仍作为不可变历史版本保留。
+- 只有独立用户目标、可信证据、原创综合、清楚触发边界、格式、E2E、安装和许可门槛都通过，才产生发布候选。
+- Git 保存 Skill/Plugin、catalog、eval、紧凑报告和发行历史。
+- 人类直接阅读的生活内容现在由 [Skills for Humans](https://github.com/KanadeK/skills-for-humans) 承担前台发行。
 
-## 安全边界
+## 唯一运行态权威
 
-- 生活类 Skills 只提供交互式指导，由人读取标签、操作器具并确认结果。
-- 食品安全不会仅凭气味或外观宣称“可以吃”；过敏、婴幼儿食品、罐藏与发酵等高风险场景会停止或转交权威建议。
-- 洗衣不会猜模糊标签、机型按钮或鼓励危险化学品混用，也不承担电器维修。
-- 软件类脚本默认只检查本地、明确提供的材料；不会执行下载来的第三方脚本，不会替用户发布、推送或绕过安全控制。
-- 医疗、法律、金融、凭据密集和现实控制能力目前只积累证据，不自动发布。
+运行态 observation、Evidence Pack、candidate、query/semantic batch、五队列、decision、source cursor 和 checkpoint 只有一个权威：[state/harvest.sqlite3](state/harvest.sqlite3)，SQLite schema 4。
 
-## 为什么不是“又一堆提示词”
+没有 Git-JSON fallback、长期双写或多套真源。未来迁移仍采用一次写入、验证、原子替换，并明确删除旧路径。
 
-- 每个能力都有稳定 ID、七字段能力指纹、来源 revision、Evidence Pack 和可审计决策。
-- 精确散列只去掉复制品；真正的近重复以用户目标、输入输出、工具、副作用和平台边界判断。
-- 新建或更新 Skill 必须通过格式、正向触发、负向误触发、端到端任务、隔离安装/调用、原创性与许可检查。
-- 运行态 observation、candidate、queue、decision 和 cursor 由一个 SQLite 权威存储管理；Git 保存可审查的 Skills、清单、评测与发布历史。
-- 相同输入重跑只处理新增、变化或未完成批次；无变化会如实 no-op。
+## 本地使用
 
-## 维护者入口
+要求 Python 3.12+。
 
-公开产品页有意保持简洁。架构、真实 campaign 数字、迁移记录、验证命令与历史证据见 [工程状态](docs/engineering-status.md)；贡献方式见 [CONTRIBUTING.md](CONTRIBUTING.md)，安全问题见 [SECURITY.md](SECURITY.md)。
+    python -m venv .venv
+    .\.venv\Scripts\python -m pip install --no-build-isolation -e .
+    .\.venv\Scripts\skill-harvester status --root . --json
+    .\.venv\Scripts\skill-harvester review-queue --root . --json
 
-项目规范只依赖 OpenAI 官方的 [Skills 文档](https://developers.openai.com/codex/skills) 与 [Plugins 文档](https://developers.openai.com/plugins/build/plugins)。外部内容一律作为不可信证据处理。
+维护与验证：
+
+    .\.venv\Scripts\python -m unittest discover -s tests -v
+    .\.venv\Scripts\python scripts/run_evals.py
+    .\.venv\Scripts\python scripts/validate_repo.py
+    .\.venv\Scripts\python scripts/benchmark_storage.py
+    .\.venv\Scripts\python scripts/build_release.py
+
+定时 GitHub Actions 只运行有界 campaign 并打开 review PR；它不会无人值守执行 L4 merge、发布 Skill 或创建 Release。
+
+## 当前持久状态
+
+- 217 个注册来源与 source states
+- 1,217 observations
+- 180 Evidence Packs
+- 145 个已裁决 candidates
+- 1,642 个 Topic Bank queries
+- SQLite v4，0 个待裁决 candidate
+
+规模数字是观测结果，不是制造 Skill 的 KPI。完整历史、campaign 数字、迁移和验证证据见 [工程状态](docs/engineering-status.md)。
+
+## 安全和范围
+
+- 不运行下载的第三方脚本，不保存密钥，不把社区讨论当操作权威。
+- 医疗、法律、金融、凭据密集、高权限和现实控制能力只积累证据，禁止自动发布。
+- 不以空队列冒充长期 campaign 完成；no-op 只表示同一组输入没有新增、变化或未完成工作。
+- [RepoPilot Skillforge](https://github.com/KanadeK/repopilot-skillforge) 扫描单个代码仓库并生成仓库级指导；Harvester 维护跨来源能力生态，两者不重复。
+
+## 文档
+
+- [规格](docs/spec.md)
+- [架构](docs/architecture.md)
+- [计划采用审计](docs/plan-adoption-audit.md)
+- [分类法](docs/taxonomy.md)
+- [Schema migrations](docs/schema-migrations.md)
+- [工程状态](docs/engineering-status.md)
+- [贡献指南](CONTRIBUTING.md)
+- [安全政策](SECURITY.md)
+
+Skill 格式只依赖 OpenAI 官方 [Skills 文档](https://developers.openai.com/codex/skills)；外部来源只提供事实和发现信号。
 
 ## License
 

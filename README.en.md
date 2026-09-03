@@ -1,79 +1,109 @@
-# Human Skills · 会过日子
+# Codex Skill Harvester
 
 [简体中文](README.md)
 
 [![CI](https://github.com/KanadeK/codex-skill-harvester/actions/workflows/ci.yml/badge.svg)](https://github.com/KanadeK/codex-skill-harvester/actions/workflows/ci.yml)
 
-> AI has no hands, but it can help you make everyday work make sense.
+Codex Skill Harvester is the **background discovery, evidence, deduplication, and maintenance engine** for public workflows. It incrementally reads trusted sources, turns raw discoveries into Evidence Packs and normalized capabilities, applies supervised semantic adjudication, and maintains verifiable Codex / Open Agent Skills.
 
-Human Skills is a bilingual set of Codex Skills that turns “how do I do this?” into bounded, interactive, executable guidance. It covers groceries, laundry, and home cooking alongside software release checks, web-request diagnosis, and offline Git delivery.
+> Looking for everyday Skills written for people to read and “install”? Go to:
+>
+> **[Skills for Humans](https://github.com/KanadeK/skills-for-humans) / 给人类的 Skill**.
 
-Behind the catalog, Skill Harvester incrementally discovers public, traceable workflow evidence. A capability is published only after evidence review, deduplication, supervised semantic adjudication, trigger evaluation, and end-to-end validation. This is not a bulk Skill mirror, and a page title never becomes a Skill by itself.
+The repositories have different jobs:
 
-## Ask it like this
+- **Skill Harvester** owns sources, cursors, evidence, capability fingerprints, deduplication, candidates, decisions, validation, and release engineering.
+- **Skills for Humans** contains final SKILL.md files read and executed directly by people, without the database, campaigns, or candidate queue.
 
-- “Plan groceries for two people for three days. I already have eggs and half a cabbage, and my budget is about ¥150.”
-- “I have white T-shirts, dark jeans, and a wool sweater. Which loads should I make, and how should I wash them?”
-- “I have chicken thighs, potatoes, peppers, and one wok. Plan dinner and tell me what to prep first.”
-- “Are this Python wheel and its GitHub Actions publishing workflow actually ready for PyPI?”
-- “The browser says CORS blocked. I captured the preflight and response headers—where is the failure?”
+## Where v0.2.0 belongs
 
-Each Skill asks for facts that materially change the answer, then gives steps, stop conditions, and explicit uncertainties. AI has no hands: it does not pretend to read a missing label, smell food, press an appliance button, or publish software.
+[v0.2.0](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.2.0) remains an immutable historical technical prototype. It proved 204 executable endpoints, 1,622 real queries, SQLite v4, content review, 17 Skills, 11 Plugins, cross-platform CI, and immutable Release engineering. Its everyday-life Plugins were mistakenly presented as this repository's frontstage product.
 
-## What is included
+That public history will not be deleted or rewritten. The corrected split is:
 
-The released [v0.2.0](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.2.0) catalog contains 17 Skills distributed as 11 small Plugins organized by installation intent.
+    codex-skill-harvester
+        discover → evidence → deduplicate → supervise → validate → maintain
+                                             |
+                                             └── qualified human content goes to skills-for-humans
 
-| Everyday-life Plugin | Scope |
-| --- | --- |
-| Grocery Shopping | Plan a bounded shop, inspect perishables using observable clues, and put food away in a use-first order |
-| Laundry Care | Read care labels, sort loads, select settings for the exact washer, and care for wool knitwear |
-| Home Cooking | Sequence one meal, substitute ingredients by function, and check doneness and leftovers |
+The v0.2.0 Skills, Plugins, evals, and reports remain here as a technical prototype, regression corpus, and maintenance evidence. They no longer define the Harvester's public brand.
 
-| Software Plugin | Scope |
-| --- | --- |
-| GitHub Release Evidence | Audit whether an already-published GitHub Release is genuinely complete |
-| Python Package Delivery | Inspect sdist, wheel, metadata, and Trusted Publishing readiness |
-| JavaScript Package Delivery | Inspect npm package contents and publication boundaries |
-| Git Offline Transfer | Create and verify a Git bundle for committed history |
-| Ansible Collection Quality | Plan the appropriate ansible-test validation layers |
-| Rust Build Performance | Reproduce and compare cold and warm Cargo builds |
-| Web Request Diagnostics | Locate CORS and Fetch failures from captured evidence |
-| API Request Safety | Audit curl semantics, local-file references, and credential risks before execution |
+## What the engine does
 
-See the bilingual [Skill Catalog](SKILLS.md) for every stable capability ID, example prompt, release state, and safety boundary.
+### 1. Evidence / Discovery
 
-## Install
+- A fixed source registry covers official documentation, CLI/API/OpenAPI, primary repositories, Releases/Changelogs, RSS/Atom, sitemaps, and bounded discovery queries.
+- Sources retain trust, license, revision, ETag/Last-Modified, query, and cursor state.
+- External content is always untrusted data. Raw pages stay in temporary cache, downloaded third-party scripts are never executed, and unknown-license bodies are not committed.
 
-Starting with v0.2.0, add the repository marketplace:
+### 2. Capability Registry
 
-    codex plugin marketplace add KanadeK/codex-skill-harvester --ref v0.2.0
+- An observation enters content review before it can become an Evidence Pack and normalized candidate.
+- Capability fingerprints cover goal, triggers, inputs, outputs, tools, side_effects, and platforms.
+- Exact hashes handle copies. L2/L3 provide recall only; supervised L4 decides not_promoted, merge, update, variant, or create.
+- not_promoted retains source, reason, and reactivation conditions instead of deleting evidence.
 
-Then open the Plugins Directory in Codex or Work mode and install only the Plugin that matches your task. You do not need all 11.
+### 3. Published artifacts
 
-The current public stable version is [v0.2.0](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.2.0). Its immutable Release has 13 GitHub-attested assets, and the downloaded source plus all 11 Plugins passed isolated install/E2E verification. [v0.1.1](https://github.com/KanadeK/codex-skill-harvester/releases/tag/v0.1.1) remains available as immutable history.
+- Publication candidates require a distinct user goal, trusted evidence, original synthesis, clear trigger boundaries, format, E2E, installation, and license gates.
+- Git owns Skills/Plugins, catalogs, evals, compact reports, and release history.
+- Human-readable everyday content now ships through [Skills for Humans](https://github.com/KanadeK/skills-for-humans).
 
-## Safety boundaries
+## Sole runtime authority
 
-- Everyday-life Skills provide interactive guidance; a person reads labels, operates tools, and confirms results.
-- Food guidance never declares questionable food safe from smell or appearance alone, and stops on medical diets, allergy-critical substitutions, infant food, canning, fermentation, or similar high-risk boundaries.
-- Laundry guidance never guesses unreadable symbols or controls, recommends dangerous chemical mixing, or repairs appliances.
-- Software scripts inspect explicitly supplied local material. They do not execute downloaded third-party scripts, publish, push, or bypass controls.
-- Medical, legal, financial, credential-heavy, and real-world-control capabilities remain evidence-only and cannot be auto-published.
+Runtime observations, Evidence Packs, candidates, query/semantic batches, five queues, decisions, source cursors, and checkpoints have one authority: [state/harvest.sqlite3](state/harvest.sqlite3), SQLite schema 4.
 
-## Why this is more than a prompt collection
+There is no Git-JSON fallback, long-lived dual write, or second source of truth. Future migrations retain the write-validate-atomic-swap contract and state the old-path deletion condition.
 
-- Every capability has a stable ID, seven-field fingerprint, revisioned sources, an Evidence Pack, and an auditable decision.
-- Exact hashes remove copies; near-duplicate decisions compare user goals, inputs, outputs, tools, side effects, and platforms.
-- A new or updated Skill must pass format, positive trigger, negative trigger, end-to-end, isolated install/invocation, originality, and license gates.
-- One SQLite store owns runtime observations, candidates, queues, decisions, and cursors. Git owns reviewable Skills, catalogs, evals, and release history.
-- A repeated run handles only changed, new, or unfinished work and truthfully reports a no-op when nothing changed.
+## Local use
 
-## Maintainer entry points
+Requires Python 3.12+.
 
-The public README stays intentionally compact. Architecture, measured campaign results, migrations, verification commands, and historical evidence live in [Engineering Status](docs/engineering-status.md). See [CONTRIBUTING.md](CONTRIBUTING.md) for contributions and [SECURITY.md](SECURITY.md) for security reports.
+    python -m venv .venv
+    .\.venv\Scripts\python -m pip install --no-build-isolation -e .
+    .\.venv\Scripts\skill-harvester status --root . --json
+    .\.venv\Scripts\skill-harvester review-queue --root . --json
 
-Skill and Plugin format claims rely only on OpenAI's official [Skills documentation](https://developers.openai.com/codex/skills) and [Plugins documentation](https://developers.openai.com/plugins/build/plugins). All external content is treated as untrusted evidence.
+Maintenance and verification:
+
+    .\.venv\Scripts\python -m unittest discover -s tests -v
+    .\.venv\Scripts\python scripts/run_evals.py
+    .\.venv\Scripts\python scripts/validate_repo.py
+    .\.venv\Scripts\python scripts/benchmark_storage.py
+    .\.venv\Scripts\python scripts/build_release.py
+
+Scheduled GitHub Actions runs a bounded campaign and opens a review PR. It never performs unattended L4 merges, publishes a Skill, or creates a Release.
+
+## Current durable state
+
+- 217 registered sources and source states
+- 1,217 observations
+- 180 Evidence Packs
+- 145 adjudicated candidates
+- 1,642 Topic Bank queries
+- SQLite v4 with zero pending candidates
+
+Scale numbers are measured outcomes, not Skill-production KPIs. See [Engineering Status](docs/engineering-status.md) for campaign metrics, migrations, and verification evidence.
+
+## Safety and scope
+
+- Never execute downloaded third-party scripts, store secrets, or treat community discussion as operational authority.
+- Medical, legal, financial, credential-heavy, high-privilege, and real-world-control capabilities remain evidence-only and blocked from automatic publication.
+- An empty queue is not permanent campaign completion. A no-op only describes the same input set with no new, changed, or unfinished work.
+- [RepoPilot Skillforge](https://github.com/KanadeK/repopilot-skillforge) analyzes one supplied repository and writes repository-local guidance. Harvester maintains a cross-source capability ecosystem.
+
+## Documentation
+
+- [Specification](docs/spec.md)
+- [Architecture](docs/architecture.md)
+- [Plan Adoption Audit](docs/plan-adoption-audit.md)
+- [Taxonomy](docs/taxonomy.md)
+- [Schema migrations](docs/schema-migrations.md)
+- [Engineering Status](docs/engineering-status.md)
+- [Contributing](CONTRIBUTING.md)
+- [Security](SECURITY.md)
+
+Skill-format claims rely only on OpenAI's official [Skills documentation](https://developers.openai.com/codex/skills). External sources supply facts and discovery signals only.
 
 ## License
 
